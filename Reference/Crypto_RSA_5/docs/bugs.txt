@@ -1,0 +1,69 @@
+                         RSAEuro Bug Report Form.
+
+                                Version 1.0
+
+This is the RSAEuro report form, please complete this if during
+your use you encounter a problem.  Once complete please either
+e-mail or post a copy to me.  This can also be used for comments
+and suggestions.
+
+You may also contact me by telephone on +44 (468) 286034 weekdays
+or weekends, on +44 (1200) 448241 and ask for Stephen.
+
+Bug Report:
+
+Source File:-
+Details:-
+
+
+
+
+
+
+
+
+
+
+
+
+Comment/Suggestion:
+
+Details:-
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Return to:
+
+     1.   E-mail:   rsaeuro@sourcery.demon.co.uk
+
+     2.   S-mail:   Stephen Kapp.
+                    The Post Office,
+                    Dunsop Bridge,
+                    Clitheroe,
+                    Lancashire,
+                    BB7 3BB.
+
+          Please write "RSAEuro BUGS" in top left of envelope.
+
+     3.   Phone:    +44 (468) 286034  Daytime during weekdays.
+                    +44 (1200) 448241 After 7pm Weekdays, Anytime Weekends.
+
