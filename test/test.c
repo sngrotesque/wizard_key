@@ -62,16 +62,27 @@ SN_PRIVATE(snVoid) snNet_listen_test()
 {
     snNet_ctx *net = snNull;
     snNetSize tSize;
-    snByte buf[32];
+    snByte buf[33];
 
-    snZeroObject(buf, 32);
+    snZeroObject(buf, 33);
 
+    printf("Initialize program...\n");
     snNet_new(&net, AF_INET);
     snNet_init(net, "0.0.0.0", SN_FT_DEFAULT_PORT, false);
 
+    printf("Set timeout to 15 seconds.\n");
+    snNet_timeout(net, 15);
+
+    printf("socket bind...\n");
     snNet_bind(net, 1);
+    printf("socket listen...\n");
     snNet_listen(net, 5);
+    printf("Waiting to be connected...\n");
     snNet_accept(net);
+
+    SOCKADDR_IN *ipv4 = net->info->client;
+    printf("Client info: %s:%d\n",
+        snNet_GetAddr(ipv4->sin_addr), snNet_GetPort(ipv4->sin_port));
 
     snNet_recv(net, &tSize, buf, 32);
     snNet_send(net, &tSize, "This machine received a message.", 32);
@@ -79,20 +90,27 @@ SN_PRIVATE(snVoid) snNet_listen_test()
     printf("Message from the sending end: %s\n", buf);
 
     snNet_close(net);
-    snNet_release(&net);
+    // snNet_release(&net);
 }
 
 SN_PRIVATE(snVoid) snNet_client_test()
 {
     snNet_ctx *net = snNull;
     snNetSize tSize;
-    snByte buf[32];
+    snByte buf[33];
 
-    snZeroObject(buf, 32);
+    snZeroObject(buf, 33);
 
+    printf("Initialize program...\n");
     snNet_new(&net, AF_INET);
     snNet_init(net, "47.108.209.65", SN_FT_DEFAULT_PORT, false);
 
+    printf("Set timeout to 15 seconds.\n");
+    snNet_timeout(net, 15);
+
+    SOCKADDR_IN *ipv4 = net->info->receiver;
+    printf("Server info: %s:%d\n",
+        snNet_GetAddr(ipv4->sin_addr), snNet_GetPort(ipv4->sin_port));
     snNet_connect(net);
 
     snNet_send(net, &tSize, "0123456789abcdef0123456789abcdef", 32);
@@ -101,13 +119,13 @@ SN_PRIVATE(snVoid) snNet_client_test()
     printf("Message from the receiving end: %s\n", buf);
 
     snNet_close(net);
-    snNet_release(&net);
+    // snNet_release(&net);
 }
 
 int main(int argc, char **argv)
 {
-    snNet_listen_test();
-    // snNet_client_test();
+    // snNet_listen_test();
+    snNet_client_test();
 
     return 0;
 }
