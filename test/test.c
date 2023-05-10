@@ -80,7 +80,7 @@ SN_PRIVATE(snVoid) snNet_listen_test()
     printf("Waiting to be connected...\n");
     snNet_accept(net);
 
-    SOCKADDR_IN *ipv4 = net->info->client;
+    SOCKADDR_IN *ipv4 = (SOCKADDR_IN *)net->info->client;
     printf("Client info: %s:%d\n",
         snNet_GetAddr(ipv4->sin_addr), snNet_GetPort(ipv4->sin_port));
 
@@ -103,12 +103,12 @@ SN_PRIVATE(snVoid) snNet_client_test()
 
     printf("Initialize program...\n");
     snNet_new(&net, AF_INET);
-    snNet_init(net, "47.108.209.65", SN_FT_DEFAULT_PORT, false);
+    snNet_init(net, "192.168.125.129", SN_FT_DEFAULT_PORT, false);
 
     printf("Set timeout to 15 seconds.\n");
     snNet_timeout(net, 15);
 
-    SOCKADDR_IN *ipv4 = net->info->receiver;
+    SOCKADDR_IN *ipv4 = (SOCKADDR_IN *)net->info->receiver;
     printf("Server info: %s:%d\n",
         snNet_GetAddr(ipv4->sin_addr), snNet_GetPort(ipv4->sin_port));
     snNet_connect(net);

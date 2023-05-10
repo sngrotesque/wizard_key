@@ -18,21 +18,16 @@ def run_code(program :str, parameters :list):
         inPath = 'test/test.cpp'
 
     if platform == 'win32':
-        parameters.append('-I E:\\Projects\\Shark_Coast\\includes')
-        parameters.append('-I E:\\Projects\\Shark_Coast\\source')
+        parameters.append('-I Shark_Coast\\includes')
+        parameters.append('-I Shark_Coast\\source')
         parameters.append('-I E:\\OpenSSL\\include')
         parameters.append('-L E:\\OpenSSL\\lib')
         inPath = inPath.replace('/', '\\')
         outPath = 'out\\main.exe'
 
     if platform == 'linux':
-        if '--server-args' in parameters:
-            parameters.append(f'-I /root/code/Shark_Coast/includes')
-            parameters.append(f'-I /root/code/Shark_Coast/source')
-            parameters.remove('--server-args')
-        else:
-            parameters.append(f'-I /home/{userName}/code/Projects/Shark_Coast/includes')
-            parameters.append(f'-I /home/{userName}/code/Projects/Shark_Coast/source')
+        parameters.append(f'-I Shark_Coast/includes')
+        parameters.append(f'-I Shark_Coast/source')
         outPath = 'out/main'
 
     if '--print-args' in parameters:
