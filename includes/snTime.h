@@ -23,7 +23,7 @@ typedef struct {
     ULONGLONG stop;
 #endif
     snFloat totalTime;
-} snTimer_ctx;
+} snTime_ctx;
 
 // 获取当前时间。格式：年月日-时分秒
 SN_PUBLIC(snChar *) snTime_GetNowTime SN_OPEN_API
@@ -35,14 +35,14 @@ SN_FUNC_OF((snVoid));
 
 // 开始计时
 SN_PUBLIC(snVoid) snTime_TimerBegin SN_OPEN_API
-SN_FUNC_OF((snTimer_ctx *timer));
+SN_FUNC_OF((snTime_ctx *timer));
 
 // 结束计时
 SN_PUBLIC(snVoid) snTime_TimerEnd SN_OPEN_API
-SN_FUNC_OF((snTimer_ctx *timer));
+SN_FUNC_OF((snTime_ctx *timer));
 
 // 打印计时后的结果
 SN_PUBLIC(snVoid) snTime_TimerPrint SN_OPEN_API
-SN_FUNC_OF((const snChar *text, snTimer_ctx *timer));
+SN_FUNC_OF((const snChar *text, snTime_ctx *timer));
 
 #endif

@@ -65,7 +65,7 @@ SN_PRIVATE(snVoid) minesGame_init(mines_ctx *ctx)
 SN_PRIVATE(snVoid) minesGame()
 {
     static mines_ctx *ctx = snNull;
-    static snTimer_ctx *timer = snNull;
+    static snTime_ctx *timer = snNull;
     static snSize count;
     static snChar mine_x[6];
     static snChar mine_y[6];
@@ -74,7 +74,7 @@ SN_PRIVATE(snVoid) minesGame()
     static snBool gameOver;
 
     ctx = (mines_ctx *)malloc(sizeof(mines_ctx));
-    timer = (snTimer_ctx *)malloc(sizeof(snTimer_ctx));
+    timer = (snTime_ctx *)malloc(sizeof(snTime_ctx));
 
     minesGame_init(ctx);
 

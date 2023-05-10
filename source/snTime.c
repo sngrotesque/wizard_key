@@ -51,7 +51,7 @@ SN_FUNC_OF((snVoid))
 }
 
 SN_PUBLIC(snVoid) snTime_TimerBegin SN_OPEN_API
-SN_FUNC_OF((snTimer_ctx *timer))
+SN_FUNC_OF((snTime_ctx *timer))
 {
 #if defined(__linux)
     gettimeofday(&timer->start, snNull);
@@ -61,7 +61,7 @@ SN_FUNC_OF((snTimer_ctx *timer))
 }
 
 SN_PUBLIC(snVoid) snTime_TimerEnd SN_OPEN_API
-SN_FUNC_OF((snTimer_ctx *timer))
+SN_FUNC_OF((snTime_ctx *timer))
 {
 #if defined(__linux)
     gettimeofday(&timer->stop, snNull);
@@ -76,7 +76,7 @@ SN_FUNC_OF((snTimer_ctx *timer))
 }
 
 SN_PUBLIC(snVoid) snTime_TimerPrint SN_OPEN_API
-SN_FUNC_OF((const snChar *text, snTimer_ctx *timer))
+SN_FUNC_OF((const snChar *text, snTime_ctx *timer))
 {
     printf("%s%.2lfs.\n", text, timer->totalTime);
 }
