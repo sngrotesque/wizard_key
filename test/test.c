@@ -124,8 +124,10 @@ SN_PRIVATE(snVoid) snNet_client_test()
 
 int main(int argc, char **argv)
 {
+    // snTransfer_listen_test();
+    snTransfer_client_test()
     // snNet_listen_test();
-    snNet_client_test();
+    // snNet_client_test();
 
     return 0;
 }
