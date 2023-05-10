@@ -12,22 +12,21 @@ def run_code(program :str, parameters :list):
     parameters.append('-lcrypto')
     parameters.append('-lm')
 
+    parameters.append('-I includes')
+    parameters.append('-I source')
+
     if program == 'gcc':
         inPath = 'test/test.c'
     elif program == 'g++':
         inPath = 'test/test.cpp'
 
     if platform == 'win32':
-        parameters.append('-I Shark_Coast\\includes')
-        parameters.append('-I Shark_Coast\\source')
         parameters.append('-I E:\\OpenSSL\\include')
         parameters.append('-L E:\\OpenSSL\\lib')
         inPath = inPath.replace('/', '\\')
         outPath = 'out\\main.exe'
 
     if platform == 'linux':
-        parameters.append(f'-I Shark_Coast/includes')
-        parameters.append(f'-I Shark_Coast/source')
         outPath = 'out/main'
 
     if '--print-args' in parameters:
