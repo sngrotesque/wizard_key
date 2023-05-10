@@ -20,12 +20,13 @@ SN_PRIVATE(snVoid) snTransfer_listen_test()
     snTime_ctx *timer = snNull;
     snTransfer_ctx *ctx = snNull;
     const snChar *addr = "0.0.0.0";
+    const snChar *fn = "misc/00000001.mp4";
 
     timer = (snTime_ctx *)malloc(sizeof(snTime_ctx));
     snTransfer_new(&ctx, addr, SN_FT_DEFAULT_PORT, 5);
 
     snTime_TimerBegin(timer);
-    snTransfer_Listen(ctx, "misc/snFT_listen.bin");
+    snTransfer_Listen(ctx, fn);
     snTime_TimerEnd(timer);
     snTime_TimerPrint("Timer: ", timer);
 
