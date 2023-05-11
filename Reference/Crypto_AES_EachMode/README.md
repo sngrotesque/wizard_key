@@ -1,6 +1,4 @@
-```c
-// 出处: https://github.com/SergeyBel/AES
-```
+> https://github.com/SergeyBel/AES
 
 # AES
 C++ AES(Advanced Encryption Standard) implementation  

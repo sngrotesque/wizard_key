@@ -1,13 +1,12 @@
 from subprocess import call
 from sys import platform, argv
-from os import getlogin
+
+OUT_PATH = "#output"
 
 def run(cmd :str):
     call(cmd, shell=True)
 
 def run_code(program :str, parameters :list):
-    userName = getlogin()
-
     parameters.append('-lssl')
     parameters.append('-lcrypto')
     parameters.append('-lm')
@@ -24,10 +23,10 @@ def run_code(program :str, parameters :list):
         parameters.append('-I E:\\OpenSSL\\include')
         parameters.append('-L E:\\OpenSSL\\lib')
         inPath = inPath.replace('/', '\\')
-        outPath = 'out\\main.exe'
+        outPath = f'{OUT_PATH}\\main.exe'
 
     if platform == 'linux':
-        outPath = 'out/main'
+        outPath = f'{OUT_PATH}/main'
 
     if '--print-args' in parameters:
         parameters.remove("--print-args")

@@ -1,6 +1,4 @@
-```c
-// git@github.com:WaterJuice/WjCryptLib.git
-```
+> git@github.com:WaterJuice/WjCryptLib.git
 
 WjCryptLib
 ==========

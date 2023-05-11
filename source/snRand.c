@@ -1,6 +1,6 @@
 #include <snRand.h>
 
-SN_PUBLIC(snSize) snSetRandomTimerSeed SN_OPEN_API
+SN_PUBLIC(snVoid) snSetRandomTimerSeed SN_OPEN_API
 SN_FUNC_OF((snVoid))
 {
 #   if defined(__linux)
@@ -28,7 +28,7 @@ SN_FUNC_OF((snVoid))
     static sn_u32 x, count;
 
     for(x = 0; x < 32; ++x) {
-        num[x] = rand() ^ rand() ^ rand() & rand();
+        num[x] = rand() ^ (rand() ^ (rand() & rand()));
         n = n + (n ^ num[x]);
     }
 
@@ -36,10 +36,10 @@ SN_FUNC_OF((snVoid))
 
     for(count = 0; count < 32; ++count) {
         for(x = 0; x < 32; ++x) {
-            num[x] = rand() ^ rand() ^ rand() & rand();
+            num[x] = rand() ^ (rand() ^ (rand() & rand()));
         }
         n = (n + (n ^ num[count])) ^ count;
-        n = n + rand() ^ snByteSwap((count + (rand() ^ (n - num[x]))) & 0xff);
+        n = (n + rand()) ^ snByteSwap((count + (rand() ^ (n - num[x]))) & 0xff);
     }
 
     return n;

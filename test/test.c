@@ -1,133 +1,65 @@
-#include <network/snNet.h>
-#include <network/snTransfer.h>
-#include <errno.h>
-#include <snHash.h>
-#include <snTime.h>
+// #include <network/snNet.h>
+// #include <network/snTransfer.h>
+// #include <snHash.h>
+// #include <errno.h>
+
+// #include <network/snTransfer.c>
+// #include <network/snNet.c>
+// #include <snBinascii.c>
+// #include <snObject.c>
+// #include <snHash.c>
+// #include <snFile.c>
+
+#include <snPadding.h>
+#include <crypto/snc.h>
 #include <snMisc.h>
+#include <snTime.h>
 
-#include <snMisc.c>
-#include <snHash.c>
-#include <snTime.c>
-#include <snFile.c>
-#include <snObject.c>
-#include <snBinascii.c>
+#include <snPadding.c>
 #include <crypto/snc.c>
-#include <network/snNet.c>
-#include <network/snTransfer.c>
+#include <snMisc.c>
+#include <snTime.c>
+#include <snRand.c>
 
-SN_PRIVATE(snVoid) snTransfer_listen_test()
-{
-    snTime_ctx *timer = snNull;
-    snTransfer_ctx *ctx = snNull;
-    const snChar *addr = "0.0.0.0";
-    const snChar *fn = "misc/00000001.mp4";
+SN_PRIVATE_CONST(snSize) SNC_DEFAULT_MODE = SNC_512;
 
-    timer = (snTime_ctx *)malloc(sizeof(snTime_ctx));
-    snTransfer_new(&ctx, addr, SN_FT_DEFAULT_PORT, 5);
+SN_PRIVATE_CONST(snChar *) default_key = {
+    "13094329482059831058320438435981"
+    "3915u3928hasjfhd9135y39y9qwtye71"
+    // "31905uy9dashfi3p1j;su0ed8uy8092y"
+};
 
-    snTime_TimerBegin(timer);
-    snTransfer_Listen(ctx, fn);
-    snTime_TimerEnd(timer);
-    snTime_TimerPrint("Timer: ", timer);
+SN_PRIVATE_CONST(snChar *) default_iv = {
+    "134085yhidsugc92etr987123t5813t3"
+};
 
-    snTransfer_release(&ctx);
-    free(timer);
-}
-
-SN_PRIVATE(snVoid) snTransfer_client_test()
-{
-    snTransfer_ctx *ctx = snNull;
-    const snChar *addr = "47.108.209.65";
-    // const snChar *addr = "47.243.162.23";
-    // const snChar *addr = "127.0.0.1";
-
-    snTransfer_new(&ctx, addr, SN_FT_DEFAULT_PORT, 5);
-
-    snTransfer_Client(ctx, "p:/00000001.mp4");
-
-    snTransfer_release(&ctx);
-}
-
-SN_PRIVATE(snVoid) snTransfer_test()
-{
-    int code = 0;
-    if(code == 1) {
-        snTransfer_listen_test();
-    } else {
-        snTransfer_client_test();
-    }
-}
-
-SN_PRIVATE(snVoid) snNet_listen_test()
-{
-    snNet_ctx *net = snNull;
-    snNetSize tSize;
-    snByte buf[33];
-
-    snZeroObject(buf, 33);
-
-    printf("Initialize program...\n");
-    snNet_new(&net, AF_INET);
-    snNet_init(net, "0.0.0.0", SN_FT_DEFAULT_PORT, false);
-
-    printf("Set timeout to 15 seconds.\n");
-    snNet_timeout(net, 15);
-
-    printf("socket bind...\n");
-    snNet_bind(net, 1);
-    printf("socket listen...\n");
-    snNet_listen(net, 5);
-    printf("Waiting to be connected...\n");
-    snNet_accept(net);
-
-    SOCKADDR_IN *ipv4 = (SOCKADDR_IN *)net->info->client;
-    printf("Client info: %s:%d\n",
-        snNet_GetAddr(ipv4->sin_addr), snNet_GetPort(ipv4->sin_port));
-
-    snNet_recv(net, &tSize, buf, 32);
-    snNet_send(net, &tSize, "This machine received a message.", 32);
-
-    printf("Message from the sending end: %s\n", buf);
-
-    snNet_close(net);
-    // snNet_release(&net);
-}
-
-SN_PRIVATE(snVoid) snNet_client_test()
-{
-    snNet_ctx *net = snNull;
-    snNetSize tSize;
-    snByte buf[33];
-
-    snZeroObject(buf, 33);
-
-    printf("Initialize program...\n");
-    snNet_new(&net, AF_INET);
-    snNet_init(net, "192.168.125.129", SN_FT_DEFAULT_PORT, false);
-
-    printf("Set timeout to 15 seconds.\n");
-    snNet_timeout(net, 15);
-
-    SOCKADDR_IN *ipv4 = (SOCKADDR_IN *)net->info->receiver;
-    printf("Server info: %s:%d\n",
-        snNet_GetAddr(ipv4->sin_addr), snNet_GetPort(ipv4->sin_port));
-    snNet_connect(net);
-
-    snNet_send(net, &tSize, "0123456789abcdef0123456789abcdef", 32);
-    snNet_recv(net, &tSize, buf, 32);
-
-    printf("Message from the receiving end: %s\n", buf);
-
-    snNet_close(net);
-    // snNet_release(&net);
-}
+SN_PRIVATE_CONST(snChar *) default_plaintext = {
+    "0000000000000000000000000000000000000000000000000000000000000000"
+    "0000000000000000000000000000000000000000000000000000000000000000"
+    "0000000000000000000000000000000000000000000000000000000000000000"
+    "0000000000000000000000000000000000000000000000000000000000000000"
+    "0000000000000000000000000000000000000000000000000000000000000000"
+};
 
 int main(int argc, char **argv)
 {
-    // snTransfer_listen_test();
-    snTransfer_client_test()
-    // snNet_listen_test();
-    // snNet_client_test();
+    SNC_ctx *snc = snNull;
+    SNC_new(&snc, SNC_DEFAULT_MODE);
+    SNC_init(snc, (snByte *)default_key, (snByte *)default_iv);
 
+    snSize size = strlen(default_plaintext);
+    snByte *buf = (snByte *)malloc(2048);
+    snZeroObject(buf, 2048);
+    memcpy(buf, default_plaintext, size);
+    if(size % SNC_BLOCKLEN) {
+        snPadding_add(buf, &size, SNC_BLOCKLEN, false);
+    }
+
+    SNC_CBC_Encrypt(snc, buf, size);
+    SNC_CBC_Decrypt(snc, buf, size);
+
+    snMisc_PRINT(buf, size, 16, 1, 0);
+
+    SNC_release(&snc);
     return 0;
 }

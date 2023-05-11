@@ -16,7 +16,7 @@
 #endif
 
 // 设置时间随机数种子
-SN_PUBLIC(snSize) snSetRandomTimerSeed SN_OPEN_API
+SN_PUBLIC(snVoid) snSetRandomTimerSeed SN_OPEN_API
 SN_FUNC_OF((snVoid));
 
 // 随机数生成

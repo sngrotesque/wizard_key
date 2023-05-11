@@ -1,20 +1,27 @@
 #include <crypto/snc.h>
+#include <snMisc.h>
+#include <snTime.h>
+
 #include <crypto/snc.c>
-
-static const snChar *default_iv  = {
-    "0123456789abcdef0123456789abcdef"};
-static const snChar *default_key = {
-    "IJj315+_DOF//13.5[-SF=301-5_SF1]"
-    "0123456789abcdef0123456789abcdef"
-    "XNuh831yt9y183y80yasGyg13D*FJF83"};
-
-SN_PRIVATE(snVoid) test()
-{
-    
-}
+#include <snMisc.c>
+#include <snTime.c>
 
 int main(int argc, char **argv)
 {
-    test();
+    SNC_ctx *snc = snNull;
+    snTime_ctx timer;
+
+    SNC_new(&snc, SNC_768);
+    SNC_init(snc,
+        (snByte *)"192840348274981749832750142748017583279431985629764274917503284017489279852319058304984791879341",
+        (snByte *)"19483042749817987491857324619412");
+
+    static snByte buf[16777216];
+
+    snTime_TimerBegin(&timer);
+    SNC_CBC_Encrypt(snc, buf, 16777216);
+    snTime_TimerEnd(&timer);
+    snTime_TimerPrint("timer: ", &timer);
+
     return 0;
 }

@@ -1,6 +1,4 @@
-```c
-// 出处: git@github.com:andrewkiluk/RSA-Library.git
-```
+> git@github.com:andrewkiluk/RSA-Library.git
 
 RSA-Library
 ===========

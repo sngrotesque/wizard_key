@@ -61,14 +61,22 @@ typedef enum {
     SNC_768  // 密钥长度：96字节（Key length: 96 bytes）
 } SNC_mode;
 
-typedef snByte sncState_t[SNC_NB][SNC_NK]; // 声明区块类型（declare block type）
+// 声明区块类型（declare block type）
+typedef snByte sncState[SNC_NB][SNC_NK];
+/*
+* 用于禁止编译器产生无意义的警告。
+* Used to prevent the compiler from generating meaningless errors.
+* 后续针对这个问题处理一下，现在脑袋昏，没有处理的动力。
+*/
+typedef snByte sncStateRK[13][96];
+// 声明SNC算法的数据结构（declare SNC structure）
 typedef struct {
     sn_u16 NR;
     sn_u16 KN;
     SNC_mode mode;
     snByte **roundKey;
     snByte iv[SNC_BLOCKLEN];
-} SNC_ctx; // 声明SNC算法的数据结构（declare SNC structure）
+} SNC_ctx;
 
 // 为SNC对象申请内存空间
 SN_PUBLIC(snError) SNC_new SN_OPEN_API
@@ -79,7 +87,7 @@ SN_PUBLIC(snError) SNC_release SN_OPEN_API
 SN_FUNC_OF((SNC_ctx **ctx));
 
 // 初始化SNC对象
-SN_PUBLIC(snVoid) SNC_init_ctx SN_OPEN_API
+SN_PUBLIC(snVoid) SNC_init SN_OPEN_API
 SN_FUNC_OF((SNC_ctx *ctx, snByte *keyBuf, snByte *ivBuf));
 
 // ECB加密

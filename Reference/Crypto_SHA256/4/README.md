@@ -1,6 +1,4 @@
-```c
-// git@github.com:jb55/sha256.c.git
-```
+> git@github.com:jb55/sha256.c.git
 
 # sha256.c
 

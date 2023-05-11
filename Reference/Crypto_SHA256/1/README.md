@@ -1,6 +1,4 @@
-```c
-// 出处：https://github.com/ilvn/SHA256.git
-```
+> 出处：https://github.com/ilvn/SHA256.git
 
 # SHA256
 

@@ -1,6 +1,4 @@
-```c
-// 出处: https://github.com/kokke/tiny-AES-c.git
-```
+> https://github.com/kokke/tiny-AES-c.git
 
 ![CI](https://github.com/kokke/tiny-AES-c/workflows/CI/badge.svg)
 ### Tiny AES in C

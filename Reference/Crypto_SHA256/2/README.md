@@ -1,6 +1,4 @@
-```c
-// 出处：git@github.com:h5p9sl/hmac_sha256.git
-```
+> 出处：git@github.com:h5p9sl/hmac_sha256.git
 
 # hmac_sha256
 *Minimal HMAC-SHA256 implementation in C / C++*

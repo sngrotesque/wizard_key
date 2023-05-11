@@ -1,6 +1,4 @@
-```c
-// git@github.com:aperezdc/hmac-sha256.git
-```
+> git@github.com:aperezdc/hmac-sha256.git
 
 hmac-sha256
 ===========
