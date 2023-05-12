@@ -68,7 +68,7 @@ typedef snByte sncState[SNC_NB][SNC_NK];
 * Used to prevent the compiler from generating meaningless errors.
 * 后续针对这个问题处理一下，现在脑袋昏，没有处理的动力。
 */
-typedef snByte sncStateRK[13][96];
+// typedef snByte sncStateRK[13][96];
 // 声明SNC算法的数据结构（declare SNC structure）
 typedef struct {
     sn_u16 NR;

@@ -483,9 +483,9 @@ SN_FUNC_OF((SNC_ctx **ctx))
 {
     memset((*ctx)->iv, 0x00, SNC_BLOCKLEN);
     free((*ctx)->roundKey);
-    free((*ctx));
+    // free((*ctx));
     (*ctx)->roundKey = snNull;
-    (*ctx) = snNull;
+    // (*ctx) = snNull;
 
     return snErr_OK;
 }

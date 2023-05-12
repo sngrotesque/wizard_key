@@ -101,11 +101,6 @@
 
 #include <snConf.h>
 
-typedef struct {
-    snByte *BytesBuffer;
-    snVoid *NumberBuffer;
-} snNum_ctx;
-
 /**
  *  用来判断当前计算机是大端排序还是小端排序。
  *  小端返回True，大端返回False。
@@ -116,9 +111,9 @@ SN_PUBLIC(snBool) snNum_PlatformEnd SN_OPEN_API
 SN_FUNC_OF((void));
 
 SN_PUBLIC(snError) snNum_pack SN_OPEN_API
-SN_FUNC_OF((snChar *format, snNum_ctx *obj));
+SN_FUNC_OF((const snChar *format, snByte *dst, snVoid *src));
 
 SN_PUBLIC(snError) snNum_unpack SN_OPEN_API
-SN_FUNC_OF((snChar *format, snNum_ctx *obj));
+SN_FUNC_OF((const snChar *format, snVoid *dst, snByte *src));
 
 #endif

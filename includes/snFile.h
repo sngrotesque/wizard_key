@@ -18,7 +18,7 @@
 
 typedef struct {
     snByte *data; // 文件数据
-    snFile *fp;   // 文件句柄，暂时直接使用
+    snFile *fp;   // 文件句柄，暂时禁止直接使用
     snSize size;  // 文件长度
     snSize quotient; // 文件长度除块大小的商
     snSize leftover; // 文件剩余长度
@@ -43,7 +43,7 @@ SN_FUNC_OF((const snChar *fn));
 
 // 获取文件大小
 SN_PUBLIC(snError) snFile_fileSize SN_OPEN_API
-SN_FUNC_OF((snSize *_size_p, const snChar *fn));
+SN_FUNC_OF((snSize *size, const snChar *fn));
 
 // 整个读取文件
 SN_PUBLIC(snError) snFile_fread SN_OPEN_API

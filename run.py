@@ -16,6 +16,7 @@ def run_code(program :str, parameters :list):
 
     if program == 'gcc':
         inPath = 'test/test.c'
+        # inPath = 'test/snc_test.c'
     elif program == 'g++':
         inPath = 'test/test.cpp'
 

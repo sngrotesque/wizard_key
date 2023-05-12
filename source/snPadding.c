@@ -7,7 +7,7 @@ SN_FUNC_OF((snByte *buf, snSize *size, sn_u16 BlockSize, snBool randomPadding))
     snSize totalSize;
     snSize index;
 
-    padoffset = PADDING(BlockSize, *size);
+    padoffset = snPadding_offset(BlockSize, *size);
     totalSize = padoffset + *size;
 
     switch(randomPadding) {
@@ -18,7 +18,7 @@ SN_FUNC_OF((snByte *buf, snSize *size, sn_u16 BlockSize, snBool randomPadding))
             break;
         default:
             for(index = *size; index < totalSize - 1; ++index)
-                buf[index] = PADDING_VALUE;
+                buf[index] = snPadding_value;
             break;
     }
 

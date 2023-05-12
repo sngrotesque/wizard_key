@@ -154,7 +154,7 @@
 #   endif
 #endif
 
-typedef ssize_t                 snSSize;           // 长整数类型
+typedef int64_t                 snSSize;           // 长整数类型
 typedef size_t                  snSize;            // 长度类型
 
 typedef char                    snChar;            // 字符类型

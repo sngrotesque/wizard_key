@@ -5,8 +5,9 @@
 #include <snRand.h>
 #include <snTime.h>
 
-#define PADDING(BlockSize, size) (BlockSize - size % BlockSize)
-#define PADDING_VALUE 0xac
+#define snPadding_offset(BlockSize, size) (BlockSize - size % BlockSize)
+#define snPadding_totalSize(BlockSize, size) (snPadding_offset(BlockSize, size) + size)
+#define snPadding_value 0xac
 
 /**
  *  buf          需要被填充的内容

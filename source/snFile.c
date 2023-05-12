@@ -8,6 +8,8 @@ SN_FUNC_OF((snFile_ctx **obj))
             return snErr_Memory;
         }
     }
+    (*obj)->data = snNull;
+    (*obj)->fp = snNull;
 
     return snErr_OK;
 }
@@ -34,7 +36,7 @@ SN_PUBLIC(snBool) snFile_exists SN_OPEN_API
 SN_FUNC_OF((const snChar *fn))
 {
     if(!fn) {
-        return snErr_FileFolderPath;
+        return false;
     }
     sn_32 result = access(fn, F_OK);
     if(result == 0) {
@@ -49,6 +51,9 @@ SN_FUNC_OF((snSize *size, const snChar *fn))
 {
     if(!snFile_exists(fn)) {
         return snErr_FileFolderPath;
+    }
+    if(!size) {
+        return snErr_ErrInvalid;
     }
 
 #   if defined(__linux)
@@ -69,6 +74,7 @@ SN_FUNC_OF((snSize *size, const snChar *fn))
 #   endif
         return snErr_FileNull;
     }
+    CloseHandle(hFile);
 
     return snErr_OK;
 }
@@ -81,8 +87,10 @@ SN_FUNC_OF((snFile_ctx *obj, const snChar *fn))
     if(snFile_fileSize(&obj->size, fn) == snErr_FileFolderPath) {
         return snErr_FileFolderPath;
     }
-    if(!(obj->data = (snByte *)malloc(obj->size + 1))) {
-        return snErr_Memory;
+    if(!obj->data) {
+        if(!(obj->data = (snByte *)malloc(obj->size + 1))) {
+            return snErr_Memory;
+        }
     }
 
     fileData_ptr = obj->data;

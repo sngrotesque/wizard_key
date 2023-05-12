@@ -4,7 +4,7 @@
 SN_PUBLIC(snSize) snMath_Pow SN_OPEN_API
 SN_FUNC_OF((snSize n, snSize m))
 {
-    static snSize buf = n, i;
+    snSize buf = n, i;
     for(i = 1; i < m; ++i)
         buf *= n;
     return buf;
