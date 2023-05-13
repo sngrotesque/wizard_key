@@ -2,6 +2,12 @@ from subprocess import call
 from sys import platform, argv
 
 OUT_PATH = "#output"
+if platform == 'win32':
+    PATH_SYMBOL = '\\'
+    PROGRAM_NAME = 'main.exe'
+else:
+    PATH_SYMBOL = '/'
+    PROGRAM_NAME = 'main'
 
 def run(cmd :str):
     call(cmd, shell=True)
@@ -9,25 +15,21 @@ def run(cmd :str):
 def run_code(program :str, parameters :list):
     parameters.append('-lssl')
     parameters.append('-lcrypto')
+    parameters.append('-lzdll')
     parameters.append('-lm')
 
     parameters.append('-I includes')
     parameters.append('-I source')
 
+    parameters.append(f'-L includes{PATH_SYMBOL}openssl')
+    parameters.append(f'-L includes{PATH_SYMBOL}zlib')
+
     if program == 'gcc':
-        inPath = 'test/test.c'
-        # inPath = 'test/snc_test.c'
+        inPath = f'test{PATH_SYMBOL}test.c'
     elif program == 'g++':
-        inPath = 'test/test.cpp'
+        inPath = f'test{PATH_SYMBOL}test.cpp'
 
-    if platform == 'win32':
-        parameters.append('-I E:\\OpenSSL\\include')
-        parameters.append('-L E:\\OpenSSL\\lib')
-        inPath = inPath.replace('/', '\\')
-        outPath = f'{OUT_PATH}\\main.exe'
-
-    if platform == 'linux':
-        outPath = f'{OUT_PATH}/main'
+    outPath = f'{OUT_PATH}{PATH_SYMBOL}{PROGRAM_NAME}'
 
     if '--print-args' in parameters:
         parameters.remove("--print-args")

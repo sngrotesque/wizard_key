@@ -50,7 +50,7 @@ SN_FUNC_OF((void))
 }
 
 SN_PUBLIC(snError) snNum_pack SN_OPEN_API
-SN_FUNC_OF((const snChar *format, snByte *dst, snVoid *src))
+SN_FUNC_OF((const snChar *format, snByte *dst, snSize src))
 {
     if(!format || !dst || !src) {
         return snErr_ErrNullData;
@@ -70,11 +70,7 @@ SN_FUNC_OF((const snChar *format, snByte *dst, snVoid *src))
         case 'Q': size = 8; break;
     }
 
-    printf("symbol: %c\n", symbol);
-    printf("order:  %c\n", order);
-    printf("size:   %u\n", size);
-
-    memcpy(dst, src, size);
+    memcpy(dst, &src, size);
 
     if(order != '@') {
         if(!little_end) {
@@ -122,6 +118,71 @@ SN_FUNC_OF((const snChar *format, snByte *dst, snVoid *src))
 SN_PUBLIC(snError) snNum_unpack SN_OPEN_API
 SN_FUNC_OF((const snChar *format, snVoid *dst, snByte *src))
 {
+    /**
+     * 先直接判断本机是大端排序还是小端排序，然后根据用户指定的
+     * 格式字符来决定要不要翻转。
+     * 比如如果本机是小端序，而用户指定的格式字符也是小端序，那么
+     * 就不需要翻转，直接内存复制到数字变量中就行。
+    */
+    if(!format || !dst || !src) {
+        return snErr_ErrNullData;
+    }
+    if(!snNum_check_format(format)) {
+        return snErr_ErrInvalid;
+    }
+    snBool little_end = snNum_PlatformEnd();
+    snByte order  = format[0]; // 字节顺序
+    snByte symbol = format[1]; // 格式字符
+    snByte swap = 0;           // 用于交换数据的缓冲区
+    sn_u32 size = 0;
+
+    switch(symbol) {
+        case 'H': size = 2; break;
+        case 'I': size = 4; break;
+        case 'Q': size = 8; break;
+    }
+
+    if(order != '@') {
+        if(!little_end) {
+            if(order == '<') {
+                switch(size) {
+                    case 2:
+                        snNum_swap_bytes(&src[0], &src[1]);
+                        break;
+                    case 4:
+                        snNum_swap_bytes(&src[0], &src[3]);
+                        snNum_swap_bytes(&src[1], &src[2]);
+                        break;
+                    case 8:
+                        snNum_swap_bytes(&src[0], &src[7]);
+                        snNum_swap_bytes(&src[1], &src[6]);
+                        snNum_swap_bytes(&src[2], &src[5]);
+                        snNum_swap_bytes(&src[3], &src[4]);
+                        break;
+                }
+            }
+        } else {
+            if(order == '>') {
+                switch(size) {
+                    case 2:
+                        snNum_swap_bytes(&src[0], &src[1]);
+                        break;
+                    case 4:
+                        snNum_swap_bytes(&src[0], &src[3]);
+                        snNum_swap_bytes(&src[1], &src[2]);
+                        break;
+                    case 8:
+                        snNum_swap_bytes(&src[0], &src[7]);
+                        snNum_swap_bytes(&src[1], &src[6]);
+                        snNum_swap_bytes(&src[2], &src[5]);
+                        snNum_swap_bytes(&src[3], &src[4]);
+                        break;
+                }
+            }
+        }
+    }
+
+    memcpy(dst, src, size);
 
     return snErr_OK;
 }

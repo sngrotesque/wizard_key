@@ -8,10 +8,10 @@ SN_FUNC_OF((snByte *data, snSize len, snSize num, snBool newline, snBool tableCh
             printf("\t");
         switch(data[x]) {
             case 0:
-                printf("\x1b[91m%02x\x1b[0m", data[x]);
+                printf("%s%02x%s", SN_CF_LIGHTRED, data[x], SN_CA_RESET);
                 break;
             case 0xff:
-                printf("\x1b[93m%02x\x1b[0m", data[x]);
+                printf("%s%02x%s", SN_CF_LIGHTYELLOW, data[x], SN_CA_RESET);
                 break;
             default:
                 printf("%02x", data[x]);
