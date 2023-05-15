@@ -16,19 +16,19 @@
 #endif
 
 // 设置时间随机数种子
-SN_PUBLIC(snVoid) snSetRandomTimerSeed SN_OPEN_API
+SN_PUBLIC(snVoid) snRand_Seed SN_OPEN_API
 SN_FUNC_OF((snVoid));
 
 // 随机数生成
-SN_PUBLIC(snSize) snRand SN_OPEN_API
+SN_PUBLIC(snSize) snRand_Rand SN_OPEN_API
 SN_FUNC_OF((snVoid));
 
 // 范围随机数生成
-SN_PUBLIC(snSize) randint SN_OPEN_API
+SN_PUBLIC(snSize) snRand_Randint SN_OPEN_API
 SN_FUNC_OF((snSize min, snSize max));
 
 // 安全随机数生成
-SN_PUBLIC(snVoid) urandom SN_OPEN_API
+SN_PUBLIC(snVoid) snRand_Urandom SN_OPEN_API
 SN_FUNC_OF((snByte *buf, sn_u32 size));
 
 #endif // #ifndef __SN_RANDOM__

@@ -147,16 +147,16 @@ static char **createRandomIPAddress(int count)
 {
     char **_buff = (char **)malloc(sizeof(char *) * count);
 
-    snSetRandomTimerSeed();
+    snRand_Seed();
     for(int x = 0; x < count; ++x) {
         _buff[x] = (char *)malloc(16);
         memset(_buff[x], 0, 16);
         sprintf(
             _buff[x], "%d.%d.%d.%d",
-            (int)randint(0, 255),
-            (int)randint(0, 255),
-            (int)randint(0, 255),
-            (int)randint(0, 255)
+            (int)snRand_Randint(0, 255),
+            (int)snRand_Randint(0, 255),
+            (int)snRand_Randint(0, 255),
+            (int)snRand_Randint(0, 255)
         );
     }
 

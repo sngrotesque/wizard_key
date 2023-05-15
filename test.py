@@ -130,51 +130,42 @@ def aes256_decrypt(data :bytes, key :bytes, iv :bytes) -> bytes:
     aes = AES.new(key = key, IV = iv, mode = AES.MODE_CBC)
     return aes.decrypt(data)
 
-SN_NET_BLOCK = 4096
+text = '''\
+SHA768 -> SNT_Cipher:  64, i:   0
+SHA768 -> SNT_Cipher:  68, i:   0
+SHA768 -> SNT_Cipher:  72, i:   0
+SHA768 -> SNT_Cipher:  76, i:   0
+SHA768 -> SNT_Cipher:  80, i:   0
+SHA768 -> SNT_Cipher:  84, i:   0
+SHA768 -> SNT_Cipher:  88, i:   0
+SHA768 -> SNT_Cipher:  92, i:   0
+SHA768 -> SNT_Cipher:  65, i:   1
+SHA768 -> SNT_Cipher:  69, i:   1
+SHA768 -> SNT_Cipher:  73, i:   1
+SHA768 -> SNT_Cipher:  77, i:   1
+SHA768 -> SNT_Cipher:  81, i:   1
+SHA768 -> SNT_Cipher:  85, i:   1
+SHA768 -> SNT_Cipher:  89, i:   1
+SHA768 -> SNT_Cipher:  93, i:   1
+SHA768 -> SNT_Cipher:  66, i:   2
+SHA768 -> SNT_Cipher:  70, i:   2
+SHA768 -> SNT_Cipher:  74, i:   2
+SHA768 -> SNT_Cipher:  78, i:   2
+SHA768 -> SNT_Cipher:  82, i:   2
+SHA768 -> SNT_Cipher:  86, i:   2
+SHA768 -> SNT_Cipher:  90, i:   2
+SHA768 -> SNT_Cipher:  94, i:   2
+SHA768 -> SNT_Cipher:  67, i:   3
+SHA768 -> SNT_Cipher:  71, i:   3
+SHA768 -> SNT_Cipher:  75, i:   3
+SHA768 -> SNT_Cipher:  79, i:   3
+SHA768 -> SNT_Cipher:  83, i:   3
+SHA768 -> SNT_Cipher:  87, i:   3
+SHA768 -> SNT_Cipher:  91, i:   3
+SHA768 -> SNT_Cipher:  95, i:   3'''.split('\n')
+text = '\n'.join(text)
 
-def snNet_listen():
-    host = '0.0.0.0'
-    port = 49281
-
-    s = socket(AF_INET, SOCK_STREAM, 0)
-    s.settimeout(300)
-    s.bind((host, port))
-    s.listen(5)
-    print('等待连接...')
-    s,addr = s.accept()
-
-    print(f'客户端已连接：{addr}')
-
-    fileSize = struct.unpack("<Q", s.recv(8))[0]
-    fileHash = s.recv(32).hex()
-    print(f'文件长度：{fileSize}')
-    print(f'文件哈希：{fileHash}')
-
-    StartTime = time.time()
-    data = buf = b''
-    while fileSize:
-        buf = s.recv(SN_NET_BLOCK)
-        data += buf
-        fileSize -= len(buf)
-    StopTime = time.time()
-
-    speed = (len(data) / (StopTime - StartTime))
-    print('传输速度为：', end='')
-    if speed > 1048576:
-        print(f'{speed / 1024**2:.2f} MB/秒。')
-    elif speed > 1024 and speed < 1048576:
-        print(f'{speed / 1024:.2f} KB/秒。')
-
-    dataSize = len(data)
-    dataHash = hashlib.sha256(data).hexdigest()
-    print(f'接收完成。')
-    print(f'数据长度：{dataSize}')
-    print(f'数据哈希：{dataHash}')
-
-    s.send(b'done')
-    s.close()
-
-
-snNet_listen()
-
-
+result = re.findall(r'SHA\d+ \-\> SNT_Cipher\:\s+(\d+), i:\s+\d', text, re.S | re.I)
+result = [int(x) for x in result]
+result.sort()
+print(result == [x for x in range(64, 96)])

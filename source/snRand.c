@@ -1,6 +1,6 @@
 #include <snRand.h>
 
-SN_PUBLIC(snVoid) snSetRandomTimerSeed SN_OPEN_API
+SN_PUBLIC(snVoid) snRand_Seed SN_OPEN_API
 SN_FUNC_OF((snVoid))
 {
 #   if defined(__linux)
@@ -21,7 +21,7 @@ SN_FUNC_OF((snVoid))
 #   endif
 }
 
-SN_PUBLIC(snSize) snRand SN_OPEN_API
+SN_PUBLIC(snSize) snRand_Rand SN_OPEN_API
 SN_FUNC_OF((snVoid))
 {
     static snSize n, num[32];
@@ -45,13 +45,13 @@ SN_FUNC_OF((snVoid))
     return n;
 }
 
-SN_PUBLIC(snSize) randint SN_OPEN_API
+SN_PUBLIC(snSize) snRand_Randint SN_OPEN_API
 SN_FUNC_OF((snSize min, snSize max))
 {
-    return snRand() % (max - min + 1) + min;
+    return snRand_Rand() % (max - min + 1) + min;
 }
 
-SN_PUBLIC(snVoid) urandom SN_OPEN_API
+SN_PUBLIC(snVoid) snRand_Urandom SN_OPEN_API
 SN_FUNC_OF((snByte *buf, sn_u32 size))
 {
 #   if defined(_WIN32)

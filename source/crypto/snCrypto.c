@@ -3,7 +3,7 @@
 SN_PUBLIC(snVoid) snCrypto_sbox_init SN_OPEN_API
 SN_FUNC_OF((snByte *sbox))
 {
-    snSetRandomTimerSeed();
+    snRand_Seed();
     static sn_u32 r, x, left, right;
     static snByte swap;
 
@@ -13,8 +13,8 @@ SN_FUNC_OF((snByte *sbox))
     for(r = 0; r < 16; ++r) {
         for(x = 0; x < 256; ++x) {
             do {
-                left  = randint(0, 255);
-                right = randint(0, 255);
+                left  = snRand_Randint(0, 255);
+                right = snRand_Randint(0, 255);
             } while(left == right);
             swap = sbox[left];
             sbox[left] = sbox[right];

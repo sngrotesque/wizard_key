@@ -27,9 +27,9 @@ SN_PUBLIC(snVoid) snLottery_DLT SN_OPEN_API SN_FUNC_OF((snLottery_ctx *ctx))
     sn_32 dlt_number_blue[DLT_BLUE_SIZE];
     sn_32 index, temp;
     for(index = 0; index < DLT_RED_SIZE; ++index)
-        dlt_number_red[index] = randint(1, DLT_RED_MAX);
+        dlt_number_red[index] = snRand_Randint(1, DLT_RED_MAX);
     for(index = 0; index < DLT_BLUE_SIZE; ++index)
-        dlt_number_blue[index] = randint(1, DLT_BLUE_MAX);
+        dlt_number_blue[index] = snRand_Randint(1, DLT_BLUE_MAX);
     bubbleSort(dlt_number_red, DLT_RED_SIZE);
     bubbleSort(dlt_number_blue, DLT_BLUE_SIZE);
 
@@ -56,9 +56,9 @@ SN_PUBLIC(snVoid) snLottery_SSQ SN_OPEN_API SN_FUNC_OF((snLottery_ctx *ctx))
     sn_32 ssq_number_blue[SSQ_BLUE_SIZE];
     sn_32 index, temp;
     for(index = 0; index < SSQ_RED_SIZE; ++index)
-        ssq_number_red[index] = randint(1, SSQ_RED_MAX);
+        ssq_number_red[index] = snRand_Randint(1, SSQ_RED_MAX);
     for(index = 0; index < SSQ_BLUE_SIZE; ++index)
-        ssq_number_blue[index] = randint(1, SSQ_BLUE_MAX);
+        ssq_number_blue[index] = snRand_Randint(1, SSQ_BLUE_MAX);
     bubbleSort(ssq_number_red, SSQ_RED_SIZE);
     bubbleSort(ssq_number_blue, SSQ_BLUE_SIZE);
 

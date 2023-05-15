@@ -1,47 +1,47 @@
-// #include <image/snPng.h>
+#include <image/snPng.h>
 #include <crypto/snc.h>
+#include <crypto/snt.h>
 #include <snPadding.h>
 #include <snMisc.h>
 #include <snTime.h>
 #include <snRand.h>
 #include <snNum.h>
 
-// #include <image/snPng.c>
+#include <image/snPng.c>
 #include <crypto/snc.c>
+#include <crypto/snt.c>
 #include <snPadding.c>
 #include <snMisc.c>
 #include <snTime.c>
 #include <snRand.c>
 #include <snNum.c>
 
-void speed_test()
-{
-    // 不需要做时间测试，不影响性能。
-    sn_u32 arr[SNC_NB][SNC_NK] = {
-        {0x00, 0x01, 0x02, 0x03},
-        {0x04, 0x05, 0x06, 0x07},
-        {0x08, 0x09, 0x0a, 0x0b},
-        {0x0c, 0x0d, 0x0e, 0x0f},
-        {0x10, 0x11, 0x12, 0x13},
-        {0x14, 0x15, 0x16, 0x17},
-        {0x18, 0x19, 0x1a, 0x1b},
-        {0x1c, 0x1d, 0x1e, 0x1f},
-    };
-    sn_u32 *p = (sn_u32 *)arr;
-
-    // 第7列第2排的元素。
-    printf("%02x\n", *(p + ((SNC_NK * 7) + 2)));
-}
+static snChar key[96] = {
+    "10o34809284098403148491749134133"
+    "jnzcuy139ry9asu0835houjfaljsdljh"
+    "139-u-d9sadpj315kms;dkfspi183534"};
+static snChar iv[32] = {
+    "bijdlishr3197gas0duh315ipjsipjfa"};
 
 void test()
 {
+    // static snChar buf[32];
+    SNC_ctx *snc = snNull;
+    SNC_new(&snc, SNC_768);
+    SNC_init(snc, (snByte *)key, (snByte *)iv);
 
+    // SNC_CBC_Encrypt(snc, (snByte *)buf, 32);
+    // snMisc_PRINT((snByte *)buf, 32, 16, 0, 0);
+
+    snMisc_PRINT(snc->roundKey, sizeof(snc->roundKey), 32, sizeof(snc->roundKey) % 32, 0);
+
+    SNC_release(&snc);
 }
 
 int main(int argc, char **argv)
 {
-    speed_test();
-    // test();
+    // speed_test();
+    test();
 
     return 0;
 }

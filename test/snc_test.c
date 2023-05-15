@@ -14,7 +14,7 @@
 #include <snFile.c>
 #include <snMisc.c>
 #include <snTime.c>
-#include <snRand.c>
+#include <snRand_Rand.c>
 
 int main(int argc, char **argv)
 {

@@ -44,33 +44,71 @@ SN_PRIVATE_CONST(snByte) SNT_rsbox[256] = {
 #define SNT_SBOX(x) (SNT_sbox[(x)])
 #define SNT_RSBOX(x) (SNT_rsbox[(x)])
 
-SN_PRIVATE_CONST(snSize) SNT_CON64[8] = {
-    0x143495a7c6359cb6, 0x3e7b3f13d66d2ecd, 0x581b91f95df49dd7, 0x7a820abd02022dd4,
-    0x97333ea759a98567, 0xac591e1a97c8bd23, 0xd532ad1c653d895e, 0xfbeecd41ceeb19f4
+SN_PRIVATE_CONST(snByte) SNT_CON64_TABLE[4][8] = {
+    {0x14, 0x34, 0x95, 0xa7, 0xc6, 0x35, 0x9c, 0xb6},
+    {0x58, 0x1b, 0x91, 0xf9, 0x5d, 0xf4, 0x9d, 0xd7},
+    {0x97, 0x33, 0x3e, 0xa7, 0x59, 0xa9, 0x85, 0x67},
+    {0xd5, 0x32, 0xad, 0x1c, 0x65, 0x3d, 0x89, 0x5e}
 };
 
-SN_PRIVATE_CONST(sn_u32) SNT_CON32[8] = {
-    0x1f351e55, 0x3f50cbad, 0x5257e191, 0x7c837019,
-    0x9a9eb8d1, 0xa74d8af0, 0xc38ed5ba, 0xf605195e
+SN_PRIVATE_CONST(snByte) SNT_CON32_TABLE[8][4] = {
+    {0x1f, 0x35, 0x1e, 0x55},
+    {0x3f, 0x50, 0xcb, 0xad},
+    {0x52, 0x57, 0xe1, 0x91},
+    {0x7c, 0x83, 0x70, 0x19},
+    {0x9a, 0x9e, 0xb8, 0xd1},
+    {0xa7, 0x4d, 0x8a, 0xf0},
+    {0xc3, 0x8e, 0xd5, 0xba},
+    {0xf6, 0x05, 0x19, 0x5e}
 };
 
-SN_PRIVATE(snSize) SNT_CONFUSION64
-SN_FUNC_OF((snSize a, snSize b, snSize c, snSize d, snSize e, snSize f, snSize g, snSize h))
-{
-    return (a << 56 | b << 48 | c << 40 | d << 32 | e << 24 | f << 16 | g << 8 | h << 0);
+// 异或单个纵列
+#define SNT_CONFUSION64(i, b0, b1, b2, b3, b4, b5, b6, b7) \
+{                                                          \
+    b0 ^= SNT_CON64_TABLE[i][0];                           \
+    b1 ^= SNT_CON64_TABLE[i][1];                           \
+    b2 ^= SNT_CON64_TABLE[i][2];                           \
+    b3 ^= SNT_CON64_TABLE[i][3];                           \
+    b4 ^= SNT_CON64_TABLE[i][4];                           \
+    b5 ^= SNT_CON64_TABLE[i][5];                           \
+    b6 ^= SNT_CON64_TABLE[i][6];                           \
+    b7 ^= SNT_CON64_TABLE[i][7];                           \
 }
 
-SN_PRIVATE(snSize) SNT_CONFUSION32
-SN_FUNC_OF((sn_u32 a, sn_u32 b, sn_u32 c, sn_u32 d))
-{
-    return (a << 24 | b << 16 | c << 8 | d << 0);
+#define SNT_MIX64(i0, i1, state)         \
+{                                        \
+    (*state)[0][i0] ^= (*state)[0][i1];  \
+    (*state)[1][i0] ^= (*state)[1][i1];  \
+    (*state)[2][i0] ^= (*state)[2][i1];  \
+    (*state)[3][i0] ^= (*state)[3][i1];  \
+    (*state)[4][i0] ^= (*state)[4][i1];  \
+    (*state)[5][i0] ^= (*state)[5][i1];  \
+    (*state)[6][i0] ^= (*state)[6][i1];  \
+    (*state)[7][i0] ^= (*state)[7][i1];  \
 }
 
+// 异或单个横排
+#define SNT_CONFUSION32(i, b0, b1, b2, b3) \
+{                                          \
+    b0 ^= SNT_CON32_TABLE[i][0];           \
+    b1 ^= SNT_CON32_TABLE[i][1];           \
+    b2 ^= SNT_CON32_TABLE[i][2];           \
+    b3 ^= SNT_CON32_TABLE[i][3];           \
+}
+
+#define SNT_MIX32(i0, i1, state)         \
+{                                        \
+    (*state)[i0][0] ^= (*state)[i1][0];  \
+    (*state)[i0][1] ^= (*state)[i1][1];  \
+    (*state)[i0][2] ^= (*state)[i1][2];  \
+    (*state)[i0][3] ^= (*state)[i1][3];  \
+}
+
+// 按照列的方式进行置换
 SN_PRIVATE(snVoid) SNT_SubBytes
 SN_FUNC_OF((SNT_State *state))
 {
-    sn_u32 i;
-    for(i = 0; i < SNT_NK; ++i) {
+    for(sn_u32 i = 0; i < SNT_NK; ++i) {
         (*state)[0][i] = SNT_SBOX((*state)[0][i]);
         (*state)[1][i] = SNT_SBOX((*state)[1][i]);
         (*state)[2][i] = SNT_SBOX((*state)[2][i]);
@@ -85,70 +123,214 @@ SN_FUNC_OF((SNT_State *state))
 SN_PRIVATE(snVoid) SNT_BlockConfusion
 SN_FUNC_OF((SNT_State *state))
 {
-    snSize n64[4];
-    sn_u32 n32[8];
-    sn_u32 i;
-
+    static sn_u32 i;
     for(i = 0; i < SNT_NK; ++i) {
-        n64[i] = SNT_CONFUSION64(
+        SNT_CONFUSION64(i,
             (*state)[0][i], (*state)[1][i], (*state)[2][i], (*state)[3][i],
-            (*state)[4][i], (*state)[5][i], (*state)[6][i], (*state)[7][i]);
-        n64[i] ^= SNT_CON64[i];
+            (*state)[4][i], (*state)[5][i], (*state)[6][i], (*state)[7][i])
     }
 
-    n64[0] = n64[0] ^ n64[1] ^ n64[2] ^ n64[3];
-    n64[1] = n64[1] ^ n64[2] ^ n64[3] ^ n64[0];
-    n64[2] = n64[2] ^ n64[3] ^ n64[0] ^ n64[1];
-    n64[3] = n64[3] ^ n64[0] ^ n64[1] ^ n64[2];
+    SNT_MIX64(0, 1, state);
+    SNT_MIX64(1, 2, state);
+    SNT_MIX64(2, 3, state);
+    SNT_MIX64(3, 0, state);
 
+    for(i = 0; i < SNT_NB; ++i) {
+        SNT_CONFUSION32(i,
+            (*state)[i][0], (*state)[i][1], (*state)[i][2], (*state)[i][3])
+    }
+
+    SNT_MIX32(0, 1, state);
+    SNT_MIX32(1, 2, state);
+    SNT_MIX32(2, 3, state);
+    SNT_MIX32(3, 4, state);
+    SNT_MIX32(4, 5, state);
+    SNT_MIX32(5, 6, state);
+    SNT_MIX32(6, 7, state);
+    SNT_MIX32(7, 0, state);
+}
+
+SN_PRIVATE(snVoid) SNT_XorWithIV SN_FUNC_OF((SNT_State *buf, SNT_State *iv))
+{
+    register sn_u32 i;
     for(i = 0; i < SNT_NK; ++i) {
-        (*state)[0][i] = n64[i] >> 56;
-        (*state)[1][i] = n64[i] >> 48;
-        (*state)[2][i] = n64[i] >> 40;
-        (*state)[3][i] = n64[i] >> 32;
-        (*state)[4][i] = n64[i] >> 24;
-        (*state)[5][i] = n64[i] >> 16;
-        (*state)[6][i] = n64[i] >> 8;
-        (*state)[7][i] = n64[i] >> 0;
-    }
-
-
-    for(i = 0; i < SNT_NB; ++i) {
-        n32[i] = SNT_CONFUSION32((*state)[i][0], (*state)[i][1], (*state)[i][2], (*state)[i][3]);
-        n32[i] ^= SNT_CON32[i];
-    }
-
-    n32[0] = n32[0] ^ n32[1] ^ n32[2] ^ n32[3] ^ n32[4] ^ n32[5] ^ n32[6] ^ n32[7];
-    n32[1] = n32[1] ^ n32[2] ^ n32[3] ^ n32[4] ^ n32[5] ^ n32[6] ^ n32[7] ^ n32[0];
-    n32[2] = n32[2] ^ n32[3] ^ n32[4] ^ n32[5] ^ n32[6] ^ n32[7] ^ n32[0] ^ n32[1];
-    n32[3] = n32[3] ^ n32[4] ^ n32[5] ^ n32[6] ^ n32[7] ^ n32[0] ^ n32[1] ^ n32[2];
-    n32[4] = n32[4] ^ n32[5] ^ n32[6] ^ n32[7] ^ n32[0] ^ n32[1] ^ n32[2] ^ n32[3];
-    n32[5] = n32[5] ^ n32[6] ^ n32[7] ^ n32[0] ^ n32[1] ^ n32[2] ^ n32[3] ^ n32[4];
-    n32[6] = n32[6] ^ n32[7] ^ n32[0] ^ n32[1] ^ n32[2] ^ n32[3] ^ n32[4] ^ n32[5];
-    n32[7] = n32[7] ^ n32[0] ^ n32[1] ^ n32[2] ^ n32[3] ^ n32[4] ^ n32[5] ^ n32[6];
-
-    for(i = 0; i < SNT_NB; ++i) {
-        (*state)[i][0] = n32[i] >> 24;
-        (*state)[i][1] = n32[i] >> 16;
-        (*state)[i][2] = n32[i] >> 8;
-        (*state)[i][3] = n32[i] >> 0;
+        (*buf)[0][i] ^= (*iv)[0][i];
+        (*buf)[1][i] ^= (*iv)[1][i];
+        (*buf)[2][i] ^= (*iv)[2][i];
+        (*buf)[3][i] ^= (*iv)[3][i];
+        (*buf)[4][i] ^= (*iv)[4][i];
+        (*buf)[5][i] ^= (*iv)[5][i];
+        (*buf)[6][i] ^= (*iv)[6][i];
+        (*buf)[7][i] ^= (*iv)[7][i];
     }
 }
 
 SN_PRIVATE(snVoid) SNT_Cipher
-SN_FUNC_OF((SNT_State *state, SNT_State *roundkey))
+SN_FUNC_OF((SNT_mode mode, SNT_State *state, snByte *roundkey))
 {
     SNT_SubBytes(state);
     for(sn_u32 i = 0; i < SNT_NK; ++i) {
-        (*state)[0][i] ^= (*roundkey)[0][i];
-        (*state)[1][i] ^= (*roundkey)[1][i];
-        (*state)[2][i] ^= (*roundkey)[2][i];
-        (*state)[3][i] ^= (*roundkey)[3][i];
-        (*state)[4][i] ^= (*roundkey)[4][i];
-        (*state)[5][i] ^= (*roundkey)[5][i];
-        (*state)[6][i] ^= (*roundkey)[6][i];
-        (*state)[7][i] ^= (*roundkey)[7][i];
+        (*state)[0][i] ^= *(roundkey + (SNT_NK * 0 + i));
+        (*state)[1][i] ^= *(roundkey + (SNT_NK * 1 + i));
+        (*state)[2][i] ^= *(roundkey + (SNT_NK * 2 + i));
+        (*state)[3][i] ^= *(roundkey + (SNT_NK * 3 + i));
+        (*state)[4][i] ^= *(roundkey + (SNT_NK * 4 + i));
+        (*state)[5][i] ^= *(roundkey + (SNT_NK * 5 + i));
+        (*state)[6][i] ^= *(roundkey + (SNT_NK * 6 + i));
+        (*state)[7][i] ^= *(roundkey + (SNT_NK * 7 + i));
+
+        if(mode == SNT_512 || mode == SNT_768) {
+            (*state)[0][i] ^= *(roundkey + (SNT_NK * 0 + (i + 32)));
+            (*state)[1][i] ^= *(roundkey + (SNT_NK * 1 + (i + 32)));
+            (*state)[2][i] ^= *(roundkey + (SNT_NK * 2 + (i + 32)));
+            (*state)[3][i] ^= *(roundkey + (SNT_NK * 3 + (i + 32)));
+            (*state)[4][i] ^= *(roundkey + (SNT_NK * 4 + (i + 32)));
+            (*state)[5][i] ^= *(roundkey + (SNT_NK * 5 + (i + 32)));
+            (*state)[6][i] ^= *(roundkey + (SNT_NK * 6 + (i + 32)));
+            (*state)[7][i] ^= *(roundkey + (SNT_NK * 7 + (i + 32)));
+        }
+
+        if(mode == SNT_768) {
+            (*state)[0][i] ^= *(roundkey + (SNT_NK * 0 + (i + 64)));
+            (*state)[1][i] ^= *(roundkey + (SNT_NK * 1 + (i + 64)));
+            (*state)[2][i] ^= *(roundkey + (SNT_NK * 2 + (i + 64)));
+            (*state)[3][i] ^= *(roundkey + (SNT_NK * 3 + (i + 64)));
+            (*state)[4][i] ^= *(roundkey + (SNT_NK * 4 + (i + 64)));
+            (*state)[5][i] ^= *(roundkey + (SNT_NK * 5 + (i + 64)));
+            (*state)[6][i] ^= *(roundkey + (SNT_NK * 6 + (i + 64)));
+            (*state)[7][i] ^= *(roundkey + (SNT_NK * 7 + (i + 64)));
+        }
     }
     SNT_BlockConfusion(state);
+}
+
+SN_PRIVATE(snVoid) SNT_keyExtension SN_FUNC_OF((sn_u16 keySize, snByte *iv, snByte *key))
+{
+    static snSize i;
+    static snByte buf;
+
+    for(i = 0; i < keySize; ++i) {
+        buf = 
+            key[i]                  ^ key[(i + 1)  % keySize] ^
+            key[(i + 4)  % keySize] ^ key[(i + 5)  % keySize] ^
+            key[(i + 8)  % keySize] ^ key[(i + 9)  % keySize] ^
+            key[(i + 12) % keySize] ^ key[(i + 13) % keySize] ^
+            key[(i + 16) % keySize] ^ key[(i + 17) % keySize] ^
+            key[(i + 20) % keySize] ^ key[(i + 21) % keySize] ^
+            key[(i + 24) % keySize] ^ key[(i + 25) % keySize] ^
+            key[(i + 28) % keySize] ^ key[(i + 29) % keySize] ^
+            iv[(i + 7) % SNT_BLOCKLEN] ^ iv[(i + 16) % SNT_BLOCKLEN];
+
+        iv[i % SNT_BLOCKLEN] ^= buf;
+
+        buf = 
+            key[(i + 2)  % keySize] ^ key[(i + 3)  % keySize] ^
+            key[(i + 6)  % keySize] ^ key[(i + 7)  % keySize] ^
+            key[(i + 10) % keySize] ^ key[(i + 11) % keySize] ^
+            key[(i + 14) % keySize] ^ key[(i + 15) % keySize] ^
+            key[(i + 18) % keySize] ^ key[(i + 19) % keySize] ^
+            key[(i + 22) % keySize] ^ key[(i + 23) % keySize] ^
+            key[(i + 26) % keySize] ^ key[(i + 27) % keySize] ^
+            key[(i + 29) % keySize] ^ key[(i + 31) % keySize] ^
+            iv[(i + 7) % SNT_BLOCKLEN] ^ iv[(i + 16) % SNT_BLOCKLEN];
+
+        iv[(i + 17) % SNT_BLOCKLEN] ^= buf;
+
+        key[(i + 7)  % keySize] = (buf ^ key[(i + 7)  % keySize]) ^ (keySize % (i + 1));
+        key[(i + 14) % keySize] = (buf ^ key[(i + 14) % keySize]) + (keySize % (i + 1));
+        key[(i + 21) % keySize] = (buf ^ key[(i + 21) % keySize]) + (keySize % (i + 1));
+        key[(i + 28) % keySize] = (buf ^ key[(i + 28) % keySize]) + (keySize % (i + 1));
+        key[(i + 35) % keySize] = (buf ^ key[(i + 35) % keySize]) + (keySize % (i + 1));
+        key[(i + 42) % keySize] = (buf ^ key[(i + 42) % keySize]) + (keySize % (i + 1));
+        key[(i + 47) % keySize] = (buf ^ key[(i + 47) % keySize]) + (keySize % (i + 1));
+        key[(i + 51) % keySize] = (buf ^ key[(i + 51) % keySize]) + (keySize % (i + 1));
+        key[(i + 54) % keySize] = (buf ^ key[(i + 54) % keySize]) + (keySize % (i + 1));
+        key[(i + 63) % keySize] = (buf ^ key[(i + 63) % keySize]) + (keySize % (i + 1));
+        key[(i + 67) % keySize] = (buf ^ key[(i + 67) % keySize]) + (keySize % (i + 1));
+        key[(i + 73) % keySize] = (buf ^ key[(i + 73) % keySize]) + (keySize % (i + 1));
+        key[(i + 79) % keySize] = (buf ^ key[(i + 79) % keySize]) + (keySize % (i + 1));
+        key[(i + 85) % keySize] = (buf ^ key[(i + 85) % keySize]) + (keySize % (i + 1));
+        key[(i + 92) % keySize] = (buf ^ key[(i + 92) % keySize]) + (keySize % (i + 1));
+        key[i] = buf;
+    }
+}
+
+SN_PUBLIC(snError) SNT_new SN_OPEN_API
+SN_FUNC_OF((SNT_ctx **ctx, SNT_mode mode))
+{
+    if(!(*ctx)) {
+        if(!((*ctx) = (SNT_ctx *)malloc(sizeof(SNT_ctx)))) {
+            return snErr_Memory;
+        }
+    }
+
+    (*ctx)->mode = mode;
+    (*ctx)->KN = SNT_KN[mode];
+    (*ctx)->NR = SNT_NR[mode];
+    snZeroObject((*ctx)->roundKey, 1056);
+
+    return snErr_OK;
+}
+
+SN_PUBLIC(snError) SNT_release SN_OPEN_API
+SN_FUNC_OF((SNT_ctx **ctx))
+{
+    snZeroObject((*ctx)->iv, SNT_BLOCKLEN);
+    snZeroObject((*ctx)->roundKey, 1056);
+    free((*ctx));
+    (*ctx) = snNull;
+
+    return snErr_OK;
+}
+
+SN_PUBLIC(snVoid) SNT_init SN_OPEN_API
+SN_FUNC_OF((SNT_ctx *ctx, snByte *keyBuf, snByte *ivBuf))
+{
+    snByte *key = (snByte *)malloc(ctx->KN);
+    snByte iv[SNT_BLOCKLEN];
+    sn_u32 r;
+
+    memcpy(ctx->iv, ivBuf, SNT_BLOCKLEN);
+    memcpy(key, keyBuf, ctx->KN);
+    memcpy(iv, ivBuf, SNT_BLOCKLEN);
+
+    for(r = 0; r < ctx->NR; ++r) {
+        memcpy(ctx->roundKey + (ctx->KN * r), key, ctx->KN);
+        SNT_keyExtension(ctx->KN, iv, key);
+        SNT_XorWithIV((SNT_State *)iv, (SNT_State *)key);
+        SNT_keyExtension(ctx->KN, iv, key);
+        if(ctx->mode == SNT_512 || ctx->mode == SNT_768) {
+            SNT_XorWithIV((SNT_State *)(key + 32), (SNT_State *)iv);
+        }
+        if(ctx->mode == SNT_768) {
+            SNT_XorWithIV((SNT_State *)(key + 64), (SNT_State *)iv);
+        }
+        SNT_Cipher(ctx->mode, (SNT_State *)iv, key);
+    }
+
+    snZeroObject(key, ctx->KN);
+    snZeroObject(iv, SNT_BLOCKLEN);
+    free(key);
+    key = snNull;
+}
+
+SN_PUBLIC(snVoid) SNT_CBC_Encrypt SN_OPEN_API
+SN_FUNC_OF((SNT_ctx *ctx, snByte *buf, snSize size))
+{
+    register snSize r, i;
+    static snByte round_iv[SNT_BLOCKLEN];
+
+    SNT_State *bufState = (SNT_State *)buf;
+    SNT_State *ivState = (SNT_State *)round_iv;
+    size /= SNT_BLOCKLEN;
+
+    for(r = 0; r < ctx->NR; ++r) {
+        memcpy(round_iv, ctx->iv, SNT_BLOCKLEN);
+        for(i = 0; i < size; ++i) {
+            SNT_XorWithIV(bufState + i, ivState);
+            SNT_Cipher(ctx->mode, bufState + i, ctx->roundKey + (ctx->KN * r));
+            memcpy(ivState, bufState + i, SNT_BLOCKLEN);
+        }
+    }
 }
 

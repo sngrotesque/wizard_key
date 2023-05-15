@@ -12,9 +12,9 @@ SN_FUNC_OF((snByte *buf, snSize *size, sn_u16 BlockSize, snBool randomPadding))
 
     switch(randomPadding) {
         case true:
-            snSetRandomTimerSeed();
+            snRand_Seed();
             for(index = *size; index < totalSize - 1; ++index)
-                buf[index] = snRand();
+                buf[index] = snRand_Rand();
             break;
         default:
             for(index = *size; index < totalSize - 1; ++index)

@@ -61,7 +61,6 @@ SN_FUNC_OF((const snChar *format, snByte *dst, snSize src))
     snBool little_end = snNum_PlatformEnd();
     snByte order  = format[0]; // 字节顺序
     snByte symbol = format[1]; // 格式字符
-    snByte swap = 0;           // 用于交换数据的缓冲区
     sn_u32 size = 0;
 
     switch(symbol) {
@@ -133,7 +132,6 @@ SN_FUNC_OF((const snChar *format, snVoid *dst, snByte *src))
     snBool little_end = snNum_PlatformEnd();
     snByte order  = format[0]; // 字节顺序
     snByte symbol = format[1]; // 格式字符
-    snByte swap = 0;           // 用于交换数据的缓冲区
     sn_u32 size = 0;
 
     switch(symbol) {

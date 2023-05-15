@@ -50,14 +50,14 @@ SN_PRIVATE(snVoid) minesGame_print(game_state_t *matrix);
 
 SN_PRIVATE(snVoid) minesGame_init(mines_ctx *ctx)
 {
-    snSetRandomTimerSeed();
+    snRand_Seed();
     snByte i;
     for(i = 0; i < numberRows; ++i) {
         memset(ctx->maps[i], basicSymbol, numberRows);
         memset(ctx->mine[i], basicSymbol, numberRows);
     }
     for(i = 0; i < numberMines; ++i) {
-        ctx->mine[randint(0, numberRows - 1)][randint(0, numberColumns - 1)]\
+        ctx->mine[snRand_Randint(0, numberRows - 1)][snRand_Randint(0, numberColumns - 1)]\
             = mineSymbol;
     }
 }
