@@ -19,7 +19,7 @@ def run_code(program :str, parameters :list):
     parameters.append('-lm')
 
     parameters.append('-I includes')
-    parameters.append('-I source')
+    parameters.append('-I sources')
 
     parameters.append(f'-L includes{PATH_SYMBOL}openssl')
     parameters.append(f'-L includes{PATH_SYMBOL}zlib')
