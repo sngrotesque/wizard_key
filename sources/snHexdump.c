@@ -4,7 +4,7 @@ SN_PRIVATE(snVoid) _hexdump
 SN_FUNC_OF((snSize offset, snByte *buf, sn_u32 size))
 {
     static sn_u32 i;
-    printf("%012lx ", offset);
+    printf("%012"PRIx64" ", offset);
     for(i = 0; i < SN_HEXDUMP_SIZE; ++i) {
         SN_HEXDUMP_PRINT_HEX_SET;}
     for(i = 0; i < size; ++i) {
@@ -19,7 +19,6 @@ SN_FUNC_OF((const snChar *fn))
     static snByte buf[SN_HEXDUMP_SIZE];
     static snSize offset = 0;
     static snSize nRead = 0;
-    static snSize i;
 
     fp = fopen(fn, "rb");
 

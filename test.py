@@ -50,8 +50,9 @@ def aes256ctr():
     nonce = b' \xac\xee$c\xb3\x9c\xc9'
     # nonce = get_random_bytes(8) # random nonce for CTR mode
     cipher = AES.new(key, AES.MODE_CTR, nonce=nonce) # create a new AES cipher object
-    plaintext = b"Hello world!"
+    plaintext = b"hello world!"
     ciphertext = cipher.encrypt(plaintext) # encrypt the plaintext
+    print(ciphertext)
     # Decryption
     cipher = AES.new(key, AES.MODE_CTR, nonce=nonce) # create a new AES cipher object with the same key and nonce
     decrypted = cipher.decrypt(ciphertext) # decrypt the ciphertext
@@ -130,42 +131,7 @@ def aes256_decrypt(data :bytes, key :bytes, iv :bytes) -> bytes:
     aes = AES.new(key = key, IV = iv, mode = AES.MODE_CBC)
     return aes.decrypt(data)
 
-text = '''\
-SHA768 -> SNT_Cipher:  64, i:   0
-SHA768 -> SNT_Cipher:  68, i:   0
-SHA768 -> SNT_Cipher:  72, i:   0
-SHA768 -> SNT_Cipher:  76, i:   0
-SHA768 -> SNT_Cipher:  80, i:   0
-SHA768 -> SNT_Cipher:  84, i:   0
-SHA768 -> SNT_Cipher:  88, i:   0
-SHA768 -> SNT_Cipher:  92, i:   0
-SHA768 -> SNT_Cipher:  65, i:   1
-SHA768 -> SNT_Cipher:  69, i:   1
-SHA768 -> SNT_Cipher:  73, i:   1
-SHA768 -> SNT_Cipher:  77, i:   1
-SHA768 -> SNT_Cipher:  81, i:   1
-SHA768 -> SNT_Cipher:  85, i:   1
-SHA768 -> SNT_Cipher:  89, i:   1
-SHA768 -> SNT_Cipher:  93, i:   1
-SHA768 -> SNT_Cipher:  66, i:   2
-SHA768 -> SNT_Cipher:  70, i:   2
-SHA768 -> SNT_Cipher:  74, i:   2
-SHA768 -> SNT_Cipher:  78, i:   2
-SHA768 -> SNT_Cipher:  82, i:   2
-SHA768 -> SNT_Cipher:  86, i:   2
-SHA768 -> SNT_Cipher:  90, i:   2
-SHA768 -> SNT_Cipher:  94, i:   2
-SHA768 -> SNT_Cipher:  67, i:   3
-SHA768 -> SNT_Cipher:  71, i:   3
-SHA768 -> SNT_Cipher:  75, i:   3
-SHA768 -> SNT_Cipher:  79, i:   3
-SHA768 -> SNT_Cipher:  83, i:   3
-SHA768 -> SNT_Cipher:  87, i:   3
-SHA768 -> SNT_Cipher:  91, i:   3
-SHA768 -> SNT_Cipher:  95, i:   3'''.split('\n')
-text = '\n'.join(text)
 
-result = re.findall(r'SHA\d+ \-\> SNT_Cipher\:\s+(\d+), i:\s+\d', text, re.S | re.I)
-result = [int(x) for x in result]
-result.sort()
-print(result == [x for x in range(64, 96)])
+
+aes256ctr()
+

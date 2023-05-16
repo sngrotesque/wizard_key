@@ -330,10 +330,10 @@ SN_FUNC_OF((SNC_mode mode, sncState *state, snByte *RoundKey))
         }
     }
 
-    //* 执行行混合函数与列移位函数。
-    //* Execute row mixing function and column shift function.
-    SNC_RowsMix(state);
+    //* 执行列移位函数。（Execute column shift function）
     SNC_ColumnShift(state);
+    //* 执行行混合函数（Execute row mixing function.）
+    SNC_RowsMix(state);
 }
 
 /*
@@ -344,10 +344,10 @@ SN_FUNC_OF((SNC_mode mode, sncState *state, snByte *RoundKey))
 {
     register sn_u32 i;
 
-    //* 执行逆列移位函数与逆行混合函数。
-    //* Execute inverse column shift function and inverse mixed function.
-    SNC_InvColumnShift(state);
+    //* 执行逆行混合函数。（Execute inverse mixed function.）
     SNC_InvRowsMix(state);
+    //* 执行逆列移位函数（Execute inverse column shift function）
+    SNC_InvColumnShift(state);
 
     for(i = 0; i < SNC_NK; ++i) {
         if(mode == SNC_768) {
@@ -466,7 +466,7 @@ SN_FUNC_OF((SNC_ctx **ctx, SNC_mode mode))
     (*ctx)->mode = mode;
     (*ctx)->KN = SNC_KN[mode];
     (*ctx)->NR = SNC_NR[mode];
-    snZeroObject((*ctx)->roundKey, 1248);
+    snZeroObject((*ctx)->roundKey, sizeof((*ctx)->roundKey));
 
     return snErr_OK;
 }

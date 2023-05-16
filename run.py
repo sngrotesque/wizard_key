@@ -1,13 +1,15 @@
 from subprocess import call
 from sys import platform, argv
 
-OUT_PATH = "#output"
+OUT_PATH = "compiled"
 if platform == 'win32':
     PATH_SYMBOL = '\\'
     PROGRAM_NAME = 'main.exe'
+    ZLIB_NAME = 'zdll'
 else:
     PATH_SYMBOL = '/'
     PROGRAM_NAME = 'main'
+    ZLIB_NAME = 'z'
 
 def run(cmd :str):
     call(cmd, shell=True)
@@ -15,7 +17,7 @@ def run(cmd :str):
 def run_code(program :str, parameters :list):
     parameters.append('-lssl')
     parameters.append('-lcrypto')
-    parameters.append('-lzdll')
+    parameters.append(f'-l{ZLIB_NAME}')
     parameters.append('-lm')
 
     parameters.append('-I includes')

@@ -7,9 +7,9 @@
 *
 * 此算法的区块长度为32字节（256位）。
 * 密钥采用三种长度：256，512，768。
-*     基础长度（256位）的密钥将进行9轮加密或解密。
-*     扩展长度（512位）的密钥将进行11轮加密或解密。
-*     扩展长度（768位）的密钥将进行13轮加密或解密。
+*     基础长度（256位）的密钥将进行7轮加密或解密。
+*     扩展长度（512位）的密钥将进行8轮加密或解密。
+*     扩展长度（768位）的密钥将进行9轮加密或解密。
 *
 * 目前提供了以下加密模式：ECB, CBC
 * 请注意，ECB模式在大多数情况下不被认为是足够安全的。
@@ -24,9 +24,9 @@
 *             长度为16777216字节，全零（the length is 16777216 Bytes. All zero.）
 *             GCC添加参数'-Ofast', '--std=c18'（GCC add parameter '-Ofast', '--std=c18'.）
 *             此时间是取自15次加密的平均值（The time is taken from the average of 15 encryption attempts.）
-*     SNC_256    0.56 seconds.
-*     SNC_512    0.65 seconds
-*     SNC_768    0.76 seconds
+*     SNC_256    0.34 seconds.
+*     SNC_512    0.44 seconds
+*     SNC_768    0.55 seconds
 */
 #ifndef __SNC_H__
 #define __SNC_H__
@@ -43,9 +43,9 @@ extern "C" {
 
 //* 加解密轮数（Encryption or Decryption number of rounds.）
 SN_PRIVATE_CONST(snByte) SNC_NR[3] = {
-    0x9, //  9 round
-    0xb, // 11 round
-    0xd  // 13 round
+    0x7, // 7 round
+    0x8, // 8 round
+    0x9  // 9 round
 };
 
 //* 密钥长度（Key Length.）
@@ -69,7 +69,7 @@ typedef struct {
     sn_u16 KN;
     SNC_mode mode;
     snByte iv[SNC_BLOCKLEN];
-    snByte roundKey[1248];
+    snByte roundKey[864];
 } SNC_ctx;
 
 // 为SNC对象申请内存空间

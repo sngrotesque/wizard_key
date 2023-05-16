@@ -3,6 +3,7 @@
 #include <crypto/snt.h>
 #include <snPadding.h>
 #include <snMisc.h>
+#include <snMath.h>
 #include <snTime.h>
 #include <snRand.h>
 #include <snNum.h>
@@ -12,36 +13,53 @@
 #include <crypto/snt.c>
 #include <snPadding.c>
 #include <snMisc.c>
+#include <snMath.c>
 #include <snTime.c>
 #include <snRand.c>
 #include <snNum.c>
 
 static snChar key[96] = {
-    "10o34809284098403148491749134133"
-    "jnzcuy139ry9asu0835houjfaljsdljh"
-    "139-u-d9sadpj315kms;dkfspi183534"};
+    "ge[{3xtnIbm;zw]SqRJ0>.c$g;nak:!s"
+    "0fl#tvE]!=Py`l]upjhfRnUL|QN(1rz@"
+    "IN;6kiT76p0>=`sB_aoyz6^m5@_mcWI1"};
 static snChar iv[32] = {
-    "bijdlishr3197gas0duh315ipjsipjfa"};
+    "{uv7$Yr)n@_e-Uuh=Ax5HP}s`N3o#GL6"};
 
-void test()
+void speed_test()
 {
-    // static snChar buf[32];
+    static snByte buf[16777216];
     SNC_ctx *snc = snNull;
+    snTime_ctx timer;
+
     SNC_new(&snc, SNC_768);
     SNC_init(snc, (snByte *)key, (snByte *)iv);
 
-    // SNC_CBC_Encrypt(snc, (snByte *)buf, 32);
-    // snMisc_PRINT((snByte *)buf, 32, 16, 0, 0);
+    snTime_TimerBegin(&timer);
+    SNC_CBC_Encrypt(snc, buf, 16777216);
+    snTime_TimerEnd(&timer);
+    snTime_TimerPrint("time: ", &timer);
 
-    snMisc_PRINT(snc->roundKey, sizeof(snc->roundKey), 32, sizeof(snc->roundKey) % 32, 0);
+    SNC_release(&snc);
+}
+
+void test()
+{
+    static snByte buf[32] = {1};
+    SNC_ctx *snc = snNull;
+
+    SNC_new(&snc, SNC_768);
+    SNC_init(snc, (snByte *)key, (snByte *)iv);
+
+    SNC_CBC_Encrypt(snc, buf, 32);
+    snMisc_PRINT(buf, 32, 4, 0, 0);
 
     SNC_release(&snc);
 }
 
 int main(int argc, char **argv)
 {
-    // speed_test();
-    test();
+    speed_test();
+    // test();
 
     return 0;
 }

@@ -29,6 +29,7 @@ SN_FUNC_OF((snSize minValue, snSize maxValue))
     }
 
     p = (snSize *)malloc(sizeof(snSize));
+    count = 0;
 
 	for(x = minValue; x <= maxValue; x += 2) {
 		for(i = 2; i * i <= x; i++)

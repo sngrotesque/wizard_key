@@ -1,4 +1,9 @@
-#include <crypto/SNT.h>
+/**
+ * 这只是一个用来测试SNC加密算法的测试算法，不会提供解密函数。
+ * 并且也请不要将它在任何实际项目中进行使用，此算法的安全性并没有得到验证。
+ * 并且这个算法的效率低下。
+*/
+#include <crypto/snt.h>
 
 SN_PRIVATE_CONST(snByte) SNT_sbox[256] = {
     // 0     1     2     3     4     5     6     7     8     9     A     B     C     D     E     F
@@ -108,7 +113,8 @@ SN_PRIVATE_CONST(snByte) SNT_CON32_TABLE[8][4] = {
 SN_PRIVATE(snVoid) SNT_SubBytes
 SN_FUNC_OF((SNT_State *state))
 {
-    for(sn_u32 i = 0; i < SNT_NK; ++i) {
+    register sn_u32 i;
+    for(i = 0; i < SNT_NK; ++i) {
         (*state)[0][i] = SNT_SBOX((*state)[0][i]);
         (*state)[1][i] = SNT_SBOX((*state)[1][i]);
         (*state)[2][i] = SNT_SBOX((*state)[2][i]);
@@ -123,7 +129,7 @@ SN_FUNC_OF((SNT_State *state))
 SN_PRIVATE(snVoid) SNT_BlockConfusion
 SN_FUNC_OF((SNT_State *state))
 {
-    static sn_u32 i;
+    register sn_u32 i;
     for(i = 0; i < SNT_NK; ++i) {
         SNT_CONFUSION64(i,
             (*state)[0][i], (*state)[1][i], (*state)[2][i], (*state)[3][i],
@@ -168,8 +174,9 @@ SN_PRIVATE(snVoid) SNT_XorWithIV SN_FUNC_OF((SNT_State *buf, SNT_State *iv))
 SN_PRIVATE(snVoid) SNT_Cipher
 SN_FUNC_OF((SNT_mode mode, SNT_State *state, snByte *roundkey))
 {
+    register sn_u32 i;
     SNT_SubBytes(state);
-    for(sn_u32 i = 0; i < SNT_NK; ++i) {
+    for(i = 0; i < SNT_NK; ++i) {
         (*state)[0][i] ^= *(roundkey + (SNT_NK * 0 + i));
         (*state)[1][i] ^= *(roundkey + (SNT_NK * 1 + i));
         (*state)[2][i] ^= *(roundkey + (SNT_NK * 2 + i));

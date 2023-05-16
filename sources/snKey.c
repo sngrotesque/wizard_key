@@ -159,7 +159,7 @@ SN_FUNC_OF((snKey_ctx *obj))
 SN_PUBLIC(snError) snKey_loadKey SN_OPEN_API
 SN_FUNC_OF((snKey_ctx *obj, const snChar *fn))
 {
-    
+    return snErr_OK;
 }
 
 SN_PUBLIC(snError) snKey_saveKey SN_OPEN_API
@@ -180,4 +180,5 @@ SN_FUNC_OF((snKey_ctx *obj, const snChar *fn))
 
     snBase64_release(&base64, SN_RELEASE_NO);
     snFile_release(&file, false);
+    return snErr_OK;
 }

@@ -8,7 +8,7 @@ SN_FUNC_OF((snNet_ctx *net, snSize fileSize, const snChar *fn))
     snNetSize tSize;     // 单次传输长度
     snFile *fp = snNull; // 文件指针
 
-    snByte fileBuf[SN_NET_BLOCKLEN];         // 建立缓冲区用于读取文件数据
+    snNetBuf fileBuf[SN_NET_BLOCKLEN];         // 建立缓冲区用于读取文件数据
 
     snZeroObject(&fileBuf, SN_NET_BLOCKLEN); // 初始化文件数据缓冲区
 
@@ -35,7 +35,7 @@ SN_FUNC_OF((snNet_ctx *net, snSize fileSize, const snChar *fn))
     snNetSize tSize;     // 单次传输长度
     snFile *fp = snNull; // 文件指针
 
-    snByte fileBuf[SN_NET_BLOCKLEN];         // 建立缓冲区用于读取文件数据
+    snNetBuf fileBuf[SN_NET_BLOCKLEN];         // 建立缓冲区用于读取文件数据
     snZeroObject(&fileBuf, SN_NET_BLOCKLEN); // 初始化文件数据缓冲区
 
     fp = fopen(fn, "wb");
@@ -82,6 +82,7 @@ SN_FUNC_OF((snTransfer_ctx **ctx))
     }
     free((*ctx));
     (*ctx) = snNull;
+    return snErr_OK;
 }
 
 SN_PUBLIC(snError) snTransfer_Listen SN_OPEN_API
@@ -96,10 +97,10 @@ SN_FUNC_OF((snTransfer_ctx *ctx, const snChar *fn))
 
     snHash_ctx *hash = snNull; // snHash对象
     snNet_ctx *net = snNull;   // snHash对象
+    snNetBuf ClientHash[32];   // 临时存放客户端发送的哈希值
+    snNetBuf fSizeByte[8];     // 文件长度数组
     snNetSize tSize;           // 单次传输长度
     snSize fileSize;           // 文件长度数字
-    snByte fSizeByte[8];       // 文件长度数组
-    snByte ClientHash[32];     // 临时存放客户端发送的哈希值
     snError code = 0;          // 错误代码
 
     printf("初始化程序中...\n");
@@ -109,9 +110,12 @@ SN_FUNC_OF((snTransfer_ctx *ctx, const snChar *fn))
     snNet_init(net, ctx->addr, ctx->port, 0); // 初始化snNet对象
     snNet_timeout(net, SN_FT_SDRV_TO);        // 设置超时时间
 
-    snNet_bind(net, 1);                       // 绑定本机
-    snNet_listen(net, 5);                     // 开启监听
-    snNet_accept(net);                        // 等待客户端连接
+    if((code = snNet_bind(net, 1)))           // 绑定本机
+        return code;
+    if((code = snNet_listen(net, 5)))         // 开启监听
+        return code;
+    if((code = snNet_accept(net)))            // 等待客户端连接
+        return code;
 
     /*************************************************/
     SOCKADDR_IN *ipv4 = snNull;
@@ -156,10 +160,10 @@ SN_FUNC_OF((snTransfer_ctx *ctx, const snChar *fn))
 
     snHash_ctx *hash = snNull; // snHash对象
     snNet_ctx *net = snNull;   // snHash对象
+    snNetBuf listenMsg[4];     // 接收端返回的信息
+    snNetBuf fSizeByte[8];       // 文件长度数组
     snNetSize tSize;           // 单次传输长度
     snSize fileSize;           // 文件长度数字
-    snByte fSizeByte[8];       // 文件长度数组
-    snByte listenMsg[4];       // 接收端返回的信息
     snError code = 0;          // 错误代码
 
     printf("初始化程序中...\n");
@@ -185,14 +189,14 @@ SN_FUNC_OF((snTransfer_ctx *ctx, const snChar *fn))
 
     printf("将文件长度与哈希值发送至接收端。\n");
     snNet_send(net, &tSize, fSizeByte, 8);    // 发送文件的长度
-    snNet_send(net, &tSize, hash->digest,     // 发送文件的哈希值
+    snNet_send(net, &tSize, (snNetBuf *)hash->digest,     // 发送文件的哈希值
         hash->digestSize);
 
     printf("将文件数据完整发送至接收端。\n");
     _snTransfer_sendall(net, fileSize, fn);   // 发送文件数据
 
     snNet_recv(net, &tSize, listenMsg, 4);    // 接收来自接收端返回的信号
-    if(0 == strncmp(listenMsg, (char *)&SN_FT_SIGNAL_DONE, 4)) {
+    if(0 == strncmp((char *)listenMsg, (char *)&SN_FT_SIGNAL_DONE, 4)) {
         printf("收到来自接收端发送的完成信号。\n");
     } else {
         printf("收到来自接收端发送的未知信号。\n"
