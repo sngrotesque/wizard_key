@@ -476,7 +476,7 @@ SN_PUBLIC(snError) SNC_release SN_OPEN_API
 SN_FUNC_OF((SNC_ctx **ctx))
 {
     memset((*ctx)->iv, 0x00, SNC_BLOCKLEN);
-    snZeroObject((*ctx)->roundKey, 1248);
+    snZeroObject((*ctx)->roundKey, sizeof((*ctx)->roundKey));
     free((*ctx));
     (*ctx) = snNull;
 
