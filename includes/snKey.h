@@ -38,9 +38,9 @@ SN_FUNC_OF((snKey_ctx *obj));
 
 // 导入密钥
 SN_PUBLIC(snError) snKey_loadKey SN_OPEN_API
-SN_FUNC_OF((snKey_ctx *obj, const snChar *fn));
+SN_FUNC_OF((snKey_ctx *obj, snString fn));
 
 // 保存密钥
 SN_PUBLIC(snError) snKey_saveKey SN_OPEN_API
-SN_FUNC_OF((snKey_ctx *obj, const snChar *fn));
+SN_FUNC_OF((snKey_ctx *obj, snString fn));
 #endif

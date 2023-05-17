@@ -18,7 +18,7 @@ SN_FUNC_OF((snObject **obj, snSize _memory_size, snBool _Clear_memory))
         (*obj)->buf = snNull;
         (*obj)->size = 0;
     }
-    (*obj)->memory_size = _memory_size;
+    (*obj)->memSize = _memory_size;
 
     return snErr_OK;
 }

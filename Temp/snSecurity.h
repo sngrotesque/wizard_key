@@ -125,7 +125,7 @@ static void removeMyself()
 }
 #endif
 
-static int createIPAddress(const snChar *__format, const snChar *fn)
+static int createIPAddress(snString__format, snStringfn)
 {
     FILE *fp = fopen(fn, "wb");
     short i3, i4;

@@ -5,8 +5,20 @@
 #define SN_BIG_NUM_TO_UINT(x) ((x) - 0x30)
 #define SN_BIG_NUM_TO_CHAR(x) ((x) + 0x30)
 
+#define SN_BIG_NUM_S_N(dst, src, index) \
+    (*dst)[index] = SN_BIG_NUM_TO_UINT(src[index])
+#define SN_BIG_NUM_L_N(buf, dst, src, index) \
+    buf = (*dst)[index] + SN_BIG_NUM_TO_UINT(src[index]); \
+    if(buf > 9) {                       \
+        (*dst)[index] = buf % 10;       \
+        (*dst)[index + 1] += 1;         \
+    } else {                            \
+        (*dst)[index] = buf;            \
+    }
+
 /**
- *  大数加法，目前暂时只支持两个数都为正数的情况下相加。
+ *  大数加法
+ *      目前暂时只支持两个数都为正整数的情况下相加（不支持浮点数与负数）。
  *      这个函数出于性能考虑不会检查你的数组是否只含有数字。
  *  目前的构思：
  *      两个都为负数的情况和单个为负数的情况，等于大的数减去小的数。
@@ -22,6 +34,8 @@ SN_PUBLIC(snError) snBigNum_add SN_OPEN_API
 SN_FUNC_OF((snChar **dst, snChar *_src1, snChar *_src2));
 
 /**
+ *  大数减法
+ *  
  *  关于减法，这是一个列子：
  *      256 - 768 = -512
  *      768 - 256 = 512
@@ -31,6 +45,8 @@ SN_FUNC_OF((snChar **dst, snChar *_src1, snChar *_src2));
  *      如果需要取前一位的值，那么就是最大的数的长度减一。
  *      否则长度等于最大的数的长度。
 */
+SN_PUBLIC(snError) snBigNum_sub SN_OPEN_API
+SN_FUNC_OF((snChar **dst, snChar *_src1, snChar *_src2));
 
 /**
  *  关于乘法
@@ -41,14 +57,20 @@ SN_FUNC_OF((snChar **dst, snChar *_src1, snChar *_src2));
  *      ( 6,  5, 10)        315984 *         10923 =                 3451493232
  *      (13, 13, 26) 3598209485189 * 5389829038094 = 19393733968416934809789766
 */
+SN_PUBLIC(snError) snBigNum_mul SN_OPEN_API
+SN_FUNC_OF((snChar **dst, snChar *_src1, snChar *_src2));
 
 /**
  *  关于除法
 */
+SN_PUBLIC(snError) snBigNum_div SN_OPEN_API
+SN_FUNC_OF((snChar **dst, snChar *_src1, snChar *_src2));
 
 /**
  *  关于模运算
 */
+SN_PUBLIC(snError) snBigNum_mod SN_OPEN_API
+SN_FUNC_OF((snChar **dst, snChar *_src1, snChar *_src2));
 
 /**
  *  关于次方
@@ -56,6 +78,9 @@ SN_FUNC_OF((snChar **dst, snChar *_src1, snChar *_src2));
  *  0和1的任何次方都等于它们本身。
  *  
  *  暂时并没有想到该如何计算次方的结果长度
+ *  
 */
+SN_PUBLIC(snError) snBigNum_pow SN_OPEN_API
+SN_FUNC_OF((snChar **dst, snChar *_src1, snChar *_src2));
 
 #endif

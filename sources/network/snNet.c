@@ -14,7 +14,7 @@
 
 // 域名解析函数
 SN_PRIVATE(snError) snNet_HostnameToIP
-SN_FUNC_OF((snNet_ctx *ctx, const snChar *hostname))
+SN_FUNC_OF((snNet_ctx *ctx, snString hostname))
 {
     // 判断用户输入的网络家族是IPv4还是IPv6，如果都不是就返回错误代码
     if(ctx->sockfdFamily != AF_INET && ctx->sockfdFamily != AF_INET6) {
@@ -100,7 +100,7 @@ SN_FUNC_OF((snNet_ctx **ctx))
 
 // 初始化snNet对象（需提前申请内存空间）
 SN_PUBLIC(snError) snNet_init SN_OPEN_API
-SN_FUNC_OF((snNet_ctx *ctx, const snChar *hostname, sn_u16 port, snBool UDP))
+SN_FUNC_OF((snNet_ctx *ctx, snString hostname, sn_u16 port, snBool UDP))
 {
 #   if defined(_WIN32) // 如果是Windows系统就初始化并启动WSADATA对象。
     WSADATA ws;

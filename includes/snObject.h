@@ -6,7 +6,7 @@
 typedef struct {
     snByte *buf;
     snSize size;
-    snSize memory_size;
+    snSize memSize;
 } snObject;
 
 // 初始化snObject对象

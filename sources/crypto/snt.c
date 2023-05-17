@@ -113,7 +113,7 @@ SN_PRIVATE_CONST(snByte) SNT_CON32_TABLE[8][4] = {
 SN_PRIVATE(snVoid) SNT_SubBytes
 SN_FUNC_OF((SNT_State *state))
 {
-    register sn_u32 i;
+    snFast sn_u32 i;
     for(i = 0; i < SNT_NK; ++i) {
         (*state)[0][i] = SNT_SBOX((*state)[0][i]);
         (*state)[1][i] = SNT_SBOX((*state)[1][i]);
@@ -129,7 +129,7 @@ SN_FUNC_OF((SNT_State *state))
 SN_PRIVATE(snVoid) SNT_BlockConfusion
 SN_FUNC_OF((SNT_State *state))
 {
-    register sn_u32 i;
+    snFast sn_u32 i;
     for(i = 0; i < SNT_NK; ++i) {
         SNT_CONFUSION64(i,
             (*state)[0][i], (*state)[1][i], (*state)[2][i], (*state)[3][i],
@@ -158,7 +158,7 @@ SN_FUNC_OF((SNT_State *state))
 
 SN_PRIVATE(snVoid) SNT_XorWithIV SN_FUNC_OF((SNT_State *buf, SNT_State *iv))
 {
-    register sn_u32 i;
+    snFast sn_u32 i;
     for(i = 0; i < SNT_NK; ++i) {
         (*buf)[0][i] ^= (*iv)[0][i];
         (*buf)[1][i] ^= (*iv)[1][i];
@@ -174,7 +174,7 @@ SN_PRIVATE(snVoid) SNT_XorWithIV SN_FUNC_OF((SNT_State *buf, SNT_State *iv))
 SN_PRIVATE(snVoid) SNT_Cipher
 SN_FUNC_OF((SNT_mode mode, SNT_State *state, snByte *roundkey))
 {
-    register sn_u32 i;
+    snFast sn_u32 i;
     SNT_SubBytes(state);
     for(i = 0; i < SNT_NK; ++i) {
         (*state)[0][i] ^= *(roundkey + (SNT_NK * 0 + i));
@@ -324,7 +324,7 @@ SN_FUNC_OF((SNT_ctx *ctx, snByte *keyBuf, snByte *ivBuf))
 SN_PUBLIC(snVoid) SNT_CBC_Encrypt SN_OPEN_API
 SN_FUNC_OF((SNT_ctx *ctx, snByte *buf, snSize size))
 {
-    register snSize r, i;
+    snFast snSize r, i;
     static snByte round_iv[SNT_BLOCKLEN];
 
     SNT_State *bufState = (SNT_State *)buf;

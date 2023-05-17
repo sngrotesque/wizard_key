@@ -7,7 +7,7 @@
 #define SN_LOG_FILE_NAME "log/sn_log.txt"
 #define LOG_ERROR_NAME "log/error_log.txt"
 
-SN_PUBLIC(snError) snLog_write SN_OPEN_API SN_FUNC_OF((snFile *fp, const snChar *message))
+SN_PUBLIC(snError) snLog_write SN_OPEN_API SN_FUNC_OF((snFile *fp, snStringmessage))
 {
     snFile *SN_STDERR = fopen(LOG_ERROR_NAME, "a+");
 

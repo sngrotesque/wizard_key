@@ -20,7 +20,7 @@ SN_FUNC_OF((snByte *array_1, snByte *array_2))
 }
 
 SN_PRIVATE(snBool) snNum_check_format
-SN_FUNC_OF((const snChar *src))
+SN_FUNC_OF((snString src))
 {
     if(!src || (strlen(src) != 2)) {
         return false;
@@ -50,7 +50,7 @@ SN_FUNC_OF((void))
 }
 
 SN_PUBLIC(snError) snNum_pack SN_OPEN_API
-SN_FUNC_OF((const snChar *format, snByte *dst, snSize src))
+SN_FUNC_OF((snString format, snByte *dst, snSize src))
 {
     if(!format || !dst || !src) {
         return snErr_ErrNullData;
@@ -115,7 +115,7 @@ SN_FUNC_OF((const snChar *format, snByte *dst, snSize src))
 }
 
 SN_PUBLIC(snError) snNum_unpack SN_OPEN_API
-SN_FUNC_OF((const snChar *format, snVoid *dst, snByte *src))
+SN_FUNC_OF((snString format, snVoid *dst, snByte *src))
 {
     /**
      * 先直接判断本机是大端排序还是小端排序，然后根据用户指定的

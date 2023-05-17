@@ -87,7 +87,7 @@ SN_PUBLIC(snError) snHash SN_OPEN_API
 SN_FUNC_OF((snHash_ctx *hash, snByte *buf, snSize size));
 
 SN_PUBLIC(snError) snHash_file SN_OPEN_API
-SN_FUNC_OF((snHash_ctx *hash, const snChar *fn));
+SN_FUNC_OF((snHash_ctx *hash, snString fn));
 
 // 释放掉snHash对象
 SN_PUBLIC(snError) snHash_release SN_OPEN_API

@@ -33,7 +33,7 @@ SN_FUNC_OF((snFile_ctx **obj, sn_u32 instruction))
 }
 
 SN_PUBLIC(snBool) snFile_exists SN_OPEN_API
-SN_FUNC_OF((const snChar *fn))
+SN_FUNC_OF((snString fn))
 {
     if(!fn) {
         return false;
@@ -47,7 +47,7 @@ SN_FUNC_OF((const snChar *fn))
 }
 
 SN_PUBLIC(snError) snFile_fileSize SN_OPEN_API
-SN_FUNC_OF((snSize *size, const snChar *fn))
+SN_FUNC_OF((snSize *size, snString fn))
 {
     if(!snFile_exists(fn)) {
         return snErr_FileFolderPath;
@@ -80,7 +80,7 @@ SN_FUNC_OF((snSize *size, const snChar *fn))
 }
 
 SN_PUBLIC(snError) snFile_fread SN_OPEN_API
-SN_FUNC_OF((snFile_ctx *obj, const snChar *fn))
+SN_FUNC_OF((snFile_ctx *obj, snString fn))
 {
     static snByte *fileData_ptr = snNull;
     static snSize x;
@@ -113,7 +113,7 @@ SN_FUNC_OF((snFile_ctx *obj, const snChar *fn))
 }
 
 SN_PUBLIC(snError) snFile_fwrite SN_OPEN_API
-SN_FUNC_OF((snFile_ctx *obj, const snChar *fn))
+SN_FUNC_OF((snFile_ctx *obj, snString fn))
 {
     if(!obj->data || !obj->size) {
         return snErr_FileNull;

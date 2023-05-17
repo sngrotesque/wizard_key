@@ -1,7 +1,7 @@
 #include <network/snTransfer.h>
 
 SN_PRIVATE(snError) _snTransfer_sendall
-SN_FUNC_OF((snNet_ctx *net, snSize fileSize, const snChar *fn))
+SN_FUNC_OF((snNet_ctx *net, snSize fileSize, snString fn))
 {
     snNetSize quotient;  // 文件长度除块大小的商
     snNetSize leftover;  // 文件剩余长度
@@ -30,7 +30,7 @@ SN_FUNC_OF((snNet_ctx *net, snSize fileSize, const snChar *fn))
 }
 
 SN_PRIVATE(snError) _snTransfer_recvall
-SN_FUNC_OF((snNet_ctx *net, snSize fileSize, const snChar *fn))
+SN_FUNC_OF((snNet_ctx *net, snSize fileSize, snString fn))
 {
     snNetSize tSize;     // 单次传输长度
     snFile *fp = snNull; // 文件指针
@@ -50,7 +50,7 @@ SN_FUNC_OF((snNet_ctx *net, snSize fileSize, const snChar *fn))
 }
 
 SN_PUBLIC(snError) snTransfer_new SN_OPEN_API
-SN_FUNC_OF((snTransfer_ctx **ctx, const snChar *addr, sn_u16 port, sn_u32 maxRetry))
+SN_FUNC_OF((snTransfer_ctx **ctx, snString addr, sn_u16 port, sn_u32 maxRetry))
 {
     if(!((*ctx) = (snTransfer_ctx *)malloc(sizeof(snTransfer_ctx)))) {
         return snErr_Memory;
@@ -86,7 +86,7 @@ SN_FUNC_OF((snTransfer_ctx **ctx))
 }
 
 SN_PUBLIC(snError) snTransfer_Listen SN_OPEN_API
-SN_FUNC_OF((snTransfer_ctx *ctx, const snChar *fn))
+SN_FUNC_OF((snTransfer_ctx *ctx, snString fn))
 {
     if(!ctx->addr || !ctx->port) {
         return snErr_ErrNullData;
@@ -147,7 +147,7 @@ SN_FUNC_OF((snTransfer_ctx *ctx, const snChar *fn))
 }
 
 SN_PUBLIC(snError) snTransfer_Client SN_OPEN_API
-SN_FUNC_OF((snTransfer_ctx *ctx, const snChar *fn))
+SN_FUNC_OF((snTransfer_ctx *ctx, snString fn))
 {
     if(!snFile_exists(fn))
         return snErr_FileFolderPath;

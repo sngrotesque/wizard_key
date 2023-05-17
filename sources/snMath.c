@@ -14,9 +14,9 @@ SN_FUNC_OF((snSize n, snSize m))
 SN_PUBLIC(snSize *) snMath_PrimeNumber SN_OPEN_API
 SN_FUNC_OF((snSize minValue, snSize maxValue))
 {
-	register snSize x;
-	register snSize i;
-    register snSize count;
+	snFast snSize x;
+	snFast snSize i;
+    snFast snSize count;
     snSize *p;
 
     if(minValue % 2 == 0 && minValue > 1)

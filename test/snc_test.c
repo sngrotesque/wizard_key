@@ -28,8 +28,8 @@ int main(int argc, char **argv)
     static snByte iv[32] = {
         0xf8, 0x8f, 0x42, 0x1d, 0xe1, 0xb5, 0x7a, 0xef, 0x09, 0xdd, 0x5a, 0xe1, 0x72, 0x2c, 0xb5, 0x42,
         0x93, 0x0b, 0x3b, 0x6e, 0x09, 0xd0, 0x56, 0x33, 0xf4, 0x4e, 0x81, 0xd8, 0x53, 0x47, 0x6e, 0x2c};
-    static const snChar *fn_src = "misc/img/building2014851.jpg";
-    static const snChar *fn_dst = "misc/img/building2014852.jpg";
+    static snStringfn_src = "misc/img/building2014851.jpg";
+    static snStringfn_dst = "misc/img/building2014852.jpg";
     static snHash_ctx *hash = snNull;
     static snFile_ctx *file = snNull;
     static SNC_ctx *snc = snNull;

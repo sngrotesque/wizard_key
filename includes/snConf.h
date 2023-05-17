@@ -1,30 +1,30 @@
 /**
- *  我完全放弃了一些类型：
+ *  我完全放弃了一些东西：
  *      float类型，默认采用double类型。
  *      signed char类型，默认使用char类型。
- *      uint64_t类型，默认使用size_t代替，因不会提供32位系统支持。
+ *      uint64_t类型，默认使用size_t代替，因此不会提供32位系统支持。
 */
 #ifndef __SN_CONF__
 #define __SN_CONF__
 
+/** 导入必要头文件 Begin ****************/
 #include <stdio.h>    // 标准输入输出库
 #include <string.h>   // 标准字符串库
 #include <stdint.h>   // 标准数字类型库
 #include <signal.h>   // 信号库
 #include <stdbool.h>  // 标准布尔值库
-#include <inttypes.h> // 用于在跨平台输出同样的数据类型
+#include <inttypes.h> // 用于在跨平台打印同样的数据类型
+/** 导入必要头文件 End ****************/
 
-#if __cplusplus > 199711L
-#   define register
-#endif
-
-#define SHARK_COAST_VERSION     "4.4.0"
-#define SHARK_COAST_VERNUM       0x440
+/** 版本信息 Begin ****************/
+#define SHARK_COAST_VERSION     "4.6.0"
+#define SHARK_COAST_VERNUM       0x460
 #define SHARK_COAST_VER_MAJOR    4
-#define SHARK_COAST_VER_MINOR    4
+#define SHARK_COAST_VER_MINOR    6
 #define SHARK_COAST_VER_REVISION 0
+/** 版本信息 End ****************/
 
-// 错误代码
+/** 错误代码 Begin ****************/
 #ifndef __SN_ERROR__
 #define __SN_ERROR__
 // General
@@ -59,9 +59,9 @@
 #define snErr_MemNMSR             0x6e6d7372         // 内存相关错误：No memory space requested
 #define snErr_MemRelease          0x776d7269         // 内存相关错误：Wrong memory release instruction
 #endif // #ifndef __SN_ERROR__
+/** 错误代码 End ****************/
 
-
-
+/** 其他功能 Begin ****************/
 // 是否启用其他功能
 #define SN_ENABLE_FEATURES
 #if defined(SN_ENABLE_FEATURES)
@@ -117,20 +117,14 @@
 #       define SN_CB_LIGHTWHITE   "\x1b[107m" // 亮白色（背景）
 #   endif
 #endif // #if defined(SN_ENABLE_FEATURES)
+/** 其他功能 End ****************/
 
+/** 类型定义 Begin ****************/
+// 如果C++禁用了register关键词，那么启用它
+#if __cplusplus > 199711L
+#   define register
+#endif
 
-
-/* 函数定义 */
-// 字节交换：0x91 -> 0x19
-#define snByteSwap(x) ((((x) & 0xf) << 4) ^ ((x) >> 4))
-// 宽字交换：0x91ba -> 0xab19
-#define snWordSwap(x) ((snByteSwap(x & 0xff) << 8) ^ snByteSwap((x & 0xff00) >> 8))
-// 长字交换：0x91ba4951 -> 0x1594ab19
-#define snLongSwap(x) ((snWordSwap((x & 0xffff0000) >> 16)) ^ (snWordSwap(x & 0xffff) << 16))
-#define snZeroObject(x, s) memset((x), 0x00, (s))
-
-
-/* 类型定义 */
 #define SN_PRIVATE_INLINE(type) static inline type // 静态内联函数
 #define SN_PRIVATE_CONST(type)  static const  type // 静态常量
 #define SN_PRIVATE(type)        static type        // 静态函数（私有函数）
@@ -138,38 +132,51 @@
 #define SN_FUNC_OF(args)        args               // 函数取消调用消耗
 #define SN_OPEN_API                                // 公共函数请加上此宏用于标识
 
-#define SN_RELEASE_NO           0x00               // 不需要释放
-#define SN_RELEASE_NORMAL       0x01               // 释放掉结构体中的指针
-#define SN_RELEASE_FILE         0x02               // 释放文件指针
-#define SN_RELEASE_SRC          0x09               // 释放掉结构体中的输入指针
-#define SN_RELEASE_DST          0x10               // 释放掉结构体中的输出指针
-//      SN_RELEASE_XX           0x03               !!! 不能定义 !!!
-//      SN_RELEASE_XX           0x19               !!! 不能定义 !!!
+#define SN_RELEASE_NO           0x00 // 不需要释放
+#define SN_RELEASE_NORMAL       0x01 // 释放掉结构体中的指针
+#define SN_RELEASE_FILE         0x02 // 释放文件指针
+#define SN_RELEASE_SRC          0x09 // 释放掉结构体中的输入指针
+#define SN_RELEASE_DST          0x10 // 释放掉结构体中的输出指针
+//      SN_RELEASE_XX           0x03 !!! 不能定义 !!!
+//      SN_RELEASE_XX           0x19 !!! 不能定义 !!!
 
-#ifndef snNull                                     // 空指针
-#   ifdef __cplusplus
-#       define snNull           0
-#   else
-#       define snNull           ((void *)0)
-#   endif
-#endif
+#define snNull                  NULL      // 空指针
+#define snFast                  register  // 寄存器类型
 
-typedef int64_t                 snSSize;           // 长整数类型
-typedef size_t                  snSize;            // 长度类型
+typedef const char *            snString; // 固定字符串类型
 
-typedef char                    snChar;            // 字符类型
-typedef uint8_t                 snByte;            // 字节类型
-typedef double                  snFloat;           // 浮点数类型
+typedef char                    snChar;   // 字符类型
+typedef uint8_t                 snByte;   // 字节类型
 
-typedef int16_t                 sn_16;             // 宽字节类型
-typedef int32_t                 sn_32;             // 整数类型
-typedef uint16_t                sn_u16;            // 无符号宽字节类型
-typedef uint32_t                sn_u32;            // 无符号整数类型
+typedef double                  snFloat;  // 浮点数类型
 
-typedef void                    snVoid;            // 空类型
-typedef bool                    snBool;            // 布尔类型
-typedef FILE                    snFile;            // 文件类型
-typedef uint32_t                snError;           // 错误类型
+typedef int64_t                 snSSize;  // 长整数类型
+typedef size_t                  snSize;   // 长度类型
+typedef int16_t                 sn_16;    // 宽字节类型
+typedef int32_t                 sn_32;    // 整数类型
+typedef uint16_t                sn_u16;   // 无符号宽字节类型
+typedef uint32_t                sn_u32;   // 无符号整数类型
+
+typedef void                    snVoid;   // 空类型
+typedef bool                    snBool;   // 布尔类型
+typedef FILE                    snFile;   // 文件类型
+typedef uint32_t                snError;  // 错误类型
+/** 类型定义 End ****************/
+
+/** 函数定义 Begin ****************/
+// 字节交换：0x91 -> 0x19
+#define snByteSwap(x) ((((x) & 0xf) << 4) ^ ((x) >> 4))
+// 宽字交换：0x91ba -> 0xab19
+#define snWordSwap(x) ((snByteSwap(x & 0xff) << 8) ^ snByteSwap((x & 0xff00) >> 8))
+// 长字交换：0x91ba4951 -> 0x1594ab19
+#define snLongSwap(x) ((snWordSwap((x & 0xffff0000) >> 16)) ^ (snWordSwap(x & 0xffff) << 16))
+// 内存空间申请
+#define snMemory_new(type, x, size) (x = (type)malloc((size)))
+// 内存空间释放
+#define snMemory_release(x) free(x); x = snNull
+// 内存内容初始化为0
+#define snZeroObject(x, s) memset((x), 0x00, (s))
+/** 函数定义 End ****************/
 
 #endif // #ifndef __SN_CONF__
 

@@ -66,7 +66,7 @@ SN_FUNC_OF((snHash_ctx *hash, snByte *buf, snSize size))
 }
 
 SN_PUBLIC(snError) snHash_file SN_OPEN_API
-SN_FUNC_OF((snHash_ctx *hash, const snChar *fn))
+SN_FUNC_OF((snHash_ctx *hash, snString fn))
 {
     static snByte *buf = snNull;
     static snFile *fp = snNull;

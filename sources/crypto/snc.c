@@ -79,7 +79,7 @@ SN_PRIVATE_CONST(snByte) SNC_rsbox[256] = {
 */
 SN_PRIVATE(snVoid) SNC_SubBytes SN_FUNC_OF((sncState *state))
 {
-    register sn_u32 i;
+    snFast sn_u32 i;
     for(i = 0; i < SNC_NK; ++i) {
         (*state)[0][i] = SNC_SBOX((*state)[0][i]);
         (*state)[1][i] = SNC_SBOX((*state)[1][i]);
@@ -102,7 +102,7 @@ SN_PRIVATE(snVoid) SNC_SubBytes SN_FUNC_OF((sncState *state))
 */
 SN_PRIVATE(snVoid) SNC_InvSubBytes SN_FUNC_OF((sncState *state))
 {
-    register sn_u32 i;
+    snFast sn_u32 i;
     for(i = 0; i < SNC_NK; ++i) {
         (*state)[0][i] = SNC_RSBOX((*state)[0][i]);
         (*state)[1][i] = SNC_RSBOX((*state)[1][i]);
@@ -151,7 +151,7 @@ SN_PRIVATE(snVoid) SNC_InvSubBytes SN_FUNC_OF((sncState *state))
 */
 SN_PRIVATE(snVoid) SNC_RowsMix SN_FUNC_OF((sncState *state))
 {
-    register sn_u32 i;
+    snFast sn_u32 i;
     for(i = 0; i < SNC_NB; ++i) {
         SNC_ROWS_MIX((*state)[i][0], (*state)[i][2], (*state)[i][1], (*state)[i][3]);
         SNC_ROWS_MIX((*state)[i][1], (*state)[i][0], (*state)[i][3], (*state)[i][2]);
@@ -166,7 +166,7 @@ SN_PRIVATE(snVoid) SNC_RowsMix SN_FUNC_OF((sncState *state))
 */
 SN_PRIVATE(snVoid) SNC_InvRowsMix SN_FUNC_OF((sncState *state))
 {
-    register sn_u32 i;
+    snFast sn_u32 i;
     for(i = 0; i < SNC_NB; ++i) {
         SNC_INV_ROWS_MIX((*state)[i][3], (*state)[i][1], (*state)[i][2], (*state)[i][0]);
         SNC_INV_ROWS_MIX((*state)[i][2], (*state)[i][3], (*state)[i][1], (*state)[i][0]);
@@ -264,7 +264,7 @@ SN_PRIVATE(snVoid) SNC_InvColumnShift SN_FUNC_OF((sncState *state))
 */
 SN_PRIVATE(snVoid) SNC_XorWithIV SN_FUNC_OF((sncState *buf, sncState *iv))
 {
-    register sn_u32 i;
+    snFast sn_u32 i;
     for(i = 0; i < SNC_NK; ++i) {
         (*buf)[0][i] ^= (*iv)[0][i];
         (*buf)[1][i] ^= (*iv)[1][i];
@@ -283,7 +283,7 @@ SN_PRIVATE(snVoid) SNC_XorWithIV SN_FUNC_OF((sncState *buf, sncState *iv))
 SN_PRIVATE(snVoid) SNC_Cipher
 SN_FUNC_OF((SNC_mode mode, sncState *state, snByte *RoundKey))
 {
-    register sn_u32 i;
+    snFast sn_u32 i;
 
     //* 执行块置换函数（Execute block substitute function）
     SNC_SubBytes(state);
@@ -342,7 +342,7 @@ SN_FUNC_OF((SNC_mode mode, sncState *state, snByte *RoundKey))
 SN_PRIVATE(snVoid) SNC_InvCipher
 SN_FUNC_OF((SNC_mode mode, sncState *state, snByte *RoundKey))
 {
-    register sn_u32 i;
+    snFast sn_u32 i;
 
     //* 执行逆行混合函数。（Execute inverse mixed function.）
     SNC_InvRowsMix(state);
@@ -546,8 +546,8 @@ SN_FUNC_OF((SNC_ctx *ctx, snByte *keyBuf, snByte *ivBuf))
 SN_PUBLIC(snVoid) SNC_ECB_Encrypt SN_OPEN_API
 SN_FUNC_OF((SNC_ctx *ctx, snByte *buf, snSize size))
 {
-    register snSize r;
-    register snSize i;
+    snFast snSize r;
+    snFast snSize i;
 
     //* 将SNC的块结构指向输入的数据，用于提高性能和简化代码
     sncState *bufState = (sncState *)buf;
@@ -566,8 +566,8 @@ SN_FUNC_OF((SNC_ctx *ctx, snByte *buf, snSize size))
 SN_PUBLIC(snVoid) SNC_ECB_Decrypt SN_OPEN_API
 SN_FUNC_OF((SNC_ctx *ctx, snByte *buf, snSize size))
 {
-    register snSize r;
-    register snSize i;
+    snFast snSize r;
+    snFast snSize i;
 
     //* 将SNC的块结构指向输入的数据，用于提高性能和简化代码
     sncState *bufState = (sncState *)buf;
@@ -586,7 +586,7 @@ SN_FUNC_OF((SNC_ctx *ctx, snByte *buf, snSize size))
 SN_PUBLIC(snVoid) SNC_CBC_Encrypt SN_OPEN_API
 SN_FUNC_OF((SNC_ctx *ctx, snByte *buf, snSize size))
 {
-    register snSize r, i;
+    snFast snSize r, i;
     static snByte round_iv[SNC_BLOCKLEN];
 
     sncState *bufState = (sncState *)buf;
@@ -607,8 +607,8 @@ SN_FUNC_OF((SNC_ctx *ctx, snByte *buf, snSize size))
 SN_PUBLIC(snVoid) SNC_CBC_Decrypt SN_OPEN_API
 SN_FUNC_OF((SNC_ctx *ctx, snByte *buf, snSize size))
 {
-    register snSize r;
-    register snSize i;
+    snFast snSize r;
+    snFast snSize i;
     static snByte round_iv[SNC_BLOCKLEN];
     static snByte round_buf[SNC_BLOCKLEN];
 

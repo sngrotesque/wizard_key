@@ -113,7 +113,7 @@ SN_FUNC_OF((snNet_ctx **ctx));
 
 // 初始化snNet对象（需提前申请内存空间）
 SN_PUBLIC(snError) snNet_init SN_OPEN_API
-SN_FUNC_OF((snNet_ctx *ctx, const snChar *hostname, sn_u16 port, snBool UDP));
+SN_FUNC_OF((snNet_ctx *ctx, snString hostname, sn_u16 port, snBool UDP));
 
 // 设置发送与接收超时时间
 SN_PUBLIC(snError) snNet_timeout SN_OPEN_API

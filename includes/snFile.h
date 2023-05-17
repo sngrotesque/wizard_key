@@ -39,17 +39,17 @@ SN_FUNC_OF((snFile_ctx **obj, sn_u32 instruction));
 
 // 检查路径是否存在
 SN_PUBLIC(snBool) snFile_exists SN_OPEN_API
-SN_FUNC_OF((const snChar *fn));
+SN_FUNC_OF((snString fn));
 
 // 获取文件大小
 SN_PUBLIC(snError) snFile_fileSize SN_OPEN_API
-SN_FUNC_OF((snSize *size, const snChar *fn));
+SN_FUNC_OF((snSize *size, snString fn));
 
 // 整个读取文件
 SN_PUBLIC(snError) snFile_fread SN_OPEN_API
-SN_FUNC_OF((snFile_ctx *obj, const snChar *fn));
+SN_FUNC_OF((snFile_ctx *obj, snString fn));
 
 // 整个写入文件
 SN_PUBLIC(snError) snFile_fwrite SN_OPEN_API
-SN_FUNC_OF((snFile_ctx *obj, const snChar *fn));
+SN_FUNC_OF((snFile_ctx *obj, snString fn));
 #endif

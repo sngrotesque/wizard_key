@@ -42,7 +42,7 @@ SN_PUBLIC(snByte *) snBinascii_b2a_hex SN_OPEN_API
 SN_FUNC_OF((snByte *src, snSize srcSize))
 {
     static snByte *dst = snNull;
-    register snSize i;
+    snFast snSize i;
 
     dst = (snByte *)malloc((srcSize << 1) + 1);
     if (!dst)

@@ -13,6 +13,6 @@
     (*(buf + i) >= 0x20 && *(buf + i) < 0x7f)?(printf("%c", *(buf + i))):(printf("."))
 
 SN_PUBLIC(snVoid) snHexdump SN_OPEN_API
-SN_FUNC_OF((const snChar *fn));
+SN_FUNC_OF((snString fn));
 
 #endif

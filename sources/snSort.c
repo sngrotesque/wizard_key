@@ -3,11 +3,11 @@
 SN_PRIVATE(snVoid) _mergeSort
 SN_FUNC_OF((sn_32 *arr, snSize s1, snSize e1, snSize s2, snSize e2, sn_32 *m1, sn_32 *m2))
 {
-    register snSize len1 = e1 - s1 + 1;
-    register snSize len2 = e2 - s2 + 1;
-    register snSize p1 = 0;
-    register snSize p2 = 0;
-    register snSize p = s1;
+    snFast snSize len1 = e1 - s1 + 1;
+    snFast snSize len2 = e2 - s2 + 1;
+    snFast snSize p1 = 0;
+    snFast snSize p2 = 0;
+    snFast snSize p = s1;
     memcpy(m1, arr + s1, sizeof(sn_32) * len1);
     memcpy(m2, arr + s2, sizeof(sn_32) * len2);
 
@@ -30,7 +30,7 @@ SN_FUNC_OF((sn_32 *arr, snSize s1, snSize e1, snSize s2, snSize e2, sn_32 *m1, s
 SN_PRIVATE(sn_32) _quickSort
 SN_FUNC_OF((sn_32 *arr, snSize first, snSize last, snSize pivot_index))
 {
-    register sn_u32 buf;
+    snFast sn_u32 buf;
     if (pivot_index != first) {
         buf = arr[first];
         arr[first] = arr[pivot_index];
@@ -65,10 +65,10 @@ SN_FUNC_OF((sn_32 *arr, snSize first, snSize last, snSize pivot_index))
 SN_PRIVATE(snVoid) _heapSort_heapify
 SN_FUNC_OF((sn_32 *arr, snSize size, snSize i))
 {
-    register snSize largest = i; // Initialize largest as root
-    register snSize left = 2 * i + 1; // left child
-    register snSize right = 2 * i + 2; // right child
-    register snSize temp;
+    snFast snSize largest = i; // Initialize largest as root
+    snFast snSize left = 2 * i + 1; // left child
+    snFast snSize right = 2 * i + 2; // right child
+    snFast snSize temp;
 
     // If left child is larger than root
     if (left < size && arr[left] > arr[largest])
@@ -91,7 +91,7 @@ SN_FUNC_OF((sn_32 *arr, snSize size, snSize i))
 SN_PRIVATE(snVoid) _bitonicSort_exchange
 SN_FUNC_OF((sn_32 *arr, snSize i, snSize j, sn_32 d))
 {
-    register sn_32 temp;
+    snFast sn_32 temp;
     if (d == (arr[i] > arr[j]))
     {
         temp = arr[i];
@@ -103,7 +103,7 @@ SN_FUNC_OF((sn_32 *arr, snSize i, snSize j, sn_32 d))
 SN_PRIVATE(snVoid) _bitonicSort_merge
 SN_FUNC_OF((sn_32 *arr, snSize beg, snSize c, snSize d))
 {
-    register snSize k, i;
+    snFast snSize k, i;
     if (c > 1)
     {
         k = c / 2;
@@ -117,7 +117,7 @@ SN_FUNC_OF((sn_32 *arr, snSize beg, snSize c, snSize d))
 SN_PRIVATE(snVoid) _bitonicSort
 SN_FUNC_OF((sn_32 *arr, snSize beg, snSize c, snSize d))
 {
-    register snSize k;
+    snFast snSize k;
     if (c > 1)
     {
         k = c / 2;
@@ -130,7 +130,7 @@ SN_FUNC_OF((sn_32 *arr, snSize beg, snSize c, snSize d))
 SN_PUBLIC(snVoid) bubbleSort SN_OPEN_API
 SN_FUNC_OF((sn_32 *arr, snSize size))
 {
-    register sn_32 i, j, buf;
+    snFast sn_32 i, j, buf;
     for(i = 1; i < size; ++i) {
         for(j = 0; j < (size - i); ++j) {
             if(arr[j] > arr[j+1]) {
@@ -145,8 +145,8 @@ SN_FUNC_OF((sn_32 *arr, snSize size))
 SN_PUBLIC(snVoid) selectionSort SN_OPEN_API
 SN_FUNC_OF((sn_32 *arr, snSize size))
 {
-    register sn_32 i, j, buf;
-    register sn_32 minIndex;
+    snFast sn_32 i, j, buf;
+    snFast sn_32 minIndex;
     for(i = 0; i < size-1; ++i) {
         minIndex = i;
         for(j = i + 1; j < size; ++j) {
@@ -164,8 +164,8 @@ SN_FUNC_OF((sn_32 *arr, snSize size))
 SN_PUBLIC(snVoid) insertionSort SN_OPEN_API
 SN_FUNC_OF((sn_32 *arr, snSize size))
 {
-    register sn_32 i, j;
-    register sn_32 buff;
+    snFast sn_32 i, j;
+    snFast sn_32 buff;
     for(i = 1; i < size; ++i) {
         buff = arr[i];
         j = i - 1;
@@ -180,13 +180,13 @@ SN_FUNC_OF((sn_32 *arr, snSize size))
 SN_PUBLIC(snVoid) mergeSort SN_OPEN_API
 SN_FUNC_OF((sn_32 *arr, snSize size))
 {
-    register snSize step = 1;
-    register sn_32 *m1 = (sn_32 *)malloc(size * sizeof(sn_32));
-    register sn_32 *m2 = (sn_32 *)malloc(size * sizeof(sn_32));
+    snFast snSize step = 1;
+    snFast sn_32 *m1 = (sn_32 *)malloc(size * sizeof(sn_32));
+    snFast sn_32 *m2 = (sn_32 *)malloc(size * sizeof(sn_32));
     if(!m1 || !m2)
         return;
     
-    register snSize i, s1, e1, s2, e2;
+    snFast snSize i, s1, e1, s2, e2;
     while(step < size) {
         for(i = 0; (i + step - 1) < (size - 1); i += 2 * step) {
             s1 = i;
@@ -206,8 +206,8 @@ SN_FUNC_OF((sn_32 *arr, snSize size))
 SN_PUBLIC(snVoid) shellSort SN_OPEN_API
 SN_FUNC_OF((sn_32 *arr, snSize size))
 {
-    register snSize gaps, i, j;
-    register sn_32 buff;
+    snFast snSize gaps, i, j;
+    snFast sn_32 buff;
     for(gaps = size / 2; gaps > 0; gaps /= 2) {
         for(i = gaps; i < size; i += 1) {
             buff = arr[i];
@@ -222,7 +222,7 @@ SN_FUNC_OF((sn_32 *arr, snSize size))
 SN_PUBLIC(snVoid) quickSort SN_OPEN_API
 SN_FUNC_OF((sn_32 *arr, snSize first, snSize last))
 {
-    register snSize pivot;
+    snFast snSize pivot;
     if (first >= last)
         return;
     
@@ -240,8 +240,8 @@ SN_FUNC_OF((sn_32 *arr, snSize first, snSize last))
 SN_PUBLIC(snVoid) heapSort SN_OPEN_API
 SN_FUNC_OF((sn_32 *arr, snSize size))
 {
-    register snSize i;
-    register snSize temp;
+    snFast snSize i;
+    snFast snSize temp;
 
     for (i = size / 2 - 1; i; i--)
         _heapSort_heapify(arr, size, i);
@@ -259,8 +259,8 @@ SN_FUNC_OF((sn_32 *arr, snSize size))
 SN_PUBLIC(snVoid) countSort SN_OPEN_API
 SN_FUNC_OF((sn_32 *arr, snSize size))
 {
-    register sn_32 max = arr[0];
-    register snSize i;
+    snFast sn_32 max = arr[0];
+    snFast snSize i;
 
     static sn_32 *dst = snNull;
     static sn_32 *count = snNull;

@@ -43,6 +43,6 @@ SN_FUNC_OF((snTime_ctx *timer));
 
 // 打印计时后的结果
 SN_PUBLIC(snVoid) snTime_TimerPrint SN_OPEN_API
-SN_FUNC_OF((const snChar *text, snTime_ctx *timer));
+SN_FUNC_OF((snString text, snTime_ctx *timer));
 
 #endif

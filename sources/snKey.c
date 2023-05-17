@@ -157,13 +157,13 @@ SN_FUNC_OF((snKey_ctx *obj))
 }
 
 SN_PUBLIC(snError) snKey_loadKey SN_OPEN_API
-SN_FUNC_OF((snKey_ctx *obj, const snChar *fn))
+SN_FUNC_OF((snKey_ctx *obj, snString fn))
 {
     return snErr_OK;
 }
 
 SN_PUBLIC(snError) snKey_saveKey SN_OPEN_API
-SN_FUNC_OF((snKey_ctx *obj, const snChar *fn))
+SN_FUNC_OF((snKey_ctx *obj, snString fn))
 {
     static snBase64_ctx *base64 = snNull;
     static snFile_ctx *file = snNull;

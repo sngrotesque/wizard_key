@@ -13,7 +13,7 @@ SN_FUNC_OF((snSize offset, snByte *buf, sn_u32 size))
 }
 
 SN_PUBLIC(snVoid) snHexdump SN_OPEN_API
-SN_FUNC_OF((const snChar *fn))
+SN_FUNC_OF((snString fn))
 {
     static snFile *fp = snNull;
     static snByte buf[SN_HEXDUMP_SIZE];
