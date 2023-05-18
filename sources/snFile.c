@@ -3,32 +3,29 @@
 SN_PUBLIC(snError) snFile_new SN_OPEN_API
 SN_FUNC_OF((snFile_ctx **obj))
 {
-    if(!(*obj)) {
-        if(!((*obj) = (snFile_ctx *)malloc(sizeof(snFile_ctx)))) {
-            return snErr_Memory;
-        }
-    }
+    if(!obj)
+        return snErr_ErrNullData;
+    if(!snMemoryNew(snFile_ctx *, (*obj), sizeof(snFile_ctx)))
+        return snErr_Memory;
     (*obj)->data = snNull;
     (*obj)->fp = snNull;
 
     return snErr_OK;
 }
 
-SN_PUBLIC(snError) snFile_release SN_OPEN_API
-SN_FUNC_OF((snFile_ctx **obj, sn_u32 instruction))
+SN_PUBLIC(snError) snFile_free SN_OPEN_API
+SN_FUNC_OF((snFile_ctx **obj))
 {
-    if(instruction == (SN_RELEASE_NORMAL | SN_RELEASE_FILE)) {
-        free((*obj)->data);
-        fclose((*obj)->fp);
-    } else if(instruction == SN_RELEASE_NORMAL) {
-        free((*obj)->data);
-    } else if(instruction == SN_RELEASE_FILE) {
-        fclose((*obj)->fp);
+    if(!obj)
+        return snErr_ErrNullData;
+    if((*obj)->data) {
+        snMemoryFree((*obj)->data);
     }
-    (*obj)->data = snNull;
-    (*obj)->fp = snNull;
-    free((*obj));
-    (*obj) = snNull;
+    if((*obj)->fp) {
+        fclose((*obj)->fp);
+        (*obj)->fp = snNull;
+    }
+    snMemoryFree((*obj));
     return snErr_OK;
 }
 
@@ -74,7 +71,9 @@ SN_FUNC_OF((snSize *size, snString fn))
 #   endif
         return snErr_FileNull;
     }
+#   if defined(_WIN32)
     CloseHandle(hFile);
+#   endif
 
     return snErr_OK;
 }
@@ -88,9 +87,8 @@ SN_FUNC_OF((snFile_ctx *obj, snString fn))
         return snErr_FileFolderPath;
     }
     if(!obj->data) {
-        if(!(obj->data = (snByte *)malloc(obj->size + 1))) {
+        if(!snMemoryNew(snByte *, obj->data, obj->size + 1))
             return snErr_Memory;
-        }
     }
 
     fileData_ptr = obj->data;

@@ -3,50 +3,36 @@
 SN_PRIVATE(snError) _snHash_init
 SN_FUNC_OF((snHash_ctx **obj, snSize size))
 {
-    (*obj)->digest = (snByte *)malloc(size);
-    (*obj)->hexdigest = (snByte *)malloc((size << 1) + 1);
-    if(!(*obj)->digest || !(*obj)->hexdigest) {
-        return snErr_Memory;
-    }
-    (*obj)->hexdigest[size << 1] = 0x00;
-    (*obj)->digestSize = size;
     (*obj)->hexdigestSize = size << 1;
+    (*obj)->digestSize = size;
+
+    (*obj)->hexdigest = snNull;
+    if(!snMemoryNew(snByte *, (*obj)->digest, size))
+        return snErr_Memory;
+
     return snErr_OK;
 }
 
 SN_PUBLIC(snError) snHash_new SN_OPEN_API
-SN_FUNC_OF((snHash_ctx **obj, sn_u32 hashType))
+SN_FUNC_OF((snHash_ctx **obj, snHash_HashType hashType))
 {
-    if(!(*obj)) {
-        if(!((*obj) = (snHash_ctx *)malloc(sizeof(snHash_ctx)))) {
-            return snErr_Memory;
-        }
-    }
+    if(!obj)
+        return snErr_ErrNullData;
 
-    static sn_u32 err_code;
-    if(hashType == SN_HASH_TYPE_MD5) {
-        (*obj)->md = EVP_md5();
-        err_code = _snHash_init(obj, MD5_DIGEST_LENGTH);
-    } else if(hashType == SN_HASH_TYPE_SHA1) {
-        (*obj)->md = EVP_sha1();
-        err_code = _snHash_init(obj, SHA_DIGEST_LENGTH);
-    } else if(hashType == SN_HASH_TYPE_SHA224) {
-        (*obj)->md = EVP_sha224();
-        err_code = _snHash_init(obj, SHA224_DIGEST_LENGTH);
-    } else if(hashType == SN_HASH_TYPE_SHA256) {
-        (*obj)->md = EVP_sha256();
-        err_code = _snHash_init(obj, SHA256_DIGEST_LENGTH);
-    } else if(hashType == SN_HASH_TYPE_SHA384) {
-        (*obj)->md = EVP_sha384();
-        err_code = _snHash_init(obj, SHA384_DIGEST_LENGTH);
-    } else if(hashType == SN_HASH_TYPE_SHA512) {
-        (*obj)->md = EVP_sha512();
-        err_code = _snHash_init(obj, SHA512_DIGEST_LENGTH);
-    } else {
-        return snErr_ErrType;
-    }
+    if(!snMemoryNew(snHash_ctx *, (*obj), sizeof(snHash_ctx)))
+        return snErr_Memory;
 
-    if(err_code == snErr_Memory) {
+    const EVP_MD *snHash_EVP_Type[6] = {
+        EVP_md5(),    // MD5
+        EVP_sha1(),   // SHA-1
+        EVP_sha224(), // SHA-224
+        EVP_sha256(), // SHA-256
+        EVP_sha384(), // SHA-384
+        EVP_sha512()  // SHA-512
+    };
+
+    (*obj)->md = snHash_EVP_Type[hashType];
+    if(_snHash_init(obj, snHash_SIZE[hashType])) {
         return snErr_Memory;
     }
 
@@ -56,18 +42,24 @@ SN_FUNC_OF((snHash_ctx **obj, sn_u32 hashType))
 SN_PUBLIC(snError) snHash SN_OPEN_API
 SN_FUNC_OF((snHash_ctx *hash, snByte *buf, snSize size))
 {
+    snError err_code;
     EVP_MD_CTX *md_ctx = EVP_MD_CTX_new();
+
     EVP_DigestInit_ex(md_ctx, hash->md, snNull);
     EVP_DigestUpdate(md_ctx, buf, size);
     EVP_DigestFinal_ex(md_ctx, hash->digest, snNull);
     EVP_MD_CTX_free(md_ctx);
-    memcpy(hash->hexdigest, snBinascii_b2a_hex(hash->digest, hash->digestSize), hash->hexdigestSize);
+
+    if((err_code = snBinascii_b2a_hex(&hash->hexdigest, hash->digest, hash->digestSize)))
+        return err_code;
+
     return snErr_OK;
 }
 
 SN_PUBLIC(snError) snHash_file SN_OPEN_API
 SN_FUNC_OF((snHash_ctx *hash, snString fn))
 {
+    static EVP_MD_CTX *md_ctx = snNull;
     static snByte *buf = snNull;
     static snFile *fp = snNull;
     static snError err_code;
@@ -91,7 +83,7 @@ SN_FUNC_OF((snHash_ctx *hash, snString fn))
 
     fp = fopen(fn, "rb");
 
-    EVP_MD_CTX *md_ctx = EVP_MD_CTX_new();
+    md_ctx = EVP_MD_CTX_new();
     EVP_DigestInit_ex(md_ctx, hash->md, snNull);
 
     for(index = 0; index < quotient; ++index) {
@@ -104,23 +96,23 @@ SN_FUNC_OF((snHash_ctx *hash, snString fn))
     }
     EVP_DigestFinal_ex(md_ctx, hash->digest, snNull);
     EVP_MD_CTX_free(md_ctx);
-    memcpy(hash->hexdigest, snBinascii_b2a_hex(hash->digest, hash->digestSize), hash->hexdigestSize);
+
+    if((err_code = snBinascii_b2a_hex(&hash->hexdigest, hash->digest, hash->digestSize)))
+        return err_code;
 
     free(buf);
     fclose(fp);
     return snErr_OK;
 }
 
-SN_PUBLIC(snError) snHash_release SN_OPEN_API
-SN_FUNC_OF((snHash_ctx **obj, sn_u32 instruction))
+SN_PUBLIC(snError) snHash_free SN_OPEN_API
+SN_FUNC_OF((snHash_ctx **obj))
 {
-    if(instruction == SN_RELEASE_NORMAL) {
-        free((*obj)->digest);
-        free((*obj)->hexdigest);
-        (*obj)->digest = snNull;
-        (*obj)->hexdigest = snNull;
+    if(!obj) {
+        return snErr_ErrNullData;
     }
-    free((*obj));
-    (*obj) = snNull;
+    snMemoryFree((*obj)->digest);
+    snMemoryFree((*obj)->hexdigest);
+    snMemoryFree((*obj));
     return snErr_OK;
 }

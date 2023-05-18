@@ -1,7 +1,3 @@
-/**
- * 后续处理一下SNC_Cipher中GCC的-Wall参数的警告
-*/
-
 #include <crypto/snc.h>
 
 /*

@@ -7,6 +7,10 @@
  *  如果要加密的话，请将所有内容加密，同时应考虑加密算法的效率问题。
 */
 
+/**
+ * 由于snNet库的不确定性，暂时启用此传输库
+*/
+
 #ifndef __SN_TRANSFER__
 #define __SN_TRANSFER__
 
@@ -37,7 +41,7 @@ SN_PUBLIC(snError) snTransfer_new SN_OPEN_API
 SN_FUNC_OF((snTransfer_ctx **ctx, snString addr, sn_u16 port, sn_u32 maxRetry));
 
 // 释放snTransfer对象
-SN_PUBLIC(snError) snTransfer_release SN_OPEN_API
+SN_PUBLIC(snError) snTransfer_free SN_OPEN_API
 SN_FUNC_OF((snTransfer_ctx **ctx));
 
 // 接收端

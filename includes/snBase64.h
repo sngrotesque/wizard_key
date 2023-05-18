@@ -22,8 +22,8 @@ SN_FUNC_OF((snBase64_ctx **obj));
  *      SN_RELEASE_DST                     释放掉obj->dst指针
  *      SN_RELEASE_SRC | SN_RELEASE_DST    同时释放两个指针
 */
-SN_PUBLIC(snError) snBase64_release SN_OPEN_API
-SN_FUNC_OF((snBase64_ctx **obj, sn_u32 instruction));
+SN_PUBLIC(snError) snBase64_free SN_OPEN_API
+SN_FUNC_OF((snBase64_ctx **obj));
 
 // 求出Base64编码后的长度
 SN_PUBLIC(snSize) snB64E_size SN_OPEN_API

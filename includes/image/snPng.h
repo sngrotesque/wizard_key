@@ -18,7 +18,7 @@ typedef struct snPng_block {
 SN_PUBLIC(snError) snPng_new SN_OPEN_API
 SN_FUNC_OF((snPng_block **obj, snSize length));
 
-SN_PUBLIC(snError) snPng_release SN_OPEN_API
+SN_PUBLIC(snError) snPng_free SN_OPEN_API
 SN_FUNC_OF((snPng_block **obj));
 
 

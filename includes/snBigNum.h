@@ -2,13 +2,13 @@
 #define __SN_BIG_NUMBER__
 #include <snConf.h>
 
-#define SN_BIG_NUM_TO_UINT(x) ((x) - 0x30)
-#define SN_BIG_NUM_TO_CHAR(x) ((x) + 0x30)
+#define snBigNumToUint(x) ((x) - 0x30)
+#define snBigNumToChar(x) ((x) + 0x30)
 
-#define SN_BIG_NUM_S_N(dst, src, index) \
-    (*dst)[index] = SN_BIG_NUM_TO_UINT(src[index])
-#define SN_BIG_NUM_L_N(buf, dst, src, index) \
-    buf = (*dst)[index] + SN_BIG_NUM_TO_UINT(src[index]); \
+#define snBigNumSmallNumber(dst, src, index) \
+    (*dst)[index] = snBigNumToUint(src[index])
+#define snBigNumLargeNumber(buf, dst, src, index) \
+    buf = (*dst)[index] + snBigNumToUint(src[index]); \
     if(buf > 9) {                       \
         (*dst)[index] = buf % 10;       \
         (*dst)[index + 1] += 1;         \

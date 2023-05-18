@@ -1,5 +1,80 @@
 #include <snBigNum.h>
 
+/*
+在C语言中实现大数加法函数，可以使用char数组来实现加法运算，解决精度的问题。
+下面是一个简单的例子：
+
+#include <stdio.h>
+#include <string.h>
+
+#define MAX 1000
+
+char str1[MAX], str2[MAX], result[MAX];
+
+void reverse(char* str) {
+    int len = strlen(str);
+    for (int i = 0; i < len / 2; i++) {
+        char temp = str[i];
+        str[i] = str[len - i - 1];
+        str[len - i - 1] = temp;
+    }
+}
+
+void sum(char* str1, char* str2) {
+    int carry = 0;
+    int len1 = strlen(str1);
+    int len2 = strlen(str2);
+    int maxLen = len1 > len2 ? len1 : len2;
+    for (int i = 0; i < maxLen; i++) {
+        int a = i < len1 ? str1[i] - '0' : 0;
+        int b = i < len2 ? str2[i] - '0' : 0;
+        result[i] = (a + b + carry) % 10 + '0';
+        carry = (a + b + carry) / 10;
+    }
+    if (carry > 0) {
+        result[maxLen++] = carry + '0';
+    }
+    result[maxLen] = '\0';
+}
+
+int main() {
+    scanf("%s%s", str1, str2);
+    reverse(str1);
+    reverse(str2);
+    sum(str1, str2);
+    reverse(result);
+    printf("%s\n", result);
+}
+复制
+这个例子中，我们定义了一个sum()函数，它接受两个字符串作为参数，并返回它们的和。
+我们首先将两个字符串反转，然后从最低位开始遍历它们，并将每一位相加。
+如果有进位，则将其添加到下一位中。最后，我们将结果反转回来并输出它。
+
+
+如果你不知道传入的数字字符串参数和结果的长度是多少，你可以使用动态内存分配来解决这个问题。
+在C语言中，可以使用malloc()函数来动态分配内存。这个函数接受一个参数，即要分配的字节数。
+例如，如果你想分配一个长度为1000的字符数组，
+你可以这样做：char* str = (char*)malloc(1000 * sizeof(char));。
+这将分配一个长度为1000的字符数组，并返回一个指向该数组的指针。
+
+在你的大数加法函数中，你可以使用动态内存分配来分配足够的空间来存储结果。
+例如，你可以这样做：
+
+char* sum(char* str1, char* str2) {
+    int len1 = strlen(str1);
+    int len2 = strlen(str2);
+    int maxLen = len1 > len2 ? len1 : len2;
+    char* result = (char*)malloc((maxLen + 1) * sizeof(char));
+    // ...
+    return result;
+}
+复制
+在这个例子中，我们使用了malloc()函数来分配足够的空间来存储结果。
+我们首先计算出两个字符串中最长的那个，并将其存储在maxLen变量中。
+然后，我们使用malloc()函数来分配一个长度为maxLen + 1的字符数组，并将其存储在result指针中。
+最后，我们返回指向该数组的指针。
+*/
+
 SN_PRIVATE(snError) snBigNum_ArrayReversal
 SN_FUNC_OF((snChar *number_string, snSize size))
 {
@@ -19,90 +94,70 @@ SN_FUNC_OF((snChar *number_string, snSize size))
 }
 
 SN_PUBLIC(snError) snBigNum_add SN_OPEN_API
-SN_FUNC_OF((snChar **dst, snChar *_src1, snChar *_src2))
+SN_FUNC_OF((snChar **dst, snChar *src1, snChar *src2))
 {
-    if(!dst || !_src1 || !_src2) {
+    if(!dst || !src1 || !src2) {
         return snErr_ErrNullData;
     }
 
-    snSize _src1_size = strlen(_src1); // 第一个数字数组的长度
-    snSize _src2_size = strlen(_src2); // 第二个数字数组的长度
-    snSize *smallerSize = snNull;      // 小的数的长度的指针
-    snSize *largerSize = snNull;       // 大的数的长度的指针
-    snChar *smaller = snNull;          // 小的数的指针
-    snChar *larger = snNull;           // 大的数的指针
-    snSize _dst_size = 0;              // dst的长度
-    snSize index;                      // 下标
-    snByte buf;                        // 用来暂时存储结果的缓冲区
-
-    if(!_src1_size || !_src2_size) {
-        // 如果任何一个数字的长度为0，那么也没有必要进行运算了。
+    snSize src1Size = strlen(src1);
+    snSize src2Size = strlen(src2);
+    if(!src1Size || !src2Size) {
         return snErr_ErrNullData;
     }
 
-    // 如果数字1长度等于数字2长度
-    if(_src1_size == _src2_size) {
-        // 如果数字1的第一位数加数字2的第一位数大于9
-        if((SN_BIG_NUM_TO_UINT(_src1[0]) + SN_BIG_NUM_TO_UINT(_src2[0])) > 9) {
-            // dst的长度就要在这基础上加一
-            _dst_size = _src1_size + 1;
-        } else {
-            // 否则不变（由于长度相同，所以赋值哪个长度都行）
-            _dst_size = _src1_size;
-        }
-    } else {
-        // 数字长度不相同，数字1长度如果大于数字2长度
-        if(_src1_size > _src2_size) {
-            // 将数字1长度赋值给dst度
-            _dst_size = _src1_size;
-        } else {
-            // 否则将数字2长度赋值给dst长度
-            _dst_size = _src2_size;
-        }
-    }
+    // snSize *smallerSize = snNull; // 小的数的长度的指针
+    // snSize *largerSize = snNull; // 大的数的长度的指针
+    // snChar *smaller = snNull; // 小的数的指针
+    // snChar *larger = snNull; // 大的数的指针
+    // snSize dstSize = 0; // dst的长度
+    // snSize index; // 下标
+    // snChar buf; // 用来暂时存储结果的缓冲区
 
-    // 为dst指针申请内存空间
-    if(!((*dst) = (snChar *)malloc(_dst_size + 1))) {
-        return snErr_Memory; // 如果申请失败
-    }
-    snZeroObject((*dst), _dst_size + 1);
+    // if(src1Size > src2Size) {
+    //     larger = src1;
+    //     smaller = src2;
+    //     *largerSize = src1Size;
+    //     *smallerSize = src2Size;
+    // } else {
+    //     larger = src2;
+    //     smaller = src1;
+    //     *largerSize = src2Size;
+    //     *smallerSize = src1Size;
+    // }
 
-    // 将数字1数组反转
-    snBigNum_ArrayReversal(_src1, _src1_size);
-    // 将数字2数组反转
-    snBigNum_ArrayReversal(_src2, _src2_size);
+    // snBigNum_ArrayReversal(larger, *largerSize);
+    // snBigNum_ArrayReversal(smaller, *smallerSize);
 
-    if(_src1_size < _src2_size) {
-        // 将数字1数组赋值到dst指针中
-        for(index = 0; index < _src1_size; ++index) {
-            SN_BIG_NUM_S_N(dst, _src1, index);
-        }
-        // 将数字2数组与数字1数组的单位数相加
-        for(index = 0; index < _src2_size; ++index) {
-            SN_BIG_NUM_L_N(buf, dst, _src2, index);
-        }
-    } else {
-        // 将数字2数组与数字1数组的单位数相加
-        for(index = 0; index < _src2_size; ++index) {
-            SN_BIG_NUM_S_N(dst, _src2, index);
-        }
-        // 将数字1数组赋值到dst指针中
-        for(index = 0; index < _src1_size; ++index) {
-            SN_BIG_NUM_L_N(buf, dst, _src1, index);
-        }
-    }
+    return snErr_OK;
+}
 
-    // 将dst数组的数字转回字符
-    for(index = 0; index < _dst_size; ++index) {
-        (*dst)[index] = SN_BIG_NUM_TO_CHAR((*dst)[index]);
-    }
+SN_PUBLIC(snError) snBigNum_sub SN_OPEN_API
+SN_FUNC_OF((snChar **dst, snChar *src1, snChar *src2))
+{
+    return snErr_OK;
+}
 
-    // 反转结果数组
-    snBigNum_ArrayReversal((*dst), _dst_size);
-    // 将数字1数组反转（不再次反转的话，函数外的数组会是反回来的）
-    snBigNum_ArrayReversal(_src1, _src1_size);
-    // 将数字2数组反转（不再次反转的话，函数外的数组会是反回来的）
-    snBigNum_ArrayReversal(_src2, _src2_size);
+SN_PUBLIC(snError) snBigNum_mul SN_OPEN_API
+SN_FUNC_OF((snChar **dst, snChar *src1, snChar *src2))
+{
+    return snErr_OK;
+}
 
+SN_PUBLIC(snError) snBigNum_div SN_OPEN_API
+SN_FUNC_OF((snChar **dst, snChar *src1, snChar *src2))
+{
+    return snErr_OK;
+}
+
+SN_PUBLIC(snError) snBigNum_mod SN_OPEN_API
+SN_FUNC_OF((snChar **dst, snChar *src1, snChar *src2))
+{
+    return snErr_OK;
+}
+
+SN_PUBLIC(snError) snBigNum_pow SN_OPEN_API
+SN_FUNC_OF((snChar **dst, snChar *src1, snChar *src2))
+{
     return snErr_OK;
 }

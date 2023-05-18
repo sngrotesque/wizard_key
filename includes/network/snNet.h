@@ -6,6 +6,33 @@
 *   编译指令：gcc main.c -lws2_32 -o main.exe
 *
 */
+
+/**
+ * 
+ * 
+ * 请仔细考虑该如何修改这个库
+ * 
+ * 目前的这种情况，将非常不支持多线程的套接字通信
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+*/
 #ifndef __SN_NETWORK__
 #define __SN_NETWORK__
 
@@ -108,7 +135,7 @@ SN_FUNC_OF((snNet_ctx **ctx, sn_u32 family));
 
 // 释放snNet对象的内存空间，如果你是手动申请的内存，那么请
 // 确保未申请内存的指针成员的指向为空地址。
-SN_PUBLIC(snError) snNet_release SN_OPEN_API
+SN_PUBLIC(snError) snNet_free SN_OPEN_API
 SN_FUNC_OF((snNet_ctx **ctx));
 
 // 初始化snNet对象（需提前申请内存空间）

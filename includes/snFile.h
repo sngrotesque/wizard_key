@@ -34,8 +34,8 @@ SN_FUNC_OF((snFile_ctx **obj));
  *      SN_RELEASE_FILE                   -> obj->fp
  *      SN_RELEASE_FILE | SN_RELEASE_FILE -> obj->data and obj->fp
 */
-SN_PUBLIC(snError) snFile_release SN_OPEN_API
-SN_FUNC_OF((snFile_ctx **obj, sn_u32 instruction));
+SN_PUBLIC(snError) snFile_free SN_OPEN_API
+SN_FUNC_OF((snFile_ctx **obj));
 
 // 检查路径是否存在
 SN_PUBLIC(snBool) snFile_exists SN_OPEN_API

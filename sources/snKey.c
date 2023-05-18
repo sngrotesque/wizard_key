@@ -109,42 +109,47 @@ SN_FUNC_OF((snKey_state *buf))
 SN_PUBLIC(snError) snKey_new SN_OPEN_API
 SN_FUNC_OF((snKey_ctx **obj, snByte *key, snSize keySize, snBool mode))
 {
-    if(!(*obj)) {
-        if(!((*obj) = (snKey_ctx *)malloc(sizeof(snKey_ctx)))) {
-            return snErr_Memory;
-        }
-    }
+    if(!obj)
+        return snErr_ErrNullData;
+
+    if(!snMemoryNew(snKey_ctx *, (*obj), sizeof(snKey_ctx)))
+        return snErr_Memory;
 
     if(key && keySize) {
-        if(!(*obj)->key) {
-            if(!((*obj)->key = (snByte *)malloc(keySize))) {
-                return snErr_Memory;
-            }
-        }
+        if(!snMemoryNew(snByte *, (*obj)->key, keySize))
+            return snErr_Memory;
         memcpy((*obj)->key, key, keySize);
         (*obj)->size = keySize;
+        (*obj)->mode = mode;
+    } else {
+        (*obj)->key = snNull;
+        (*obj)->size = 0;
         (*obj)->mode = mode;
     }
 
     return snErr_OK;
 }
 
-SN_PUBLIC(snError) snKey_release SN_OPEN_API
-SN_FUNC_OF((snKey_ctx **obj, sn_u32 instruction))
+SN_PUBLIC(snError) snKey_free SN_OPEN_API
+SN_FUNC_OF((snKey_ctx **obj))
 {
-    if(instruction == SN_RELEASE_NORMAL) {
-        free((*obj)->key);
-        (*obj)->key = snNull;
+    if(!obj)
+        return snErr_ErrNullData;
+
+    if((*obj)->key) {
+        snMemoryFree((*obj)->key);
     }
-    free((*obj));
-    (*obj) = snNull;
+    snMemoryFree(*obj);
 
     return snErr_OK;
 }
 
-SN_PUBLIC(snVoid) snKey_CryptKey SN_OPEN_API
+SN_PUBLIC(snError) snKey_CryptKey SN_OPEN_API
 SN_FUNC_OF((snKey_ctx *obj))
 {
+    if(!obj)
+        return snErr_ErrNullData;
+
     static snSize x;
 
     if(obj->mode) {
@@ -154,6 +159,7 @@ SN_FUNC_OF((snKey_ctx *obj))
         for(x = 0; x < obj->size; x += 4)
             _snKey_InvCipher((snKey_state *)(obj->key + x));
     }
+    return snErr_OK;
 }
 
 SN_PUBLIC(snError) snKey_loadKey SN_OPEN_API
@@ -178,7 +184,7 @@ SN_FUNC_OF((snKey_ctx *obj, snString fn))
     }
 
 
-    snBase64_release(&base64, SN_RELEASE_NO);
-    snFile_release(&file, false);
+    snBase64_free(&base64, SN_RELEASE_NO);
+    snFile_free(&file, false);
     return snErr_OK;
 }

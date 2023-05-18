@@ -32,14 +32,14 @@ SN_FUNC_OF((snVoid))
         n = n + (n ^ num[x]);
     }
 
-    n = n + snByteSwap(rand() & 0x0f);
+    n = n + snSwapByte(rand() & 0x0f);
 
     for(count = 0; count < 32; ++count) {
         for(x = 0; x < 32; ++x) {
             num[x] = rand() ^ (rand() ^ (rand() & rand()));
         }
         n = (n + (n ^ num[count])) ^ count;
-        n = (n + rand()) ^ snByteSwap((count + (rand() ^ (n - num[x]))) & 0xff);
+        n = (n + rand()) ^ snSwapByte((count + (rand() ^ (n - num[x]))) & 0xff);
     }
 
     return n;

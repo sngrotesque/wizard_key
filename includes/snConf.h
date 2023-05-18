@@ -16,13 +16,15 @@
 #include <inttypes.h> // 用于在跨平台打印同样的数据类型
 /** 导入必要头文件 End ****************/
 
+
 /** 版本信息 Begin ****************/
-#define SHARK_COAST_VERSION     "4.6.0"
-#define SHARK_COAST_VERNUM       0x460
+#define SHARK_COAST_VERSION     "4.7.0"
+#define SHARK_COAST_VERNUM       0x470
 #define SHARK_COAST_VER_MAJOR    4
-#define SHARK_COAST_VER_MINOR    6
+#define SHARK_COAST_VER_MINOR    7
 #define SHARK_COAST_VER_REVISION 0
 /** 版本信息 End ****************/
+
 
 /** 错误代码 Begin ****************/
 #ifndef __SN_ERROR__
@@ -56,10 +58,10 @@
 #define snErr_FileClose           0x00000202         // 文件相关错误：文件关闭失败
 // Memory
 #define snErr_Memory              0x6d656f66         // 内存相关错误：Memory failure
-#define snErr_MemNMSR             0x6e6d7372         // 内存相关错误：No memory space requested
 #define snErr_MemRelease          0x776d7269         // 内存相关错误：Wrong memory release instruction
 #endif // #ifndef __SN_ERROR__
 /** 错误代码 End ****************/
+
 
 /** 其他功能 Begin ****************/
 // 是否启用其他功能
@@ -119,6 +121,7 @@
 #endif // #if defined(SN_ENABLE_FEATURES)
 /** 其他功能 End ****************/
 
+
 /** 类型定义 Begin ****************/
 // 如果C++禁用了register关键词，那么启用它
 #if __cplusplus > 199711L
@@ -131,14 +134,6 @@
 #define SN_PUBLIC(type)         type               // 动态函数（公共函数）
 #define SN_FUNC_OF(args)        args               // 函数取消调用消耗
 #define SN_OPEN_API                                // 公共函数请加上此宏用于标识
-
-#define SN_RELEASE_NO           0x00 // 不需要释放
-#define SN_RELEASE_NORMAL       0x01 // 释放掉结构体中的指针
-#define SN_RELEASE_FILE         0x02 // 释放文件指针
-#define SN_RELEASE_SRC          0x09 // 释放掉结构体中的输入指针
-#define SN_RELEASE_DST          0x10 // 释放掉结构体中的输出指针
-//      SN_RELEASE_XX           0x03 !!! 不能定义 !!!
-//      SN_RELEASE_XX           0x19 !!! 不能定义 !!!
 
 #define snNull                  NULL      // 空指针
 #define snFast                  register  // 寄存器类型
@@ -163,17 +158,18 @@ typedef FILE                    snFile;   // 文件类型
 typedef uint32_t                snError;  // 错误类型
 /** 类型定义 End ****************/
 
+
 /** 函数定义 Begin ****************/
 // 字节交换：0x91 -> 0x19
-#define snByteSwap(x) ((((x) & 0xf) << 4) ^ ((x) >> 4))
+#define snSwapByte(x) ((((x) & 0xf) << 4) ^ ((x) >> 4))
 // 宽字交换：0x91ba -> 0xab19
-#define snWordSwap(x) ((snByteSwap(x & 0xff) << 8) ^ snByteSwap((x & 0xff00) >> 8))
+#define snSwapWord(x) ((snSwapByte((x) & 0xff) << 8) ^ snSwapByte((x) >> 8))
 // 长字交换：0x91ba4951 -> 0x1594ab19
-#define snLongSwap(x) ((snWordSwap((x & 0xffff0000) >> 16)) ^ (snWordSwap(x & 0xffff) << 16))
+#define snSwapLong(x) ((snSwapWord(x & 0xffff) << 16) ^ (snSwapWord(x >> 16)))
 // 内存空间申请
-#define snMemory_new(type, x, size) (x = (type)malloc((size)))
+#define snMemoryNew(type, x, size) (x = (type)malloc((size)))
 // 内存空间释放
-#define snMemory_release(x) free(x); x = snNull
+#define snMemoryFree(x) free(x); x = snNull
 // 内存内容初始化为0
 #define snZeroObject(x, s) memset((x), 0x00, (s))
 /** 函数定义 End ****************/

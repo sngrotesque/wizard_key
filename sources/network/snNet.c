@@ -1,16 +1,31 @@
-/**
- * 首先是热烈祝贺自己终于把这个网络库给写完了
- * 
- * 其次是，明天醒来的时候，再次检查一下有没有哪里需要修改的。
- * 如果能改，那尽量给它改了。
- * 
- * 还有一些细节方面的问题，请一定要切换系统来编写这个针对性的跨平台代码。
- * 
- * 最后呢，查找一下有没有哪里可能存在漏洞的地方，如果有，把它修复掉。
- * 
- * 晚安，自己。
-*/
 #include <network/snNet.h>
+
+/**
+ * 
+ * 
+ * 请仔细考虑该如何修改这个库
+ * 
+ * 目前的这种情况，将非常不支持多线程的套接字通信
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+*/
 
 // 域名解析函数
 SN_PRIVATE(snError) snNet_HostnameToIP
@@ -79,7 +94,7 @@ SN_FUNC_OF((snNet_ctx **ctx, sn_u32 family))
     return snErr_OK;
 }
 
-SN_PUBLIC(snError) snNet_release SN_OPEN_API
+SN_PUBLIC(snError) snNet_free SN_OPEN_API
 SN_FUNC_OF((snNet_ctx **ctx))
 {
     // 如果指针指向非空地址，那么将其释放掉

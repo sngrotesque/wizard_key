@@ -84,39 +84,28 @@ SN_FUNC_OF((snObject *dst, snObject *src))
 SN_PUBLIC(snError) snBase64_new SN_OPEN_API
 SN_FUNC_OF((snBase64_ctx **obj))
 {
-    if(!(*obj)) {
-        if(!((*obj) = (snBase64_ctx *)malloc(sizeof(snBase64_ctx)))) {
-            return snErr_Memory;
-        }
-    }
-    (*obj)->src = (snObject *)malloc(sizeof(snObject));
-    (*obj)->dst = (snObject *)malloc(sizeof(snObject));
+    if(!obj)
+        return snErr_ErrNullData;
+    if(!snMemoryNew(snBase64_ctx *, (*obj), sizeof(snBase64_ctx)))
+        return snErr_Memory;
+    if(!snMemoryNew(snObject *, (*obj)->src, sizeof(snObject)))
+        return snErr_Memory;
+    if(!snMemoryNew(snObject *, (*obj)->dst, sizeof(snObject)))
+        return snErr_Memory;
 
     return snErr_OK;
 }
 
-SN_PUBLIC(snError) snBase64_release SN_OPEN_API
-SN_FUNC_OF((snBase64_ctx **obj, sn_u32 instruction))
+SN_PUBLIC(snError) snBase64_free SN_OPEN_API
+SN_FUNC_OF((snBase64_ctx **obj))
 {
     if(!(*obj)) {
-        return snErr_MemNMSR;
+        return snErr_ErrNullData;
     }
-    if(instruction) {
-        if(instruction == SN_RELEASE_SRC) {
-            free((*obj)->src);
-        } else if(instruction == SN_RELEASE_DST) {
-            free((*obj)->dst);
-        } else if(instruction == (SN_RELEASE_SRC | SN_RELEASE_DST)) {
-            free((*obj)->src);
-            free((*obj)->dst);
-        } else {
-            return snErr_MemRelease;
-        }
-        (*obj)->src = snNull;
-        (*obj)->dst = snNull;
-    }
-    free((*obj));
-    (*obj) = snNull;
+    snMemoryFree((*obj)->src);
+    snMemoryFree((*obj)->dst);
+
+    snMemoryFree((*obj));
 
     return snErr_OK;
 }

@@ -26,8 +26,15 @@ class git_process:
         self.DefinedFolderPath = folder_path
 
         self.path = os.listdir(folder_path)
-        try: self.path.remove('.git')
-        except ValueError: pass
+        try:
+            self.path.remove('.git')
+            self.path.remove('Temp')
+            self.path.remove('compiled')
+            self.path.remove('misc')
+            self.path.remove('test')
+            self.path.remove('test.py')
+        except ValueError:
+            pass
         deleteListData(self.path, '___')
 
     def view(self):

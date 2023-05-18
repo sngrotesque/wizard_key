@@ -3,7 +3,7 @@
 SN_PUBLIC(snError) snPng_new SN_OPEN_API
 SN_FUNC_OF((snPng_block **obj, snSize length))
 {
-    if(!length) {
+    if(!length || !obj) {
         return snErr_ErrNullData;
     }
     snPng_block *head = snNull;
@@ -12,14 +12,12 @@ SN_FUNC_OF((snPng_block **obj, snSize length))
 
     for(index = 0; index < length; ++index) {
         if(head == snNull) {
-            if(!(head = (snPng_block *)malloc(sizeof(snPng_block)))) {
+            if(!snMemoryNew(snPng_block *, head, sizeof(snPng_block)))
                 return snErr_Memory;
-            }
             ptr = head;
         } else {
-            if(!(ptr->next = (snPng_block *)malloc(sizeof(snPng_block)))) {
+            if(!snMemoryNew(snPng_block *, ptr->next, sizeof(snPng_block)))
                 return snErr_Memory;
-            }
             ptr = ptr->next;
         }
     }
@@ -30,21 +28,7 @@ SN_FUNC_OF((snPng_block **obj, snSize length))
     return snErr_OK;
 }
 
-// SN_PUBLIC(snError) snPng_release SN_OPEN_API
-// SN_FUNC_OF((snPng_block **obj))
-// {
-//     snPng_block *ptr = snNull;
-//     while(*obj)
-//     {
-//         ptr = *obj;
-//         *obj = (*obj)->next;
-//         free( ptr );
-//     }
-
-//     return snErr_OK;
-// }
-
-SN_PUBLIC(snError) snPng_release SN_OPEN_API
+SN_PUBLIC(snError) snPng_free SN_OPEN_API
 SN_FUNC_OF((snPng_block **obj))
 {
     if(!obj || !(*obj)) {
