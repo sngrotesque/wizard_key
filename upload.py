@@ -27,11 +27,13 @@ class git_process:
 
         self.path = os.listdir(folder_path)
         try:
+            # 此处的排序逻辑是隐藏目录优先级最高，其次是名称长的。
             self.path.remove('.git')
-            self.path.remove('Temp')
             self.path.remove('compiled')
+            self.path.remove('Temp')
             self.path.remove('misc')
             self.path.remove('test')
+            self.path.remove('keys')
             self.path.remove('test.py')
         except ValueError:
             pass
