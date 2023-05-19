@@ -20,7 +20,7 @@
 
 // 判断是否是64位系统及以上（如果有的话）
 #if defined(__SIZEOF_SIZE_T__) && (__SIZEOF_SIZE_T__ >= 8)
-#define SHARK_COAST_VERSION     "4.7.1"
+#define SHARK_COAST_VERSION     "v4.7.2"
 #define SHARK_COAST_VERNUM       0x472
 #define SHARK_COAST_VER_MAJOR    4
 #define SHARK_COAST_VER_MINOR    7

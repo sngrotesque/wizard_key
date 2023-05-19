@@ -22,7 +22,7 @@ class git_process:
         self.repo              = Repo.init(folder_path)
         self.DefinedRemoteUrl  = 'git@github.com:sngrotesque/Shark_Coast.git'
         self.DefinedCommit     = 'Shark_Coast'
-        self.DefinedVersion    = 'v4.7.0'
+        self.DefinedVersion    = 'v4.7.2'
         self.DefinedFolderPath = folder_path
 
         self.path = os.listdir(folder_path)
