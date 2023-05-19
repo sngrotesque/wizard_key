@@ -38,6 +38,8 @@ class git_process:
                 test.c
             '''
             self.path.remove('.git')
+            self.path.remove('Reference')
+            self.path.remove('Documents')
             self.path.remove('compiled')
             self.path.remove('Temp')
             self.path.remove('misc')
