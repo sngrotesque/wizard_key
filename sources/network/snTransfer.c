@@ -40,7 +40,7 @@ SN_FUNC_OF((snTransfer_ctx **ctx))
 }
 
 SN_PUBLIC(snError) snTransfer_Listen SN_OPEN_API
-SN_FUNC_OF((snTransfer_ctx *ctx, snString fn))
+SN_FUNC_OF((snTransfer_ctx *ctx, snFileStr fn))
 {
     if(!ctx->addr || !ctx->port) {
         return snErr_ErrNullData;
@@ -53,7 +53,7 @@ SN_FUNC_OF((snTransfer_ctx *ctx, snString fn))
 }
 
 SN_PUBLIC(snError) snTransfer_Client SN_OPEN_API
-SN_FUNC_OF((snTransfer_ctx *ctx, snString fn))
+SN_FUNC_OF((snTransfer_ctx *ctx, snFileStr fn))
 {
     if(!snFile_exists(fn))
         return snErr_FileFolderPath;

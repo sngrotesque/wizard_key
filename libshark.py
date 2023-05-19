@@ -78,7 +78,10 @@ action(command)
 print(f'库文件生成完毕，删除{objectTempOutput}目录与其中的内容。')
 for i in compile_temp_path:
     remove(i)
-removedirs(f'{objectTempOutput}')
+try:
+    removedirs(f'{objectTempOutput}')
+except:
+    pass
 
 '''
 gcc test\shark_coast.c -Wall -I includes -L. -L includes/openssl -lshark -lssl -lcrypto \

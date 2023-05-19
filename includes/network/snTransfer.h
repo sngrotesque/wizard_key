@@ -46,10 +46,10 @@ SN_FUNC_OF((snTransfer_ctx **ctx));
 
 // 接收端
 SN_PUBLIC(snError) snTransfer_Listen SN_OPEN_API
-SN_FUNC_OF((snTransfer_ctx *ctx, snString fn));
+SN_FUNC_OF((snTransfer_ctx *ctx, snFileStr fn));
 
 // 发送端
 SN_PUBLIC(snError) snTransfer_Client SN_OPEN_API
-SN_FUNC_OF((snTransfer_ctx *ctx, snString fn));
+SN_FUNC_OF((snTransfer_ctx *ctx, snFileStr fn));
 
 #endif // #ifndef __SN_TRANSFER__
