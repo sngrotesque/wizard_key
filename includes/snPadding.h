@@ -9,12 +9,7 @@
 #define snPadding_totalSize(BlockSize, size) (snPadding_offset(BlockSize, size) + size)
 #define snPadding_value 0xac
 
-/**
- *  buf          需要被填充的内容
- *  size         内容长度类型的地址
- *  blockSize    块长度
- *  randomPad    是否随机填充
-*/
+// 填充函数
 SN_PUBLIC(snVoid) snPadding_add SN_OPEN_API
 SN_FUNC_OF((snByte *buf, snSize *size, sn_u16 BlockSize, snBool randomPadding));
 
