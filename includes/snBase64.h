@@ -16,12 +16,7 @@ typedef struct {
 SN_PUBLIC(snError) snBase64_new SN_OPEN_API
 SN_FUNC_OF((snBase64_ctx **obj));
 
-/*
- *  instruction:
- *      SN_RELEASE_SRC                     释放掉obj->src指针
- *      SN_RELEASE_DST                     释放掉obj->dst指针
- *      SN_RELEASE_SRC | SN_RELEASE_DST    同时释放两个指针
-*/
+// 释放snBase64对象
 SN_PUBLIC(snError) snBase64_free SN_OPEN_API
 SN_FUNC_OF((snBase64_ctx **obj));
 

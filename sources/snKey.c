@@ -184,7 +184,7 @@ SN_FUNC_OF((snKey_ctx *obj, snString fn))
     }
 
 
-    snBase64_free(&base64, SN_RELEASE_NO);
-    snFile_free(&file, false);
+    snBase64_free(&base64);
+    snFile_free(&file);
     return snErr_OK;
 }

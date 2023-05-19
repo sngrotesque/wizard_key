@@ -66,15 +66,17 @@ SN_PRIVATE_CONST(sn_u32) snHash_SIZE[6] = {
     64   // SHA-512
 };
 
+// 初始化snHash对象
 SN_PUBLIC(snError) snHash_new SN_OPEN_API
 SN_FUNC_OF((snHash_ctx **obj, snHash_HashType hashType));
 
-// 根据你需要的算法进行哈希计算
+// 根据你选择的算法进行哈希计算
 SN_PUBLIC(snError) snHash SN_OPEN_API
 SN_FUNC_OF((snHash_ctx *hash, snByte *buf, snSize size));
 
+// 根据你选择的算法对文件进行哈希计算
 SN_PUBLIC(snError) snHash_file SN_OPEN_API
-SN_FUNC_OF((snHash_ctx *hash, snString fn));
+SN_FUNC_OF((snHash_ctx *hash, snFileStr fn));
 
 // 释放掉snHash对象
 SN_PUBLIC(snError) snHash_free SN_OPEN_API

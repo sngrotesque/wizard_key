@@ -57,7 +57,7 @@ SN_FUNC_OF((snHash_ctx *hash, snByte *buf, snSize size))
 }
 
 SN_PUBLIC(snError) snHash_file SN_OPEN_API
-SN_FUNC_OF((snHash_ctx *hash, snString fn))
+SN_FUNC_OF((snHash_ctx *hash, snFileStr fn))
 {
     static EVP_MD_CTX *md_ctx = snNull;
     static snByte *buf = snNull;
@@ -81,7 +81,7 @@ SN_FUNC_OF((snHash_ctx *hash, snString fn))
     quotient = fileSize / SN_HASH_BLOCKLEN;
     leftover = fileSize % SN_HASH_BLOCKLEN;
 
-    fp = fopen(fn, "rb");
+    fp = snFile_open(fn, snFile_Char("rb"));
 
     md_ctx = EVP_MD_CTX_new();
     EVP_DigestInit_ex(md_ctx, hash->md, snNull);

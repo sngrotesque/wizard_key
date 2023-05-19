@@ -10,6 +10,16 @@ import re
 def action(cmd :str):
     call(cmd, shell=True)
 
+objectTempOutput = 'compiled'
+library_name = 'libshark.lib'
+
+if platform == 'win32':
+    zlib_name = 'zdll'
+else:
+    zlib_name = 'z'
+
+compile_temp_path = []
+
 source_file_list = [
     'sources/crypto/snc.c',
     'sources/crypto/snCrypto.c',
@@ -34,38 +44,28 @@ source_file_list = [
     'sources/snTime.c'
 ]
 
-include_path = 'includes'
-compile_temp_path = []
-
-if platform == 'win32':
-    library_name = 'libshark.dll'
-else:
-    library_name = 'libshark.so'
-
-if platform == 'win32':
-    zlib_name = 'zdll'
-else:
-    zlib_name = 'z'
-
-if not exists('compiled/temp'):
-    print('compiled/temp目录不存在，将创建。')
-    mkdir('compiled/temp')
+if not exists(objectTempOutput):
+    print(f'{objectTempOutput}目录不存在，将创建。')
+    mkdir(objectTempOutput)
+if not exists(f'{objectTempOutput}/temp'):
+    print(f'{objectTempOutput}/temp目录不存在，将创建。')
+    mkdir(f'{objectTempOutput}/temp')
 
 print('开始生成临时对象文件...')
-for sourceFile in source_file_list:
+for src in source_file_list:
     tempFilePath = re.findall(
         r'(?:\w+/)?'
         r'\w+/(\w+).c',
-        sourceFile, re.S)[0]
-    tempFilePath = f'compiled/temp/{tempFilePath}.o'
+        src, re.S)[0]
+    tempFilePath = f'{objectTempOutput}/temp/{tempFilePath}.o'
     compile_temp_path.append(tempFilePath)
 
     if not exists(tempFilePath):
         command = (
-            f'gcc -I {include_path} -L includes/openssl -L includes/zlib '
+            f'gcc -I includes -L includes/openssl -L includes/zlib '
             f'-lssl -lcrypto -l{zlib_name} -lm -lws2_32 '
             f'-static --std=c18 -Ofast -Wno-pragmas -Wall '
-            f'-c {sourceFile} -o {tempFilePath}'
+            f'-c {src} -o {tempFilePath}'
         )
         # print(f'生成临时对象文件命令：{command}')
         action(command)
@@ -75,11 +75,12 @@ compile_path = ' '.join(compile_temp_path)
 command = f'ar rcs {library_name} {compile_path}'
 action(command)
 
-print('库文件生成完毕，删除compiled/temp目录与其中的内容。')
-for compile_temp_file_path in compile_temp_path:
-    remove(compile_temp_file_path)
-removedirs('compiled/temp')
+print(f'库文件生成完毕，删除{objectTempOutput}目录与其中的内容。')
+for i in compile_temp_path:
+    remove(i)
+removedirs(f'{objectTempOutput}')
 
 '''
-gcc test\shark_coast.c -Wall -I includes -L. -L includes/openssl -lshark -lssl -lcrypto -o shark_coast.exe && .\shark_coast.exe
+gcc test\shark_coast.c -Wall -I includes -L. -L includes/openssl -lshark -lssl -lcrypto \
+    -o shark_coast.exe && .\shark_coast.exe
 '''
