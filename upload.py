@@ -46,6 +46,8 @@ class git_process:
             self.path.remove('test')
             self.path.remove('keys')
             self.path.remove('test.py')
+            if os.path.exists('libshark.lib'):
+                self.path.remove('libshark.lib')
         except ValueError:
             pass
         deleteListData(self.path, '___')
