@@ -1,7 +1,7 @@
 #include <network/snTransfer.h>
 
 /**
- * 由于snNet库的不确定性，暂时启用此传输库
+ * 由于snNet库的不确定性，暂时弃用此传输库
 */
 
 SN_PUBLIC(snError) snTransfer_new SN_OPEN_API
