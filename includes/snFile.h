@@ -44,9 +44,9 @@ SN_FUNC_OF((snSize *size, snFileStr fn));
 
 // 整个读取文件
 SN_PUBLIC(snError) snFile_fread SN_OPEN_API
-SN_FUNC_OF((snFile_ctx *obj, snString fn));
+SN_FUNC_OF((snFile_ctx *obj, snFileStr fn));
 
 // 整个写入文件
 SN_PUBLIC(snError) snFile_fwrite SN_OPEN_API
-SN_FUNC_OF((snFile_ctx *obj, snString fn));
+SN_FUNC_OF((snFile_ctx *obj, snFileStr fn));
 #endif
