@@ -3,10 +3,6 @@
  *      float类型，默认采用double类型。
  *      signed char类型，默认使用char类型。
  *      uint64_t类型，默认使用size_t代替，因此不会提供32位系统支持。
- * 
- *  下一步更新为：
- *      添加snError类型的结构体，参考Python源代码实现。
- *      包含错误代码和错误信息的文本，使用宏的方式定义。
 */
 #ifndef __SN_CONF__
 #define __SN_CONF__
@@ -38,19 +34,6 @@
 #define SN_FUNC_OF(args)        args               // 函数取消调用消耗
 #define SN_OPEN_API                                // 公共函数请加上此宏用于标识
 
-//      字节交换：    0x91 -> 0x19
-#define snSwapByte(x) ((((x) & 0xf) << 4) ^ ((x) >> 4))
-//      宽字交换：    0x91ba -> 0xab19
-#define snSwapWord(x) ((snSwapByte((x) & 0xff) << 8) ^ snSwapByte((x) >> 8))
-//      长字交换：    0x91ba4951 -> 0x1594ab19
-#define snSwapLong(x) ((snSwapWord(x & 0xffff) << 16) ^ (snSwapWord(x >> 16)))
-//      内存空间申请
-#define snMemoryNew(type, x, size) (x = (type)malloc((size)))
-//      内存空间释放
-#define snMemoryFree(x) free(x); x = snNull
-//      内存内容初始化为0
-#define snZeroObject(x, s) memset((x), 0x00, (s))
-
 #ifndef _SHARK_COAST_DEFINED
 #define _SHARK_COAST_DEFINED
 #define snNull      NULL      // 空指针
@@ -68,8 +51,20 @@ typedef uint32_t    sn_u32;   // 无符号整数类型
 typedef void        snVoid;   // 空类型
 typedef bool        snBool;   // 布尔类型
 typedef FILE        snFile;   // 文件类型
-typedef size_t      snError;  // 错误代码类型（将snErr_ctx对象替换snError后删掉此类型）
 #endif // #ifndef _SHARK_COAST_DEFINED
+
+//      字节交换：    0x91 -> 0x19
+#define snSwapByte(x) ((((x) & 0xf) << 4) ^ ((x) >> 4))
+//      宽字交换：    0x91ba -> 0xab19
+#define snSwapWord(x) ((snSwapByte((x) & 0xff) << 8) ^ snSwapByte((x) >> 8))
+//      长字交换：    0x91ba4951 -> 0x1594ab19
+#define snSwapLong(x) ((snSwapWord(x & 0xffff) << 16) ^ (snSwapWord(x >> 16)))
+//      内存空间申请
+#define snMemoryNew(type, x, size) (x = (type)malloc((size)))
+//      内存空间释放
+#define snMemoryFree(x) free(x); x = snNull
+//      内存内容初始化为0
+#define snMemoryZero(x, s) memset((x), 0x00, (s))
 
 #ifndef SN_ERROR_CODE
 #   define SN_ERROR_CODE
@@ -98,22 +93,14 @@ typedef size_t      snError;  // 错误代码类型（将snErr_ctx对象替换sn
 #   define snErr_FileFolderPath    32ULL // 文件：错误的路径
 #   define snErr_FileNull          33ULL // 文件：空文件
 #   define snErr_FileClose         34ULL // 文件：文件关闭失败
-//  初始化snErr对象
-#   define snErr_new(ctx) \
-    if(!snMemoryNew(snErr_ctx *, ctx, sizeof(snErr_ctx))) \
-        return snNull
-
 //  赋值snErr对象并Return
-#   define snErr_return(ctx, _code, _message) \
-    ctx->message = _message; ctx->code = _code; \
-    return ctx
-
-//  释放snErr对象
-#   define snErr_free(ctx) snMemoryFree(ctx)
+#   define snErr_return(error, _code, _message) \
+    error.message = _message; error.code = _code; \
+    return error
 
 typedef struct {
     snString message;
-    snError code;
+    uint64_t code;
 } snErr_ctx;
 #endif // #ifndef SN_ERROR_CODE
 
@@ -137,38 +124,39 @@ typedef struct {
 #       include <iso646.h>
 #   endif
 #   if defined(__SN_COLOR)
-#       define SN_CA_RESET        "\x1b[0m"  // 重置所有颜色
-#       define SN_CF_BLACK        "\x1b[30m" // 黑色（前景）
-#       define SN_CF_RED          "\x1b[31m" // 红色（前景）
-#       define SN_CF_GREEN        "\x1b[32m" // 绿色（前景）
-#       define SN_CF_YELLOW       "\x1b[33m" // 黄色（前景）
-#       define SN_CF_BLUE         "\x1b[34m" // 蓝色（前景）
-#       define SN_CF_MAGENTA      "\x1b[35m" // 紫色（前景）
-#       define SN_CF_CYAN         "\x1b[36m" // 青色（前景）
-#       define SN_CF_WHITE        "\x1b[37m" // 白色（前景）
-#       define SN_CF_LIGHTBLACK   "\x1b[90m" // 亮黑色（前景）
-#       define SN_CF_LIGHTRED     "\x1b[91m" // 亮红色（前景）
-#       define SN_CF_LIGHTGREEN   "\x1b[92m" // 亮绿色（前景）
-#       define SN_CF_LIGHTYELLOW  "\x1b[93m" // 亮黄色（前景）
-#       define SN_CF_LIGHTBLUE    "\x1b[94m" // 亮蓝色（前景）
-#       define SN_CF_LIGHTMAGENTA "\x1b[95m" // 亮紫色（前景）
-#       define SN_CF_LIGHTCYAN    "\x1b[96m" // 亮青色（前景）
-#       define SN_CF_LIGHTWHITE   "\x1b[97m" // 亮白色（前景）
-#       define SN_CB_RED          "\x1b[41m" // 红色（背景）
-#       define SN_CB_GREEN        "\x1b[42m" // 绿色（背景）
-#       define SN_CB_YELLOW       "\x1b[43m" // 黄色（背景）
-#       define SN_CB_BLUE         "\x1b[44m" // 蓝色（背景）
-#       define SN_CB_MAGENTA      "\x1b[45m" // 紫色（背景）
-#       define SN_CB_CYAN         "\x1b[46m" // 青色（背景）
-#       define SN_CB_WHITE        "\x1b[47m" // 白色（背景）
-#       define SN_CB_LIGHTBLACK   "\x1b[100m" // 亮黑色（背景）
-#       define SN_CB_LIGHTRED     "\x1b[101m" // 亮红色（背景）
-#       define SN_CB_LIGHTGREEN   "\x1b[102m" // 亮绿色（背景）
-#       define SN_CB_LIGHTYELLOW  "\x1b[103m" // 亮黄色（背景）
-#       define SN_CB_LIGHTBLUE    "\x1b[104m" // 亮蓝色（背景）
-#       define SN_CB_LIGHTMAGENTA "\x1b[105m" // 亮紫色（背景）
-#       define SN_CB_LIGHTCYAN    "\x1b[106m" // 亮青色（背景）
-#       define SN_CB_LIGHTWHITE   "\x1b[107m" // 亮白色（背景）
+#       define SN_ALL_COLOR_RESET         "\x1b[0m"  // 重置所有颜色
+#       define SN_FORE_COLOR_BLACK        "\x1b[30m" // 黑色（前景）
+#       define SN_FORE_COLOR_RED          "\x1b[31m" // 红色（前景）
+#       define SN_FORE_COLOR_GREEN        "\x1b[32m" // 绿色（前景）
+#       define SN_FORE_COLOR_YELLOW       "\x1b[33m" // 黄色（前景）
+#       define SN_FORE_COLOR_BLUE         "\x1b[34m" // 蓝色（前景）
+#       define SN_FORE_COLOR_MAGENTA      "\x1b[35m" // 紫色（前景）
+#       define SN_FORE_COLOR_CYAN         "\x1b[36m" // 青色（前景）
+#       define SN_FORE_COLOR_WHITE        "\x1b[37m" // 白色（前景）
+#       define SN_FORE_COLOR_LIGHTBLACK   "\x1b[90m" // 亮黑色（前景）
+#       define SN_FORE_COLOR_LIGHTRED     "\x1b[91m" // 亮红色（前景）
+#       define SN_FORE_COLOR_LIGHTGREEN   "\x1b[92m" // 亮绿色（前景）
+#       define SN_FORE_COLOR_LIGHTYELLOW  "\x1b[93m" // 亮黄色（前景）
+#       define SN_FORE_COLOR_LIGHTBLUE    "\x1b[94m" // 亮蓝色（前景）
+#       define SN_FORE_COLOR_LIGHTMAGENTA "\x1b[95m" // 亮紫色（前景）
+#       define SN_FORE_COLOR_LIGHTCYAN    "\x1b[96m" // 亮青色（前景）
+#       define SN_FORE_COLOR_LIGHTWHITE   "\x1b[97m" // 亮白色（前景）
+#       define SN_BACK_COLOR_RED          "\x1b[41m" // 红色（背景）
+#       define SN_BACK_COLOR_GREEN        "\x1b[42m" // 绿色（背景）
+#       define SN_BACK_COLOR_YELLOW       "\x1b[43m" // 黄色（背景）
+#       define SN_BACK_COLOR_BLUE         "\x1b[44m" // 蓝色（背景）
+#       define SN_BACK_COLOR_MAGENTA      "\x1b[45m" // 紫色（背景）
+#       define SN_BACK_COLOR_CYAN         "\x1b[46m" // 青色（背景）
+#       define SN_BACK_COLOR_WHITE        "\x1b[47m" // 白色（背景）
+#       define SN_BACK_COLOR_LIGHTBLACK   "\x1b[100m" // 亮黑色（背景）
+#       define SN_BACK_COLOR_LIGHTRED     "\x1b[101m" // 亮红色（背景）
+#       define SN_BACK_COLOR_LIGHTGREEN   "\x1b[102m" // 亮绿色（背景）
+#       define SN_BACK_COLOR_LIGHTYELLOW  "\x1b[103m" // 亮黄色（背景）
+#       define SN_BACK_COLOR_LIGHTBLUE    "\x1b[104m" // 亮蓝色（背景）
+#       define SN_BACK_COLOR_LIGHTMAGENTA "\x1b[105m" // 亮紫色（背景）
+#       define SN_BACK_COLOR_LIGHTCYAN    "\x1b[106m" // 亮青色（背景）
+#       define SN_BACK_COLOR_LIGHTWHITE   "\x1b[107m" // 亮白色（背景）
+#       define SN_SET_TEXT_COLOR(text, color) color text SN_ALL_COLOR_RESET
 #   endif // #if defined(__SN_COLOR)
 #endif // #if defined(SN_ENABLE_FEATURES)
 

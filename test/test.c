@@ -1,34 +1,34 @@
 #include <network/snNet.h>
-#include <image/snPng.h>
-#include <crypto/snc.h>
-#include <crypto/snt.h>
-#include <snBinascii.h>
-#include <snPadding.h>
-#include <snBase64.h>
-#include <snObject.h>
-#include <snFile.h>
-#include <snHash.h>
-#include <snMisc.h>
-#include <snMath.h>
-#include <snTime.h>
-#include <snRand.h>
-#include <snNum.h>
+// #include <image/snPng.h>
+// #include <crypto/snc.h>
+// #include <crypto/snt.h>
+// #include <snBinascii.h>
+// #include <snPadding.h>
+// #include <snBase64.h>
+// #include <snObject.h>
+// #include <snFile.h>
+// #include <snHash.h>
+// #include <snMisc.h>
+// #include <snMath.h>
+// #include <snTime.h>
+// #include <snRand.h>
+// #include <snNum.h>
 
 #include <network/snNet.c>
-#include <image/snPng.c>
-#include <crypto/snc.c>
-#include <crypto/snt.c>
-#include <snBinascii.c>
-#include <snPadding.c>
-#include <snBase64.c>
-#include <snObject.c>
-#include <snFile.c>
-#include <snHash.c>
-#include <snMisc.c>
-#include <snMath.c>
-#include <snTime.c>
-#include <snRand.c>
-#include <snNum.c>
+// #include <image/snPng.c>
+// #include <crypto/snc.c>
+// #include <crypto/snt.c>
+// #include <snBinascii.c>
+// #include <snPadding.c>
+// #include <snBase64.c>
+// #include <snObject.c>
+// #include <snFile.c>
+// #include <snHash.c>
+// #include <snMisc.c>
+// #include <snMath.c>
+// #include <snTime.c>
+// #include <snRand.c>
+// #include <snNum.c>
 
 #define CIPHER_TEST false
 
@@ -55,16 +55,8 @@ static snByte iv[32] = {
 
 void test()
 {
-    snNet_ctx *net = snNull;
-    snMemoryNew(snNet_ctx *, net, sizeof(snNet_ctx));
-
-    memset(&net->sockfd, 0x11, sizeof(snNetSocket));
-    memset(net->type, 0x22, sizeof(snNetType));
-    net->info = (snVoid *)0x3333333333333333;
-
-    snMisc_PRINT((snByte *)net, sizeof(snNet_ctx), 16, 1, 0);
-
-    snMemoryFree(net);
+    snFloat a = 0;
+    
 }
 
 int main(int argc, char **argv)

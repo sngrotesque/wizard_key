@@ -10,7 +10,7 @@
 #define __SN_NETWORK__
 
 #include <snConf.h>
-#include <snMath.h>
+#include <math.h>
 
 // TCP套接字
 #define snNet_TCP_Socket(family, protocol) socket(family, SOCK_STREAM, protocol)
@@ -74,70 +74,66 @@ typedef snChar  snNetBuf;    // snNet的缓冲区类型
 
 typedef snFloat   snNetTime; // snNet的时间类型
 typedef socklen_t snNetSize; // snNet的长度类型
-typedef snByte snNetType[4]; // snNet的结构体中的各种类型
 
 // snNet对象类型
 typedef struct {
-    // 套接字【size: win[8], linux[4]】
-    snNetSocket sockfd;
-    /* * * * * * * * * * * * * * * * * * * * *
-    * type[0]: None
-    * type[1]: 套接字类型，TCP or UDP
-    * type[2]: 套接字家族：AF_INET or AF_INET6
-    * type[3]: 网络结构体大小：SN_NET_IPV4_ADDR_SIZE or SN_NET_IPV6_ADDR_SIZE
-    * * * * * * * * * * * * * * * * * * * * */
-    snNetType   type;
-    // 用于保留地址信息的结构体【size: 8】
-    SOCKADDR   *info;
+    snNetSocket sockfd;         // 套接字【size: win[8], linux[4]】
+    snNetSize   sockfdFamily;   // 套接字家族类型
+    snNetSize   sockfdType;     // 套接字网络类型（TCP or UDP）
+    snNetSize   addr_info_size; // 网络地址信息结构体的长度
+    SOCKADDR   *addr_info;      // 用于保留地址信息的结构体【size: 8】
 } snNet_ctx;
 
 // 申请snNet对象的内存空间
-SN_PUBLIC(snError) snNet_new SN_OPEN_API
+SN_PUBLIC(snErr_ctx) snNet_new SN_OPEN_API
 SN_FUNC_OF((snNet_ctx **ctx, sn_u32 family));
 
-// 释放snNet对象的内存空间，如果你是手动申请的内存，那么请
-// 确保未申请内存的指针成员的指向为空地址。
-SN_PUBLIC(snError) snNet_free SN_OPEN_API
+// 释放snNet对象。
+SN_PUBLIC(snErr_ctx) snNet_free SN_OPEN_API
 SN_FUNC_OF((snNet_ctx **ctx));
 
 // 初始化snNet对象（需提前申请内存空间）
-SN_PUBLIC(snError) snNet_init SN_OPEN_API
+SN_PUBLIC(snErr_ctx) snNet_init SN_OPEN_API
 SN_FUNC_OF((snNet_ctx *ctx, snString hostname, sn_u16 port, snBool UDP));
 
+// 使用snNet对象解析域名信息
+SN_PUBLIC(snErr_ctx) snNet_resolveAddress
+SN_FUNC_OF((snNet_ctx *net, snString hostname));
+
 // 设置发送与接收超时时间
-SN_PUBLIC(snError) snNet_timeout SN_OPEN_API
+SN_PUBLIC(snErr_ctx) snNet_timeout SN_OPEN_API
 SN_FUNC_OF((snNet_ctx *ctx, snNetTime _user_TimeOut));
 
 // 连接函数
-SN_PUBLIC(snError) snNet_connect SN_OPEN_API
+SN_PUBLIC(snErr_ctx) snNet_connect SN_OPEN_API
 SN_FUNC_OF((snNet_ctx *ctx));
 
 // 绑定函数
-SN_PUBLIC(snError) snNet_bind SN_OPEN_API
+SN_PUBLIC(snErr_ctx) snNet_bind SN_OPEN_API
 SN_FUNC_OF((snNet_ctx *ctx, snNetTime _user_TimeOut));
 
 // 监听函数
-SN_PUBLIC(snError) snNet_listen SN_OPEN_API
+SN_PUBLIC(snErr_ctx) snNet_listen SN_OPEN_API
 SN_FUNC_OF((snNet_ctx *ctx, sn_u32 _Listen));
 
 // 等待连接函数
-SN_PUBLIC(snError) snNet_accept SN_OPEN_API
-SN_FUNC_OF((snNet_ctx *ctx));
+SN_PUBLIC(snErr_ctx) snNet_accept SN_OPEN_API
+SN_FUNC_OF((snNet_ctx *dst, snNet_ctx *src));
 
 // 发送函数，_tSize用来保存本次传输的长度
-SN_PUBLIC(snError) snNet_send SN_OPEN_API
+SN_PUBLIC(snErr_ctx) snNet_send SN_OPEN_API
 SN_FUNC_OF((snNet_ctx *ctx, snNetSize *_tSize, snNetBuf *buf, snNetSize size));
 
 // 全部发送函数
-SN_PUBLIC(snError) snNet_sendall SN_OPEN_API
+SN_PUBLIC(snErr_ctx) snNet_sendall SN_OPEN_API
 SN_FUNC_OF((snNet_ctx *ctx, snNetBuf *buf, snNetSize size));
 
 // 接收函数，_tSize用来保存本次传输的长度
-SN_PUBLIC(snError) snNet_recv SN_OPEN_API
+SN_PUBLIC(snErr_ctx) snNet_recv SN_OPEN_API
 SN_FUNC_OF((snNet_ctx* ctx, snNetSize *_tSize, snNetBuf *buf, snNetSize size));
 
 // 关闭套接字函数
-SN_PUBLIC(snError) snNet_close SN_OPEN_API
+SN_PUBLIC(snErr_ctx) snNet_close SN_OPEN_API
 SN_FUNC_OF((snNet_ctx *ctx));
 
 #endif // #ifndef __SN_NETWORK__

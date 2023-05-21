@@ -450,11 +450,10 @@ SN_PRIVATE(snVoid) SNC_keyExtension SN_FUNC_OF((sn_u16 keySize, snByte *iv, snBy
 }
 
 // 为SNC对象申请内存空间
-SN_PUBLIC(snErr_ctx *) SNC_new SN_OPEN_API
+SN_PUBLIC(snErr_ctx) SNC_new SN_OPEN_API
 SN_FUNC_OF((SNC_ctx **ctx, SNC_mode mode))
 {
-    snErr_ctx *error = snNull;
-    snErr_new(error);
+    snErr_ctx error;
 
     if(!ctx) {
         snErr_return(error, snErr_ErrNullData, "ctx is NULL.");
@@ -467,23 +466,22 @@ SN_FUNC_OF((SNC_ctx **ctx, SNC_mode mode))
     (*ctx)->mode = mode;
     (*ctx)->KN = SNC_KN[mode];
     (*ctx)->NR = SNC_NR[mode];
-    snZeroObject((*ctx)->roundKey, sizeof((*ctx)->roundKey));
+    snMemoryZero((*ctx)->roundKey, sizeof((*ctx)->roundKey));
 
     snErr_return(error, snErr_OK, "OK.");
 }
 
 // 释放SNC对象
-SN_PUBLIC(snErr_ctx *) SNC_free SN_OPEN_API
+SN_PUBLIC(snErr_ctx) SNC_free SN_OPEN_API
 SN_FUNC_OF((SNC_ctx **ctx))
 {
-    snErr_ctx *error = snNull;
-    snErr_new(error);
+    snErr_ctx error;
     if(!ctx) {
         snErr_return(error, snErr_ErrNullData, "ctx is NULL.");
     }
 
     memset((*ctx)->iv, 0x00, SNC_BLOCKLEN);
-    snZeroObject((*ctx)->roundKey, sizeof((*ctx)->roundKey));
+    snMemoryZero((*ctx)->roundKey, sizeof((*ctx)->roundKey));
     snMemoryFree((*ctx));
 
     snErr_return(error, snErr_OK, "OK.");
@@ -494,11 +492,10 @@ SN_FUNC_OF((SNC_ctx **ctx))
 * Function to initialize the SNC data structure, used to generate sub keys for each
 * round based on the basic key input by the user.
 */
-SN_PUBLIC(snErr_ctx *) SNC_init SN_OPEN_API
+SN_PUBLIC(snErr_ctx) SNC_init SN_OPEN_API
 SN_FUNC_OF((SNC_ctx *ctx, snByte *keyBuf, snByte *ivBuf))
 {
-    snErr_ctx *error = snNull;
-    snErr_new(error);
+    snErr_ctx error;
     if(!ctx || !keyBuf || !ivBuf) {
         snErr_return(error, snErr_ErrNullData, "ctx or keyBuf or ivBuf is NULL.");
     }
@@ -551,8 +548,8 @@ SN_FUNC_OF((SNC_ctx *ctx, snByte *keyBuf, snByte *ivBuf))
     }
 
     //* 用于确保内存安全（Used to ensure memory security.）
-    snZeroObject(key, ctx->KN);
-    snZeroObject(iv, SNC_BLOCKLEN);
+    snMemoryZero(key, ctx->KN);
+    snMemoryZero(iv, SNC_BLOCKLEN);
     free(key);
     key = snNull;
     snErr_return(error, snErr_OK, "OK.");

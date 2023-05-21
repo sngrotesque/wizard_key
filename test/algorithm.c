@@ -18,7 +18,7 @@ void snAlgorithm_YangHuiTriangle()
     snSize array[YHT_height][YHT_width];
     sn_u32 i, j, temp;
 
-    snZeroObject(array, (YHT_width * YHT_height) * sizeof(snSize));
+    snMemoryZero(array, (YHT_width * YHT_height) * sizeof(snSize));
     array[0][0] = 1;
 
     for(i = 1; i < YHT_height; ++i) {

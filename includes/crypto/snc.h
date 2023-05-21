@@ -73,15 +73,15 @@ typedef struct {
 } SNC_ctx;
 
 // 为SNC对象申请内存空间
-SN_PUBLIC(snErr_ctx *) SNC_new SN_OPEN_API
+SN_PUBLIC(snErr_ctx) SNC_new SN_OPEN_API
 SN_FUNC_OF((SNC_ctx **ctx, SNC_mode mode));
 
 // 释放SNC对象
-SN_PUBLIC(snErr_ctx *) SNC_free SN_OPEN_API
+SN_PUBLIC(snErr_ctx) SNC_free SN_OPEN_API
 SN_FUNC_OF((SNC_ctx **ctx));
 
 // 初始化SNC对象
-SN_PUBLIC(snErr_ctx *) SNC_init SN_OPEN_API
+SN_PUBLIC(snErr_ctx) SNC_init SN_OPEN_API
 SN_FUNC_OF((SNC_ctx *ctx, snByte *keyBuf, snByte *ivBuf));
 
 // ECB加密

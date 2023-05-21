@@ -14,10 +14,10 @@ typedef struct snPng_block {
     snByte crc[4];
 } snPng_block;
 
-SN_PUBLIC(snErr_ctx *) snPng_new SN_OPEN_API
+SN_PUBLIC(snErr_ctx) snPng_new SN_OPEN_API
 SN_FUNC_OF((snPng_block **obj));
 
-SN_PUBLIC(snErr_ctx *) snPng_free SN_OPEN_API
+SN_PUBLIC(snErr_ctx) snPng_free SN_OPEN_API
 SN_FUNC_OF((snPng_block **obj));
 
 

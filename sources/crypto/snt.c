@@ -274,7 +274,7 @@ SN_FUNC_OF((SNT_ctx **ctx, SNT_mode mode))
     (*ctx)->mode = mode;
     (*ctx)->KN = SNT_KN[mode];
     (*ctx)->NR = SNT_NR[mode];
-    snZeroObject((*ctx)->roundKey, 1056);
+    snMemoryZero((*ctx)->roundKey, 1056);
 
     return snErr_OK;
 }
@@ -282,8 +282,8 @@ SN_FUNC_OF((SNT_ctx **ctx, SNT_mode mode))
 SN_PUBLIC(snError) SNT_release SN_OPEN_API
 SN_FUNC_OF((SNT_ctx **ctx))
 {
-    snZeroObject((*ctx)->iv, SNT_BLOCKLEN);
-    snZeroObject((*ctx)->roundKey, 1056);
+    snMemoryZero((*ctx)->iv, SNT_BLOCKLEN);
+    snMemoryZero((*ctx)->roundKey, 1056);
     free((*ctx));
     (*ctx) = snNull;
 
@@ -315,8 +315,8 @@ SN_FUNC_OF((SNT_ctx *ctx, snByte *keyBuf, snByte *ivBuf))
         SNT_Cipher(ctx->mode, (SNT_State *)iv, key);
     }
 
-    snZeroObject(key, ctx->KN);
-    snZeroObject(iv, SNT_BLOCKLEN);
+    snMemoryZero(key, ctx->KN);
+    snMemoryZero(iv, SNT_BLOCKLEN);
     free(key);
     key = snNull;
 }

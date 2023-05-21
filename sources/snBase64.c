@@ -34,11 +34,10 @@ SN_FUNC_OF((snObject *src))
         return src->size / 4 * 3;
 }
 
-SN_PUBLIC(snErr_ctx *) snBase64_new SN_OPEN_API
+SN_PUBLIC(snErr_ctx) snBase64_new SN_OPEN_API
 SN_FUNC_OF((snBase64_ctx **obj))
 {
-    snErr_ctx *error = snNull;
-    snErr_new(error);
+    snErr_ctx error;
 
     if(!obj) {
         snErr_return(error, snErr_ErrNullData, "obj is NULL.");
@@ -56,11 +55,10 @@ SN_FUNC_OF((snBase64_ctx **obj))
     snErr_return(error, snErr_OK, "OK.");
 }
 
-SN_PUBLIC(snErr_ctx *) snBase64_free SN_OPEN_API
+SN_PUBLIC(snErr_ctx) snBase64_free SN_OPEN_API
 SN_FUNC_OF((snBase64_ctx **obj))
 {
-    snErr_ctx *error = snNull;
-    snErr_new(error);
+    snErr_ctx error;
 
     if(!obj) {
         snErr_return(error, snErr_ErrNullData, "obj is NULL.");
@@ -72,11 +70,10 @@ SN_FUNC_OF((snBase64_ctx **obj))
     snErr_return(error, snErr_OK, "OK.");
 }
 
-SN_PUBLIC(snErr_ctx *) snBase64Encode SN_OPEN_API
+SN_PUBLIC(snErr_ctx) snBase64Encode SN_OPEN_API
 SN_FUNC_OF((snObject *dst, snObject *src))
 {
-    snErr_ctx *error = snNull;
-    snErr_new(error);
+    snErr_ctx error;
     if(!dst || !src) {
         snErr_return(error, snErr_ErrNullData, "dst or src is null.");
     }
@@ -108,11 +105,10 @@ SN_FUNC_OF((snObject *dst, snObject *src))
     snErr_return(error, snErr_OK, "OK.");
 }
 
-SN_PUBLIC(snErr_ctx *) snBase64Decode SN_OPEN_API
+SN_PUBLIC(snErr_ctx) snBase64Decode SN_OPEN_API
 SN_FUNC_OF((snObject *dst, snObject *src))
 {
-    snErr_ctx *error = snNull;
-    snErr_new(error);
+    snErr_ctx error;
     if(!dst || !src) {
         snErr_return(error, snErr_ErrNullData, "dst or src is null.");
     }
