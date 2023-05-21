@@ -6,7 +6,7 @@ SN_FUNC_OF((snFile_ctx **obj))
     if(!obj)
         return snErr_ErrNullData;
     if(!snMemoryNew(snFile_ctx *, (*obj), sizeof(snFile_ctx)))
-        return snErr_Memory;
+        return snErr_ErrMemory;
     (*obj)->data = snNull;
     (*obj)->fp = snNull;
 
@@ -91,7 +91,7 @@ SN_FUNC_OF((snFile_ctx *obj, snFileStr fn))
     }
     if(!obj->data) {
         if(!snMemoryNew(snByte *, obj->data, obj->size + 1))
-            return snErr_Memory;
+            return snErr_ErrMemory;
     }
 
     fileData_ptr = obj->data;

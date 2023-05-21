@@ -8,7 +8,7 @@ SN_FUNC_OF((snHash_ctx **obj, snSize size))
 
     (*obj)->hexdigest = snNull;
     if(!snMemoryNew(snByte *, (*obj)->digest, size))
-        return snErr_Memory;
+        return snErr_ErrMemory;
 
     return snErr_OK;
 }
@@ -20,7 +20,7 @@ SN_FUNC_OF((snHash_ctx **obj, snHash_HashType hashType))
         return snErr_ErrNullData;
 
     if(!snMemoryNew(snHash_ctx *, (*obj), sizeof(snHash_ctx)))
-        return snErr_Memory;
+        return snErr_ErrMemory;
 
     const EVP_MD *snHash_EVP_Type[6] = {
         EVP_md5(),    // MD5
@@ -33,7 +33,7 @@ SN_FUNC_OF((snHash_ctx **obj, snHash_HashType hashType))
 
     (*obj)->md = snHash_EVP_Type[hashType];
     if(_snHash_init(obj, snHash_SIZE[hashType])) {
-        return snErr_Memory;
+        return snErr_ErrMemory;
     }
 
     return snErr_OK;
@@ -75,7 +75,7 @@ SN_FUNC_OF((snHash_ctx *hash, snFileStr fn))
         return err_code;
     }
     if(!(buf = (snByte *)malloc(SN_HASH_BLOCKLEN))) {
-        return snErr_Memory;
+        return snErr_ErrMemory;
     }
 
     quotient = fileSize / SN_HASH_BLOCKLEN;

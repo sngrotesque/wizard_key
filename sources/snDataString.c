@@ -99,7 +99,7 @@ SN_FUNC_OF((snByte **buf, snSize n))
 
     if(!(*buf)) {
         if(!((*buf) = (snByte *)malloc(size + 1))) {
-            return snErr_Memory;
+            return snErr_ErrMemory;
         }
     }
     (*buf)[size] = 0x00;

@@ -4,11 +4,11 @@ SN_PUBLIC(snError) snObject_new SN_OPEN_API
 SN_FUNC_OF((snObject **obj, snSize _memory_size, snBool _Clear_memory))
 {
     if(!snMemoryNew(snObject *, (*obj), sizeof(snObject)))
-        return snErr_Memory;
+        return snErr_ErrMemory;
 
     if(_memory_size) {
         if(!snMemoryNew(snByte *, (*obj)->buf, _memory_size))
-            return snErr_Memory;
+            return snErr_ErrMemory;
         if(_Clear_memory)
             memset((*obj)->buf, 0x00, _memory_size);
     } else {
@@ -26,7 +26,9 @@ SN_FUNC_OF((snObject **obj))
     if(!obj)
         return snErr_ErrNullData;
 
-    snMemoryFree((*obj)->buf);
+    if((*obj)->buf) {
+        snMemoryFree((*obj)->buf);
+    }
     snMemoryFree((*obj));
 
     return snErr_OK;

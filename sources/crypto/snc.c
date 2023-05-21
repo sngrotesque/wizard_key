@@ -450,13 +450,18 @@ SN_PRIVATE(snVoid) SNC_keyExtension SN_FUNC_OF((sn_u16 keySize, snByte *iv, snBy
 }
 
 // 为SNC对象申请内存空间
-SN_PUBLIC(snError) SNC_new SN_OPEN_API
+SN_PUBLIC(snErr_ctx *) SNC_new SN_OPEN_API
 SN_FUNC_OF((SNC_ctx **ctx, SNC_mode mode))
 {
-    if(!(*ctx)) {
-        if(!((*ctx) = (SNC_ctx *)malloc(sizeof(SNC_ctx)))) {
-            return snErr_Memory;
-        }
+    snErr_ctx *error = snNull;
+    snErr_new(error);
+
+    if(!ctx) {
+        snErr_return(error, snErr_ErrNullData, "ctx is NULL.");
+    }
+
+    if(!snMemoryNew(SNC_ctx *, (*ctx), sizeof(SNC_ctx))) {
+        snErr_return(error, snErr_ErrMemory, "(*ctx) Failed to apply for memory.");
     }
 
     (*ctx)->mode = mode;
@@ -464,19 +469,24 @@ SN_FUNC_OF((SNC_ctx **ctx, SNC_mode mode))
     (*ctx)->NR = SNC_NR[mode];
     snZeroObject((*ctx)->roundKey, sizeof((*ctx)->roundKey));
 
-    return snErr_OK;
+    snErr_return(error, snErr_OK, "OK.");
 }
 
 // 释放SNC对象
-SN_PUBLIC(snError) SNC_release SN_OPEN_API
+SN_PUBLIC(snErr_ctx *) SNC_free SN_OPEN_API
 SN_FUNC_OF((SNC_ctx **ctx))
 {
+    snErr_ctx *error = snNull;
+    snErr_new(error);
+    if(!ctx) {
+        snErr_return(error, snErr_ErrNullData, "ctx is NULL.");
+    }
+
     memset((*ctx)->iv, 0x00, SNC_BLOCKLEN);
     snZeroObject((*ctx)->roundKey, sizeof((*ctx)->roundKey));
-    free((*ctx));
-    (*ctx) = snNull;
+    snMemoryFree((*ctx));
 
-    return snErr_OK;
+    snErr_return(error, snErr_OK, "OK.");
 }
 
 /*
@@ -484,10 +494,16 @@ SN_FUNC_OF((SNC_ctx **ctx))
 * Function to initialize the SNC data structure, used to generate sub keys for each
 * round based on the basic key input by the user.
 */
-SN_PUBLIC(snVoid) SNC_init SN_OPEN_API
+SN_PUBLIC(snErr_ctx *) SNC_init SN_OPEN_API
 SN_FUNC_OF((SNC_ctx *ctx, snByte *keyBuf, snByte *ivBuf))
 {
-    snByte *key = (snByte *)malloc(ctx->KN);
+    snErr_ctx *error = snNull;
+    snErr_new(error);
+    if(!ctx || !keyBuf || !ivBuf) {
+        snErr_return(error, snErr_ErrNullData, "ctx or keyBuf or ivBuf is NULL.");
+    }
+
+    snByte *key = snNull;
     snByte iv[SNC_BLOCKLEN];
     sn_u32 r;
     /*
@@ -500,6 +516,9 @@ SN_FUNC_OF((SNC_ctx *ctx, snByte *keyBuf, snByte *ivBuf))
     *     The copy of Initialization vector is used to ensure that the input Initialization
     *     vector does not change.
     */
+    if(!snMemoryNew(snByte *, key, ctx->KN)) {
+        snErr_return(error, snErr_ErrMemory, "key Failed to apply for memory.");
+    }
 
     memcpy(ctx->iv, ivBuf, SNC_BLOCKLEN);
     memcpy(key, keyBuf, ctx->KN);
@@ -536,6 +555,7 @@ SN_FUNC_OF((SNC_ctx *ctx, snByte *keyBuf, snByte *ivBuf))
     snZeroObject(iv, SNC_BLOCKLEN);
     free(key);
     key = snNull;
+    snErr_return(error, snErr_OK, "OK.");
 }
 
 //* ECB模式加密

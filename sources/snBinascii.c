@@ -47,7 +47,7 @@ SN_FUNC_OF((snByte **dst, snByte *src, snSize srcSize))
     snFast snSize i;
 
     if(!snMemoryNew(snByte *, (*dst), (srcSize << 1) + 1))
-        return snErr_Memory;
+        return snErr_ErrMemory;
 
     (*dst)[srcSize << 1] = 0x00;
 
@@ -72,7 +72,7 @@ SN_FUNC_OF((snByte **dst, snByte *src, snSize srcSize))
         return snErr_ErrType;
 
     if(!snMemoryNew(snByte *, (*dst), (srcSize >> 1) + 1)) {
-        return snErr_Memory;
+        return snErr_ErrMemory;
     }
     (*dst)[(srcSize >> 1)] = 0x00;
 

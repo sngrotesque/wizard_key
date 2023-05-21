@@ -267,7 +267,7 @@ SN_FUNC_OF((SNT_ctx **ctx, SNT_mode mode))
 {
     if(!(*ctx)) {
         if(!((*ctx) = (SNT_ctx *)malloc(sizeof(SNT_ctx)))) {
-            return snErr_Memory;
+            return snErr_ErrMemory;
         }
     }
 

@@ -11,7 +11,7 @@ SN_FUNC_OF((snTransfer_ctx **ctx, snString addr, sn_u16 port, sn_u32 maxRetry))
         return snErr_ErrNullData;
     }
     if(!snMemoryNew(snTransfer_ctx *, (*ctx), sizeof(snTransfer_ctx)))
-        return snErr_Memory;
+        return snErr_ErrMemory;
 
     (*ctx)->addr = addr;
     if(port) {

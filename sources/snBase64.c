@@ -34,20 +34,65 @@ SN_FUNC_OF((snObject *src))
         return src->size / 4 * 3;
 }
 
-SN_PUBLIC(snError) snBase64Encode SN_OPEN_API
+SN_PUBLIC(snErr_ctx *) snBase64_new SN_OPEN_API
+SN_FUNC_OF((snBase64_ctx **obj))
+{
+    snErr_ctx *error = snNull;
+    snErr_new(error);
+
+    if(!obj) {
+        snErr_return(error, snErr_ErrNullData, "obj is NULL.");
+    }
+    if(!snMemoryNew(snBase64_ctx *, (*obj), sizeof(snBase64_ctx))) {
+        snErr_return(error, snErr_ErrMemory, "(*obj) Failed to apply for memory.");
+    }
+    if(!snMemoryNew(snObject *, (*obj)->src, sizeof(snObject))) {
+        snErr_return(error, snErr_ErrMemory, "(*obj)->src Failed to apply for memory.");
+    }
+    if(!snMemoryNew(snObject *, (*obj)->dst, sizeof(snObject))) {
+        snErr_return(error, snErr_ErrMemory, "(*obj)->dst Failed to apply for memory.");
+    }
+
+    snErr_return(error, snErr_OK, "OK.");
+}
+
+SN_PUBLIC(snErr_ctx *) snBase64_free SN_OPEN_API
+SN_FUNC_OF((snBase64_ctx **obj))
+{
+    snErr_ctx *error = snNull;
+    snErr_new(error);
+
+    if(!obj) {
+        snErr_return(error, snErr_ErrNullData, "obj is NULL.");
+    }
+    snMemoryFree((*obj)->src);
+    snMemoryFree((*obj)->dst);
+    snMemoryFree((*obj));
+
+    snErr_return(error, snErr_OK, "OK.");
+}
+
+SN_PUBLIC(snErr_ctx *) snBase64Encode SN_OPEN_API
 SN_FUNC_OF((snObject *dst, snObject *src))
 {
-    if(!dst->buf || !dst->size || !src->buf || !src->size) {
-        printf("dst->buf or dst->size or src->buf or src->size is null.\n");
-        return snErr_ErrNullData;
+    snErr_ctx *error = snNull;
+    snErr_new(error);
+    if(!dst || !src) {
+        snErr_return(error, snErr_ErrNullData, "dst or src is null.");
+    }
+    if(!dst->buf || !src->buf) {
+        snErr_return(error, snErr_ErrNullData, "dst->buf or src->buf is null.");
+    }
+    if(!dst->size || !src->size) {
+        snErr_return(error, snErr_ErrNullData, "dst->size or src->size is null.");
     }
     snSize dst_i, src_i;
 
     for (dst_i = src_i = 0; dst_i < dst->size - 2; src_i += 3, dst_i += 4) {
-        dst->buf[dst_i]   = _B64ET[src->buf[src_i] >> 2];
-        dst->buf[dst_i+1] = _B64ET[(src->buf[src_i] & 0x3)   << 4 | (src->buf[src_i+1] >> 4)];
+        dst->buf[dst_i]   = _B64ET[src->buf[src_i]           >> 2];
+        dst->buf[dst_i+1] = _B64ET[(src->buf[src_i]   & 0x3) << 4 | (src->buf[src_i+1] >> 4)];
         dst->buf[dst_i+2] = _B64ET[(src->buf[src_i+1] & 0xf) << 2 | (src->buf[src_i+2] >> 6)];
-        dst->buf[dst_i+3] = _B64ET[src->buf[src_i+2] & 0x3f];
+        dst->buf[dst_i+3] = _B64ET[src->buf[src_i+2]  & 0x3f];
     }
 
     switch(src->size % 3) {
@@ -60,52 +105,30 @@ SN_FUNC_OF((snObject *dst, snObject *src))
             break;
     }
 
-    return snErr_OK;
+    snErr_return(error, snErr_OK, "OK.");
 }
 
-SN_PUBLIC(snError) snBase64Decode SN_OPEN_API
+SN_PUBLIC(snErr_ctx *) snBase64Decode SN_OPEN_API
 SN_FUNC_OF((snObject *dst, snObject *src))
 {
-    if(!dst->buf || !dst->size || !src->buf || !src->size) {
-        printf("dst->buf or dst->size or src->buf or src->size is null.\n");
-        return snErr_ErrNullData;
+    snErr_ctx *error = snNull;
+    snErr_new(error);
+    if(!dst || !src) {
+        snErr_return(error, snErr_ErrNullData, "dst or src is null.");
+    }
+    if(!dst->buf || !src->buf) {
+        snErr_return(error, snErr_ErrNullData, "dst->buf or src->buf is null.");
+    }
+    if(!dst->size || !src->size) {
+        snErr_return(error, snErr_ErrNullData, "dst->size or src->size is null.");
     }
     snSize src_i, dst_i;
 
     for (src_i = dst_i = 0; src_i < src->size - 2; dst_i += 3, src_i += 4) {
-        dst->buf[dst_i]   = _B64DT[src->buf[src_i]] << 2 | (_B64DT[src->buf[src_i+1]] >> 4);
+        dst->buf[dst_i]   = (_B64DT[src->buf[src_i]]   << 2) |  (_B64DT[src->buf[src_i+1]]  >> 4);
         dst->buf[dst_i+1] = (_B64DT[src->buf[src_i+1]] << 4) | ((_B64DT[src->buf[src_i+2]]) >> 2);
-        dst->buf[dst_i+2] = (_B64DT[src->buf[src_i+2]] << 6) | _B64DT[src->buf[src_i+3]];
+        dst->buf[dst_i+2] = (_B64DT[src->buf[src_i+2]] << 6) |   _B64DT[src->buf[src_i+3]];
     }
 
-    return snErr_OK;
-}
-
-SN_PUBLIC(snError) snBase64_new SN_OPEN_API
-SN_FUNC_OF((snBase64_ctx **obj))
-{
-    if(!obj)
-        return snErr_ErrNullData;
-    if(!snMemoryNew(snBase64_ctx *, (*obj), sizeof(snBase64_ctx)))
-        return snErr_Memory;
-    if(!snMemoryNew(snObject *, (*obj)->src, sizeof(snObject)))
-        return snErr_Memory;
-    if(!snMemoryNew(snObject *, (*obj)->dst, sizeof(snObject)))
-        return snErr_Memory;
-
-    return snErr_OK;
-}
-
-SN_PUBLIC(snError) snBase64_free SN_OPEN_API
-SN_FUNC_OF((snBase64_ctx **obj))
-{
-    if(!(*obj)) {
-        return snErr_ErrNullData;
-    }
-    snMemoryFree((*obj)->src);
-    snMemoryFree((*obj)->dst);
-
-    snMemoryFree((*obj));
-
-    return snErr_OK;
+    snErr_return(error, snErr_OK, "OK.");
 }

@@ -6,33 +6,6 @@
 *   编译指令：gcc main.c -lws2_32 -o main.exe
 *
 */
-
-/**
- * 
- * 
- * 请仔细考虑该如何修改这个库
- * 
- * 目前的这种情况，将非常不支持多线程的套接字通信
- * 
- * 
- * 
- * 
- * 
- * 
- * 
- * 
- * 
- * 
- * 
- * 
- * 
- * 
- * 
- * 
- * 
- * 
- * 
-*/
 #ifndef __SN_NETWORK__
 #define __SN_NETWORK__
 
@@ -85,7 +58,6 @@ typedef struct sockaddr_in6 SOCKADDR_IN6; // IPv6网络结构
 typedef sn_u32 snNetSocket;               // snNet的socket类型
 typedef snVoid snNetTimer;                // snNet的计时类型
 typedef snByte snNetBuf;                  // snNet的缓冲区类型
-typedef snSize snNetType;                 // snNet的协议类型（TCP,UDP）
 #endif // #if defined(__linux)
 
 #if defined(_WIN32)
@@ -98,35 +70,25 @@ typedef snSize snNetType;                 // snNet的协议类型（TCP,UDP）
 typedef SOCKET  snNetSocket; // snNet的socket类型
 typedef snChar  snNetTimer;  // snNet的计时类型
 typedef snChar  snNetBuf;    // snNet的缓冲区类型
-typedef sn_u32  snNetType;   // snNet的协议类型（TCP,UDP）
 #endif // #if defined(_WIN32)
 
-// snNet的时间类型
-typedef snFloat snNetTime;
-// snNet的长度类型
-typedef socklen_t snNetSize;
-
-// snNet的网络结构体
-typedef struct {
-    // 客户端，用于本机作为接收端时保存客户端信息时使用
-    SOCKADDR *client;
-    // 接收端（也可以叫本机端），用于连接网络服务器或让
-    // 客户端连接时使用
-    SOCKADDR *receiver;
-    // 本机端和客户端的内存占用大小（单位字节）
-    snNetSize size;
-} snNetInfo;
+typedef snFloat   snNetTime; // snNet的时间类型
+typedef socklen_t snNetSize; // snNet的长度类型
+typedef snByte snNetType[4]; // snNet的结构体中的各种类型
 
 // snNet对象类型
 typedef struct {
-    // socket数据
-    snNetSocket sockfd;       // sizeof: win[8], linux[4]
-    // socket使用的网络家族
-    sn_u32      sockfdFamily; // sizeof: 4
-    // socket的类型，TCP或UDP
-    snNetType   sockfdType;   // sizeof: win[4], linux[8]
-    // snNet的网络结构体
-    snNetInfo  *info;         // sizeof: 8
+    // 套接字【size: win[8], linux[4]】
+    snNetSocket sockfd;
+    /* * * * * * * * * * * * * * * * * * * * *
+    * type[0]: None
+    * type[1]: 套接字类型，TCP or UDP
+    * type[2]: 套接字家族：AF_INET or AF_INET6
+    * type[3]: 网络结构体大小：SN_NET_IPV4_ADDR_SIZE or SN_NET_IPV6_ADDR_SIZE
+    * * * * * * * * * * * * * * * * * * * * */
+    snNetType   type;
+    // 用于保留地址信息的结构体【size: 8】
+    SOCKADDR   *info;
 } snNet_ctx;
 
 // 申请snNet对象的内存空间

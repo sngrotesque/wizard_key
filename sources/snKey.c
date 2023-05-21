@@ -113,11 +113,11 @@ SN_FUNC_OF((snKey_ctx **obj, snByte *key, snSize keySize, snBool mode))
         return snErr_ErrNullData;
 
     if(!snMemoryNew(snKey_ctx *, (*obj), sizeof(snKey_ctx)))
-        return snErr_Memory;
+        return snErr_ErrMemory;
 
     if(key && keySize) {
         if(!snMemoryNew(snByte *, (*obj)->key, keySize))
-            return snErr_Memory;
+            return snErr_ErrMemory;
         memcpy((*obj)->key, key, keySize);
         (*obj)->size = keySize;
         (*obj)->mode = mode;
