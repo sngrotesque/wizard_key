@@ -1,3 +1,5 @@
+from os.path import exists
+from os import mkdir
 from subprocess import call
 from sys import platform, argv
 
@@ -54,6 +56,9 @@ if __name__ == '__main__':
         program = 'g++'
     else:
         exit(f'python {argv[0]} [c/cpp]')
+    
+    if not exists(OUT_PATH):
+        mkdir(OUT_PATH)
     
     run_code(program, para)
 
