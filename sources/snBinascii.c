@@ -38,16 +38,21 @@ SN_FUNC_OF((snByte c))
         return (c & 0x0f) + 0x57;
 }
 
-SN_PUBLIC(snError) snBinascii_b2a_hex SN_OPEN_API
+SN_PUBLIC(snErr_ctx) snBinascii_b2a_hex SN_OPEN_API
 SN_FUNC_OF((snByte **dst, snByte *src, snSize srcSize))
 {
+    snErr_ctx error;
+
     if(!dst || !src || !srcSize) {
-        return snErr_ErrNullData;
+        snErr_return(error, snErr_ErrNullData,
+            "snBinascii_b2a_hex: dst or src or srcSize is NULL.");
     }
     snFast snSize i;
 
-    if(!snMemoryNew(snByte *, (*dst), (srcSize << 1) + 1))
-        return snErr_ErrMemory;
+    if(!snMemoryNew(snByte *, (*dst), (srcSize << 1) + 1)) {
+        snErr_return(error, snErr_ErrMemory,
+            "snBinascii_b2a_hex: (*dst) Failed to apply for memory.");
+    }
 
     (*dst)[srcSize << 1] = 0x00;
 
@@ -56,23 +61,29 @@ SN_FUNC_OF((snByte **dst, snByte *src, snSize srcSize))
         (*dst)[(i<<1)+1] = _sn_binascii_to_bot(src[i]);
     }
 
-    return snErr_OK;
+    snErr_return(error, snErr_OK, "OK.");
 }
 
-SN_PUBLIC(snError) snBinascii_a2b_hex SN_OPEN_API
+SN_PUBLIC(snErr_ctx) snBinascii_a2b_hex SN_OPEN_API
 SN_FUNC_OF((snByte **dst, snByte *src, snSize srcSize))
 {
+    snErr_ctx error;
+
     if(!dst || !src || !srcSize) {
-        return snErr_ErrNullData;
+        snErr_return(error, snErr_ErrNullData,
+            "snBinascii_a2b_hex: dst or src or srcSize is NULL.");
     }
     static snSize src_i, dst_i;
     static sn_32 top, bot;
 
-    if (srcSize % 2)
-        return snErr_ErrType;
+    if (srcSize % 2) {
+        snErr_return(error, snErr_ErrType,
+            "snBinascii_a2b_hex: Wrong type, should not be an odd length.");
+    }
 
     if(!snMemoryNew(snByte *, (*dst), (srcSize >> 1) + 1)) {
-        return snErr_ErrMemory;
+        snErr_return(error, snErr_ErrMemory,
+            "snBinascii_a2b_hex: (*dst) Failed to apply for memory.");
     }
     (*dst)[(srcSize >> 1)] = 0x00;
 
@@ -80,10 +91,11 @@ SN_FUNC_OF((snByte **dst, snByte *src, snSize srcSize))
         top = _a2b_hex_table[src[src_i]];
         bot = _a2b_hex_table[src[src_i+1]];
         if((top | bot) > 30) {
-            return snErr_ErrType;
+            snErr_return(error, snErr_ErrType,
+                "snBinascii_a2b_hex: Wrong type, characters must be from 0 to f.");
         }
         (*dst)[dst_i] = (top << 4) + bot;
     }
 
-    return snErr_OK;
+    snErr_return(error, snErr_OK, "OK.");
 }

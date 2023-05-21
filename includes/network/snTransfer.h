@@ -7,9 +7,7 @@
  *  如果要加密的话，请将所有内容加密，同时应考虑加密算法的效率问题。
 */
 
-/**
- * 由于snNet库的不确定性，暂时弃用此传输库
-*/
+//* 预计6月恢复此库的编写
 
 #ifndef __SN_TRANSFER__
 #define __SN_TRANSFER__
@@ -22,9 +20,9 @@
 #define SN_FT_BIND_TO 1   // 用于设定SO_REUSEADDR的超时时间
 
 // 信号：等待
-SN_PRIVATE_CONST(snError) SN_FT_SIGNAL_WAIT = 0x74696177U;
+SN_PRIVATE_CONST(sn_u32) SN_FT_SIGNAL_WAIT = 0x74696177U;
 // 信号：完成
-SN_PRIVATE_CONST(snError) SN_FT_SIGNAL_DONE = 0x656e6f64U;
+SN_PRIVATE_CONST(sn_u32) SN_FT_SIGNAL_DONE = 0x656e6f64U;
 
 #define SN_FT_DEFAULT_MAX_RETRY 5 // 默认最大重试次数为5
 #define SN_FT_DEFAULT_PORT 49281  // 默认端口
@@ -37,19 +35,19 @@ typedef struct {
 } snTransfer_ctx;
 
 // 为snTransfer对象申请内存空间
-SN_PUBLIC(snError) snTransfer_new SN_OPEN_API
-SN_FUNC_OF((snTransfer_ctx **ctx, snString addr, sn_u16 port, sn_u32 maxRetry));
+SN_PUBLIC(snErr_ctx) snTransfer_new SN_OPEN_API
+SN_FUNC_OF((snTransfer_ctx **net, snString addr, sn_u16 port, sn_u32 maxRetry));
 
 // 释放snTransfer对象
-SN_PUBLIC(snError) snTransfer_free SN_OPEN_API
-SN_FUNC_OF((snTransfer_ctx **ctx));
+SN_PUBLIC(snErr_ctx) snTransfer_free SN_OPEN_API
+SN_FUNC_OF((snTransfer_ctx **net));
 
 // 接收端
-SN_PUBLIC(snError) snTransfer_Listen SN_OPEN_API
-SN_FUNC_OF((snTransfer_ctx *ctx, snFileStr fn));
+SN_PUBLIC(snErr_ctx) snTransfer_Listen SN_OPEN_API
+SN_FUNC_OF((snTransfer_ctx *net, snFileStr fn));
 
 // 发送端
-SN_PUBLIC(snError) snTransfer_Client SN_OPEN_API
-SN_FUNC_OF((snTransfer_ctx *ctx, snFileStr fn));
+SN_PUBLIC(snErr_ctx) snTransfer_Client SN_OPEN_API
+SN_FUNC_OF((snTransfer_ctx *net, snFileStr fn));
 
 #endif // #ifndef __SN_TRANSFER__

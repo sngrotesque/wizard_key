@@ -15,7 +15,7 @@ SN_PRIVATE_CONST(snByte) _B64DT[123] = { // Base64解码表
     25, 0,  0,  0,  0,  0,  0,  26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36,
     37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51};
 
-SN_PUBLIC(snSize) snB64E_size SN_OPEN_API
+SN_PUBLIC(snSize) snBase64_encode_size SN_OPEN_API
 SN_FUNC_OF((snObject *src))
 {
     if(src->size % 3)
@@ -23,7 +23,7 @@ SN_FUNC_OF((snObject *src))
     return src->size / 3 * 4;
 }
 
-SN_PUBLIC(snSize) snB64D_size SN_OPEN_API
+SN_PUBLIC(snSize) snBase64_decode_size SN_OPEN_API
 SN_FUNC_OF((snObject *src))
 {
     if ((src->buf[src->size - 1] & src->buf[src->size - 2]) == BASE64_PAD)
@@ -40,16 +40,19 @@ SN_FUNC_OF((snBase64_ctx **obj))
     snErr_ctx error;
 
     if(!obj) {
-        snErr_return(error, snErr_ErrNullData, "obj is NULL.");
+        snErr_return(error, snErr_ErrNullData, "snBase64_new: obj is NULL.");
     }
     if(!snMemoryNew(snBase64_ctx *, (*obj), sizeof(snBase64_ctx))) {
-        snErr_return(error, snErr_ErrMemory, "(*obj) Failed to apply for memory.");
+        snErr_return(error, snErr_ErrMemory,
+            "snBase64_new: (*obj) Failed to apply for memory.");
     }
     if(!snMemoryNew(snObject *, (*obj)->src, sizeof(snObject))) {
-        snErr_return(error, snErr_ErrMemory, "(*obj)->src Failed to apply for memory.");
+        snErr_return(error, snErr_ErrMemory,
+            "snBase64_new: (*obj)->src Failed to apply for memory.");
     }
     if(!snMemoryNew(snObject *, (*obj)->dst, sizeof(snObject))) {
-        snErr_return(error, snErr_ErrMemory, "(*obj)->dst Failed to apply for memory.");
+        snErr_return(error, snErr_ErrMemory,
+            "snBase64_new: (*obj)->dst Failed to apply for memory.");
     }
 
     snErr_return(error, snErr_OK, "OK.");
@@ -61,7 +64,7 @@ SN_FUNC_OF((snBase64_ctx **obj))
     snErr_ctx error;
 
     if(!obj) {
-        snErr_return(error, snErr_ErrNullData, "obj is NULL.");
+        snErr_return(error, snErr_ErrNullData, "snBase64_free: obj is NULL.");
     }
     snMemoryFree((*obj)->src);
     snMemoryFree((*obj)->dst);
@@ -70,18 +73,20 @@ SN_FUNC_OF((snBase64_ctx **obj))
     snErr_return(error, snErr_OK, "OK.");
 }
 
-SN_PUBLIC(snErr_ctx) snBase64Encode SN_OPEN_API
+SN_PUBLIC(snErr_ctx) snBase64_Encode SN_OPEN_API
 SN_FUNC_OF((snObject *dst, snObject *src))
 {
     snErr_ctx error;
     if(!dst || !src) {
-        snErr_return(error, snErr_ErrNullData, "dst or src is null.");
+        snErr_return(error, snErr_ErrNullData, "snBase64_Encode: dst or src is null.");
     }
     if(!dst->buf || !src->buf) {
-        snErr_return(error, snErr_ErrNullData, "dst->buf or src->buf is null.");
+        snErr_return(error, snErr_ErrNullData,
+            "snBase64_Encode: dst->buf or src->buf is null.");
     }
     if(!dst->size || !src->size) {
-        snErr_return(error, snErr_ErrNullData, "dst->size or src->size is null.");
+        snErr_return(error, snErr_ErrNullData,
+            "snBase64_Encode: dst->size or src->size is null.");
     }
     snSize dst_i, src_i;
 
@@ -105,7 +110,7 @@ SN_FUNC_OF((snObject *dst, snObject *src))
     snErr_return(error, snErr_OK, "OK.");
 }
 
-SN_PUBLIC(snErr_ctx) snBase64Decode SN_OPEN_API
+SN_PUBLIC(snErr_ctx) snBase64_Decode SN_OPEN_API
 SN_FUNC_OF((snObject *dst, snObject *src))
 {
     snErr_ctx error;

@@ -1,68 +1,77 @@
 #include <network/snTransfer.h>
 
-/**
- * 由于snNet库的不确定性，暂时弃用此传输库
-*/
-
-SN_PUBLIC(snError) snTransfer_new SN_OPEN_API
-SN_FUNC_OF((snTransfer_ctx **ctx, snString addr, sn_u16 port, sn_u32 maxRetry))
+SN_PUBLIC(snErr_ctx) snTransfer_new SN_OPEN_API
+SN_FUNC_OF((snTransfer_ctx **net, snString addr, sn_u16 port, sn_u32 maxRetry))
 {
-    if(!addr) {
-        return snErr_ErrNullData;
-    }
-    if(!snMemoryNew(snTransfer_ctx *, (*ctx), sizeof(snTransfer_ctx)))
-        return snErr_ErrMemory;
+    snErr_ctx error;
 
-    (*ctx)->addr = addr;
+    if(!net || !addr) {
+        snErr_return(error, snErr_ErrNullData, "snTransfer_new: net or addr is NULL.");
+    }
+    if(!snMemoryNew(snTransfer_ctx *, (*net), sizeof(snTransfer_ctx))) {
+        snErr_return(error, snErr_ErrMemory,
+            "snTransfer_new: (*net) Failed to apply for memory.");
+    }
+
+    (*net)->addr = addr;
     if(port) {
-        (*ctx)->port = port;
+        (*net)->port = port;
     } else {
-        (*ctx)->port = SN_FT_DEFAULT_PORT;
+        (*net)->port = SN_FT_DEFAULT_PORT;
     }
     if(maxRetry) {
-        (*ctx)->maxRetry = maxRetry;
+        (*net)->maxRetry = maxRetry;
     } else {
-        (*ctx)->maxRetry = SN_FT_DEFAULT_MAX_RETRY;
+        (*net)->maxRetry = SN_FT_DEFAULT_MAX_RETRY;
     }
-    (*ctx)->snc = snNull;
-    // SNC_new(&(*ctx)->snc, SNC_256);
-    return snErr_OK;
+    (*net)->snc = snNull;
+    // SNC_new(&(*net)->snc, SNC_256);
+
+    snErr_return(error, snErr_OK, "OK.");
 }
 
-SN_PUBLIC(snError) snTransfer_free SN_OPEN_API
-SN_FUNC_OF((snTransfer_ctx **ctx))
+SN_PUBLIC(snErr_ctx) snTransfer_free SN_OPEN_API
+SN_FUNC_OF((snTransfer_ctx **net))
 {
-    if((*ctx)->snc) {
-        SNC_release(&(*ctx)->snc);
+    snErr_ctx error;
+    if(!net) {
+        snErr_return(error, snErr_ErrNullData, "snTransfer_free: net is NULL.");
     }
-    snMemoryFree((*ctx));
-    return snErr_OK;
+
+    if((*net)->snc) {
+        SNC_release(&(*net)->snc);
+    }
+    snMemoryFree((*net));
+
+    snErr_return(error, snErr_OK, "OK.");
 }
 
-SN_PUBLIC(snError) snTransfer_Listen SN_OPEN_API
-SN_FUNC_OF((snTransfer_ctx *ctx, snFileStr fn))
+SN_PUBLIC(snErr_ctx) snTransfer_Listen SN_OPEN_API
+SN_FUNC_OF((snTransfer_ctx *net, snFileStr fn))
 {
-    if(!ctx->addr || !ctx->port) {
-        return snErr_ErrNullData;
+    snErr_ctx error;
+    if(!net || !net->addr || !net->port || !fn) {
+        snErr_return(error, snErr_ErrNullData,
+            "snTransfer_Listen: net or net->addr or net->port or fn is NULL.");
     }
-    if(!ctx->maxRetry) {
-        ctx->maxRetry = SN_FT_DEFAULT_MAX_RETRY;
+    if(!net->maxRetry) {
+        net->maxRetry = SN_FT_DEFAULT_MAX_RETRY;
     }
 
-    return snErr_OK;
+    snErr_return(error, snErr_OK, "OK.");
 }
 
-SN_PUBLIC(snError) snTransfer_Client SN_OPEN_API
-SN_FUNC_OF((snTransfer_ctx *ctx, snFileStr fn))
+SN_PUBLIC(snErr_ctx) snTransfer_Client SN_OPEN_API
+SN_FUNC_OF((snTransfer_ctx *net, snFileStr fn))
 {
-    if(!snFile_exists(fn))
-        return snErr_FileFolderPath;
-    if(!ctx->addr || !ctx->port) {
-        return snErr_ErrNullData;
+    snErr_ctx error;
+    if(!net || !net->addr || !net->port || !fn) {
+        snErr_return(error, snErr_ErrNullData,
+            "snTransfer_Listen: net or net->addr or net->port or fn is NULL.");
     }
-    if(!ctx->maxRetry) {
-        ctx->maxRetry = SN_FT_DEFAULT_MAX_RETRY;
+    if(!net->maxRetry) {
+        net->maxRetry = SN_FT_DEFAULT_MAX_RETRY;
     }
 
-    return snErr_OK;
+    snErr_return(error, snErr_OK, "OK.");
 }
