@@ -43,7 +43,7 @@ class git_process:
             self.path.remove('compiled')
             self.path.remove('Temp')
             self.path.remove('misc')
-            self.path.remove('test')
+            # self.path.remove('test')
             self.path.remove('keys')
             self.path.remove('test.py')
             if os.path.exists('libshark.lib'):
