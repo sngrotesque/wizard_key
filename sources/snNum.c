@@ -52,11 +52,14 @@ SN_FUNC_OF((void))
 SN_PUBLIC(snErr_ctx) snNum_pack SN_OPEN_API
 SN_FUNC_OF((snString format, snByte *dst, snSize src))
 {
+    snErr_ctx error;
     if(!format || !dst || !src) {
-        return snErr_ErrNullData;
+        snErr_return(error, snErr_ErrNullData,
+            "snNum_pack: format or dst or src is NULL");
     }
     if(!snNum_check_format(format)) {
-        return snErr_ErrInvalid;
+        snErr_return(error, snErr_ErrInvalid,
+            "snNum_pack: Incorrect formatting symbol.");
     }
     snBool little_end = snNum_PlatformEnd();
     snByte order  = format[0]; // 字节顺序
@@ -111,7 +114,7 @@ SN_FUNC_OF((snString format, snByte *dst, snSize src))
         }
     }
 
-    return snErr_OK;
+    snErr_return(error, snErr_OK, "OK.");
 }
 
 SN_PUBLIC(snErr_ctx) snNum_unpack SN_OPEN_API
@@ -123,11 +126,14 @@ SN_FUNC_OF((snString format, snVoid *dst, snByte *src))
      * 比如如果本机是小端序，而用户指定的格式字符也是小端序，那么
      * 就不需要翻转，直接内存复制到数字变量中就行。
     */
+    snErr_ctx error;
     if(!format || !dst || !src) {
-        return snErr_ErrNullData;
+        snErr_return(error, snErr_ErrNullData,
+            "snNum_unpack: format or dst or src is NULL");
     }
     if(!snNum_check_format(format)) {
-        return snErr_ErrInvalid;
+        snErr_return(error, snErr_ErrInvalid,
+            "snNum_unpack: Incorrect formatting symbol.");
     }
     snBool little_end = snNum_PlatformEnd();
     snByte order  = format[0]; // 字节顺序
@@ -182,5 +188,5 @@ SN_FUNC_OF((snString format, snVoid *dst, snByte *src))
 
     memcpy(dst, src, size);
 
-    return snErr_OK;
+    snErr_return(error, snErr_OK, "OK.");
 }

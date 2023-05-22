@@ -3,8 +3,10 @@
 SN_PUBLIC(snErr_ctx) snLinkList_new SN_OPEN_API
 SN_FUNC_OF((snLink **obj, snSize length))
 {
-    if(!length || !obj) {
-        return snErr_ErrNullData;
+    snErr_ctx error;
+    if(!obj || !length) {
+        snErr_return(error, snErr_ErrNullData,
+            "snLinkList_new: obj or length is NULL.");
     }
     snLink *head = snNull;
     snLink *ptr = snNull;
@@ -12,12 +14,16 @@ SN_FUNC_OF((snLink **obj, snSize length))
 
     for(index = 0; index < length; ++index) {
         if(head == snNull) {
-            if(!snMemoryNew(snLink *, head, sizeof(snLink)))
-                return snErr_ErrMemory;
+            if(!snMemoryNew(snLink *, head, sizeof(snLink))) {
+                snErr_return(error, snErr_ErrMemory,
+                    "snLinkList_new: head failed to apply for memory.");
+            }
             ptr = head;
         } else {
-            if(!snMemoryNew(snLink *, ptr->next, sizeof(snLink)))
-                return snErr_ErrMemory;
+            if(!snMemoryNew(snLink *, ptr->next, sizeof(snLink))) {
+                snErr_return(error, snErr_ErrMemory,
+                    "snLinkList_new: ptr->next failed to apply for memory.");
+            }
             ptr = ptr->next;
         }
     }
@@ -25,14 +31,16 @@ SN_FUNC_OF((snLink **obj, snSize length))
     ptr->next = snNull;
     (*obj) = head;
 
-    return snErr_OK;
+    snErr_return(error, snErr_OK, "OK.");
 }
 
 SN_PUBLIC(snErr_ctx) snLinkList_free SN_OPEN_API
 SN_FUNC_OF((snLink **obj))
 {
-    if(!obj || !(*obj)) {
-        return snErr_ErrNullData;
+    snErr_ctx error;
+    if(!obj) {
+        snErr_return(error, snErr_ErrNullData,
+            "snLinkList_new: obj or length is NULL.");
     }
     snLink *ptr = snNull;
     while(*obj)
@@ -42,5 +50,5 @@ SN_FUNC_OF((snLink **obj))
         free(ptr);
     }
 
-    return snErr_OK;
+    snErr_return(error, snErr_OK, "OK.");
 }

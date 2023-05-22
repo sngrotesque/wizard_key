@@ -3,12 +3,21 @@
 SN_PUBLIC(snErr_ctx) snObject_new SN_OPEN_API
 SN_FUNC_OF((snObject **obj, snSize _memory_size, snBool _Clear_memory))
 {
-    if(!snMemoryNew(snObject *, (*obj), sizeof(snObject)))
-        return snErr_ErrMemory;
+    snErr_ctx error;
+    if(!obj) {
+        snErr_return(error, snErr_ErrNullData, "snObject_new: obj is NULL.");
+    }
+
+    if(!snMemoryNew(snObject *, (*obj), sizeof(snObject))) {
+        snErr_return(error, snErr_ErrMemory,
+            "snObject_new: (*obj) failed to apply for memory.");
+    }
 
     if(_memory_size) {
-        if(!snMemoryNew(snByte *, (*obj)->buf, _memory_size))
-            return snErr_ErrMemory;
+        if(!snMemoryNew(snByte *, (*obj)->buf, _memory_size)) {
+            snErr_return(error, snErr_ErrMemory,
+                "snObject_new: (*obj)->buf failed to apply for memory.");
+        }
         if(_Clear_memory)
             memset((*obj)->buf, 0x00, _memory_size);
     } else {
@@ -17,19 +26,21 @@ SN_FUNC_OF((snObject **obj, snSize _memory_size, snBool _Clear_memory))
     }
     (*obj)->memSize = _memory_size;
 
-    return snErr_OK;
+    snErr_return(error, snErr_OK, "OK.");
 }
 
 SN_PUBLIC(snErr_ctx) snObject_free SN_OPEN_API
 SN_FUNC_OF((snObject **obj))
 {
-    if(!obj)
-        return snErr_ErrNullData;
+    snErr_ctx error;
+    if(!obj) {
+        snErr_return(error, snErr_ErrNullData, "snObject_new: obj is NULL.");
+    }
 
     if((*obj)->buf) {
         snMemoryFree((*obj)->buf);
     }
     snMemoryFree((*obj));
 
-    return snErr_OK;
+    snErr_return(error, snErr_OK, "OK.");
 }

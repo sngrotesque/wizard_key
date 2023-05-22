@@ -59,7 +59,7 @@ SN_FUNC_OF((snKey_state *buf))
 SN_PRIVATE(snVoid) _snKey_MatrixRows
 SN_FUNC_OF((snKey_state *buf))
 {
-    static snByte swap;
+    snByte swap;
     swap = (*buf)[0][0];
     (*buf)[0][0] = (*buf)[0][1];
     (*buf)[0][1] = swap;
@@ -109,15 +109,21 @@ SN_FUNC_OF((snKey_state *buf))
 SN_PUBLIC(snErr_ctx) snKey_new SN_OPEN_API
 SN_FUNC_OF((snKey_ctx **obj, snByte *key, snSize keySize, snBool mode))
 {
-    if(!obj)
-        return snErr_ErrNullData;
+    snErr_ctx error;
+    if(!obj) {
+        snErr_return(error, snErr_ErrNullData, "snKey_new: obj is NULL.");
+    }
 
-    if(!snMemoryNew(snKey_ctx *, (*obj), sizeof(snKey_ctx)))
-        return snErr_ErrMemory;
+    if(!snMemoryNew(snKey_ctx *, (*obj), sizeof(snKey_ctx))) {
+        snErr_return(error, snErr_ErrMemory,
+            "snKey_new: (*obj) failed to apply for memory.");
+    }
 
     if(key && keySize) {
-        if(!snMemoryNew(snByte *, (*obj)->key, keySize))
-            return snErr_ErrMemory;
+        if(!snMemoryNew(snByte *, (*obj)->key, keySize)) {
+            snErr_return(error, snErr_ErrMemory,
+                "snKey_new: (*obj)->key failed to apply for memory.");
+        }
         memcpy((*obj)->key, key, keySize);
         (*obj)->size = keySize;
         (*obj)->mode = mode;
@@ -127,30 +133,37 @@ SN_FUNC_OF((snKey_ctx **obj, snByte *key, snSize keySize, snBool mode))
         (*obj)->mode = mode;
     }
 
-    return snErr_OK;
+    snErr_return(error, snErr_OK, "OK.");
 }
 
 SN_PUBLIC(snErr_ctx) snKey_free SN_OPEN_API
 SN_FUNC_OF((snKey_ctx **obj))
 {
-    if(!obj)
-        return snErr_ErrNullData;
+    snErr_ctx error;
+    if(!obj) {
+        snErr_return(error, snErr_ErrNullData, "snKey_free: obj is NULL.");
+    }
 
     if((*obj)->key) {
         snMemoryFree((*obj)->key);
     }
     snMemoryFree(*obj);
 
-    return snErr_OK;
+    snErr_return(error, snErr_OK, "OK.");
 }
 
 SN_PUBLIC(snErr_ctx) snKey_CryptKey SN_OPEN_API
 SN_FUNC_OF((snKey_ctx *obj))
 {
-    if(!obj)
-        return snErr_ErrNullData;
-
-    static snSize x;
+    snErr_ctx error;
+    if(!obj) {
+        snErr_return(error, snErr_ErrNullData, "snKey_CryptKey: obj is NULL.");
+    }
+    if(obj->size % 4) {
+        snErr_return(error, snErr_ErrType,
+            "snKey_CryptKey: The length of the key should be a multiple of 4.");
+    }
+    snSize x;
 
     if(obj->mode) {
         for(x = 0; x < obj->size; x += 4)
@@ -159,20 +172,23 @@ SN_FUNC_OF((snKey_ctx *obj))
         for(x = 0; x < obj->size; x += 4)
             _snKey_InvCipher((snKey_state *)(obj->key + x));
     }
-    return snErr_OK;
+
+    snErr_return(error, snErr_OK, "OK.");
 }
 
 SN_PUBLIC(snErr_ctx) snKey_loadKey SN_OPEN_API
 SN_FUNC_OF((snKey_ctx *obj, snString fn))
 {
-    return snErr_OK;
+    snErr_ctx error;
+    snErr_return(error, snErr_OK, "OK.");
 }
 
 SN_PUBLIC(snErr_ctx) snKey_saveKey SN_OPEN_API
 SN_FUNC_OF((snKey_ctx *obj, snString fn))
 {
-    static snBase64_ctx *base64 = snNull;
-    static snFile_ctx *file = snNull;
+    snErr_ctx error;
+    snBase64_ctx *base64 = snNull;
+    snFile_ctx *file = snNull;
     snBase64_new(&base64);
     snFile_new(&file);
 
@@ -186,5 +202,5 @@ SN_FUNC_OF((snKey_ctx *obj, snString fn))
 
     snBase64_free(&base64);
     snFile_free(&file);
-    return snErr_OK;
+    snErr_return(error, snErr_OK, "OK.");
 }
