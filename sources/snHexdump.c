@@ -3,7 +3,7 @@
 SN_PRIVATE(snVoid) _hexdump
 SN_FUNC_OF((snSize offset, snByte *buf, sn_u32 size))
 {
-    static sn_u32 i;
+    sn_u32 i;
     printf("%012"PRIx64" ", offset);
     for(i = 0; i < SN_HEXDUMP_SIZE; ++i) {
         SN_HEXDUMP_PRINT_HEX_SET;}
@@ -12,15 +12,21 @@ SN_FUNC_OF((snSize offset, snByte *buf, sn_u32 size))
     printf("\n");
 }
 
-SN_PUBLIC(snVoid) snHexdump SN_OPEN_API
-SN_FUNC_OF((snString fn))
+SN_PUBLIC(snErr_ctx) snHexdump SN_OPEN_API
+SN_FUNC_OF((snFileStr fn))
 {
-    static snFile *fp = snNull;
-    static snByte buf[SN_HEXDUMP_SIZE];
-    static snSize offset = 0;
-    static snSize nRead = 0;
+    snErr_ctx error;
+    if(!fn) {
+        snErr_return(error, snErr_ErrNullData, "snHexdump: fn is NULL.");
+    }
+    snFile *fp = snNull;
+    snByte buf[SN_HEXDUMP_SIZE];
+    snSize offset = 0;
+    snSize nRead = 0;
 
-    fp = fopen(fn, "rb");
+    if(!(fp = snFile_open(fn, snFile_Char("rb")))) {
+        snErr_return(error, snErr_FileOpen, "snHexdump: File opening failed.");
+    }
 
     while(!feof(fp)) {
         nRead = fread(buf, 1, SN_HEXDUMP_SIZE, fp);
@@ -28,7 +34,10 @@ SN_FUNC_OF((snString fn))
         offset += SN_HEXDUMP_SIZE;
     }
 
-    fclose(fp);
+    if(fclose(fp)) {
+        snErr_return(error, snErr_FileClose, "snHexdump: File closing failed.");
+    }
+    snErr_return(error, snErr_OK, "OK.");
 }
 
 
