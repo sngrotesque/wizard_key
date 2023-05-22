@@ -49,7 +49,7 @@ SN_FUNC_OF((void))
     return false;
 }
 
-SN_PUBLIC(snError) snNum_pack SN_OPEN_API
+SN_PUBLIC(snErr_ctx) snNum_pack SN_OPEN_API
 SN_FUNC_OF((snString format, snByte *dst, snSize src))
 {
     if(!format || !dst || !src) {
@@ -114,7 +114,7 @@ SN_FUNC_OF((snString format, snByte *dst, snSize src))
     return snErr_OK;
 }
 
-SN_PUBLIC(snError) snNum_unpack SN_OPEN_API
+SN_PUBLIC(snErr_ctx) snNum_unpack SN_OPEN_API
 SN_FUNC_OF((snString format, snVoid *dst, snByte *src))
 {
     /**

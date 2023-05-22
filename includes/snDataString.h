@@ -9,7 +9,7 @@
  *  dst            可以不用申请内存空间，传入之后会自动申请。
  *  left, right    要拼接的两个内容
 */
-SN_PUBLIC(snError) snString_Splicing SN_OPEN_API
+SN_PUBLIC(snErr_ctx) snString_Splicing SN_OPEN_API
 SN_FUNC_OF((snObject **dst, snObject *left, snObject *right));
 
 /**
@@ -18,7 +18,7 @@ SN_FUNC_OF((snObject **dst, snObject *left, snObject *right));
  *  src    需要切片的内容
  *  start  切片开始处
 */
-SN_PUBLIC(snError) snString_Slice SN_OPEN_API
+SN_PUBLIC(snErr_ctx) snString_Slice SN_OPEN_API
 SN_FUNC_OF((snObject **dst, snObject *src, snSSize start, snSSize end));
 
 /**
@@ -26,7 +26,7 @@ SN_FUNC_OF((snObject **dst, snObject *src, snSSize start, snSSize end));
  *  buf     缓冲区
  *  size    缓冲区长度
 */
-SN_PUBLIC(snError) snString_Scanf SN_OPEN_API
+SN_PUBLIC(snErr_ctx) snString_Scanf SN_OPEN_API
 SN_FUNC_OF((snByte *buf, snSize size));
 
 /**
@@ -34,16 +34,16 @@ SN_FUNC_OF((snByte *buf, snSize size));
  *  buf     缓冲区
  *  size    缓冲区长度
 */
-SN_PUBLIC(snError) snString_Reverse SN_OPEN_API
+SN_PUBLIC(snErr_ctx) snString_Reverse SN_OPEN_API
 SN_FUNC_OF((snByte *data, snSize size));
 
 /**
- *  此函数：求出n的二进制值
- *  buf     缓冲区，可以不申请内存空间
- *  n       求此数字的二进制值
+ *  此函数：求出数字的二进制值
+ *  dst     结果缓冲区，不用手动申请内存空间
+ *  src     数字
 */
-SN_PUBLIC(snError) snString_Binary SN_OPEN_API
-SN_FUNC_OF((snByte **buf, snSize n));
+SN_PUBLIC(snErr_ctx) snString_Binary SN_OPEN_API
+SN_FUNC_OF((snByte **dst, snSize src));
 
 /**
  *  此函数：判断两个内容是否相同

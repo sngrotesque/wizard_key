@@ -1,32 +1,33 @@
 #include <snFile.h>
 
-SN_PUBLIC(snError) snFile_new SN_OPEN_API
+SN_PUBLIC(snErr_ctx) snFile_new SN_OPEN_API
 SN_FUNC_OF((snFile_ctx **obj))
 {
-    if(!obj)
-        return snErr_ErrNullData;
-    if(!snMemoryNew(snFile_ctx *, (*obj), sizeof(snFile_ctx)))
-        return snErr_ErrMemory;
+    snErr_ctx error;
+    if(!obj) {
+        snErr_return(error, snErr_ErrNullData, "snFile_new: obj is NULL.");
+    }
+    if(!snMemoryNew(snFile_ctx *, (*obj), sizeof(snFile_ctx))) {
+        snErr_return(error, snErr_ErrMemory,
+            "snBase64_new: (*obj) Failed to apply for memory.");
+    }
     (*obj)->data = snNull;
-    (*obj)->fp = snNull;
 
-    return snErr_OK;
+    snErr_return(error, snErr_OK, "OK.");
 }
 
-SN_PUBLIC(snError) snFile_free SN_OPEN_API
+SN_PUBLIC(snErr_ctx) snFile_free SN_OPEN_API
 SN_FUNC_OF((snFile_ctx **obj))
 {
-    if(!obj)
-        return snErr_ErrNullData;
+    snErr_ctx error;
+    if(!obj) {
+        snErr_return(error, snErr_ErrNullData, "snFile_new: obj is NULL.");
+    }
     if((*obj)->data) {
         snMemoryFree((*obj)->data);
     }
-    if((*obj)->fp) {
-        fclose((*obj)->fp);
-        (*obj)->fp = snNull;
-    }
     snMemoryFree((*obj));
-    return snErr_OK;
+    snErr_return(error, snErr_OK, "OK.");
 }
 
 SN_PUBLIC(snBool) snFile_exists SN_OPEN_API
@@ -50,23 +51,25 @@ SN_FUNC_OF((snFileStr fn))
     return false;
 }
 
-SN_PUBLIC(snError) snFile_fileSize SN_OPEN_API
+SN_PUBLIC(snErr_ctx) snFile_fileSize SN_OPEN_API
 SN_FUNC_OF((snSize *size, snFileStr fn))
 {
+    snErr_ctx error;
     if(!snFile_exists(fn)) {
-        return snErr_FileFolderPath;
+        snErr_return(error, snErr_FileFolderPath,
+            "snFile_fileSize: No files or directories.");
     }
     if(!size) {
-        return snErr_ErrInvalid;
+        snErr_return(error, snErr_ErrNullData, "snFile_fileSize: size is NULL.");
     }
 
 #   if defined(__linux)
-    static struct stat info;
+    struct stat info;
     stat(fn, &info);
     *size = info.st_size;
 #   elif defined(_WIN32)
-    HANDLE hFile = CreateFileW(fn, GENERIC_READ, FILE_SHARE_READ, snNull,
-        OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, snNull);
+    HANDLE hFile = CreateFileW(fn, GENERIC_READ, FILE_SHARE_READ, snNull, OPEN_EXISTING,
+        FILE_ATTRIBUTE_NORMAL, snNull);
     LARGE_INTEGER W_size;
     GetFileSizeEx(hFile, &W_size);
     *size = W_size.QuadPart;
@@ -75,23 +78,30 @@ SN_FUNC_OF((snSize *size, snFileStr fn))
 #   if defined(_WIN32)
     CloseHandle(hFile);
 #   endif
-    if(!(*size))
-        return snErr_FileNull;
+    if(!(*size)) {
+        snErr_return(error, snErr_FileNull, "snFile_fileSize: The file is empty.");
+    }
 
-    return snErr_OK;
+    snErr_return(error, snErr_OK, "OK.");
 }
 
-SN_PUBLIC(snError) snFile_fread SN_OPEN_API
+SN_PUBLIC(snErr_ctx) snFile_fread SN_OPEN_API
 SN_FUNC_OF((snFile_ctx *obj, snFileStr fn))
 {
-    static snByte *fileData_ptr = snNull;
-    static snSize x;
-    if(snFile_fileSize(&obj->size, fn) == snErr_FileFolderPath) {
-        return snErr_FileFolderPath;
+    snErr_ctx error;
+    snByte *fileData_ptr = snNull;
+    snFile *fp = snNull;
+    snSize x;
+
+    error = snFile_fileSize(&obj->size, fn);
+    if(error.code) {
+        return error;
     }
     if(!obj->data) {
-        if(!snMemoryNew(snByte *, obj->data, obj->size + 1))
-            return snErr_ErrMemory;
+        if(!snMemoryNew(snByte *, obj->data, obj->size + 1)) {
+            snErr_return(error, snErr_ErrMemory,
+                "snFile_fread: obj->data Failed to apply for memory.");
+        }
     }
 
     fileData_ptr = obj->data;
@@ -99,44 +109,55 @@ SN_FUNC_OF((snFile_ctx *obj, snFileStr fn))
     obj->quotient = obj->size / SN_FILE_BLOCKLEN;
     obj->leftover = obj->size % SN_FILE_BLOCKLEN;
 
-    obj->fp = snFile_open(fn, snFile_Char("rb"));
+    if(!(fp = snFile_open(fn, snFile_Char("rb")))) {
+        snErr_return(error, snErr_FileOpen, "snFile_fread: File opening failed.");
+    }
 
     for(x = 0; x < obj->quotient; ++x) {
-        fread(fileData_ptr, 1, SN_FILE_BLOCKLEN, obj->fp);
+        fread(fileData_ptr, 1, SN_FILE_BLOCKLEN, fp);
         fileData_ptr += SN_FILE_BLOCKLEN;
     }
     if(obj->leftover) {
-        fread(fileData_ptr, 1, obj->leftover, obj->fp);
+        fread(fileData_ptr, 1, obj->leftover, fp);
     }
 
-    fclose(obj->fp);
-    return snErr_OK;
+    if(fclose(fp)) {
+        snErr_return(error, snErr_FileClose, "snFile_fread: File closing failed.");
+    }
+    snErr_return(error, snErr_OK, "OK.");
 }
 
-SN_PUBLIC(snError) snFile_fwrite SN_OPEN_API
+SN_PUBLIC(snErr_ctx) snFile_fwrite SN_OPEN_API
 SN_FUNC_OF((snFile_ctx *obj, snFileStr fn))
 {
-    if(!obj->data || !obj->size) {
-        return snErr_FileNull;
+    snErr_ctx error;
+    if(!obj->data || !obj->size || !fn) {
+        snErr_return(error, snErr_ErrNullData,
+            "snFile_fwrite: obj->data or obj->size or fn is NULL.");
     }
-    static snByte *fileData_ptr = snNull;
-    static snSize x;
+    snByte *fileData_ptr = snNull;
+    snFile *fp = snNull;
+    snSize x;
 
     fileData_ptr = obj->data;
     obj->quotient = obj->size / SN_FILE_BLOCKLEN;
     obj->leftover = obj->size % SN_FILE_BLOCKLEN;
 
-    obj->fp = snFile_open(fn, snFile_Char("wb"));
+    if(!(fp = snFile_open(fn, snFile_Char("wb")))) {
+        snErr_return(error, snErr_FileOpen, "snFile_fwrite: File opening failed.");
+    }
 
     for(x = 0; x < obj->quotient; ++x) {
-        fwrite(fileData_ptr, 1, SN_FILE_BLOCKLEN, obj->fp);
+        fwrite(fileData_ptr, 1, SN_FILE_BLOCKLEN, fp);
         fileData_ptr += SN_FILE_BLOCKLEN;
     }
     if(obj->leftover) {
-        fwrite(fileData_ptr, 1, obj->leftover, obj->fp);
+        fwrite(fileData_ptr, 1, obj->leftover, fp);
     }
 
-    fclose(obj->fp);
-    return snErr_OK;
+    if(fclose(fp)) {
+        snErr_return(error, snErr_FileClose, "snFile_fwrite: File closing failed.");
+    }
+    snErr_return(error, snErr_OK, "OK.");
 }
 

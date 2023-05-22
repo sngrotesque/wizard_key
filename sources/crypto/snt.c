@@ -262,7 +262,7 @@ SN_PRIVATE(snVoid) SNT_keyExtension SN_FUNC_OF((sn_u16 keySize, snByte *iv, snBy
     }
 }
 
-SN_PUBLIC(snError) SNT_new SN_OPEN_API
+SN_PUBLIC(snErr_ctx) SNT_new SN_OPEN_API
 SN_FUNC_OF((SNT_ctx **ctx, SNT_mode mode))
 {
     if(!(*ctx)) {
@@ -279,7 +279,7 @@ SN_FUNC_OF((SNT_ctx **ctx, SNT_mode mode))
     return snErr_OK;
 }
 
-SN_PUBLIC(snError) SNT_release SN_OPEN_API
+SN_PUBLIC(snErr_ctx) SNT_release SN_OPEN_API
 SN_FUNC_OF((SNT_ctx **ctx))
 {
     snMemoryZero((*ctx)->iv, SNT_BLOCKLEN);

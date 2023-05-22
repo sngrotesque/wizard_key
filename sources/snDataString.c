@@ -1,49 +1,61 @@
 #include <snDataString.h>
 
-SN_PUBLIC(snError) snString_Splicing SN_OPEN_API
+SN_PUBLIC(snErr_ctx) snString_Splicing SN_OPEN_API
 SN_FUNC_OF((snObject **dst, snObject *left, snObject *right))
 {
-    snObject_new(dst, (left->size + right->size) + 1, true);
-    (*dst)->size = (left->size + right->size);
-
-    if(!(*dst)->size) {
-        return snErr_ErrNullData;
+    snErr_ctx error;
+    if(!dst || !left || !right) {
+        snErr_return(error, snErr_ErrNullData,
+            "snString_Splicing: dst or left or right is NULL.");
     }
+
+    (*dst)->size = (left->size + right->size);
+    if(!(*dst)->size) {
+        snErr_return(error, snErr_ErrNullData, "snString_Splicing: dst->size is zero.");
+    }
+
+    snObject_new(dst, (left->size + right->size) + 1, true);
 
     memcpy((*dst)->buf, left->buf, left->size);
     memcpy((*dst)->buf + left->size, right->buf, right->size);
 
-    return snErr_OK;
+    snErr_return(error, snErr_OK, "OK.");
 }
 
-SN_PUBLIC(snError) snString_Slice SN_OPEN_API
+SN_PUBLIC(snErr_ctx) snString_Slice SN_OPEN_API
 SN_FUNC_OF((snObject **dst, snObject *src, snSSize start, snSSize end))
 {
+    snErr_ctx error;
     if(end < 0) {
         if((end = src->size + end) > src->size) {
-            return snErr_ErrOutRange;
+            snErr_return(error, snErr_ErrOutRange,
+                "snString_Slice: The range at the end is too large.");
         }
     } else if(end > src->size) {
-        return snErr_ErrOutRange;
+        snErr_return(error, snErr_ErrOutRange,
+            "snString_Slice: The range at the end is too large.");
     }
     if(start < 0) {
         if((start = src->size + start) > src->size) {
-            return snErr_ErrOutRange;
+            snErr_return(error, snErr_ErrOutRange,
+                "snString_Slice: The range at the start is too large.");
         }
     } else if(start > src->size) {
-        return snErr_ErrOutRange;
+        snErr_return(error, snErr_ErrOutRange,
+            "snString_Slice: The range at the start is too large.");
     }
     if(start > end) {
         if(end) {
-            return snErr_ErrInvalidRange;
+        snErr_return(error, snErr_ErrInvalidRange,
+            "snString_Slice: The starting subscript exceeds the ending subscript.");
         } else {
             end = src->size;
         }
     }
 
-    printf("size: %lld\n", src->size);
-    printf("start: %lld\n", start);
-    printf("end: %lld\n", end);
+    // printf("size: %lld\n", src->size);
+    // printf("start: %lld\n", start);
+    // printf("end: %lld\n", end);
 
     snObject_new(dst, (end - start) + 1, false);
     (*dst)->buf[end - start] = 0x00;
@@ -51,14 +63,16 @@ SN_FUNC_OF((snObject **dst, snObject *src, snSSize start, snSSize end))
 
     memcpy((*dst)->buf, src->buf + start, (*dst)->size);
 
-    return snErr_OK;
+    snErr_return(error, snErr_OK, "OK.");
 }
 
-SN_PUBLIC(snError) snString_Scanf SN_OPEN_API
+SN_PUBLIC(snErr_ctx) snString_Scanf SN_OPEN_API
 SN_FUNC_OF((snByte *buf, snSize size))
 {
-    if(!buf || !size)
-        return snErr_ErrInvalid;
+    snErr_ctx error;
+    if(!buf || !size) {
+        snErr_return(error, snErr_ErrNullData, "snString_Scanf: buf or size is NULL.");
+    }
 
     for(snSize x = 0; x < size; ++x) {
         if((buf[x] = getchar()) == 0x0a) {
@@ -68,54 +82,62 @@ SN_FUNC_OF((snByte *buf, snSize size))
     }
 
     if(!(*buf)) {
-        return snErr_ErrNullData;
+        snErr_return(error, snErr_ErrNullData, "snString_Scanf: buf or size is NULL.");
     }
-    return snErr_OK;
+    snErr_return(error, snErr_OK, "OK.");
 }
 
-SN_PUBLIC(snError) snString_Reverse SN_OPEN_API
+SN_PUBLIC(snErr_ctx) snString_Reverse SN_OPEN_API
 SN_FUNC_OF((snByte *data, snSize size))
 {
+    snErr_ctx error;
     if(!data || !size) {
-        return snErr_ErrNullData;
+        snErr_return(error, snErr_ErrNullData, "snString_Reverse: buf or size is NULL.");
     }
-    static snSize buf, i;
+    snSize i;
+    snByte buf;
     for(i = 0; i < size / 2; ++i) {
         buf = data[i];
         data[i] = data[size - i - 1];
         data[size - i - 1] = buf;
     }
-    return snErr_OK;
+    snErr_return(error, snErr_OK, "OK.");
 }
 
-SN_PUBLIC(snError) snString_Binary SN_OPEN_API
-SN_FUNC_OF((snByte **buf, snSize n))
+SN_PUBLIC(snErr_ctx) snString_Binary SN_OPEN_API
+SN_FUNC_OF((snByte **dst, snSize src))
 {
-    static snSize temp;
-    static snSize size;
-    static snSize i;
-
-    for(temp = n, size = 0; temp; size += 8, temp >>= 8) {}
-
-    if(!(*buf)) {
-        if(!((*buf) = (snByte *)malloc(size + 1))) {
-            return snErr_ErrMemory;
-        }
+    snErr_ctx error;
+    if(!dst || !src) {
+        snErr_return(error, snErr_ErrNullData, "snString_Binary: dst or src is NULL.");
     }
-    (*buf)[size] = 0x00;
-    memset((*buf), 0x30, size);
+    snSize temp;
+    snSize size;
+    snSize i;
 
-    for(i = 0; n; n >>= 1, ++i) {
-        (*buf)[i] = (n & 0x1) + 0x30;
+    for(temp = src, size = 0; temp; size += 8, temp >>= 8) {}
+
+    if(!snMemoryNew(snByte *, (*dst), size + 1)) {
+        snErr_return(error, snErr_ErrMemory,
+            "snString_Binary: (*dst) Failed to apply for memory.");
+    }
+    (*dst)[size] = 0x00;
+    memset((*dst), 0x30, size);
+
+    for(i = 0; src; src >>= 1, ++i) {
+        (*dst)[i] = (src & 0x1) + 0x30;
     }
 
-    snString_Reverse((*buf), size);
-    return snErr_OK;
+    snString_Reverse((*dst), size);
+    snErr_return(error, snErr_OK, "OK.");
 }
 
 SN_PUBLIC(snBool) snString_Compare SN_OPEN_API
 SN_FUNC_OF((snByte *src1, snByte *src2, snSize size))
 {
+    if(!src1 || !src2 || size) {
+        return false;
+    }
     if(!strncmp((snChar *)src1, (snChar *)src2, size)) {
         return true;
     } else {

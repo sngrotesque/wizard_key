@@ -106,7 +106,7 @@ SN_FUNC_OF((snKey_state *buf))
     }
 }
 
-SN_PUBLIC(snError) snKey_new SN_OPEN_API
+SN_PUBLIC(snErr_ctx) snKey_new SN_OPEN_API
 SN_FUNC_OF((snKey_ctx **obj, snByte *key, snSize keySize, snBool mode))
 {
     if(!obj)
@@ -130,7 +130,7 @@ SN_FUNC_OF((snKey_ctx **obj, snByte *key, snSize keySize, snBool mode))
     return snErr_OK;
 }
 
-SN_PUBLIC(snError) snKey_free SN_OPEN_API
+SN_PUBLIC(snErr_ctx) snKey_free SN_OPEN_API
 SN_FUNC_OF((snKey_ctx **obj))
 {
     if(!obj)
@@ -144,7 +144,7 @@ SN_FUNC_OF((snKey_ctx **obj))
     return snErr_OK;
 }
 
-SN_PUBLIC(snError) snKey_CryptKey SN_OPEN_API
+SN_PUBLIC(snErr_ctx) snKey_CryptKey SN_OPEN_API
 SN_FUNC_OF((snKey_ctx *obj))
 {
     if(!obj)
@@ -162,13 +162,13 @@ SN_FUNC_OF((snKey_ctx *obj))
     return snErr_OK;
 }
 
-SN_PUBLIC(snError) snKey_loadKey SN_OPEN_API
+SN_PUBLIC(snErr_ctx) snKey_loadKey SN_OPEN_API
 SN_FUNC_OF((snKey_ctx *obj, snString fn))
 {
     return snErr_OK;
 }
 
-SN_PUBLIC(snError) snKey_saveKey SN_OPEN_API
+SN_PUBLIC(snErr_ctx) snKey_saveKey SN_OPEN_API
 SN_FUNC_OF((snKey_ctx *obj, snString fn))
 {
     static snBase64_ctx *base64 = snNull;

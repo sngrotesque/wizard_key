@@ -1,6 +1,6 @@
 #include <snObject.h>
 
-SN_PUBLIC(snError) snObject_new SN_OPEN_API
+SN_PUBLIC(snErr_ctx) snObject_new SN_OPEN_API
 SN_FUNC_OF((snObject **obj, snSize _memory_size, snBool _Clear_memory))
 {
     if(!snMemoryNew(snObject *, (*obj), sizeof(snObject)))
@@ -20,7 +20,7 @@ SN_FUNC_OF((snObject **obj, snSize _memory_size, snBool _Clear_memory))
     return snErr_OK;
 }
 
-SN_PUBLIC(snError) snObject_free SN_OPEN_API
+SN_PUBLIC(snErr_ctx) snObject_free SN_OPEN_API
 SN_FUNC_OF((snObject **obj))
 {
     if(!obj)

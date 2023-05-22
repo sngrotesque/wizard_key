@@ -1,6 +1,6 @@
 #include <snLinkList.h>
 
-SN_PUBLIC(snError) snLinkList_new SN_OPEN_API
+SN_PUBLIC(snErr_ctx) snLinkList_new SN_OPEN_API
 SN_FUNC_OF((snLink **obj, snSize length))
 {
     if(!length || !obj) {
@@ -28,7 +28,7 @@ SN_FUNC_OF((snLink **obj, snSize length))
     return snErr_OK;
 }
 
-SN_PUBLIC(snError) snLinkList_free SN_OPEN_API
+SN_PUBLIC(snErr_ctx) snLinkList_free SN_OPEN_API
 SN_FUNC_OF((snLink **obj))
 {
     if(!obj || !(*obj)) {

@@ -25,22 +25,22 @@ typedef struct {
 } snKey_ctx;
 
 // 初始化snKey对象
-SN_PUBLIC(snError) snKey_new SN_OPEN_API
+SN_PUBLIC(snErr_ctx) snKey_new SN_OPEN_API
 SN_FUNC_OF((snKey_ctx **obj, snByte *key, snSize keySize, snBool mode));
 
 // 释放snKey对象
-SN_PUBLIC(snError) snKey_free SN_OPEN_API
+SN_PUBLIC(snErr_ctx) snKey_free SN_OPEN_API
 SN_FUNC_OF((snKey_ctx **obj));
 
 // 密钥加密函数（只能处理4的倍数长度的密钥）
-SN_PUBLIC(snError) snKey_CryptKey SN_OPEN_API
+SN_PUBLIC(snErr_ctx) snKey_CryptKey SN_OPEN_API
 SN_FUNC_OF((snKey_ctx *obj));
 
 // 导入密钥
-SN_PUBLIC(snError) snKey_loadKey SN_OPEN_API
+SN_PUBLIC(snErr_ctx) snKey_loadKey SN_OPEN_API
 SN_FUNC_OF((snKey_ctx *obj, snString fn));
 
 // 保存密钥
-SN_PUBLIC(snError) snKey_saveKey SN_OPEN_API
+SN_PUBLIC(snErr_ctx) snKey_saveKey SN_OPEN_API
 SN_FUNC_OF((snKey_ctx *obj, snString fn));
 #endif

@@ -55,7 +55,6 @@ static snByte iv[32] = {
 
 void test()
 {
-    snFloat a = 0;
     
 }
 

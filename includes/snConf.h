@@ -71,9 +71,13 @@ typedef FILE        snFile;   // 文件类型
 #   define snErr_OK                0ULL  // 一切正常
 #   define snErr_Err64            -1ULL  // 一般：64位的错误
 #   define snErr_Err32            -1U    // 一般：32位的错误
+
+/**针对这些错误做一下优化，因为目前具有二义性************/
 #   define snErr_ErrInvalid       -2ULL  // 一般：错误的参数
 #   define snErr_ErrNullData      -3ULL  // 一般：不应是空数据
 #   define snErr_ErrType          -4ULL  // 一般：错误的类型
+/*************************************************************/
+
 #   define snErr_ErrOutRange      -5ULL  // 一般：超过规定范围
 #   define snErr_ErrInvalidRange  -6ULL  // 一般：起始范围超过末尾范围
 #   define snErr_ErrMemory        -7ULL  // 一般：内存错误（Memory failure）
@@ -92,7 +96,8 @@ typedef FILE        snFile;   // 文件类型
 #   define snErr_NetSetSockOpt     15ULL // 网络：setsockopt函数错误
 #   define snErr_FileFolderPath    32ULL // 文件：错误的路径
 #   define snErr_FileNull          33ULL // 文件：空文件
-#   define snErr_FileClose         34ULL // 文件：文件关闭失败
+#   define snErr_FileOpen          34ULL // 文件：打开失败
+#   define snErr_FileClose         35ULL // 文件：关闭失败
 //  赋值snErr对象并Return
 #   define snErr_return(error, _code, _message) \
     error.message = _message; error.code = _code; \
