@@ -1,4 +1,4 @@
-### Shark Coast
+# Shark Coast
 > Shark_Coast by SN-Grotesque
 
 ```text
@@ -8,13 +8,13 @@
 并且有良好的代码注释。
 ```
 
-### 特别鸣谢
+## 特别鸣谢
  - [OpenSSL](https://github.com/openssl/openssl)
  - [libpng](http://libpng.org/pub/png/)
  - [Python](https://www.python.org/)
  - [Zlib](https://github.com/madler/zlib)
 
-# v4.8.0
+### v4.8.0
 1. 改变了错误代码的类型，将同时返回错误代码与错误文本，更好的纠错。
     为`snConf.h`中定义的错误类型更正了其值所代表的错误含义。
     删除了以往的`snError`类型，新增了`snErr_ctx`类型，为了消除二义性
