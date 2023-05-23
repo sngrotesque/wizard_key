@@ -3,8 +3,9 @@
 
 ### 特别感谢这些开源项目
  - [OpenSSL](https://github.com/openssl/openssl)
- - [Zlib](https://github.com/madler/zlib)
+ - [libpng](http://libpng.org/pub/png/)
  - [Python](https://www.python.org/)
+ - [Zlib](https://github.com/madler/zlib)
 
 ```text
 这是由SN-Grotesque自主开发的代码框架，用于开发未来的程序。
