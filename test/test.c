@@ -1,34 +1,36 @@
 #include <network/snNet.h>
-// #include <image/snPng.h>
-// #include <crypto/snc.h>
-// #include <crypto/snt.h>
-// #include <snBinascii.h>
-// #include <snPadding.h>
-// #include <snBase64.h>
-// #include <snObject.h>
-// #include <snFile.h>
-// #include <snHash.h>
-// #include <snMisc.h>
-// #include <snMath.h>
-// #include <snTime.h>
-// #include <snRand.h>
-// #include <snNum.h>
+#include <image/snPng.h>
+#include <crypto/snc.h>
+#include <snBinascii.h>
+#include <snPadding.h>
+#include <snHexdump.h>
+#include <snBase64.h>
+#include <snObject.h>
+#include <snFile.h>
+#include <snHash.h>
+#include <snMisc.h>
+#include <snMath.h>
+#include <snTime.h>
+#include <snRand.h>
+#include <snKey.h>
+#include <snNum.h>
 
 #include <network/snNet.c>
-// #include <image/snPng.c>
-// #include <crypto/snc.c>
-// #include <crypto/snt.c>
-// #include <snBinascii.c>
-// #include <snPadding.c>
-// #include <snBase64.c>
-// #include <snObject.c>
-// #include <snFile.c>
-// #include <snHash.c>
-// #include <snMisc.c>
-// #include <snMath.c>
-// #include <snTime.c>
-// #include <snRand.c>
-// #include <snNum.c>
+#include <image/snPng.c>
+#include <crypto/snc.c>
+#include <snBinascii.c>
+#include <snPadding.c>
+#include <snHexdump.c>
+#include <snBase64.c>
+#include <snObject.c>
+#include <snFile.c>
+#include <snHash.c>
+#include <snMisc.c>
+#include <snMath.c>
+#include <snTime.c>
+#include <snRand.c>
+#include <snKey.c>
+#include <snNum.c>
 
 #define CIPHER_TEST false
 
@@ -55,20 +57,7 @@ static snByte iv[32] = {
 
 void test()
 {
-    snNet_ctx *net = snNull;
-    snNetBuf *sendbuf = (snNetBuf *)"GET / HTTP/1.1\r\nHost: www.bilibili.com\r\nUser-Agent: Android\r\n\r\n";
-    snNetBuf recvbuf[4096];
-    snMemoryZero(recvbuf, 4096);
-
-    snNet_new(&net, AF_INET);
-    snNet_init(net, "www.bilibili.com", 80, false);
-    snNet_connect(net);
-    snNet_send(net, snNull, sendbuf, strlen((char*)sendbuf));
-    snNet_recv(net, snNull, recvbuf, 4096);
-    snNet_close(net);
-    snNet_free(&net);
-
-    printf("%s\n", recvbuf);
+    printf("%s\n", SN_SET_TEXT_COLOR(SN_ALL_COLOR_FLICKER, "hello, world."));
 }
 
 int main(int argc, char **argv)

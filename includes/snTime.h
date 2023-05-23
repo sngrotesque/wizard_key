@@ -26,12 +26,8 @@ typedef struct {
 } snTime_ctx;
 
 // 获取当前时间。格式：年月日-时分秒
-SN_PUBLIC(snChar *) snTime_GetNowTime SN_OPEN_API
-SN_FUNC_OF((snVoid));
-
-// 获取当前的毫秒
-SN_PUBLIC(snFloat) snTime_GetNowSec SN_OPEN_API
-SN_FUNC_OF((snVoid));
+SN_PUBLIC(snErr_ctx) snTime_GetNowTime SN_OPEN_API
+SN_FUNC_OF((snChar **dst));
 
 // 开始计时
 SN_PUBLIC(snVoid) snTime_TimerBegin SN_OPEN_API

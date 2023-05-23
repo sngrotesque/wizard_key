@@ -232,6 +232,7 @@ typedef struct {
 #   endif
 #   if defined(__SN_COLOR)
 #       define SN_ALL_COLOR_RESET         "\x1b[0m"  // 重置所有颜色
+#       define SN_ALL_COLOR_FLICKER       "\x1b[5m"  // 闪烁的字符
 #       define SN_FORE_COLOR_BLACK        "\x1b[30m" // 黑色（前景）
 #       define SN_FORE_COLOR_RED          "\x1b[31m" // 红色（前景）
 #       define SN_FORE_COLOR_GREEN        "\x1b[32m" // 绿色（前景）
@@ -263,7 +264,7 @@ typedef struct {
 #       define SN_BACK_COLOR_LIGHTMAGENTA "\x1b[105m" // 亮紫色（背景）
 #       define SN_BACK_COLOR_LIGHTCYAN    "\x1b[106m" // 亮青色（背景）
 #       define SN_BACK_COLOR_LIGHTWHITE   "\x1b[107m" // 亮白色（背景）
-#       define SN_SET_TEXT_COLOR(text, color) color text SN_ALL_COLOR_RESET
+#       define SN_SET_TEXT_COLOR(color, text) color text SN_ALL_COLOR_RESET
 #   endif // #if defined(__SN_COLOR)
 #endif // #if defined(SN_ENABLE_FEATURES)
 

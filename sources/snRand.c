@@ -39,7 +39,7 @@ SN_FUNC_OF((snVoid))
             num[x] = rand() ^ (rand() ^ (rand() & rand()));
         }
         n = (n + (n ^ num[count])) ^ count;
-        n = (n + rand()) ^ snSwapByte((count + (rand() ^ (n - num[x]))) & 0xff);
+        n = (n + rand()) ^ snSwapByte((count + (rand() ^ (n - num[count]))) & 0xff);
     }
 
     return n;
