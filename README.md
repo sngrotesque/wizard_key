@@ -10,9 +10,7 @@
 
 ### v4.8.0
 1. 改变了错误代码的类型，将同时返回错误代码与错误文本，更好的纠错。
-
     为`snConf.h`中定义的错误类型更正了其值所代表的错误含义。
-
     删除了以往的`snError`类型，新增了`snErr_ctx`类型，为了消除二义性
     将`snErr_ErrNullData`错误代码更名为了`snErr_ErrNULL`，删除
     了`snErr_ErrInvalid`错误类型。
