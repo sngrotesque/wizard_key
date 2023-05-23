@@ -1,12 +1,6 @@
 ### Shark Coast
 > Shark_Coast by SN-Grotesque
 
-### 特别感谢这些开源项目
- - [OpenSSL](https://github.com/openssl/openssl)
- - [libpng](http://libpng.org/pub/png/)
- - [Python](https://www.python.org/)
- - [Zlib](https://github.com/madler/zlib)
-
 ```text
 这是由SN-Grotesque自主开发的代码框架，用于开发未来的程序。
 这个框架提供了SNC对称加密算法，字节码处理，哈希算法处理等功能。
@@ -14,7 +8,13 @@
 并且有良好的代码注释。
 ```
 
-### v4.8.0
+### 特别鸣谢
+ - [OpenSSL](https://github.com/openssl/openssl)
+ - [libpng](http://libpng.org/pub/png/)
+ - [Python](https://www.python.org/)
+ - [Zlib](https://github.com/madler/zlib)
+
+# v4.8.0
 1. 改变了错误代码的类型，将同时返回错误代码与错误文本，更好的纠错。
     为`snConf.h`中定义的错误类型更正了其值所代表的错误含义。
     删除了以往的`snError`类型，新增了`snErr_ctx`类型，为了消除二义性
