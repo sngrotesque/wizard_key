@@ -456,7 +456,7 @@ SN_FUNC_OF((SNC_ctx **ctx, SNC_mode mode))
     snErr_ctx error;
 
     if(!ctx) {
-        snErr_return(error, snErr_ErrNullData, "ctx is NULL.");
+        snErr_return(error, snErr_ErrNULL, "ctx is NULL.");
     }
 
     if(!snMemoryNew(SNC_ctx *, (*ctx), sizeof(SNC_ctx))) {
@@ -477,7 +477,7 @@ SN_FUNC_OF((SNC_ctx **ctx))
 {
     snErr_ctx error;
     if(!ctx) {
-        snErr_return(error, snErr_ErrNullData, "ctx is NULL.");
+        snErr_return(error, snErr_ErrNULL, "ctx is NULL.");
     }
 
     memset((*ctx)->iv, 0x00, SNC_BLOCKLEN);
@@ -497,7 +497,7 @@ SN_FUNC_OF((SNC_ctx *ctx, snByte *keyBuf, snByte *ivBuf))
 {
     snErr_ctx error;
     if(!ctx || !keyBuf || !ivBuf) {
-        snErr_return(error, snErr_ErrNullData, "ctx or keyBuf or ivBuf is NULL.");
+        snErr_return(error, snErr_ErrNULL, "ctx or keyBuf or ivBuf is NULL.");
     }
 
     snByte *key = snNull;

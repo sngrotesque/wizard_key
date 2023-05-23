@@ -6,7 +6,7 @@ SN_FUNC_OF((snTransfer_ctx **net, snString addr, sn_u16 port, sn_u32 maxRetry))
     snErr_ctx error;
 
     if(!net || !addr) {
-        snErr_return(error, snErr_ErrNullData, "snTransfer_new: net or addr is NULL.");
+        snErr_return(error, snErr_ErrNULL, "snTransfer_new: net or addr is NULL.");
     }
     if(!snMemoryNew(snTransfer_ctx *, (*net), sizeof(snTransfer_ctx))) {
         snErr_return(error, snErr_ErrMemory,
@@ -35,7 +35,7 @@ SN_FUNC_OF((snTransfer_ctx **net))
 {
     snErr_ctx error;
     if(!net) {
-        snErr_return(error, snErr_ErrNullData, "snTransfer_free: net is NULL.");
+        snErr_return(error, snErr_ErrNULL, "snTransfer_free: net is NULL.");
     }
 
     if((*net)->snc) {
@@ -51,7 +51,7 @@ SN_FUNC_OF((snTransfer_ctx *net, snFileStr fn))
 {
     snErr_ctx error;
     if(!net || !net->addr || !net->port || !fn) {
-        snErr_return(error, snErr_ErrNullData,
+        snErr_return(error, snErr_ErrNULL,
             "snTransfer_Listen: net or net->addr or net->port or fn is NULL.");
     }
     if(!net->maxRetry) {
@@ -66,7 +66,7 @@ SN_FUNC_OF((snTransfer_ctx *net, snFileStr fn))
 {
     snErr_ctx error;
     if(!net || !net->addr || !net->port || !fn) {
-        snErr_return(error, snErr_ErrNullData,
+        snErr_return(error, snErr_ErrNULL,
             "snTransfer_Listen: net or net->addr or net->port or fn is NULL.");
     }
     if(!net->maxRetry) {

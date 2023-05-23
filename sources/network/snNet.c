@@ -7,7 +7,7 @@ SN_FUNC_OF((snNet_ctx **net, sn_u32 family))
     snErr_ctx error;
 
     if(!net) {
-        snErr_return(error, snErr_ErrNullData, "snNet_new: net is NULL.");
+        snErr_return(error, snErr_ErrNULL, "snNet_new: net is NULL.");
     }
 
     if(!snMemoryNew(snNet_ctx *, (*net), sizeof(snNet_ctx))) {
@@ -40,7 +40,7 @@ SN_FUNC_OF((snNet_ctx **net))
 {
     snErr_ctx error;
     if(!net) {
-        snErr_return(error, snErr_ErrNullData, "snNet_free: net is NULL.");
+        snErr_return(error, snErr_ErrNULL, "snNet_free: net is NULL.");
     }
 
     if((*net)->addr_info) {
@@ -60,7 +60,7 @@ SN_FUNC_OF((snNet_ctx *net, snString hostname, sn_u16 port, snBool UDP))
     snErr_ctx error;
 
     if(!net) {
-        snErr_return(error, snErr_ErrNullData, "snNet_init: net is NULL.");
+        snErr_return(error, snErr_ErrNULL, "snNet_init: net is NULL.");
     }
     if((net->sockfdFamily != AF_INET) && (net->sockfdFamily != AF_INET6)) {
         snErr_return(error, snErr_NetFamily,
@@ -121,7 +121,7 @@ SN_FUNC_OF((snNet_ctx *net, snString hostname))
     snErr_ctx error;
 
     if(!net || !hostname || !net->addr_info) {
-        snErr_return(error, snErr_ErrNullData,
+        snErr_return(error, snErr_ErrNULL,
             "snNet_resolveAddress: net or hostname or net->addr_info is NULL.");
     }
 
@@ -153,7 +153,7 @@ SN_FUNC_OF((snNet_ctx *net, snNetTime _user_TimeOut))
 {
     snErr_ctx error;
     if(!net) {
-        snErr_return(error, snErr_ErrNullData, "snNet_timeout: net is NULL.");
+        snErr_return(error, snErr_ErrNULL, "snNet_timeout: net is NULL.");
     }
 
     snNetSize optlen = sizeof(struct timeval);
@@ -181,7 +181,7 @@ SN_FUNC_OF((snNet_ctx *net))
 {
     snErr_ctx error;
     if(!net) {
-        snErr_return(error, snErr_ErrNullData, "snNet_connect: net is NULL.");
+        snErr_return(error, snErr_ErrNULL, "snNet_connect: net is NULL.");
     }
     if(net->sockfdType == SN_NET_UDP_TYPE) {
         snErr_return(error, snErr_NetSockfdType,
@@ -203,7 +203,7 @@ SN_FUNC_OF((snNet_ctx *net, snNetTime _user_TimeOut))
 {
     snErr_ctx error;
     if(!net) {
-        snErr_return(error, snErr_ErrNullData, "snNet_bind: net is NULL.");
+        snErr_return(error, snErr_ErrNULL, "snNet_bind: net is NULL.");
     }
 
     snNetTimer *optval = snNull;
@@ -234,7 +234,7 @@ SN_FUNC_OF((snNet_ctx *net, sn_u32 _Listen))
 {
     snErr_ctx error;
     if(!net) {
-        snErr_return(error, snErr_ErrNullData, "snNet_listen: net is NULL.");
+        snErr_return(error, snErr_ErrNULL, "snNet_listen: net is NULL.");
     }
 
     // 监听连接，失败或者Socket类型不正确就返回错误代码
@@ -260,10 +260,10 @@ SN_FUNC_OF((snNet_ctx *dst, snNet_ctx *src))
 {
     snErr_ctx error;
     if(!dst || !src) {
-        snErr_return(error, snErr_ErrNullData, "snNet_accept: dst or src is NULL.");
+        snErr_return(error, snErr_ErrNULL, "snNet_accept: dst or src is NULL.");
     }
     if(!dst->addr_info || !src->addr_info) {
-        snErr_return(error, snErr_ErrNullData,
+        snErr_return(error, snErr_ErrNULL,
             "snNet_accept: dst->addr_info or src->addr_info is NULL.");
     }
 
@@ -288,7 +288,7 @@ SN_FUNC_OF((snNet_ctx *net, snNetSize *_tSize, snNetBuf *buf, snNetSize size))
 {
     snErr_ctx error;
     if(!net || !buf || !size) {
-        snErr_return(error, snErr_ErrNullData,
+        snErr_return(error, snErr_ErrNULL,
             "snNet_send: net or buf or size is NULL.");
     }
     if(!_tSize) {
@@ -327,7 +327,7 @@ SN_FUNC_OF((snNet_ctx *net, snNetBuf *buf, snNetSize size))
 {
     snErr_ctx error;
     if(!net || !buf || !size) {
-        snErr_return(error, snErr_ErrNullData,
+        snErr_return(error, snErr_ErrNULL,
             "snNet_sendall: net or buf or size is NULL.");
     }
     snNetSize index, quotient, leftover, _tSize;
@@ -363,7 +363,7 @@ SN_FUNC_OF((snNet_ctx* net, snNetSize *_tSize, snNetBuf *buf, snNetSize size))
 {
     snErr_ctx error;
     if(!net || !buf || !size) {
-        snErr_return(error, snErr_ErrNullData,
+        snErr_return(error, snErr_ErrNULL,
             "snNet_recv: net or buf or size is NULL.");
     }
     if(!_tSize) {
@@ -401,7 +401,7 @@ SN_FUNC_OF((snNet_ctx *net))
 {
     snErr_ctx error;
     if(!net) {
-        snErr_return(error, snErr_ErrNullData, "snNet_close: net is NULL.");
+        snErr_return(error, snErr_ErrNULL, "snNet_close: net is NULL.");
     }
 
     // 判断系统类型，根据对应系统使用不同的关闭函数将Socket与WSADATA进行关闭

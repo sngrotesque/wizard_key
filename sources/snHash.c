@@ -21,7 +21,7 @@ SN_FUNC_OF((snHash_ctx **obj, snHash_HashType hashType))
 {
     snErr_ctx error;
     if(!obj) {
-        snErr_return(error, snErr_ErrNullData, "snHash_new: obj is NULL.");
+        snErr_return(error, snErr_ErrNULL, "snHash_new: obj is NULL.");
     }
     if((sn_u32)hashType > 5) {
         snErr_return(error, snErr_ErrType,
@@ -62,7 +62,7 @@ SN_FUNC_OF((snHash_ctx *hash, snByte *buf, snSize size))
 {
     snErr_ctx error;
     if(!hash || !buf || !size) {
-        snErr_return(error, snErr_ErrNullData, "snHash: hash or buf or size is NULL.");
+        snErr_return(error, snErr_ErrNULL, "snHash: hash or buf or size is NULL.");
     }
     EVP_MD_CTX *md_ctx = EVP_MD_CTX_new();
 
@@ -84,7 +84,7 @@ SN_FUNC_OF((snHash_ctx *hash, snFileStr fn))
 {
     snErr_ctx error;
     if(!hash || !fn) {
-        snErr_return(error, snErr_ErrNullData,
+        snErr_return(error, snErr_ErrNULL,
             "snHash_file: hash or fn is NULL.");
     }
     EVP_MD_CTX *md_ctx = snNull;
@@ -144,7 +144,7 @@ SN_FUNC_OF((snHash_ctx **obj))
 {
     snErr_ctx error;
     if(!obj) {
-        snErr_return(error, snErr_ErrNullData, "snHash_free: obj is NULL.");
+        snErr_return(error, snErr_ErrNULL, "snHash_free: obj is NULL.");
     }
     if((*obj)->hexdigest) {
         snMemoryFree((*obj)->hexdigest);

@@ -5,13 +5,13 @@ SN_FUNC_OF((snObject **dst, snObject *left, snObject *right))
 {
     snErr_ctx error;
     if(!dst || !left || !right) {
-        snErr_return(error, snErr_ErrNullData,
+        snErr_return(error, snErr_ErrNULL,
             "snString_Splicing: dst or left or right is NULL.");
     }
 
     (*dst)->size = (left->size + right->size);
     if(!(*dst)->size) {
-        snErr_return(error, snErr_ErrNullData, "snString_Splicing: dst->size is zero.");
+        snErr_return(error, snErr_ErrNULL, "snString_Splicing: dst->size is zero.");
     }
 
     snObject_new(dst, (left->size + right->size) + 1, true);
@@ -71,7 +71,7 @@ SN_FUNC_OF((snByte *buf, snSize size))
 {
     snErr_ctx error;
     if(!buf || !size) {
-        snErr_return(error, snErr_ErrNullData, "snString_Scanf: buf or size is NULL.");
+        snErr_return(error, snErr_ErrNULL, "snString_Scanf: buf or size is NULL.");
     }
 
     for(snSize x = 0; x < size; ++x) {
@@ -82,7 +82,7 @@ SN_FUNC_OF((snByte *buf, snSize size))
     }
 
     if(!(*buf)) {
-        snErr_return(error, snErr_ErrNullData, "snString_Scanf: buf or size is NULL.");
+        snErr_return(error, snErr_ErrNULL, "snString_Scanf: buf is NULL.");
     }
     snErr_return(error, snErr_OK, "OK.");
 }
@@ -92,7 +92,7 @@ SN_FUNC_OF((snByte *data, snSize size))
 {
     snErr_ctx error;
     if(!data || !size) {
-        snErr_return(error, snErr_ErrNullData, "snString_Reverse: buf or size is NULL.");
+        snErr_return(error, snErr_ErrNULL, "snString_Reverse: buf or size is NULL.");
     }
     snSize i;
     snByte buf;
@@ -109,7 +109,7 @@ SN_FUNC_OF((snByte **dst, snSize src))
 {
     snErr_ctx error;
     if(!dst || !src) {
-        snErr_return(error, snErr_ErrNullData, "snString_Binary: dst or src is NULL.");
+        snErr_return(error, snErr_ErrNULL, "snString_Binary: dst or src is NULL.");
     }
     snSize temp;
     snSize size;

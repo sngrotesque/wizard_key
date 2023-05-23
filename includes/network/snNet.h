@@ -45,8 +45,8 @@
 
 #if defined(__linux)
 #include <netdb.h>
-#include <resolv.h>
 #include <unistd.h>
+#include <sys/time.h>
 #include <arpa/inet.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -120,7 +120,7 @@ SN_FUNC_OF((snNet_ctx *ctx, sn_u32 _Listen));
 SN_PUBLIC(snErr_ctx) snNet_accept SN_OPEN_API
 SN_FUNC_OF((snNet_ctx *dst, snNet_ctx *src));
 
-// 发送函数，_tSize用来保存本次传输的长度
+// 发送函数，_tSize用来保存本次传输的长度（可以为空）
 SN_PUBLIC(snErr_ctx) snNet_send SN_OPEN_API
 SN_FUNC_OF((snNet_ctx *ctx, snNetSize *_tSize, snNetBuf *buf, snNetSize size));
 
@@ -128,7 +128,7 @@ SN_FUNC_OF((snNet_ctx *ctx, snNetSize *_tSize, snNetBuf *buf, snNetSize size));
 SN_PUBLIC(snErr_ctx) snNet_sendall SN_OPEN_API
 SN_FUNC_OF((snNet_ctx *ctx, snNetBuf *buf, snNetSize size));
 
-// 接收函数，_tSize用来保存本次传输的长度
+// 接收函数，_tSize用来保存本次传输的长度（可以为空）
 SN_PUBLIC(snErr_ctx) snNet_recv SN_OPEN_API
 SN_FUNC_OF((snNet_ctx* ctx, snNetSize *_tSize, snNetBuf *buf, snNetSize size));
 

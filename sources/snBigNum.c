@@ -5,7 +5,7 @@ SN_FUNC_OF((snChar *number_string, snSize size))
 {
     snErr_ctx error;
     if(!number_string || !size) {
-        snErr_return(error, snErr_ErrNullData,
+        snErr_return(error, snErr_ErrNULL,
             "snBigNum_ArrayReversal: number_string or size is NULL.");
     }
     static snSize i;
@@ -60,14 +60,14 @@ SN_FUNC_OF((snChar **dst, snChar *src1, snChar *src2))
     */
     snErr_ctx error;
     if(!dst || !src1 || !src2) {
-        snErr_return(error, snErr_ErrNullData,
+        snErr_return(error, snErr_ErrNULL,
             "snBigNum_add: dst or src1 or src2 is NULL.");
     }
 
     snSize src1Size = strlen(src1);
     snSize src2Size = strlen(src2);
     if(!src1Size || !src2Size) {
-        snErr_return(error, snErr_ErrNullData,
+        snErr_return(error, snErr_ErrNULL,
             "snBigNum_add: src1Size or src2Size is NULL.");
     }
 

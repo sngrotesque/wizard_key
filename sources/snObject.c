@@ -5,7 +5,7 @@ SN_FUNC_OF((snObject **obj, snSize _memory_size, snBool _Clear_memory))
 {
     snErr_ctx error;
     if(!obj) {
-        snErr_return(error, snErr_ErrNullData, "snObject_new: obj is NULL.");
+        snErr_return(error, snErr_ErrNULL, "snObject_new: obj is NULL.");
     }
 
     if(!snMemoryNew(snObject *, (*obj), sizeof(snObject))) {
@@ -34,7 +34,7 @@ SN_FUNC_OF((snObject **obj))
 {
     snErr_ctx error;
     if(!obj) {
-        snErr_return(error, snErr_ErrNullData, "snObject_new: obj is NULL.");
+        snErr_return(error, snErr_ErrNULL, "snObject_new: obj is NULL.");
     }
 
     if((*obj)->buf) {

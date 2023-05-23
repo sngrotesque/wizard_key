@@ -40,7 +40,7 @@ SN_FUNC_OF((snBase64_ctx **obj))
     snErr_ctx error;
 
     if(!obj) {
-        snErr_return(error, snErr_ErrNullData, "snBase64_new: obj is NULL.");
+        snErr_return(error, snErr_ErrNULL, "snBase64_new: obj is NULL.");
     }
     if(!snMemoryNew(snBase64_ctx *, (*obj), sizeof(snBase64_ctx))) {
         snErr_return(error, snErr_ErrMemory,
@@ -64,7 +64,7 @@ SN_FUNC_OF((snBase64_ctx **obj))
     snErr_ctx error;
 
     if(!obj) {
-        snErr_return(error, snErr_ErrNullData, "snBase64_free: obj is NULL.");
+        snErr_return(error, snErr_ErrNULL, "snBase64_free: obj is NULL.");
     }
     snMemoryFree((*obj)->src);
     snMemoryFree((*obj)->dst);
@@ -78,14 +78,14 @@ SN_FUNC_OF((snObject *dst, snObject *src))
 {
     snErr_ctx error;
     if(!dst || !src) {
-        snErr_return(error, snErr_ErrNullData, "snBase64_Encode: dst or src is null.");
+        snErr_return(error, snErr_ErrNULL, "snBase64_Encode: dst or src is null.");
     }
     if(!dst->buf || !src->buf) {
-        snErr_return(error, snErr_ErrNullData,
+        snErr_return(error, snErr_ErrNULL,
             "snBase64_Encode: dst->buf or src->buf is null.");
     }
     if(!dst->size || !src->size) {
-        snErr_return(error, snErr_ErrNullData,
+        snErr_return(error, snErr_ErrNULL,
             "snBase64_Encode: dst->size or src->size is null.");
     }
     snSize dst_i, src_i;
@@ -115,13 +115,13 @@ SN_FUNC_OF((snObject *dst, snObject *src))
 {
     snErr_ctx error;
     if(!dst || !src) {
-        snErr_return(error, snErr_ErrNullData, "dst or src is null.");
+        snErr_return(error, snErr_ErrNULL, "dst or src is null.");
     }
     if(!dst->buf || !src->buf) {
-        snErr_return(error, snErr_ErrNullData, "dst->buf or src->buf is null.");
+        snErr_return(error, snErr_ErrNULL, "dst->buf or src->buf is null.");
     }
     if(!dst->size || !src->size) {
-        snErr_return(error, snErr_ErrNullData, "dst->size or src->size is null.");
+        snErr_return(error, snErr_ErrNULL, "dst->size or src->size is null.");
     }
     snSize src_i, dst_i;
 

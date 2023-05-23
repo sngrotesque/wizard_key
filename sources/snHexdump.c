@@ -17,7 +17,7 @@ SN_FUNC_OF((snFileStr fn))
 {
     snErr_ctx error;
     if(!fn) {
-        snErr_return(error, snErr_ErrNullData, "snHexdump: fn is NULL.");
+        snErr_return(error, snErr_ErrNULL, "snHexdump: fn is NULL.");
     }
     snFile *fp = snNull;
     snByte buf[SN_HEXDUMP_SIZE];

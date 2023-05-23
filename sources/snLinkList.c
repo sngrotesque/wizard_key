@@ -5,7 +5,7 @@ SN_FUNC_OF((snLink **obj, snSize length))
 {
     snErr_ctx error;
     if(!obj || !length) {
-        snErr_return(error, snErr_ErrNullData,
+        snErr_return(error, snErr_ErrNULL,
             "snLinkList_new: obj or length is NULL.");
     }
     snLink *head = snNull;
@@ -39,8 +39,8 @@ SN_FUNC_OF((snLink **obj))
 {
     snErr_ctx error;
     if(!obj) {
-        snErr_return(error, snErr_ErrNullData,
-            "snLinkList_new: obj or length is NULL.");
+        snErr_return(error, snErr_ErrNULL,
+            "snLinkList_free: obj or length is NULL.");
     }
     snLink *ptr = snNull;
     while(*obj)

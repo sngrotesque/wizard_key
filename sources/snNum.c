@@ -54,11 +54,11 @@ SN_FUNC_OF((snString format, snByte *dst, snSize src))
 {
     snErr_ctx error;
     if(!format || !dst || !src) {
-        snErr_return(error, snErr_ErrNullData,
+        snErr_return(error, snErr_ErrNULL,
             "snNum_pack: format or dst or src is NULL");
     }
     if(!snNum_check_format(format)) {
-        snErr_return(error, snErr_ErrInvalid,
+        snErr_return(error, snErr_ErrType,
             "snNum_pack: Incorrect formatting symbol.");
     }
     snBool little_end = snNum_PlatformEnd();
@@ -128,11 +128,11 @@ SN_FUNC_OF((snString format, snVoid *dst, snByte *src))
     */
     snErr_ctx error;
     if(!format || !dst || !src) {
-        snErr_return(error, snErr_ErrNullData,
+        snErr_return(error, snErr_ErrNULL,
             "snNum_unpack: format or dst or src is NULL");
     }
     if(!snNum_check_format(format)) {
-        snErr_return(error, snErr_ErrInvalid,
+        snErr_return(error, snErr_ErrType,
             "snNum_unpack: Incorrect formatting symbol.");
     }
     snBool little_end = snNum_PlatformEnd();

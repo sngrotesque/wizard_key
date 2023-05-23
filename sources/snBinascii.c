@@ -44,7 +44,7 @@ SN_FUNC_OF((snByte **dst, snByte *src, snSize srcSize))
     snErr_ctx error;
 
     if(!dst || !src || !srcSize) {
-        snErr_return(error, snErr_ErrNullData,
+        snErr_return(error, snErr_ErrNULL,
             "snBinascii_b2a_hex: dst or src or srcSize is NULL.");
     }
     snFast snSize i;
@@ -70,7 +70,7 @@ SN_FUNC_OF((snByte **dst, snByte *src, snSize srcSize))
     snErr_ctx error;
 
     if(!dst || !src || !srcSize) {
-        snErr_return(error, snErr_ErrNullData,
+        snErr_return(error, snErr_ErrNULL,
             "snBinascii_a2b_hex: dst or src or srcSize is NULL.");
     }
     static snSize src_i, dst_i;

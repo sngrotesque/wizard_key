@@ -55,7 +55,20 @@ static snByte iv[32] = {
 
 void test()
 {
-    
+    snNet_ctx *net = snNull;
+    snNetBuf *sendbuf = (snNetBuf *)"GET / HTTP/1.1\r\nHost: www.bilibili.com\r\nUser-Agent: Android\r\n\r\n";
+    snNetBuf recvbuf[4096];
+    snMemoryZero(recvbuf, 4096);
+
+    snNet_new(&net, AF_INET);
+    snNet_init(net, "www.bilibili.com", 80, false);
+    snNet_connect(net);
+    snNet_send(net, snNull, sendbuf, strlen((char*)sendbuf));
+    snNet_recv(net, snNull, recvbuf, 4096);
+    snNet_close(net);
+    snNet_free(&net);
+
+    printf("%s\n", recvbuf);
 }
 
 int main(int argc, char **argv)

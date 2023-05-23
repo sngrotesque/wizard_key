@@ -111,7 +111,7 @@ SN_FUNC_OF((snKey_ctx **obj, snByte *key, snSize keySize, snBool mode))
 {
     snErr_ctx error;
     if(!obj) {
-        snErr_return(error, snErr_ErrNullData, "snKey_new: obj is NULL.");
+        snErr_return(error, snErr_ErrNULL, "snKey_new: obj is NULL.");
     }
 
     if(!snMemoryNew(snKey_ctx *, (*obj), sizeof(snKey_ctx))) {
@@ -141,7 +141,7 @@ SN_FUNC_OF((snKey_ctx **obj))
 {
     snErr_ctx error;
     if(!obj) {
-        snErr_return(error, snErr_ErrNullData, "snKey_free: obj is NULL.");
+        snErr_return(error, snErr_ErrNULL, "snKey_free: obj is NULL.");
     }
 
     if((*obj)->key) {
@@ -157,7 +157,7 @@ SN_FUNC_OF((snKey_ctx *obj))
 {
     snErr_ctx error;
     if(!obj) {
-        snErr_return(error, snErr_ErrNullData, "snKey_CryptKey: obj is NULL.");
+        snErr_return(error, snErr_ErrNULL, "snKey_CryptKey: obj is NULL.");
     }
     if(obj->size % 4) {
         snErr_return(error, snErr_ErrType,

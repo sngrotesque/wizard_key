@@ -5,11 +5,11 @@ SN_FUNC_OF((snFile_ctx **obj))
 {
     snErr_ctx error;
     if(!obj) {
-        snErr_return(error, snErr_ErrNullData, "snFile_new: obj is NULL.");
+        snErr_return(error, snErr_ErrNULL, "snFile_new: obj is NULL.");
     }
     if(!snMemoryNew(snFile_ctx *, (*obj), sizeof(snFile_ctx))) {
         snErr_return(error, snErr_ErrMemory,
-            "snBase64_new: (*obj) Failed to apply for memory.");
+            "snFile_new: (*obj) Failed to apply for memory.");
     }
     (*obj)->data = snNull;
 
@@ -21,7 +21,7 @@ SN_FUNC_OF((snFile_ctx **obj))
 {
     snErr_ctx error;
     if(!obj) {
-        snErr_return(error, snErr_ErrNullData, "snFile_new: obj is NULL.");
+        snErr_return(error, snErr_ErrNULL, "snFile_free: obj is NULL.");
     }
     if((*obj)->data) {
         snMemoryFree((*obj)->data);
@@ -60,7 +60,7 @@ SN_FUNC_OF((snSize *size, snFileStr fn))
             "snFile_fileSize: No files or directories.");
     }
     if(!size) {
-        snErr_return(error, snErr_ErrNullData, "snFile_fileSize: size is NULL.");
+        snErr_return(error, snErr_ErrNULL, "snFile_fileSize: size is NULL.");
     }
 
 #   if defined(__linux)
@@ -131,9 +131,9 @@ SN_PUBLIC(snErr_ctx) snFile_fwrite SN_OPEN_API
 SN_FUNC_OF((snFile_ctx *obj, snFileStr fn))
 {
     snErr_ctx error;
-    if(!obj->data || !obj->size || !fn) {
-        snErr_return(error, snErr_ErrNullData,
-            "snFile_fwrite: obj->data or obj->size or fn is NULL.");
+    if(!obj || !obj->data || !obj->size || !fn) {
+        snErr_return(error, snErr_ErrNULL,
+            "snFile_fwrite: obj or obj->data or obj->size or fn is NULL.");
     }
     snByte *fileData_ptr = snNull;
     snFile *fp = snNull;
