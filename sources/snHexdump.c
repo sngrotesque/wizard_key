@@ -13,7 +13,7 @@ SN_FUNC_OF((snSize offset, snByte *buf, sn_u32 size))
 }
 
 SN_PUBLIC(snErr_ctx) snHexdump SN_OPEN_API
-SN_FUNC_OF((snFileStr fn))
+SN_FUNC_OF((snFileString fn))
 {
     snErr_ctx error;
     if(!fn) {
@@ -24,7 +24,7 @@ SN_FUNC_OF((snFileStr fn))
     snSize offset = 0;
     snSize nRead = 0;
 
-    if(!(fp = snFile_open(fn, snFile_Char("rb")))) {
+    if(!(fp = snFile_fopen(fn, snFile_text("rb")))) {
         snErr_return(error, snErr_FileOpen, "snHexdump: File opening failed.");
     }
 

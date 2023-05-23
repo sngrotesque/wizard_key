@@ -3,7 +3,7 @@ from os import mkdir
 from subprocess import call
 from sys import platform, argv
 
-OUT_PATH = "compiled"
+OUT_PATH = "snCompiled"
 if platform == 'win32':
     PATH_SYMBOL = '\\'
     PROGRAM_NAME = 'main.exe'

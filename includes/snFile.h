@@ -6,14 +6,14 @@
 #if defined(__linux)
 #   include <sys/stat.h>
 #   include <unistd.h>
-#   define snFile_Char(x) x
-#   define snFile_open(fn, mode) fopen(fn, mode)
-typedef snString snFileStr;
+#   define snFile_text(x) x
+#   define snFile_fopen(fn, mode) fopen(fn, mode)
+typedef snString snFileString;
 #elif defined(_WIN32)
 #   include <windows.h>
-#   define snFile_Char(x) L ## x
-#   define snFile_open(fn, mode) _wfopen(fn, mode)
-typedef LPCWSTR snFileStr;
+#   define snFile_text(x) L ## x
+#   define snFile_fopen(fn, mode) _wfopen(fn, mode)
+typedef LPCWSTR snFileString;
 #endif
 
 #define SN_FILE_BLOCKLEN 4096
@@ -35,17 +35,17 @@ SN_FUNC_OF((snFile_ctx **obj));
 
 // 检查路径是否存在
 SN_PUBLIC(snBool) snFile_exists SN_OPEN_API
-SN_FUNC_OF((snFileStr fn));
+SN_FUNC_OF((snFileString fn));
 
 // 获取文件大小
 SN_PUBLIC(snErr_ctx) snFile_fileSize SN_OPEN_API
-SN_FUNC_OF((snSize *size, snFileStr fn));
+SN_FUNC_OF((snSize *size, snFileString fn));
 
 // 整个读取文件
 SN_PUBLIC(snErr_ctx) snFile_fread SN_OPEN_API
-SN_FUNC_OF((snFile_ctx *obj, snFileStr fn));
+SN_FUNC_OF((snFile_ctx *obj, snFileString fn));
 
 // 整个写入文件
 SN_PUBLIC(snErr_ctx) snFile_fwrite SN_OPEN_API
-SN_FUNC_OF((snFile_ctx *obj, snFileStr fn));
+SN_FUNC_OF((snFile_ctx *obj, snFileString fn));
 #endif

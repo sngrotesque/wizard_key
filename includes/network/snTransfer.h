@@ -44,10 +44,10 @@ SN_FUNC_OF((snTransfer_ctx **net));
 
 // 接收端
 SN_PUBLIC(snErr_ctx) snTransfer_Listen SN_OPEN_API
-SN_FUNC_OF((snTransfer_ctx *net, snFileStr fn));
+SN_FUNC_OF((snTransfer_ctx *net, snFileString fn));
 
 // 发送端
 SN_PUBLIC(snErr_ctx) snTransfer_Client SN_OPEN_API
-SN_FUNC_OF((snTransfer_ctx *net, snFileStr fn));
+SN_FUNC_OF((snTransfer_ctx *net, snFileString fn));
 
 #endif // #ifndef __SN_TRANSFER__

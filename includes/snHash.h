@@ -76,7 +76,7 @@ SN_FUNC_OF((snHash_ctx *hash, snByte *buf, snSize size));
 
 // 根据你选择的算法对文件进行哈希计算
 SN_PUBLIC(snErr_ctx) snHash_file SN_OPEN_API
-SN_FUNC_OF((snHash_ctx *hash, snFileStr fn));
+SN_FUNC_OF((snHash_ctx *hash, snFileString fn));
 
 // 释放掉snHash对象
 SN_PUBLIC(snErr_ctx) snHash_free SN_OPEN_API

@@ -20,6 +20,7 @@
 
 // 判断是否是64位系统及以上（如果有的话）
 #if defined(__SIZEOF_SIZE_T__) && (__SIZEOF_SIZE_T__ >= 8)
+
 #define SHARK_COAST_VERSION     "v4.8.0"
 #define SHARK_COAST_VERNUM       0x480
 #define SHARK_COAST_VER_MAJOR    4
@@ -52,7 +53,6 @@ typedef void        snVoid;   // 空类型
 typedef bool        snBool;   // 布尔类型
 typedef FILE        snFile;   // 文件类型
 #endif // #ifndef _SHARK_COAST_DEFINED
-
 
 /***字节交换：0x91 -> 0x19 ****************************/
 #define snSwapByte(x) ((((x) & 0xf) << 4) ^ ((x) >> 4))

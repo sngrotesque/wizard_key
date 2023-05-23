@@ -80,7 +80,7 @@ SN_FUNC_OF((snHash_ctx *hash, snByte *buf, snSize size))
 }
 
 SN_PUBLIC(snErr_ctx) snHash_file SN_OPEN_API
-SN_FUNC_OF((snHash_ctx *hash, snFileStr fn))
+SN_FUNC_OF((snHash_ctx *hash, snFileString fn))
 {
     snErr_ctx error;
     if(!hash || !fn) {
@@ -108,7 +108,7 @@ SN_FUNC_OF((snHash_ctx *hash, snFileStr fn))
     quotient = fileSize / SN_HASH_BLOCKLEN;
     leftover = fileSize % SN_HASH_BLOCKLEN;
 
-    if(!(fp = snFile_open(fn, snFile_Char("rb")))) {
+    if(!(fp = snFile_fopen(fn, snFile_text("rb")))) {
         snErr_return(error, snErr_FileOpen, "snHash_file: File opening failed.");
     }
 

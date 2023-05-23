@@ -47,7 +47,7 @@ SN_FUNC_OF((snTransfer_ctx **net))
 }
 
 SN_PUBLIC(snErr_ctx) snTransfer_Listen SN_OPEN_API
-SN_FUNC_OF((snTransfer_ctx *net, snFileStr fn))
+SN_FUNC_OF((snTransfer_ctx *net, snFileString fn))
 {
     snErr_ctx error;
     if(!net || !net->addr || !net->port || !fn) {
@@ -62,7 +62,7 @@ SN_FUNC_OF((snTransfer_ctx *net, snFileStr fn))
 }
 
 SN_PUBLIC(snErr_ctx) snTransfer_Client SN_OPEN_API
-SN_FUNC_OF((snTransfer_ctx *net, snFileStr fn))
+SN_FUNC_OF((snTransfer_ctx *net, snFileString fn))
 {
     snErr_ctx error;
     if(!net || !net->addr || !net->port || !fn) {

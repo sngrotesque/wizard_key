@@ -32,7 +32,7 @@
 #include <snKey.c>
 #include <snNum.c>
 
-#define CIPHER_TEST false
+#define CIPHER_TEST true
 
 #if defined(__SNC_H__) && (CIPHER_TEST)
 static snByte key[96] = {
@@ -57,7 +57,22 @@ static snByte iv[32] = {
 
 void test()
 {
-    
+    snFile_ctx *file = snNull;
+    SNC_ctx *snc = snNull;
+
+    snFileString fn = snFile_text("Documents/未来.md");
+
+    snFile_new(&file);
+    SNC_new(&snc, SNC_768);
+    SNC_init(snc, key, iv);
+
+    snFile_fread(file, fn);
+
+    SNC_CBC_Encrypt(snc, file->data, file->size);
+
+
+    snFile_free(&file);
+    SNC_free(&snc);
 }
 
 int main(int argc, char **argv)

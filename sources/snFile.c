@@ -31,7 +31,7 @@ SN_FUNC_OF((snFile_ctx **obj))
 }
 
 SN_PUBLIC(snBool) snFile_exists SN_OPEN_API
-SN_FUNC_OF((snFileStr fn))
+SN_FUNC_OF((snFileString fn))
 {
     if(!fn) {
         return false;
@@ -52,7 +52,7 @@ SN_FUNC_OF((snFileStr fn))
 }
 
 SN_PUBLIC(snErr_ctx) snFile_fileSize SN_OPEN_API
-SN_FUNC_OF((snSize *size, snFileStr fn))
+SN_FUNC_OF((snSize *size, snFileString fn))
 {
     snErr_ctx error;
     if(!snFile_exists(fn)) {
@@ -86,7 +86,7 @@ SN_FUNC_OF((snSize *size, snFileStr fn))
 }
 
 SN_PUBLIC(snErr_ctx) snFile_fread SN_OPEN_API
-SN_FUNC_OF((snFile_ctx *obj, snFileStr fn))
+SN_FUNC_OF((snFile_ctx *obj, snFileString fn))
 {
     snErr_ctx error;
     snByte *fileData_ptr = snNull;
@@ -109,7 +109,7 @@ SN_FUNC_OF((snFile_ctx *obj, snFileStr fn))
     obj->quotient = obj->size / SN_FILE_BLOCKLEN;
     obj->leftover = obj->size % SN_FILE_BLOCKLEN;
 
-    if(!(fp = snFile_open(fn, snFile_Char("rb")))) {
+    if(!(fp = snFile_fopen(fn, snFile_text("rb")))) {
         snErr_return(error, snErr_FileOpen, "snFile_fread: File opening failed.");
     }
 
@@ -128,7 +128,7 @@ SN_FUNC_OF((snFile_ctx *obj, snFileStr fn))
 }
 
 SN_PUBLIC(snErr_ctx) snFile_fwrite SN_OPEN_API
-SN_FUNC_OF((snFile_ctx *obj, snFileStr fn))
+SN_FUNC_OF((snFile_ctx *obj, snFileString fn))
 {
     snErr_ctx error;
     if(!obj || !obj->data || !obj->size || !fn) {
@@ -143,7 +143,7 @@ SN_FUNC_OF((snFile_ctx *obj, snFileStr fn))
     obj->quotient = obj->size / SN_FILE_BLOCKLEN;
     obj->leftover = obj->size % SN_FILE_BLOCKLEN;
 
-    if(!(fp = snFile_open(fn, snFile_Char("wb")))) {
+    if(!(fp = snFile_fopen(fn, snFile_text("wb")))) {
         snErr_return(error, snErr_FileOpen, "snFile_fwrite: File opening failed.");
     }
 

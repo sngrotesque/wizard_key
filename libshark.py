@@ -10,7 +10,7 @@ import re
 def action(cmd :str):
     call(cmd, shell=True)
 
-objectTempOutput = 'compiled'
+objectTempOutput = 'snCompiled'
 library_name = 'libshark.lib'
 
 if platform == 'win32':
