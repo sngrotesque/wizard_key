@@ -26,4 +26,5 @@
 
 4. 更改了`snTime.h`与`snTime.c`中`snTime_GetNowTime`函数的实现方式。
 5. 修复了`snRand.c`中`snRand_Rand`函数的一个潜在BUG。
+6. 增加了一个终端颜色`SN_ALL_COLOR_FLICKER`
 
