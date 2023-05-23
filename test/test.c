@@ -57,7 +57,7 @@ static snByte iv[32] = {
 
 void test()
 {
-    printf("%s\n", SN_SET_TEXT_COLOR(SN_ALL_COLOR_FLICKER, "hello, world."));
+    
 }
 
 int main(int argc, char **argv)

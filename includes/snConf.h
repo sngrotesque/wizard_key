@@ -54,17 +54,17 @@ typedef FILE        snFile;   // 文件类型
 #endif // #ifndef _SHARK_COAST_DEFINED
 
 
-//      字节交换：    0x91 -> 0x19
+/***字节交换：0x91 -> 0x19 ****************************/
 #define snSwapByte(x) ((((x) & 0xf) << 4) ^ ((x) >> 4))
-//      宽字交换：    0x91ba -> 0xab19
+/***宽字交换：0x91ba -> 0xab19 ********************************************/
 #define snSwapWord(x) ((snSwapByte((x) & 0xff) << 8) ^ snSwapByte((x) >> 8))
-//      长字交换：    0x91ba4951 -> 0x1594ab19
+/***长字交换：0x91ba4951 -> 0x1594ab19 ***************************************/
 #define snSwapLong(x) ((snSwapWord(x & 0xffff) << 16) ^ (snSwapWord(x >> 16)))
-//      内存空间申请
+/***内存空间申请 ********************************************/
 #define snMemoryNew(type, x, size) (x = (type)malloc((size)))
-//      内存空间释放
+/***内存空间释放 **************************/
 #define snMemoryFree(x) free(x); x = snNull
-//      内存内容初始化为0
+/***内存内容初始化为零 **************************/
 #define snMemoryZero(x, s) memset((x), 0x00, (s))
 
 
@@ -77,12 +77,12 @@ typedef FILE        snFile;   // 文件类型
 #define snErr_OK                0ULL
 
 /****************************************************************************
- * 一般的错误，但是用于表示64位的错误代码，通常用作判断一些库函数的返回值是否是-1。
+ * 一般的错误，用于表示64位的错误代码，通常用作判断一些库函数的返回值是否是-1。
 *****************************************************************************/
 #define snErr_Err64            -1ULL  // 一般：64位的错误
 
 /****************************************************************************
- * 一般的错误，但是用于表示32位的错误代码，通常用作判断一些库函数的返回值是否是-1。
+ * 一般的错误，用于表示32位的错误代码，通常用作判断一些库函数的返回值是否是-1。
 *****************************************************************************/
 #define snErr_Err32            -1U    // 一般：32位的错误
 
@@ -93,8 +93,8 @@ typedef FILE        snFile;   // 文件类型
 
 /****************************************************************************
  * 错误的类型，代表用户传入的参数和函数要求的参数类型不一致。比如要求hex串，但
- * 字符串中包含了0-f以外的字符。或是长度与函数要求的不一致。或是函数要求的类型
- * 与用户传入的类型都不相同等等。
+ * 字符串中包含了0-f以外的字符。或是长度与函数要求的不一致。或是函数要求的格式
+ * 类型与用户传入的格式类型不相同等等。
 *****************************************************************************/
 #define snErr_ErrType          -3ULL
 
@@ -202,12 +202,11 @@ typedef FILE        snFile;   // 文件类型
  * 将snErr对象赋值并作为返回值返回。
 *****************************************************************************/
 #define snErr_return(error, _code, _message) \
-    error.message = _message; error.code = _code; \
-    return error
+    error.message = _message; error.code = _code; return error
 
 typedef struct {
-    snString message;
-    snSSize code;
+    snString message; // 错误消息
+    snSSize code;     // 错误代码
 } snErr_ctx;
 #endif // #ifndef SN_ERROR_CODE
 
@@ -273,8 +272,3 @@ typedef struct {
 #endif // #if defined(__SIZEOF_SIZE_T__) && (__SIZEOF_SIZE_T__ >= 8)
 
 #endif // #ifndef __SN_CONF__
-
-
-// #define SN_TEST_DEFINE(x, y) (x # y)  // 拼接（不接受指针）
-// #define SN_TEST_DEFINE(x, y) (x ## y) // 拼接（不接受指针）
-// #define SN_TEST_DEFINE(x, y) (x y)    // 将字符串拼接（不接受指针）
