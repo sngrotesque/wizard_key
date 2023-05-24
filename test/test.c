@@ -1,36 +1,40 @@
-#include <network/snNet.h>
-#include <image/snPng.h>
-#include <crypto/snc.h>
-#include <snBinascii.h>
-#include <snPadding.h>
-#include <snHexdump.h>
-#include <snBase64.h>
-#include <snObject.h>
-#include <snFile.h>
-#include <snHash.h>
-#include <snMisc.h>
-#include <snMath.h>
-#include <snTime.h>
-#include <snRand.h>
-#include <snKey.h>
-#include <snNum.h>
+// #include <network/snNet.h>
+// #include <image/snPng.h>
+// #include <crypto/snc.h>
+// #include <snBinascii.h>
+// #include <snPadding.h>
+// #include <snHexdump.h>
+// #include <snBase64.h>
+// #include <snObject.h>
+// #include <snFile.h>
+// #include <snHash.h>
+// #include <snMisc.h>
+// #include <snMath.h>
+// #include <snTime.h>
+// #include <snRand.h>
+// #include <snKey.h>
+// #include <snNum.h>
 
-#include <network/snNet.c>
-#include <image/snPng.c>
-#include <crypto/snc.c>
-#include <snBinascii.c>
-#include <snPadding.c>
-#include <snHexdump.c>
-#include <snBase64.c>
-#include <snObject.c>
-#include <snFile.c>
-#include <snHash.c>
-#include <snMisc.c>
-#include <snMath.c>
-#include <snTime.c>
-#include <snRand.c>
-#include <snKey.c>
-#include <snNum.c>
+// #include <network/snNet.c>
+// #include <image/snPng.c>
+// #include <crypto/snc.c>
+// #include <snBinascii.c>
+// #include <snPadding.c>
+// #include <snHexdump.c>
+// #include <snBase64.c>
+// #include <snObject.c>
+// #include <snFile.c>
+// #include <snHash.c>
+// #include <snMisc.c>
+// #include <snMath.c>
+// #include <snTime.c>
+// #include <snRand.c>
+// #include <snKey.c>
+// #include <snNum.c>
+
+#include <snConf.h>
+#include <snWinAPI.h>
+#include <snWinAPI.c>
 
 #define CIPHER_TEST true
 
@@ -57,22 +61,15 @@ static snByte iv[32] = {
 
 void test()
 {
-    snFile_ctx *file = snNull;
-    SNC_ctx *snc = snNull;
+    FILE *fp = fopen("run.py", "rb");
+    HANDLE hFile = CreateFileW(L"run.py", GENERIC_READ,
+        FILE_SHARE_READ, snNull, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, snNull);
 
-    snFileString fn = snFile_text("Documents/未来.md");
+    printf("fp:    %p, %p\n", &fp, fp);
+    printf("hFile: %p, %p\n", &hFile, hFile);
 
-    snFile_new(&file);
-    SNC_new(&snc, SNC_768);
-    SNC_init(snc, key, iv);
-
-    snFile_fread(file, fn);
-
-    SNC_CBC_Encrypt(snc, file->data, file->size);
-
-
-    snFile_free(&file);
-    SNC_free(&snc);
+    fclose(fp);
+    CloseHandle(hFile);
 }
 
 int main(int argc, char **argv)

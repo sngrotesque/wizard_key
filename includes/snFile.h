@@ -1,3 +1,8 @@
+/**
+ * 后续重新设计一下这个库，让它变得更加易用一些。
+ * 针对于Windows系统的一些复杂问题，想想办法解决。
+*/
+
 #ifndef __SN_FILE_HANDLER__
 #define __SN_FILE_HANDLER__
 
@@ -8,13 +13,16 @@
 #   include <unistd.h>
 #   define snFile_text(x) x
 #   define snFile_fopen(fn, mode) fopen(fn, mode)
-typedef snString snFileString;
+typedef snString _snFileString;
 #elif defined(_WIN32)
-#   include <windows.h>
+#   include <Windows.h>
+#   include <shlwapi.h>
 #   define snFile_text(x) L ## x
 #   define snFile_fopen(fn, mode) _wfopen(fn, mode)
-typedef LPCWSTR snFileString;
+typedef LPCWSTR _snFileString;
 #endif
+
+typedef _snfilestring snFileString;
 
 #define SN_FILE_BLOCKLEN 4096
 

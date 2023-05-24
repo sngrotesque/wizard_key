@@ -42,8 +42,7 @@ SN_FUNC_OF((snFileString fn))
         return true;
     }
 #   elif defined(_WIN32)
-    DWORD dwAttrib = GetFileAttributesW(fn);
-    if(dwAttrib != INVALID_FILE_ATTRIBUTES && !(dwAttrib & FILE_ATTRIBUTE_DIRECTORY)) {
+    if(PathFileExistsW(fn)) {
         return true;
     }
 #   endif
@@ -66,18 +65,16 @@ SN_FUNC_OF((snSize *size, snFileString fn))
 #   if defined(__linux)
     struct stat info;
     stat(fn, &info);
-    *size = info.st_size;
+    *size = (snSize)info.st_size;
 #   elif defined(_WIN32)
     HANDLE hFile = CreateFileW(fn, GENERIC_READ, FILE_SHARE_READ, snNull, OPEN_EXISTING,
         FILE_ATTRIBUTE_NORMAL, snNull);
     LARGE_INTEGER W_size;
     GetFileSizeEx(hFile, &W_size);
-    *size = W_size.QuadPart;
-#   endif
-
-#   if defined(_WIN32)
+    *size = (snSize)W_size.QuadPart;
     CloseHandle(hFile);
 #   endif
+
     if(!(*size)) {
         snErr_return(error, snErr_FileNull, "snFile_fileSize: The file is empty.");
     }
@@ -160,4 +157,3 @@ SN_FUNC_OF((snFile_ctx *obj, snFileString fn))
     }
     snErr_return(error, snErr_OK, "OK.");
 }
-

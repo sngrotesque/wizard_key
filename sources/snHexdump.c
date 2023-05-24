@@ -40,4 +40,3 @@ SN_FUNC_OF((snFileString fn))
     snErr_return(error, snErr_OK, "OK.");
 }
 
-
