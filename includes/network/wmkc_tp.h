@@ -29,10 +29,10 @@ WMKC_PRIVATE_CONST(wmkc_u32) WMKC_TP_SIGNAL_DONE = 0x656e6f64U;
 #define WMKC_TP_DEFAULT_PORT 49281  // 默认端口
 
 typedef struct {
-    wmkcString addr;     // 网络地址
+    wmkcString addr;    // 网络地址
     wmkc_u16  port;     // 网络端口
     wmkc_u32  maxRetry; // 失败重试次数
-    SNC_ctx *snc;     // SNC加密算法对象
+    SNC_ctx *snc;       // SNC加密算法对象
 } wmkcTp_ctx;
 
 // 为wmkcTp对象申请内存空间

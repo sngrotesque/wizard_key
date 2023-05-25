@@ -1,8 +1,6 @@
 #include <wmkc_hexdump.h>
 
 #define WMKC_HEXDUMP_SIZE 32
-#define WMKC_HEXDUMP_PRINT_PLAINTEXT \
-    
 
 WMKC_PRIVATE(wmkcVoid) _hexdump
 WMKC_OF((wmkcSize offset, wmkcByte *buf, wmkc_u32 size))

@@ -54,7 +54,7 @@ WMKC_OF((wmkcHash_ctx **obj, wmkcHash_HashType hashType))
  * https://www.openssl.org/docs/man1.1.1/man3/EVP_MD_CTX_new.html
  * 对于OpenSSL库提供的EVP相关功能，我查阅到OpenSSL库中的提示是
  * 返回值为1时表示无错误，为0时表示错误。
- * 为了不与本库（Shark Coast）产生冲突，不针对EVP相关功能进行
+ * 为了不与本库产生冲突，不针对EVP相关功能进行
  * 返回值检查。
 */
 WMKC_PUBLIC(wmkcErr_ctx) wmkcHash WMKC_OPEN_API

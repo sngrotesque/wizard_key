@@ -1,8 +1,3 @@
-/**
- *  后续再决定到底是否应该开发此库，
- *  此库的功能在C语言中显得并不是那么重要。
-*/
-
 /** Python Struct
  *  https://docs.python.org/zh-cn/3/library/struct.html
  *  

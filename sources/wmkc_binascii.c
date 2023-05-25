@@ -1,6 +1,6 @@
 #include <wmkc_binascii.h>
 
-// sn_a2b_hex函数的解码表
+// 解码表
 WMKC_PRIVATE_CONST(wmkcByte) _wmkc_a2b_hexTable[256] = {
     31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31,
     31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31,

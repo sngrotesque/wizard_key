@@ -14,7 +14,7 @@
 #define wmkcFile_text(x) L ## x
 #define wmkcFile_fopen(fn, mode) _wfopen(fn, mode)
 typedef LPCWSTR _wmkcFileString;
-#else
+#elif defined(WMKC_LINUX_SUPPORT)
 #include <sys/stat.h>
 #include <unistd.h>
 #define wmkcFile_text(x) x
