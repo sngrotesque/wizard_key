@@ -3,10 +3,10 @@
  * 并且也请不要将它在任何实际项目中进行使用，此算法的安全性并没有得到验证。
  * 并且这个算法的效率低下。
 */
-#ifndef __SNT_H__
-#define __SNT_H__
+#ifndef WMKC_SNT
+#define WMKC_SNT
 
-#include <snConf.h>
+#include <wmkc_conf.h>
 
 #define SNT_BLOCKLEN 32
 #define SNT_NB 8 // 纵向长度

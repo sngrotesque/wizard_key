@@ -450,17 +450,17 @@ WMKC_PRIVATE(wmkcVoid) SNC_keyExtension WMKC_OF((wmkc_u16 keySize, wmkcByte *iv,
 }
 
 // 为SNC对象申请内存空间
-WMKC_PUBLIC(snErr_ctx) SNC_new WMKC_OPEN_API
+WMKC_PUBLIC(wmkcErr_ctx) SNC_new WMKC_OPEN_API
 WMKC_OF((SNC_ctx **ctx, SNC_mode mode))
 {
-    snErr_ctx error;
+    wmkcErr_ctx error;
 
     if(!ctx) {
-        snErr_return(error, snErr_ErrNULL, "ctx is NULL.");
+        wmkcErr_return(error, wmkcErr_ErrNULL, "ctx is NULL.");
     }
 
     if(!wmkcMemoryNew(SNC_ctx *, (*ctx), sizeof(SNC_ctx))) {
-        snErr_return(error, snErr_ErrMemory, "(*ctx) Failed to apply for memory.");
+        wmkcErr_return(error, wmkcErr_ErrMemory, "(*ctx) Failed to apply for memory.");
     }
 
     (*ctx)->mode = mode;
@@ -468,23 +468,23 @@ WMKC_OF((SNC_ctx **ctx, SNC_mode mode))
     (*ctx)->NR = SNC_NR[mode];
     wmkcMemoryZero((*ctx)->roundKey, sizeof((*ctx)->roundKey));
 
-    snErr_return(error, snErr_OK, "OK.");
+    wmkcErr_return(error, wmkcErr_OK, "OK.");
 }
 
 // 释放SNC对象
-WMKC_PUBLIC(snErr_ctx) SNC_free WMKC_OPEN_API
+WMKC_PUBLIC(wmkcErr_ctx) SNC_free WMKC_OPEN_API
 WMKC_OF((SNC_ctx **ctx))
 {
-    snErr_ctx error;
+    wmkcErr_ctx error;
     if(!ctx) {
-        snErr_return(error, snErr_ErrNULL, "ctx is NULL.");
+        wmkcErr_return(error, wmkcErr_ErrNULL, "ctx is NULL.");
     }
 
     memset((*ctx)->iv, 0x00, SNC_BLOCKLEN);
     wmkcMemoryZero((*ctx)->roundKey, sizeof((*ctx)->roundKey));
     wmkcMemoryFree((*ctx));
 
-    snErr_return(error, snErr_OK, "OK.");
+    wmkcErr_return(error, wmkcErr_OK, "OK.");
 }
 
 /*
@@ -492,12 +492,12 @@ WMKC_OF((SNC_ctx **ctx))
 * Function to initialize the SNC data structure, used to generate sub keys for each
 * round based on the basic key input by the user.
 */
-WMKC_PUBLIC(snErr_ctx) SNC_init WMKC_OPEN_API
+WMKC_PUBLIC(wmkcErr_ctx) SNC_init WMKC_OPEN_API
 WMKC_OF((SNC_ctx *ctx, wmkcByte *keyBuf, wmkcByte *ivBuf))
 {
-    snErr_ctx error;
+    wmkcErr_ctx error;
     if(!ctx || !keyBuf || !ivBuf) {
-        snErr_return(error, snErr_ErrNULL, "ctx or keyBuf or ivBuf is NULL.");
+        wmkcErr_return(error, wmkcErr_ErrNULL, "ctx or keyBuf or ivBuf is NULL.");
     }
 
     wmkcByte *key = wmkcNull;
@@ -514,7 +514,7 @@ WMKC_OF((SNC_ctx *ctx, wmkcByte *keyBuf, wmkcByte *ivBuf))
     *     vector does not change.
     */
     if(!wmkcMemoryNew(wmkcByte *, key, ctx->KN)) {
-        snErr_return(error, snErr_ErrMemory, "key Failed to apply for memory.");
+        wmkcErr_return(error, wmkcErr_ErrMemory, "key Failed to apply for memory.");
     }
 
     memcpy(ctx->iv, ivBuf, SNC_BLOCKLEN);
@@ -552,7 +552,7 @@ WMKC_OF((SNC_ctx *ctx, wmkcByte *keyBuf, wmkcByte *ivBuf))
     wmkcMemoryZero(iv, SNC_BLOCKLEN);
     free(key);
     key = wmkcNull;
-    snErr_return(error, snErr_OK, "OK.");
+    wmkcErr_return(error, wmkcErr_OK, "OK.");
 }
 
 //* ECB模式加密

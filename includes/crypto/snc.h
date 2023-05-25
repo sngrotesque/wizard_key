@@ -28,14 +28,14 @@
 *     SNC_512    0.44 seconds
 *     SNC_768    0.55 seconds
 */
-#ifndef __SNC_H__
-#define __SNC_H__
+#ifndef WMKC_SNC
+#define WMKC_SNC
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#include <snConf.h>
+#include <wmkc_conf.h>
 
 #define SNC_BLOCKLEN 32 // 区块长度（Block size）
 #define SNC_NB 8 // 纵向长度（Longitudinal length）
@@ -74,15 +74,15 @@ typedef struct {
 } SNC_ctx;
 
 // 为SNC对象申请内存空间
-WMKC_PUBLIC(snErr_ctx) SNC_new WMKC_OPEN_API
+WMKC_PUBLIC(wmkcErr_ctx) SNC_new WMKC_OPEN_API
 WMKC_OF((SNC_ctx **ctx, SNC_mode mode));
 
 // 释放SNC对象
-WMKC_PUBLIC(snErr_ctx) SNC_free WMKC_OPEN_API
+WMKC_PUBLIC(wmkcErr_ctx) SNC_free WMKC_OPEN_API
 WMKC_OF((SNC_ctx **ctx));
 
 // 初始化SNC对象
-WMKC_PUBLIC(snErr_ctx) SNC_init WMKC_OPEN_API
+WMKC_PUBLIC(wmkcErr_ctx) SNC_init WMKC_OPEN_API
 WMKC_OF((SNC_ctx *ctx, wmkcByte *keyBuf, wmkcByte *ivBuf));
 
 // ECB加密
@@ -105,4 +105,4 @@ WMKC_OF((SNC_ctx *ctx, wmkcByte *buf, wmkcSize size));
 }
 #endif
 
-#endif // #ifndef __SNC_H__
+#endif // #ifndef WMKC_SNC

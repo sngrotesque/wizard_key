@@ -1,20 +1,20 @@
 #include <crypto/snc.h>
-#include <snBinascii.h>
-#include <snPadding.h>
-#include <snHash.h>
-#include <wmkcFile.h>
-#include <snMisc.h>
-#include <snTime.h>
-#include <snRand.h>
+#include <wmkc_binascii.h>
+#include <wmkc_pad.h>
+#include <wmkc_hash.h>
+#include <wmkc_file.h>
+#include <wmkc_misc.h>
+#include <wmkc_time.h>
+#include <wmkc_random.h>
 
 #include <crypto/snc.c>
-#include <snBinascii.c>
-#include <snPadding.c>
-#include <snHash.c>
+#include <wmkc_binascii.c>
+#include <wmkcPad.c>
+#include <wmkcHash.c>
 #include <wmkcFile.c>
-#include <snMisc.c>
-#include <snTime.c>
-#include <snRand_Rand.c>
+#include <wmkcMisc.c>
+#include <wmkcTime.c>
+#include <wmkcRandom_rand.c>
 
 int main(int argc, char **argv)
 {
@@ -28,10 +28,10 @@ int main(int argc, char **argv)
     static wmkcByte iv[32] = {
         0xf8, 0x8f, 0x42, 0x1d, 0xe1, 0xb5, 0x7a, 0xef, 0x09, 0xdd, 0x5a, 0xe1, 0x72, 0x2c, 0xb5, 0x42,
         0x93, 0x0b, 0x3b, 0x6e, 0x09, 0xd0, 0x56, 0x33, 0xf4, 0x4e, 0x81, 0xd8, 0x53, 0x47, 0x6e, 0x2c};
-    static snStringfn_src = "misc/img/building2014851.jpg";
-    static snStringfn_dst = "misc/img/building2014852.jpg";
-    static snHash_ctx *hash = wmkcNull;
-    static snFile_ctx *file = wmkcNull;
+    static wmkcStreamfn_src = "misc/img/building2014851.jpg";
+    static wmkcStreamfn_dst = "misc/img/building2014852.jpg";
+    static wmkcHash_ctx *hash = wmkcNull;
+    static wmkcFile_ctx *file = wmkcNull;
     static SNC_ctx *snc = wmkcNull;
     static wmkcByte *buf = wmkcNull;
     static wmkcSize size;

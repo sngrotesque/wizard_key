@@ -262,12 +262,12 @@ WMKC_PRIVATE(wmkcVoid) SNT_keyExtension WMKC_OF((wmkc_u16 keySize, wmkcByte *iv,
     }
 }
 
-WMKC_PUBLIC(snErr_ctx) SNT_new WMKC_OPEN_API
+WMKC_PUBLIC(wmkcErr_ctx) SNT_new WMKC_OPEN_API
 WMKC_OF((SNT_ctx **ctx, SNT_mode mode))
 {
     if(!(*ctx)) {
         if(!((*ctx) = (SNT_ctx *)malloc(sizeof(SNT_ctx)))) {
-            return snErr_ErrMemory;
+            return wmkcErr_ErrMemory;
         }
     }
 
@@ -276,10 +276,10 @@ WMKC_OF((SNT_ctx **ctx, SNT_mode mode))
     (*ctx)->NR = SNT_NR[mode];
     wmkcMemoryZero((*ctx)->roundKey, 1056);
 
-    return snErr_OK;
+    return wmkcErr_OK;
 }
 
-WMKC_PUBLIC(snErr_ctx) SNT_release WMKC_OPEN_API
+WMKC_PUBLIC(wmkcErr_ctx) SNT_release WMKC_OPEN_API
 WMKC_OF((SNT_ctx **ctx))
 {
     wmkcMemoryZero((*ctx)->iv, SNT_BLOCKLEN);
@@ -287,7 +287,7 @@ WMKC_OF((SNT_ctx **ctx))
     free((*ctx));
     (*ctx) = wmkcNull;
 
-    return snErr_OK;
+    return wmkcErr_OK;
 }
 
 WMKC_PUBLIC(wmkcVoid) SNT_init WMKC_OPEN_API

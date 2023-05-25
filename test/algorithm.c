@@ -1,4 +1,4 @@
-#include <snConf.h>
+#include <wmkc_conf.h>
 
 /* 递归算法 *** 开始 ***************************/
 int snAlgorithm_Recursion(wmkcSize n)

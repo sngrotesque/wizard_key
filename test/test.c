@@ -1,42 +1,40 @@
-// #include <network/snNet.h>
-// #include <image/snPng.h>
-// #include <crypto/snc.h>
-// #include <snBinascii.h>
-// #include <snPadding.h>
-// #include <snHexdump.h>
-// #include <snBase64.h>
-// #include <snObject.h>
-// #include <wmkcFile.h>
-// #include <snHash.h>
-// #include <snMisc.h>
-// #include <snMath.h>
-// #include <snTime.h>
-// #include <snRand.h>
-// #include <snKey.h>
-// #include <snNum.h>
+#include <network/wmkc_net.h>
+#include <image/wmkc_png.h>
+#include <crypto/snc.h>
+#include <wmkc_binascii.h>
+#include <wmkc_hexdump.h>
+#include <wmkc_object.h>
+#include <wmkc_random.h>
+#include <wmkc_struct.h>
+#include <wmkc_base.h>
+#include <wmkc_file.h>
+#include <wmkc_misc.h>
+#include <wmkc_math.h>
+#include <wmkc_time.h>
+#include <wmkc_hash.h>
+#include <wmkc_pad.h>
+#include <wmkc_key.h>
 
-// #include <network/snNet.c>
-// #include <image/snPng.c>
-// #include <crypto/snc.c>
-// #include <snBinascii.c>
-// #include <snPadding.c>
-// #include <snHexdump.c>
-// #include <snBase64.c>
-// #include <snObject.c>
-// #include <wmkcFile.c>
-// #include <snHash.c>
-// #include <snMisc.c>
-// #include <snMath.c>
-// #include <snTime.c>
-// #include <snRand.c>
-// #include <snKey.c>
-// #include <snNum.c>
+#include <network/wmkc_net.c>
+#include <image/wmkc_png.c>
+#include <crypto/snc.c>
+#include <wmkc_binascii.c>
+#include <wmkc_hexdump.c>
+#include <wmkc_object.c>
+#include <wmkc_random.c>
+#include <wmkc_struct.c>
+#include <wmkc_base.c>
+#include <wmkc_file.c>
+#include <wmkc_misc.c>
+#include <wmkc_math.c>
+#include <wmkc_time.c>
+#include <wmkc_hash.c>
+#include <wmkc_pad.c>
+#include <wmkc_key.c>
 
-#include <snConf.h>
+#define CIPHER_TEST false
 
-#define CIPHER_TEST true
-
-#if defined(__SNC_H__) && (CIPHER_TEST)
+#if defined(WMKC_SNC) && (CIPHER_TEST)
 static wmkcByte key[96] = {
     0x67, 0x65, 0x5b, 0x7b, 0x33, 0x78, 0x74, 0x6e,
     0x49, 0x62, 0x6d, 0x3b, 0x7a, 0x77, 0x5d, 0x53,
@@ -59,7 +57,33 @@ static wmkcByte iv[32] = {
 
 void test()
 {
-    
+    wmkcNetBuf *sendbuf = (wmkcNetBuf *)(
+        "GET / HTTP/1.1\r\n"
+        "Host: www.bilibili.com\r\n"
+        "User-Agent: Android\r\n\r\n"
+    );
+    wmkcNetBuf recvbuf[4096] = {0};
+    wmkcNet_ctx *net = wmkcNull;
+    wmkcErr_ctx error;
+
+    error = wmkcNet_new(&net, AF_INET6);
+    if(error.code) printf("%s\n", error.message);
+    error = wmkcNet_init(net, "www.bilibili.com", 80, false);
+    if(error.code) printf("%s\n", error.message);
+
+    error = wmkcNet_connect(net);
+    if(error.code) printf("%s\n", error.message);
+    error = wmkcNet_send(net, wmkcNull, sendbuf, (wmkcNetSize)strlen(sendbuf));
+    if(error.code) printf("%s\n", error.message);
+    error = wmkcNet_recv(net, wmkcNull, recvbuf, 4096);
+    if(error.code) printf("%s\n", error.message);
+
+    printf("%s\n", recvbuf);
+
+    error = wmkcNet_close(net);
+    if(error.code) printf("%s\n", error.message);
+    error = wmkcNet_free(&net);
+    if(error.code) printf("%s\n", error.message);
 }
 
 int main(int argc, char **argv)
