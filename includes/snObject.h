@@ -4,17 +4,17 @@
 #include <snConf.h>
 
 typedef struct {
-    snByte *buf;
-    snSize size;
-    snSize memSize;
+    wmkcByte *buf;
+    wmkcSize size;
+    wmkcSize memSize;
 } snObject;
 
 // 初始化snObject对象
-SN_PUBLIC(snErr_ctx) snObject_new SN_OPEN_API
-SN_FUNC_OF((snObject **obj, snSize _memory_size, snBool _Clear_memory));
+WMKC_PUBLIC(snErr_ctx) snObject_new WMKC_OPEN_API
+WMKC_OF((snObject **obj, wmkcSize _memory_size, wmkcBool _Clear_memory));
 
 // 释放snObject对象
-SN_PUBLIC(snErr_ctx) snObject_free SN_OPEN_API
-SN_FUNC_OF((snObject **obj));
+WMKC_PUBLIC(snErr_ctx) snObject_free WMKC_OPEN_API
+WMKC_OF((snObject **obj));
 
 #endif // #ifndef __SN_OBJECT__

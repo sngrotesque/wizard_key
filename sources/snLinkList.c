@@ -1,26 +1,26 @@
 #include <snLinkList.h>
 
-SN_PUBLIC(snErr_ctx) snLinkList_new SN_OPEN_API
-SN_FUNC_OF((snLink **obj, snSize length))
+WMKC_PUBLIC(snErr_ctx) snLinkList_new WMKC_OPEN_API
+WMKC_OF((snLink **obj, wmkcSize length))
 {
     snErr_ctx error;
     if(!obj || !length) {
         snErr_return(error, snErr_ErrNULL,
             "snLinkList_new: obj or length is NULL.");
     }
-    snLink *head = snNull;
-    snLink *ptr = snNull;
-    snSize index;
+    snLink *head = wmkcNull;
+    snLink *ptr = wmkcNull;
+    wmkcSize index;
 
     for(index = 0; index < length; ++index) {
-        if(head == snNull) {
-            if(!snMemoryNew(snLink *, head, sizeof(snLink))) {
+        if(head == wmkcNull) {
+            if(!wmkcMemoryNew(snLink *, head, sizeof(snLink))) {
                 snErr_return(error, snErr_ErrMemory,
                     "snLinkList_new: head failed to apply for memory.");
             }
             ptr = head;
         } else {
-            if(!snMemoryNew(snLink *, ptr->next, sizeof(snLink))) {
+            if(!wmkcMemoryNew(snLink *, ptr->next, sizeof(snLink))) {
                 snErr_return(error, snErr_ErrMemory,
                     "snLinkList_new: ptr->next failed to apply for memory.");
             }
@@ -28,21 +28,21 @@ SN_FUNC_OF((snLink **obj, snSize length))
         }
     }
 
-    ptr->next = snNull;
+    ptr->next = wmkcNull;
     (*obj) = head;
 
     snErr_return(error, snErr_OK, "OK.");
 }
 
-SN_PUBLIC(snErr_ctx) snLinkList_free SN_OPEN_API
-SN_FUNC_OF((snLink **obj))
+WMKC_PUBLIC(snErr_ctx) snLinkList_free WMKC_OPEN_API
+WMKC_OF((snLink **obj))
 {
     snErr_ctx error;
     if(!obj) {
         snErr_return(error, snErr_ErrNULL,
             "snLinkList_free: obj or length is NULL.");
     }
-    snLink *ptr = snNull;
+    snLink *ptr = wmkcNull;
     while(*obj)
     {
         ptr = *obj;

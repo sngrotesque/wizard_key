@@ -13,27 +13,27 @@ typedef struct {
 } snBase64_ctx;
 
 // 求出Base64编码后的长度
-SN_PUBLIC(snSize) snBase64_encode_size SN_OPEN_API
-SN_FUNC_OF((snObject *src));
+WMKC_PUBLIC(wmkcSize) snBase64_encode_size WMKC_OPEN_API
+WMKC_OF((snObject *src));
 
 // 求出Base64解码后的长度
-SN_PUBLIC(snSize) snBase64_decode_size SN_OPEN_API
-SN_FUNC_OF((snObject *src));
+WMKC_PUBLIC(wmkcSize) snBase64_decode_size WMKC_OPEN_API
+WMKC_OF((snObject *src));
 
 // 初始化snBase64对象
-SN_PUBLIC(snErr_ctx) snBase64_new SN_OPEN_API
-SN_FUNC_OF((snBase64_ctx **obj));
+WMKC_PUBLIC(snErr_ctx) snBase64_new WMKC_OPEN_API
+WMKC_OF((snBase64_ctx **obj));
 
 // 释放snBase64对象
-SN_PUBLIC(snErr_ctx) snBase64_free SN_OPEN_API
-SN_FUNC_OF((snBase64_ctx **obj));
+WMKC_PUBLIC(snErr_ctx) snBase64_free WMKC_OPEN_API
+WMKC_OF((snBase64_ctx **obj));
 
 // Base64编码
-SN_PUBLIC(snErr_ctx) snBase64_Encode SN_OPEN_API
-SN_FUNC_OF((snObject *dst, snObject *src));
+WMKC_PUBLIC(snErr_ctx) snBase64_Encode WMKC_OPEN_API
+WMKC_OF((snObject *dst, snObject *src));
 
 // Base64解码
-SN_PUBLIC(snErr_ctx) snBase64_Decode SN_OPEN_API
-SN_FUNC_OF((snObject *dst, snObject *src));
+WMKC_PUBLIC(snErr_ctx) snBase64_Decode WMKC_OPEN_API
+WMKC_OF((snObject *dst, snObject *src));
 
 #endif

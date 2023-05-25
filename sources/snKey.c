@@ -1,6 +1,6 @@
 #include <snKey.h>
 
-SN_PRIVATE_CONST(snByte) snKey_SBOX[256] = {
+WMKC_PRIVATE_CONST(wmkcByte) snKey_SBOX[256] = {
     0x63, 0x10, 0x6f, 0xcc, 0x70, 0x2b, 0xfc, 0x40, 0xda, 0x5b, 0x31, 0xaf, 0x54, 0xc0, 0xdd, 0xfa,
     0x16, 0xbf, 0x8f, 0x1c, 0x61, 0xf9, 0x77, 0xf6, 0x85, 0x5a, 0x4c, 0x1b, 0x30, 0x27, 0x01, 0x4e,
     0x9d, 0x71, 0xf3, 0x6d, 0x7a, 0x15, 0x73, 0x60, 0x92, 0xce, 0x37, 0x72, 0x32, 0x35, 0xea, 0xa3,
@@ -19,7 +19,7 @@ SN_PRIVATE_CONST(snByte) snKey_SBOX[256] = {
     0x5c, 0x65, 0x75, 0x2c, 0x5e, 0x3b, 0x7d, 0x12, 0xaa, 0x17, 0xcf, 0x47, 0xe7, 0x4a, 0x00, 0x66
 };
 
-SN_PRIVATE_CONST(snByte) snKey_RSBOX[256] = {
+WMKC_PRIVATE_CONST(wmkcByte) snKey_RSBOX[256] = {
     0xfe, 0x1e, 0xdf, 0x62, 0x6b, 0x50, 0x6f, 0x5a, 0x4d, 0x85, 0x34, 0x35, 0x7a, 0x55, 0xaa, 0x47,
     0x01, 0x5d, 0xf7, 0xc0, 0xc3, 0x25, 0x10, 0xf9, 0x77, 0xa6, 0x5f, 0x1b, 0x13, 0x64, 0xb4, 0xe3,
     0xb2, 0x3f, 0xb1, 0x88, 0x36, 0xc5, 0x95, 0x1d, 0x66, 0xcd, 0x94, 0x05, 0xf3, 0xb5, 0x82, 0xcf,
@@ -38,8 +38,8 @@ SN_PRIVATE_CONST(snByte) snKey_RSBOX[256] = {
     0x5e, 0x3e, 0xde, 0x22, 0x51, 0x40, 0x17, 0x48, 0x9e, 0x15, 0x0f, 0x73, 0x06, 0xd2, 0x6a, 0x78
 };
 
-SN_PRIVATE(snVoid) _snKey_SubBytes
-SN_FUNC_OF((snKey_state *buf))
+WMKC_PRIVATE(wmkcVoid) _snKey_SubBytes
+WMKC_OF((snKey_state *buf))
 {
     (*buf)[0][0] = snKey_SBOX[(*buf)[0][0]];
     (*buf)[0][1] = snKey_SBOX[(*buf)[0][1]];
@@ -47,8 +47,8 @@ SN_FUNC_OF((snKey_state *buf))
     (*buf)[1][1] = snKey_SBOX[(*buf)[1][1]];
 }
 
-SN_PRIVATE(snVoid) _snKey_InvSubBytes
-SN_FUNC_OF((snKey_state *buf))
+WMKC_PRIVATE(wmkcVoid) _snKey_InvSubBytes
+WMKC_OF((snKey_state *buf))
 {
     (*buf)[0][0] = snKey_RSBOX[(*buf)[0][0]];
     (*buf)[0][1] = snKey_RSBOX[(*buf)[0][1]];
@@ -56,10 +56,10 @@ SN_FUNC_OF((snKey_state *buf))
     (*buf)[1][1] = snKey_RSBOX[(*buf)[1][1]];
 }
 
-SN_PRIVATE(snVoid) _snKey_MatrixRows
-SN_FUNC_OF((snKey_state *buf))
+WMKC_PRIVATE(wmkcVoid) _snKey_MatrixRows
+WMKC_OF((snKey_state *buf))
 {
-    snByte swap;
+    wmkcByte swap;
     swap = (*buf)[0][0];
     (*buf)[0][0] = (*buf)[0][1];
     (*buf)[0][1] = swap;
@@ -68,8 +68,8 @@ SN_FUNC_OF((snKey_state *buf))
     (*buf)[1][1] = swap;
 }
 
-SN_PRIVATE(snVoid) _snKey_MatrixMixs
-SN_FUNC_OF((snKey_state *buf))
+WMKC_PRIVATE(wmkcVoid) _snKey_MatrixMixs
+WMKC_OF((snKey_state *buf))
 {
     (*buf)[0][0] = (*buf)[0][0] ^ (*buf)[0][1] ^ (*buf)[1][0];
     (*buf)[0][1] = (*buf)[0][1] ^ (*buf)[1][0] ^ (*buf)[1][1];
@@ -77,8 +77,8 @@ SN_FUNC_OF((snKey_state *buf))
     (*buf)[1][1] = (*buf)[1][1] ^ (*buf)[0][0] ^ (*buf)[0][1];
 }
 
-SN_PRIVATE(snVoid) _snKey_InvMatrixMixs
-SN_FUNC_OF((snKey_state *buf))
+WMKC_PRIVATE(wmkcVoid) _snKey_InvMatrixMixs
+WMKC_OF((snKey_state *buf))
 {
     (*buf)[1][1] = (*buf)[1][1] ^ (*buf)[0][0] ^ (*buf)[0][1];
     (*buf)[1][0] = (*buf)[1][0] ^ (*buf)[1][1] ^ (*buf)[0][0];
@@ -86,41 +86,41 @@ SN_FUNC_OF((snKey_state *buf))
     (*buf)[0][0] = (*buf)[0][0] ^ (*buf)[0][1] ^ (*buf)[1][0];
 }
 
-SN_PRIVATE(snVoid) _snKey_Cipher
-SN_FUNC_OF((snKey_state *buf))
+WMKC_PRIVATE(wmkcVoid) _snKey_Cipher
+WMKC_OF((snKey_state *buf))
 {
-    for(sn_u32 x = 0; x < SN_KEY_ROUND; ++x) {
+    for(wmkc_u32 x = 0; x < SN_KEY_ROUND; ++x) {
         _snKey_MatrixRows(buf);
         _snKey_SubBytes(buf);
         _snKey_MatrixMixs(buf);
     }
 }
 
-SN_PRIVATE(snVoid) _snKey_InvCipher
-SN_FUNC_OF((snKey_state *buf))
+WMKC_PRIVATE(wmkcVoid) _snKey_InvCipher
+WMKC_OF((snKey_state *buf))
 {
-    for(sn_u32 x = 0; x < SN_KEY_ROUND; ++x) {
+    for(wmkc_u32 x = 0; x < SN_KEY_ROUND; ++x) {
         _snKey_InvMatrixMixs(buf);
         _snKey_InvSubBytes(buf);
         _snKey_MatrixRows(buf);
     }
 }
 
-SN_PUBLIC(snErr_ctx) snKey_new SN_OPEN_API
-SN_FUNC_OF((snKey_ctx **obj, snByte *key, snSize keySize, snBool mode))
+WMKC_PUBLIC(snErr_ctx) snKey_new WMKC_OPEN_API
+WMKC_OF((snKey_ctx **obj, wmkcByte *key, wmkcSize keySize, wmkcBool mode))
 {
     snErr_ctx error;
     if(!obj) {
         snErr_return(error, snErr_ErrNULL, "snKey_new: obj is NULL.");
     }
 
-    if(!snMemoryNew(snKey_ctx *, (*obj), sizeof(snKey_ctx))) {
+    if(!wmkcMemoryNew(snKey_ctx *, (*obj), sizeof(snKey_ctx))) {
         snErr_return(error, snErr_ErrMemory,
             "snKey_new: (*obj) failed to apply for memory.");
     }
 
     if(key && keySize) {
-        if(!snMemoryNew(snByte *, (*obj)->key, keySize)) {
+        if(!wmkcMemoryNew(wmkcByte *, (*obj)->key, keySize)) {
             snErr_return(error, snErr_ErrMemory,
                 "snKey_new: (*obj)->key failed to apply for memory.");
         }
@@ -128,7 +128,7 @@ SN_FUNC_OF((snKey_ctx **obj, snByte *key, snSize keySize, snBool mode))
         (*obj)->size = keySize;
         (*obj)->mode = mode;
     } else {
-        (*obj)->key = snNull;
+        (*obj)->key = wmkcNull;
         (*obj)->size = 0;
         (*obj)->mode = mode;
     }
@@ -136,8 +136,8 @@ SN_FUNC_OF((snKey_ctx **obj, snByte *key, snSize keySize, snBool mode))
     snErr_return(error, snErr_OK, "OK.");
 }
 
-SN_PUBLIC(snErr_ctx) snKey_free SN_OPEN_API
-SN_FUNC_OF((snKey_ctx **obj))
+WMKC_PUBLIC(snErr_ctx) snKey_free WMKC_OPEN_API
+WMKC_OF((snKey_ctx **obj))
 {
     snErr_ctx error;
     if(!obj) {
@@ -145,15 +145,15 @@ SN_FUNC_OF((snKey_ctx **obj))
     }
 
     if((*obj)->key) {
-        snMemoryFree((*obj)->key);
+        wmkcMemoryFree((*obj)->key);
     }
-    snMemoryFree(*obj);
+    wmkcMemoryFree(*obj);
 
     snErr_return(error, snErr_OK, "OK.");
 }
 
-SN_PUBLIC(snErr_ctx) snKey_CryptKey SN_OPEN_API
-SN_FUNC_OF((snKey_ctx *obj))
+WMKC_PUBLIC(snErr_ctx) snKey_CryptKey WMKC_OPEN_API
+WMKC_OF((snKey_ctx *obj))
 {
     snErr_ctx error;
     if(!obj) {
@@ -163,7 +163,7 @@ SN_FUNC_OF((snKey_ctx *obj))
         snErr_return(error, snErr_ErrType,
             "snKey_CryptKey: The length of the key should be a multiple of 4.");
     }
-    snSize x;
+    wmkcSize x;
 
     if(obj->mode) {
         for(x = 0; x < obj->size; x += 4)
@@ -176,19 +176,19 @@ SN_FUNC_OF((snKey_ctx *obj))
     snErr_return(error, snErr_OK, "OK.");
 }
 
-SN_PUBLIC(snErr_ctx) snKey_loadKey SN_OPEN_API
-SN_FUNC_OF((snKey_ctx *obj, snString fn))
+WMKC_PUBLIC(snErr_ctx) snKey_loadKey WMKC_OPEN_API
+WMKC_OF((snKey_ctx *obj, wmkcString fn))
 {
     snErr_ctx error;
     snErr_return(error, snErr_OK, "OK.");
 }
 
-SN_PUBLIC(snErr_ctx) snKey_saveKey SN_OPEN_API
-SN_FUNC_OF((snKey_ctx *obj, snString fn))
+WMKC_PUBLIC(snErr_ctx) snKey_saveKey WMKC_OPEN_API
+WMKC_OF((snKey_ctx *obj, wmkcString fn))
 {
     snErr_ctx error;
-    snBase64_ctx *base64 = snNull;
-    snFile_ctx *file = snNull;
+    snBase64_ctx *base64 = wmkcNull;
+    snFile_ctx *file = wmkcNull;
     snBase64_new(&base64);
     snFile_new(&file);
 

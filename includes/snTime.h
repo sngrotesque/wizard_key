@@ -22,23 +22,23 @@ typedef struct {
     ULONGLONG start;
     ULONGLONG stop;
 #endif
-    snFloat totalTime;
+    wmkcFloat totalTime;
 } snTime_ctx;
 
 // 获取当前时间。格式：年月日-时分秒
-SN_PUBLIC(snErr_ctx) snTime_GetNowTime SN_OPEN_API
-SN_FUNC_OF((snChar **dst));
+WMKC_PUBLIC(snErr_ctx) snTime_GetNowTime WMKC_OPEN_API
+WMKC_OF((wmkcChar **dst));
 
 // 开始计时
-SN_PUBLIC(snVoid) snTime_TimerBegin SN_OPEN_API
-SN_FUNC_OF((snTime_ctx *timer));
+WMKC_PUBLIC(wmkcVoid) snTime_TimerBegin WMKC_OPEN_API
+WMKC_OF((snTime_ctx *timer));
 
 // 结束计时
-SN_PUBLIC(snVoid) snTime_TimerEnd SN_OPEN_API
-SN_FUNC_OF((snTime_ctx *timer));
+WMKC_PUBLIC(wmkcVoid) snTime_TimerEnd WMKC_OPEN_API
+WMKC_OF((snTime_ctx *timer));
 
 // 打印计时后的结果
-SN_PUBLIC(snVoid) snTime_TimerPrint SN_OPEN_API
-SN_FUNC_OF((snString text, snTime_ctx *timer));
+WMKC_PUBLIC(wmkcVoid) snTime_TimerPrint WMKC_OPEN_API
+WMKC_OF((wmkcString text, snTime_ctx *timer));
 
 #endif

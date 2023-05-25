@@ -2,11 +2,11 @@
 
 int main()
 {
-    SNC_ctx *snc = snNull;
+    SNC_ctx *snc = wmkcNull;
 
-    static snByte buf[32] = {1};
-    static snByte key[32];
-    static snByte iv[32];
+    static wmkcByte buf[32] = {1};
+    static wmkcByte key[32];
+    static wmkcByte iv[32];
 
     SNC_new(&snc, SNC_256);
     SNC_init(snc, key, iv);

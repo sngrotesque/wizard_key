@@ -1,15 +1,15 @@
 #include <snSort.h>
 
-SN_PRIVATE(snVoid) _mergeSort
-SN_FUNC_OF((sn_32 *arr, snSize s1, snSize e1, snSize s2, snSize e2, sn_32 *m1, sn_32 *m2))
+WMKC_PRIVATE(wmkcVoid) _mergeSort
+WMKC_OF((wmkc_s32 *arr, wmkcSize s1, wmkcSize e1, wmkcSize s2, wmkcSize e2, wmkc_s32 *m1, wmkc_s32 *m2))
 {
-    snFast snSize len1 = e1 - s1 + 1;
-    snFast snSize len2 = e2 - s2 + 1;
-    snFast snSize p1 = 0;
-    snFast snSize p2 = 0;
-    snFast snSize p = s1;
-    memcpy(m1, arr + s1, sizeof(sn_32) * len1);
-    memcpy(m2, arr + s2, sizeof(sn_32) * len2);
+    wmkcFast wmkcSize len1 = e1 - s1 + 1;
+    wmkcFast wmkcSize len2 = e2 - s2 + 1;
+    wmkcFast wmkcSize p1 = 0;
+    wmkcFast wmkcSize p2 = 0;
+    wmkcFast wmkcSize p = s1;
+    memcpy(m1, arr + s1, sizeof(wmkc_s32) * len1);
+    memcpy(m2, arr + s2, sizeof(wmkc_s32) * len2);
 
     while (p1 < len1 && p2 < len2) {
         if(m1[p1] < m2[p2]){
@@ -27,10 +27,10 @@ SN_FUNC_OF((sn_32 *arr, snSize s1, snSize e1, snSize s2, snSize e2, sn_32 *m1, s
     }
 }
 
-SN_PRIVATE(sn_32) _quickSort
-SN_FUNC_OF((sn_32 *arr, snSize first, snSize last, snSize pivot_index))
+WMKC_PRIVATE(wmkc_s32) _quickSort
+WMKC_OF((wmkc_s32 *arr, wmkcSize first, wmkcSize last, wmkcSize pivot_index))
 {
-    snFast sn_u32 buf;
+    wmkcFast wmkc_u32 buf;
     if (pivot_index != first) {
         buf = arr[first];
         arr[first] = arr[pivot_index];
@@ -62,13 +62,13 @@ SN_FUNC_OF((sn_32 *arr, snSize first, snSize last, snSize pivot_index))
     return last;
 }
 
-SN_PRIVATE(snVoid) _heapSort_heapify
-SN_FUNC_OF((sn_32 *arr, snSize size, snSize i))
+WMKC_PRIVATE(wmkcVoid) _heapSort_heapify
+WMKC_OF((wmkc_s32 *arr, wmkcSize size, wmkcSize i))
 {
-    snFast snSize largest = i; // Initialize largest as root
-    snFast snSize left = 2 * i + 1; // left child
-    snFast snSize right = 2 * i + 2; // right child
-    snFast snSize temp;
+    wmkcFast wmkcSize largest = i; // Initialize largest as root
+    wmkcFast wmkcSize left = 2 * i + 1; // left child
+    wmkcFast wmkcSize right = 2 * i + 2; // right child
+    wmkcFast wmkcSize temp;
 
     // If left child is larger than root
     if (left < size && arr[left] > arr[largest])
@@ -88,10 +88,10 @@ SN_FUNC_OF((sn_32 *arr, snSize size, snSize i))
     }
 }
 
-SN_PRIVATE(snVoid) _bitonicSort_exchange
-SN_FUNC_OF((sn_32 *arr, snSize i, snSize j, sn_32 d))
+WMKC_PRIVATE(wmkcVoid) _bitonicSort_exchange
+WMKC_OF((wmkc_s32 *arr, wmkcSize i, wmkcSize j, wmkc_s32 d))
 {
-    snFast sn_32 temp;
+    wmkcFast wmkc_s32 temp;
     if (d == (arr[i] > arr[j]))
     {
         temp = arr[i];
@@ -100,10 +100,10 @@ SN_FUNC_OF((sn_32 *arr, snSize i, snSize j, sn_32 d))
     }
 }
 
-SN_PRIVATE(snVoid) _bitonicSort_merge
-SN_FUNC_OF((sn_32 *arr, snSize beg, snSize c, snSize d))
+WMKC_PRIVATE(wmkcVoid) _bitonicSort_merge
+WMKC_OF((wmkc_s32 *arr, wmkcSize beg, wmkcSize c, wmkcSize d))
 {
-    snFast snSize k, i;
+    wmkcFast wmkcSize k, i;
     if (c > 1)
     {
         k = c / 2;
@@ -114,10 +114,10 @@ SN_FUNC_OF((sn_32 *arr, snSize beg, snSize c, snSize d))
     }
 }
 
-SN_PRIVATE(snVoid) _bitonicSort
-SN_FUNC_OF((sn_32 *arr, snSize beg, snSize c, snSize d))
+WMKC_PRIVATE(wmkcVoid) _bitonicSort
+WMKC_OF((wmkc_s32 *arr, wmkcSize beg, wmkcSize c, wmkcSize d))
 {
-    snFast snSize k;
+    wmkcFast wmkcSize k;
     if (c > 1)
     {
         k = c / 2;
@@ -127,10 +127,10 @@ SN_FUNC_OF((sn_32 *arr, snSize beg, snSize c, snSize d))
     }
 }
 
-SN_PUBLIC(snVoid) bubbleSort SN_OPEN_API
-SN_FUNC_OF((sn_32 *arr, snSize size))
+WMKC_PUBLIC(wmkcVoid) bubbleSort WMKC_OPEN_API
+WMKC_OF((wmkc_s32 *arr, wmkcSize size))
 {
-    snFast sn_32 i, j, buf;
+    wmkcFast wmkc_s32 i, j, buf;
     for(i = 1; i < size; ++i) {
         for(j = 0; j < (size - i); ++j) {
             if(arr[j] > arr[j+1]) {
@@ -142,11 +142,11 @@ SN_FUNC_OF((sn_32 *arr, snSize size))
     }
 }
 
-SN_PUBLIC(snVoid) selectionSort SN_OPEN_API
-SN_FUNC_OF((sn_32 *arr, snSize size))
+WMKC_PUBLIC(wmkcVoid) selectionSort WMKC_OPEN_API
+WMKC_OF((wmkc_s32 *arr, wmkcSize size))
 {
-    snFast sn_32 i, j, buf;
-    snFast sn_32 minIndex;
+    wmkcFast wmkc_s32 i, j, buf;
+    wmkcFast wmkc_s32 minIndex;
     for(i = 0; i < size-1; ++i) {
         minIndex = i;
         for(j = i + 1; j < size; ++j) {
@@ -161,11 +161,11 @@ SN_FUNC_OF((sn_32 *arr, snSize size))
     }
 }
 
-SN_PUBLIC(snVoid) insertionSort SN_OPEN_API
-SN_FUNC_OF((sn_32 *arr, snSize size))
+WMKC_PUBLIC(wmkcVoid) insertionSort WMKC_OPEN_API
+WMKC_OF((wmkc_s32 *arr, wmkcSize size))
 {
-    snFast sn_32 i, j;
-    snFast sn_32 buff;
+    wmkcFast wmkc_s32 i, j;
+    wmkcFast wmkc_s32 buff;
     for(i = 1; i < size; ++i) {
         buff = arr[i];
         j = i - 1;
@@ -177,16 +177,16 @@ SN_FUNC_OF((sn_32 *arr, snSize size))
     }
 }
 
-SN_PUBLIC(snVoid) mergeSort SN_OPEN_API
-SN_FUNC_OF((sn_32 *arr, snSize size))
+WMKC_PUBLIC(wmkcVoid) mergeSort WMKC_OPEN_API
+WMKC_OF((wmkc_s32 *arr, wmkcSize size))
 {
-    snFast snSize step = 1;
-    snFast sn_32 *m1 = (sn_32 *)malloc(size * sizeof(sn_32));
-    snFast sn_32 *m2 = (sn_32 *)malloc(size * sizeof(sn_32));
+    wmkcFast wmkcSize step = 1;
+    wmkcFast wmkc_s32 *m1 = (wmkc_s32 *)malloc(size * sizeof(wmkc_s32));
+    wmkcFast wmkc_s32 *m2 = (wmkc_s32 *)malloc(size * sizeof(wmkc_s32));
     if(!m1 || !m2)
         return;
     
-    snFast snSize i, s1, e1, s2, e2;
+    wmkcFast wmkcSize i, s1, e1, s2, e2;
     while(step < size) {
         for(i = 0; (i + step - 1) < (size - 1); i += 2 * step) {
             s1 = i;
@@ -203,11 +203,11 @@ SN_FUNC_OF((sn_32 *arr, snSize size))
     }
 }
 
-SN_PUBLIC(snVoid) shellSort SN_OPEN_API
-SN_FUNC_OF((sn_32 *arr, snSize size))
+WMKC_PUBLIC(wmkcVoid) shellSort WMKC_OPEN_API
+WMKC_OF((wmkc_s32 *arr, wmkcSize size))
 {
-    snFast snSize gaps, i, j;
-    snFast sn_32 buff;
+    wmkcFast wmkcSize gaps, i, j;
+    wmkcFast wmkc_s32 buff;
     for(gaps = size / 2; gaps > 0; gaps /= 2) {
         for(i = gaps; i < size; i += 1) {
             buff = arr[i];
@@ -219,10 +219,10 @@ SN_FUNC_OF((sn_32 *arr, snSize size))
     }
 }
 
-SN_PUBLIC(snVoid) quickSort SN_OPEN_API
-SN_FUNC_OF((sn_32 *arr, snSize first, snSize last))
+WMKC_PUBLIC(wmkcVoid) quickSort WMKC_OPEN_API
+WMKC_OF((wmkc_s32 *arr, wmkcSize first, wmkcSize last))
 {
-    snFast snSize pivot;
+    wmkcFast wmkcSize pivot;
     if (first >= last)
         return;
     
@@ -237,11 +237,11 @@ SN_FUNC_OF((sn_32 *arr, snSize first, snSize last))
     }
 }
 
-SN_PUBLIC(snVoid) heapSort SN_OPEN_API
-SN_FUNC_OF((sn_32 *arr, snSize size))
+WMKC_PUBLIC(wmkcVoid) heapSort WMKC_OPEN_API
+WMKC_OF((wmkc_s32 *arr, wmkcSize size))
 {
-    snFast snSize i;
-    snFast snSize temp;
+    wmkcFast wmkcSize i;
+    wmkcFast wmkcSize temp;
 
     for (i = size / 2 - 1; i; i--)
         _heapSort_heapify(arr, size, i);
@@ -256,23 +256,23 @@ SN_FUNC_OF((sn_32 *arr, snSize size))
     }
 }
 
-SN_PUBLIC(snVoid) countSort SN_OPEN_API
-SN_FUNC_OF((sn_32 *arr, snSize size))
+WMKC_PUBLIC(wmkcVoid) countSort WMKC_OPEN_API
+WMKC_OF((wmkc_s32 *arr, wmkcSize size))
 {
-    snFast sn_32 max = arr[0];
-    snFast snSize i;
+    wmkcFast wmkc_s32 max = arr[0];
+    wmkcFast wmkcSize i;
 
-    static sn_32 *dst = snNull;
-    static sn_32 *count = snNull;
+    static wmkc_s32 *dst = wmkcNull;
+    static wmkc_s32 *count = wmkcNull;
 
     for(i = 1; i < size; i++)
         if(arr[i] > max)
             max = arr[i];
 
-    dst = (sn_32 *)malloc(sizeof(sn_32) * (size + 1));
-    count = (sn_32 *)malloc(sizeof(sn_32) * (max + 1));
+    dst = (wmkc_s32 *)malloc(sizeof(wmkc_s32) * (size + 1));
+    count = (wmkc_s32 *)malloc(sizeof(wmkc_s32) * (max + 1));
 
-    memset(count, 0x00, sizeof(sn_32) * max);
+    memset(count, 0x00, sizeof(wmkc_s32) * max);
 
     for (i = 0; i < size; i++) {
         count[arr[i]]++; // 存储每个元素的计数
@@ -295,8 +295,8 @@ SN_FUNC_OF((sn_32 *arr, snSize size))
     free(count);
 }
 
-SN_PUBLIC(snVoid) bitonicSort SN_OPEN_API
-SN_FUNC_OF((sn_32 *arr, snSize size))
+WMKC_PUBLIC(wmkcVoid) bitonicSort WMKC_OPEN_API
+WMKC_OF((wmkc_s32 *arr, wmkcSize size))
 {
     _bitonicSort(arr, 0, size, 1); // 1表示增量排序
 }

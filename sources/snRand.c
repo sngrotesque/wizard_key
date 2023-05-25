@@ -1,7 +1,7 @@
 #include <snRand.h>
 
-SN_PUBLIC(snVoid) snRand_Seed SN_OPEN_API
-SN_FUNC_OF((snVoid))
+WMKC_PUBLIC(wmkcVoid) snRand_Seed WMKC_OPEN_API
+WMKC_OF((wmkcVoid))
 {
 #   if defined(__linux)
     clockid_t a = 0;
@@ -21,38 +21,38 @@ SN_FUNC_OF((snVoid))
 #   endif
 }
 
-SN_PUBLIC(snSize) snRand_Rand SN_OPEN_API
-SN_FUNC_OF((snVoid))
+WMKC_PUBLIC(wmkcSize) snRand_Rand WMKC_OPEN_API
+WMKC_OF((wmkcVoid))
 {
-    static snSize n, num[32];
-    static sn_u32 x, count;
+    static wmkcSize n, num[32];
+    static wmkc_u32 x, count;
 
     for(x = 0; x < 32; ++x) {
         num[x] = rand() ^ (rand() ^ (rand() & rand()));
         n = n + (n ^ num[x]);
     }
 
-    n = n + snSwapByte(rand() & 0x0f);
+    n = n + wmkcSwapByte(rand() & 0x0f);
 
     for(count = 0; count < 32; ++count) {
         for(x = 0; x < 32; ++x) {
             num[x] = rand() ^ (rand() ^ (rand() & rand()));
         }
         n = (n + (n ^ num[count])) ^ count;
-        n = (n + rand()) ^ snSwapByte((count + (rand() ^ (n - num[count]))) & 0xff);
+        n = (n + rand()) ^ wmkcSwapByte((count + (rand() ^ (n - num[count]))) & 0xff);
     }
 
     return n;
 }
 
-SN_PUBLIC(snSize) snRand_Randint SN_OPEN_API
-SN_FUNC_OF((snSize min, snSize max))
+WMKC_PUBLIC(wmkcSize) snRand_Randint WMKC_OPEN_API
+WMKC_OF((wmkcSize min, wmkcSize max))
 {
     return snRand_Rand() % (max - min + 1) + min;
 }
 
-SN_PUBLIC(snVoid) snRand_Urandom SN_OPEN_API
-SN_FUNC_OF((snByte *buf, sn_u32 size))
+WMKC_PUBLIC(wmkcVoid) snRand_Urandom WMKC_OPEN_API
+WMKC_OF((wmkcByte *buf, wmkc_u32 size))
 {
 #   if defined(_WIN32)
     HCRYPTPROV hProv;

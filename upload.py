@@ -20,9 +20,9 @@ def deleteListData(OriginalList :list, dataContent: str):
 class git_process:
     def __init__(self, folder_path :str = '.'):
         self.repo              = Repo.init(folder_path)
-        self.DefinedRemoteUrl  = 'git@github.com:sngrotesque/Shark_Coast.git'
-        self.DefinedCommit     = 'Shark_Coast'
-        self.DefinedVersion    = 'v4.8.0'
+        self.DefinedRemoteUrl  = 'git@github.com:sngrotesque/WMKC.git'
+        self.DefinedCommit     = 'Wizard Magic Key Cyber'
+        self.DefinedVersion    = 'v5.0.0'
         self.DefinedFolderPath = folder_path
 
         self.path = os.listdir(folder_path)
@@ -59,7 +59,18 @@ class git_process:
         print(f'>>>> +---------- 现有文件(END)   ----------+')
 
     def versionCheck(self):
-        versionList = re.findall(r'\w+\_v[\d.]+|v[\d.]+|master|main', RunPopen('git branch'), re.S)
+        branch_version = RunPopen('git branch')
+        
+        branch_name_1_regular = r'\s+(v[\d.]+_\w+)'
+        branch_name_2_regular = r'\s+(v[\d.]+)'
+        branch_name_3_regular = r'\s+(\w+\_v[\d.]+)'
+        
+        versionList_1 = re.findall(branch_name_1_regular, branch_version, re.S)
+        versionList_2 = re.findall(branch_name_2_regular, branch_version, re.S)
+        versionList_3 = re.findall(branch_name_3_regular, branch_version, re.S)
+        
+        versionList = versionList_1 + versionList_2 + versionList_3
+        
         if self.DefinedVersion not in versionList:
             RunCommand(f'git checkout -b {self.DefinedVersion}')
         if self.DefinedVersion in versionList:

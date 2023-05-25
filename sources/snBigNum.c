@@ -1,15 +1,15 @@
 #include <snBigNum.h>
 
-SN_PRIVATE(snErr_ctx) snBigNum_ArrayReversal
-SN_FUNC_OF((snChar *number_string, snSize size))
+WMKC_PRIVATE(snErr_ctx) snBigNum_ArrayReversal
+WMKC_OF((wmkcChar *number_string, wmkcSize size))
 {
     snErr_ctx error;
     if(!number_string || !size) {
         snErr_return(error, snErr_ErrNULL,
             "snBigNum_ArrayReversal: number_string or size is NULL.");
     }
-    static snSize i;
-    static snByte swap;
+    static wmkcSize i;
+    static wmkcByte swap;
 
     for(i = 0; i < size >> 1; ++i) {
         swap = number_string[i];
@@ -20,8 +20,8 @@ SN_FUNC_OF((snChar *number_string, snSize size))
     snErr_return(error, snErr_OK, "OK.");
 }
 
-SN_PUBLIC(snErr_ctx) snBigNum_add SN_OPEN_API
-SN_FUNC_OF((snChar **dst, snChar *src1, snChar *src2))
+WMKC_PUBLIC(snErr_ctx) snBigNum_add WMKC_OPEN_API
+WMKC_OF((wmkcChar **dst, wmkcChar *src1, wmkcChar *src2))
 {
     /**
      * larger  = "1234561092843327530284087432857309150242358"
@@ -64,8 +64,8 @@ SN_FUNC_OF((snChar **dst, snChar *src1, snChar *src2))
             "snBigNum_add: dst or src1 or src2 is NULL.");
     }
 
-    snSize src1Size = strlen(src1);
-    snSize src2Size = strlen(src2);
+    wmkcSize src1Size = strlen(src1);
+    wmkcSize src2Size = strlen(src2);
     if(!src1Size || !src2Size) {
         snErr_return(error, snErr_ErrNULL,
             "snBigNum_add: src1Size or src2Size is NULL.");
@@ -74,15 +74,15 @@ SN_FUNC_OF((snChar **dst, snChar *src1, snChar *src2))
     snErr_return(error, snErr_OK, "OK.");
 }
 
-SN_PUBLIC(snErr_ctx) snBigNum_sub SN_OPEN_API
-SN_FUNC_OF((snChar **dst, snChar *src1, snChar *src2))
+WMKC_PUBLIC(snErr_ctx) snBigNum_sub WMKC_OPEN_API
+WMKC_OF((wmkcChar **dst, wmkcChar *src1, wmkcChar *src2))
 {
     snErr_ctx error;
     snErr_return(error, snErr_OK, "OK.");
 }
 
-SN_PUBLIC(snErr_ctx) snBigNum_mul SN_OPEN_API
-SN_FUNC_OF((snChar **dst, snChar *src1, snChar *src2))
+WMKC_PUBLIC(snErr_ctx) snBigNum_mul WMKC_OPEN_API
+WMKC_OF((wmkcChar **dst, wmkcChar *src1, wmkcChar *src2))
 {
     /**
      * 可参考snBigNum_add。
@@ -91,22 +91,22 @@ SN_FUNC_OF((snChar **dst, snChar *src1, snChar *src2))
     snErr_return(error, snErr_OK, "OK.");
 }
 
-SN_PUBLIC(snErr_ctx) snBigNum_div SN_OPEN_API
-SN_FUNC_OF((snChar **dst, snChar *src1, snChar *src2))
+WMKC_PUBLIC(snErr_ctx) snBigNum_div WMKC_OPEN_API
+WMKC_OF((wmkcChar **dst, wmkcChar *src1, wmkcChar *src2))
 {
     snErr_ctx error;
     snErr_return(error, snErr_OK, "OK.");
 }
 
-SN_PUBLIC(snErr_ctx) snBigNum_mod SN_OPEN_API
-SN_FUNC_OF((snChar **dst, snChar *src1, snChar *src2))
+WMKC_PUBLIC(snErr_ctx) snBigNum_mod WMKC_OPEN_API
+WMKC_OF((wmkcChar **dst, wmkcChar *src1, wmkcChar *src2))
 {
     snErr_ctx error;
     snErr_return(error, snErr_OK, "OK.");
 }
 
-SN_PUBLIC(snErr_ctx) snBigNum_pow SN_OPEN_API
-SN_FUNC_OF((snChar **dst, snChar *src1, snChar *src2))
+WMKC_PUBLIC(snErr_ctx) snBigNum_pow WMKC_OPEN_API
+WMKC_OF((wmkcChar **dst, wmkcChar *src1, wmkcChar *src2))
 {
     snErr_ctx error;
     snErr_return(error, snErr_OK, "OK.");

@@ -4,7 +4,7 @@
 #include <snConf.h>
 
 typedef struct snLink {
-    snByte *content;
+    wmkcByte *content;
     struct snLink *next;
 } snLink;
 

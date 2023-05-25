@@ -6,7 +6,7 @@
 // #include <snHexdump.h>
 // #include <snBase64.h>
 // #include <snObject.h>
-// #include <snFile.h>
+// #include <wmkcFile.h>
 // #include <snHash.h>
 // #include <snMisc.h>
 // #include <snMath.h>
@@ -23,7 +23,7 @@
 // #include <snHexdump.c>
 // #include <snBase64.c>
 // #include <snObject.c>
-// #include <snFile.c>
+// #include <wmkcFile.c>
 // #include <snHash.c>
 // #include <snMisc.c>
 // #include <snMath.c>
@@ -33,13 +33,11 @@
 // #include <snNum.c>
 
 #include <snConf.h>
-#include <snWinAPI.h>
-#include <snWinAPI.c>
 
 #define CIPHER_TEST true
 
 #if defined(__SNC_H__) && (CIPHER_TEST)
-static snByte key[96] = {
+static wmkcByte key[96] = {
     0x67, 0x65, 0x5b, 0x7b, 0x33, 0x78, 0x74, 0x6e,
     0x49, 0x62, 0x6d, 0x3b, 0x7a, 0x77, 0x5d, 0x53,
     0x71, 0x52, 0x4a, 0x30, 0x3e, 0x2e, 0x63, 0x24,
@@ -52,7 +50,7 @@ static snByte key[96] = {
     0x36, 0x70, 0x30, 0x3e, 0x3d, 0x60, 0x73, 0x42,
     0x5f, 0x61, 0x6f, 0x79, 0x7a, 0x36, 0x5e, 0x6d,
     0x35, 0x40, 0x5f, 0x6d, 0x63, 0x57, 0x49, 0x31};
-static snByte iv[32] = {
+static wmkcByte iv[32] = {
     0x7b, 0x75, 0x76, 0x37, 0x24, 0x59, 0x72, 0x29,
     0x6e, 0x40, 0x5f, 0x65, 0x2d, 0x55, 0x75, 0x68,
     0x3d, 0x41, 0x78, 0x35, 0x48, 0x50, 0x7d, 0x73,
@@ -61,15 +59,7 @@ static snByte iv[32] = {
 
 void test()
 {
-    FILE *fp = fopen("run.py", "rb");
-    HANDLE hFile = CreateFileW(L"run.py", GENERIC_READ,
-        FILE_SHARE_READ, snNull, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, snNull);
-
-    printf("fp:    %p, %p\n", &fp, fp);
-    printf("hFile: %p, %p\n", &hFile, hFile);
-
-    fclose(fp);
-    CloseHandle(hFile);
+    
 }
 
 int main(int argc, char **argv)

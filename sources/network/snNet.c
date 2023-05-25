@@ -1,8 +1,8 @@
 #include <network/snNet.h>
 
 // 申请snNet对象的内存空间
-SN_PUBLIC(snErr_ctx) snNet_new SN_OPEN_API
-SN_FUNC_OF((snNet_ctx **net, sn_u32 family))
+WMKC_PUBLIC(snErr_ctx) snNet_new WMKC_OPEN_API
+WMKC_OF((snNet_ctx **net, wmkc_u32 family))
 {
     snErr_ctx error;
 
@@ -10,7 +10,7 @@ SN_FUNC_OF((snNet_ctx **net, sn_u32 family))
         snErr_return(error, snErr_ErrNULL, "snNet_new: net is NULL.");
     }
 
-    if(!snMemoryNew(snNet_ctx *, (*net), sizeof(snNet_ctx))) {
+    if(!wmkcMemoryNew(snNet_ctx *, (*net), sizeof(snNet_ctx))) {
         snErr_return(error, snErr_ErrMemory,
             "snNet_new: (*net) Failed to apply for memory.");
     }
@@ -27,7 +27,7 @@ SN_FUNC_OF((snNet_ctx **net, sn_u32 family))
         snErr_return(error, snErr_NetFamily,
             "snNet_new: The type of socket must be AF_INET or AF_INET6.");
     }
-    if(!snMemoryNew(SOCKADDR *, (*net)->addr_info, (*net)->addr_info_size)) {
+    if(!wmkcMemoryNew(SOCKADDR *, (*net)->addr_info, (*net)->addr_info_size)) {
         snErr_return(error, snErr_ErrMemory,
             "snNet_new: (*net)->addr_info Failed to apply for memory.");
     }
@@ -35,8 +35,8 @@ SN_FUNC_OF((snNet_ctx **net, sn_u32 family))
     snErr_return(error, snErr_OK, "OK.");
 }
 
-SN_PUBLIC(snErr_ctx) snNet_free SN_OPEN_API
-SN_FUNC_OF((snNet_ctx **net))
+WMKC_PUBLIC(snErr_ctx) snNet_free WMKC_OPEN_API
+WMKC_OF((snNet_ctx **net))
 {
     snErr_ctx error;
     if(!net) {
@@ -44,18 +44,18 @@ SN_FUNC_OF((snNet_ctx **net))
     }
 
     if((*net)->addr_info) {
-        snMemoryFree((*net)->addr_info);
+        wmkcMemoryFree((*net)->addr_info);
     }
     if((*net)) {
-        snMemoryFree((*net));
+        wmkcMemoryFree((*net));
     }
 
     snErr_return(error, snErr_OK, "OK.");
 }
 
 // 初始化snNet对象（需提前申请内存空间）
-SN_PUBLIC(snErr_ctx) snNet_init SN_OPEN_API
-SN_FUNC_OF((snNet_ctx *net, snString hostname, sn_u16 port, snBool UDP))
+WMKC_PUBLIC(snErr_ctx) snNet_init WMKC_OPEN_API
+WMKC_OF((snNet_ctx *net, wmkcString hostname, wmkc_u16 port, wmkcBool UDP))
 {
     snErr_ctx error;
 
@@ -76,8 +76,8 @@ SN_FUNC_OF((snNet_ctx *net, snString hostname, sn_u16 port, snBool UDP))
 #   endif
 
     if(hostname) {
-        SOCKADDR_IN *ipv4 = snNull; // 一个IPv4网络结构的指针
-        SOCKADDR_IN6 *ipv6 = snNull; // 一个IPv6网络结构的指针
+        SOCKADDR_IN *ipv4 = wmkcNull; // 一个IPv4网络结构的指针
+        SOCKADDR_IN6 *ipv6 = wmkcNull; // 一个IPv6网络结构的指针
 
         if(UDP) {
             // 如果Socket是UDP类型
@@ -115,8 +115,8 @@ SN_FUNC_OF((snNet_ctx *net, snString hostname, sn_u16 port, snBool UDP))
 }
 
 // 域名解析函数
-SN_PUBLIC(snErr_ctx) snNet_resolveAddress
-SN_FUNC_OF((snNet_ctx *net, snString hostname))
+WMKC_PUBLIC(snErr_ctx) snNet_resolveAddress
+WMKC_OF((snNet_ctx *net, wmkcString hostname))
 {
     snErr_ctx error;
 
@@ -131,7 +131,7 @@ SN_FUNC_OF((snNet_ctx *net, snString hostname))
             "snNet_resolveAddress: The type of socket must be AF_INET or AF_INET6.");
     }
 
-    ADDRINFO *result = snNull;
+    ADDRINFO *result = wmkcNull;
     ADDRINFO hints = {.ai_family = net->sockfdFamily};
 
     // 进行域名解析，解析失败就返回错误代码
@@ -148,8 +148,8 @@ SN_FUNC_OF((snNet_ctx *net, snString hostname))
 }
 
 // 设置发送与接收超时时间
-SN_PUBLIC(snErr_ctx) snNet_timeout SN_OPEN_API
-SN_FUNC_OF((snNet_ctx *net, snNetTime _user_TimeOut))
+WMKC_PUBLIC(snErr_ctx) snNet_timeout WMKC_OPEN_API
+WMKC_OF((snNet_ctx *net, snNetTime _user_TimeOut))
 {
     snErr_ctx error;
     if(!net) {
@@ -157,7 +157,7 @@ SN_FUNC_OF((snNet_ctx *net, snNetTime _user_TimeOut))
     }
 
     snNetSize optlen = sizeof(struct timeval);
-    snNetTimer *optval = snNull;
+    snNetTimer *optval = wmkcNull;
     struct timeval _timeout;
 
     _timeout.tv_sec = floor(_user_TimeOut);
@@ -176,8 +176,8 @@ SN_FUNC_OF((snNet_ctx *net, snNetTime _user_TimeOut))
 }
 
 // 连接函数
-SN_PUBLIC(snErr_ctx) snNet_connect SN_OPEN_API
-SN_FUNC_OF((snNet_ctx *net))
+WMKC_PUBLIC(snErr_ctx) snNet_connect WMKC_OPEN_API
+WMKC_OF((snNet_ctx *net))
 {
     snErr_ctx error;
     if(!net) {
@@ -198,15 +198,15 @@ SN_FUNC_OF((snNet_ctx *net))
 }
 
 // 绑定函数
-SN_PUBLIC(snErr_ctx) snNet_bind SN_OPEN_API
-SN_FUNC_OF((snNet_ctx *net, snNetTime _user_TimeOut))
+WMKC_PUBLIC(snErr_ctx) snNet_bind WMKC_OPEN_API
+WMKC_OF((snNet_ctx *net, snNetTime _user_TimeOut))
 {
     snErr_ctx error;
     if(!net) {
         snErr_return(error, snErr_ErrNULL, "snNet_bind: net is NULL.");
     }
 
-    snNetTimer *optval = snNull;
+    snNetTimer *optval = wmkcNull;
     struct timeval _timeout;
 
     if(_user_TimeOut) {
@@ -229,8 +229,8 @@ SN_FUNC_OF((snNet_ctx *net, snNetTime _user_TimeOut))
 }
 
 // 监听函数
-SN_PUBLIC(snErr_ctx) snNet_listen SN_OPEN_API
-SN_FUNC_OF((snNet_ctx *net, sn_u32 _Listen))
+WMKC_PUBLIC(snErr_ctx) snNet_listen WMKC_OPEN_API
+WMKC_OF((snNet_ctx *net, wmkc_u32 _Listen))
 {
     snErr_ctx error;
     if(!net) {
@@ -255,8 +255,8 @@ SN_FUNC_OF((snNet_ctx *net, sn_u32 _Listen))
 }
 
 // 等待连接函数
-SN_PUBLIC(snErr_ctx) snNet_accept SN_OPEN_API
-SN_FUNC_OF((snNet_ctx *dst, snNet_ctx *src))
+WMKC_PUBLIC(snErr_ctx) snNet_accept WMKC_OPEN_API
+WMKC_OF((snNet_ctx *dst, snNet_ctx *src))
 {
     snErr_ctx error;
     if(!dst || !src) {
@@ -283,8 +283,8 @@ SN_FUNC_OF((snNet_ctx *dst, snNet_ctx *src))
 }
 
 // 发送函数
-SN_PUBLIC(snErr_ctx) snNet_send SN_OPEN_API
-SN_FUNC_OF((snNet_ctx *net, snNetSize *_tSize, snNetBuf *buf, snNetSize size))
+WMKC_PUBLIC(snErr_ctx) snNet_send WMKC_OPEN_API
+WMKC_OF((snNet_ctx *net, snNetSize *_tSize, snNetBuf *buf, snNetSize size))
 {
     snErr_ctx error;
     if(!net || !buf || !size) {
@@ -322,8 +322,8 @@ SN_FUNC_OF((snNet_ctx *net, snNetSize *_tSize, snNetBuf *buf, snNetSize size))
 }
 
 // 全部发送函数
-SN_PUBLIC(snErr_ctx) snNet_sendall SN_OPEN_API
-SN_FUNC_OF((snNet_ctx *net, snNetBuf *buf, snNetSize size))
+WMKC_PUBLIC(snErr_ctx) snNet_sendall WMKC_OPEN_API
+WMKC_OF((snNet_ctx *net, snNetBuf *buf, snNetSize size))
 {
     snErr_ctx error;
     if(!net || !buf || !size) {
@@ -358,8 +358,8 @@ SN_FUNC_OF((snNet_ctx *net, snNetBuf *buf, snNetSize size))
 }
 
 // 接收函数
-SN_PUBLIC(snErr_ctx) snNet_recv SN_OPEN_API
-SN_FUNC_OF((snNet_ctx* net, snNetSize *_tSize, snNetBuf *buf, snNetSize size))
+WMKC_PUBLIC(snErr_ctx) snNet_recv WMKC_OPEN_API
+WMKC_OF((snNet_ctx* net, snNetSize *_tSize, snNetBuf *buf, snNetSize size))
 {
     snErr_ctx error;
     if(!net || !buf || !size) {
@@ -396,8 +396,8 @@ SN_FUNC_OF((snNet_ctx* net, snNetSize *_tSize, snNetBuf *buf, snNetSize size))
 }
 
 // 关闭套接字函数
-SN_PUBLIC(snErr_ctx) snNet_close SN_OPEN_API
-SN_FUNC_OF((snNet_ctx *net))
+WMKC_PUBLIC(snErr_ctx) snNet_close WMKC_OPEN_API
+WMKC_OF((snNet_ctx *net))
 {
     snErr_ctx error;
     if(!net) {

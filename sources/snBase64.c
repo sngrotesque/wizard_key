@@ -1,12 +1,12 @@
 #include <snBase64.h>
 
-SN_PRIVATE_CONST(snByte) _B64ET[64] = { // Base64编码表
+WMKC_PRIVATE_CONST(wmkcByte) _B64ET[64] = { // Base64编码表
     65,   66,  67,  68,  69,  70,  71,  72,  73,  74,  75,  76,  77,  78,
     79,   80,  81,  82,  83,  84,  85,  86,  87,  88,  89,  90,  97,  98,
     99,  100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112,
     113, 114, 115, 116, 117, 118, 119, 120, 121, 122,  48,  49,  50,  51,
     52,   53,  54,  55,  56,  57,  43,  47};
-SN_PRIVATE_CONST(snByte) _B64DT[123] = { // Base64解码表
+WMKC_PRIVATE_CONST(wmkcByte) _B64DT[123] = { // Base64解码表
     0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
     0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
     0,  0,  0,  0,  0,  0,  0,  62, 0,  0,  0,  63, 52, 53, 54, 55, 56, 57,
@@ -15,16 +15,16 @@ SN_PRIVATE_CONST(snByte) _B64DT[123] = { // Base64解码表
     25, 0,  0,  0,  0,  0,  0,  26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36,
     37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51};
 
-SN_PUBLIC(snSize) snBase64_encode_size SN_OPEN_API
-SN_FUNC_OF((snObject *src))
+WMKC_PUBLIC(wmkcSize) snBase64_encode_size WMKC_OPEN_API
+WMKC_OF((snObject *src))
 {
     if(src->size % 3)
         return (src->size / 3 + 1) * 4;
     return src->size / 3 * 4;
 }
 
-SN_PUBLIC(snSize) snBase64_decode_size SN_OPEN_API
-SN_FUNC_OF((snObject *src))
+WMKC_PUBLIC(wmkcSize) snBase64_decode_size WMKC_OPEN_API
+WMKC_OF((snObject *src))
 {
     if ((src->buf[src->size - 1] & src->buf[src->size - 2]) == BASE64_PAD)
         return src->size / 4 * 3 - 2;
@@ -34,23 +34,23 @@ SN_FUNC_OF((snObject *src))
         return src->size / 4 * 3;
 }
 
-SN_PUBLIC(snErr_ctx) snBase64_new SN_OPEN_API
-SN_FUNC_OF((snBase64_ctx **obj))
+WMKC_PUBLIC(snErr_ctx) snBase64_new WMKC_OPEN_API
+WMKC_OF((snBase64_ctx **obj))
 {
     snErr_ctx error;
 
     if(!obj) {
         snErr_return(error, snErr_ErrNULL, "snBase64_new: obj is NULL.");
     }
-    if(!snMemoryNew(snBase64_ctx *, (*obj), sizeof(snBase64_ctx))) {
+    if(!wmkcMemoryNew(snBase64_ctx *, (*obj), sizeof(snBase64_ctx))) {
         snErr_return(error, snErr_ErrMemory,
             "snBase64_new: (*obj) Failed to apply for memory.");
     }
-    if(!snMemoryNew(snObject *, (*obj)->src, sizeof(snObject))) {
+    if(!wmkcMemoryNew(snObject *, (*obj)->src, sizeof(snObject))) {
         snErr_return(error, snErr_ErrMemory,
             "snBase64_new: (*obj)->src Failed to apply for memory.");
     }
-    if(!snMemoryNew(snObject *, (*obj)->dst, sizeof(snObject))) {
+    if(!wmkcMemoryNew(snObject *, (*obj)->dst, sizeof(snObject))) {
         snErr_return(error, snErr_ErrMemory,
             "snBase64_new: (*obj)->dst Failed to apply for memory.");
     }
@@ -58,23 +58,23 @@ SN_FUNC_OF((snBase64_ctx **obj))
     snErr_return(error, snErr_OK, "OK.");
 }
 
-SN_PUBLIC(snErr_ctx) snBase64_free SN_OPEN_API
-SN_FUNC_OF((snBase64_ctx **obj))
+WMKC_PUBLIC(snErr_ctx) snBase64_free WMKC_OPEN_API
+WMKC_OF((snBase64_ctx **obj))
 {
     snErr_ctx error;
 
     if(!obj) {
         snErr_return(error, snErr_ErrNULL, "snBase64_free: obj is NULL.");
     }
-    snMemoryFree((*obj)->src);
-    snMemoryFree((*obj)->dst);
-    snMemoryFree((*obj));
+    wmkcMemoryFree((*obj)->src);
+    wmkcMemoryFree((*obj)->dst);
+    wmkcMemoryFree((*obj));
 
     snErr_return(error, snErr_OK, "OK.");
 }
 
-SN_PUBLIC(snErr_ctx) snBase64_Encode SN_OPEN_API
-SN_FUNC_OF((snObject *dst, snObject *src))
+WMKC_PUBLIC(snErr_ctx) snBase64_Encode WMKC_OPEN_API
+WMKC_OF((snObject *dst, snObject *src))
 {
     snErr_ctx error;
     if(!dst || !src) {
@@ -88,7 +88,7 @@ SN_FUNC_OF((snObject *dst, snObject *src))
         snErr_return(error, snErr_ErrNULL,
             "snBase64_Encode: dst->size or src->size is null.");
     }
-    snSize dst_i, src_i;
+    wmkcSize dst_i, src_i;
 
     for (dst_i = src_i = 0; dst_i < dst->size - 2; src_i += 3, dst_i += 4) {
         dst->buf[dst_i]   = _B64ET[src->buf[src_i]           >> 2];
@@ -110,8 +110,8 @@ SN_FUNC_OF((snObject *dst, snObject *src))
     snErr_return(error, snErr_OK, "OK.");
 }
 
-SN_PUBLIC(snErr_ctx) snBase64_Decode SN_OPEN_API
-SN_FUNC_OF((snObject *dst, snObject *src))
+WMKC_PUBLIC(snErr_ctx) snBase64_Decode WMKC_OPEN_API
+WMKC_OF((snObject *dst, snObject *src))
 {
     snErr_ctx error;
     if(!dst || !src) {
@@ -123,7 +123,7 @@ SN_FUNC_OF((snObject *dst, snObject *src))
     if(!dst->size || !src->size) {
         snErr_return(error, snErr_ErrNULL, "dst->size or src->size is null.");
     }
-    snSize src_i, dst_i;
+    wmkcSize src_i, dst_i;
 
     for (src_i = dst_i = 0; src_i < src->size - 2; dst_i += 3, src_i += 4) {
         dst->buf[dst_i]   = (_B64DT[src->buf[src_i]]   << 2) |  (_B64DT[src->buf[src_i+1]]  >> 4);

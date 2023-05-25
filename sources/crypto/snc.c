@@ -7,7 +7,7 @@
 * 比如（Example）
 *     0x9b -> sbox -> 0x13
 */
-SN_PRIVATE_CONST(snByte) SNC_sbox[256] = {
+WMKC_PRIVATE_CONST(wmkcByte) SNC_sbox[256] = {
     // 0     1     2     3     4     5     6     7     8     9     A     B     C     D     E     F
     0xd2, 0xa7, 0xc9, 0xe0, 0x93, 0xc7, 0xb6, 0x43, 0x42, 0x1b, 0x89, 0x79, 0x12, 0xf1, 0x39, 0xd0,
     0xa0, 0x3f, 0xcf, 0x8d, 0xdc, 0x1f, 0xac, 0xe4, 0x01, 0xf7, 0x69, 0xa5, 0xf4, 0xb2, 0xf3, 0x1e,
@@ -34,7 +34,7 @@ SN_PRIVATE_CONST(snByte) SNC_sbox[256] = {
 * 比如（Example）
 *     0x13 -> rsbox -> 0x9b
 */
-SN_PRIVATE_CONST(snByte) SNC_rsbox[256] = {
+WMKC_PRIVATE_CONST(wmkcByte) SNC_rsbox[256] = {
     // 0     1     2     3     4     5     6     7     8     9     A     B     C     D     E     F
     0x26, 0x18, 0xaa, 0xeb, 0x39, 0x94, 0x3a, 0x84, 0xf2, 0x69, 0x48, 0xc3, 0xa3, 0x3b, 0xf0, 0xfe,
     0xf8, 0xba, 0x0c, 0x9b, 0xf7, 0xa1, 0x2c, 0x62, 0x75, 0xca, 0xd6, 0x09, 0x31, 0x29, 0x1f, 0x15,
@@ -73,9 +73,9 @@ SN_PRIVATE_CONST(snByte) SNC_rsbox[256] = {
 * 按照每列处理
 * Process according to each column.
 */
-SN_PRIVATE(snVoid) SNC_SubBytes SN_FUNC_OF((sncState *state))
+WMKC_PRIVATE(wmkcVoid) SNC_SubBytes WMKC_OF((sncState *state))
 {
-    snFast sn_u32 i;
+    wmkcFast wmkc_u32 i;
     for(i = 0; i < SNC_NK; ++i) {
         (*state)[0][i] = SNC_SBOX((*state)[0][i]);
         (*state)[1][i] = SNC_SBOX((*state)[1][i]);
@@ -96,9 +96,9 @@ SN_PRIVATE(snVoid) SNC_SubBytes SN_FUNC_OF((sncState *state))
 * 按照每列处理
 * Process according to each column.
 */
-SN_PRIVATE(snVoid) SNC_InvSubBytes SN_FUNC_OF((sncState *state))
+WMKC_PRIVATE(wmkcVoid) SNC_InvSubBytes WMKC_OF((sncState *state))
 {
-    snFast sn_u32 i;
+    wmkcFast wmkc_u32 i;
     for(i = 0; i < SNC_NK; ++i) {
         (*state)[0][i] = SNC_RSBOX((*state)[0][i]);
         (*state)[1][i] = SNC_RSBOX((*state)[1][i]);
@@ -145,9 +145,9 @@ SN_PRIVATE(snVoid) SNC_InvSubBytes SN_FUNC_OF((sncState *state))
 * The row mixing function ensures safety based on the uncertainty of plaintext and the
 * countless solutions of more than one unknown number operation.
 */
-SN_PRIVATE(snVoid) SNC_RowsMix SN_FUNC_OF((sncState *state))
+WMKC_PRIVATE(wmkcVoid) SNC_RowsMix WMKC_OF((sncState *state))
 {
-    snFast sn_u32 i;
+    wmkcFast wmkc_u32 i;
     for(i = 0; i < SNC_NB; ++i) {
         SNC_ROWS_MIX((*state)[i][0], (*state)[i][2], (*state)[i][1], (*state)[i][3]);
         SNC_ROWS_MIX((*state)[i][1], (*state)[i][0], (*state)[i][3], (*state)[i][2]);
@@ -160,9 +160,9 @@ SN_PRIVATE(snVoid) SNC_RowsMix SN_FUNC_OF((sncState *state))
 * 逆行混合函数，将经过SNC_RowsMix函数处理后的数据还原。
 * Reverse row mixing function, which restores the data processed by the "SNC_RowsMix" function.
 */
-SN_PRIVATE(snVoid) SNC_InvRowsMix SN_FUNC_OF((sncState *state))
+WMKC_PRIVATE(wmkcVoid) SNC_InvRowsMix WMKC_OF((sncState *state))
 {
-    snFast sn_u32 i;
+    wmkcFast wmkc_u32 i;
     for(i = 0; i < SNC_NB; ++i) {
         SNC_INV_ROWS_MIX((*state)[i][3], (*state)[i][1], (*state)[i][2], (*state)[i][0]);
         SNC_INV_ROWS_MIX((*state)[i][2], (*state)[i][3], (*state)[i][1], (*state)[i][0]);
@@ -178,9 +178,9 @@ SN_PRIVATE(snVoid) SNC_InvRowsMix SN_FUNC_OF((sncState *state))
 *
 * 按照每列处理（Process according to each column.）
 */
-SN_PRIVATE(snVoid) SNC_ColumnShift SN_FUNC_OF((sncState *state))
+WMKC_PRIVATE(wmkcVoid) SNC_ColumnShift WMKC_OF((sncState *state))
 {
-    static snByte buf;
+    static wmkcByte buf;
 
     //* 第一列（First column）
     buf = (*state)[0][0];
@@ -218,9 +218,9 @@ SN_PRIVATE(snVoid) SNC_ColumnShift SN_FUNC_OF((sncState *state))
 *
 * 按照每列处理（Process according to each column.）
 */
-SN_PRIVATE(snVoid) SNC_InvColumnShift SN_FUNC_OF((sncState *state))
+WMKC_PRIVATE(wmkcVoid) SNC_InvColumnShift WMKC_OF((sncState *state))
 {
-    static snByte buf;
+    static wmkcByte buf;
 
     //* 第四列（Fourth column）
     buf = (*state)[7][3]; (*state)[7][3] = (*state)[3][3]; (*state)[3][3] = buf;
@@ -258,9 +258,9 @@ SN_PRIVATE(snVoid) SNC_InvColumnShift SN_FUNC_OF((sncState *state))
 *
 * 按照每列处理（Process according to each column.）
 */
-SN_PRIVATE(snVoid) SNC_XorWithIV SN_FUNC_OF((sncState *buf, sncState *iv))
+WMKC_PRIVATE(wmkcVoid) SNC_XorWithIV WMKC_OF((sncState *buf, sncState *iv))
 {
-    snFast sn_u32 i;
+    wmkcFast wmkc_u32 i;
     for(i = 0; i < SNC_NK; ++i) {
         (*buf)[0][i] ^= (*iv)[0][i];
         (*buf)[1][i] ^= (*iv)[1][i];
@@ -276,10 +276,10 @@ SN_PRIVATE(snVoid) SNC_XorWithIV SN_FUNC_OF((sncState *buf, sncState *iv))
 /*
 * 加密块函数，将输入的块进行加密（Encrypt block function to encrypt input blocks）
 */
-SN_PRIVATE(snVoid) SNC_Cipher
-SN_FUNC_OF((SNC_mode mode, sncState *state, snByte *RoundKey))
+WMKC_PRIVATE(wmkcVoid) SNC_Cipher
+WMKC_OF((SNC_mode mode, sncState *state, wmkcByte *RoundKey))
 {
-    snFast sn_u32 i;
+    wmkcFast wmkc_u32 i;
 
     //* 执行块置换函数（Execute block substitute function）
     SNC_SubBytes(state);
@@ -335,10 +335,10 @@ SN_FUNC_OF((SNC_mode mode, sncState *state, snByte *RoundKey))
 /*
 * 解密块函数，将输入的块进行解密（Decrypt block function to decrypt input blocks）
 */
-SN_PRIVATE(snVoid) SNC_InvCipher
-SN_FUNC_OF((SNC_mode mode, sncState *state, snByte *RoundKey))
+WMKC_PRIVATE(wmkcVoid) SNC_InvCipher
+WMKC_OF((SNC_mode mode, sncState *state, wmkcByte *RoundKey))
 {
-    snFast sn_u32 i;
+    wmkcFast wmkc_u32 i;
 
     //* 执行逆行混合函数。（Execute inverse mixed function.）
     SNC_InvRowsMix(state);
@@ -396,10 +396,10 @@ SN_FUNC_OF((SNC_mode mode, sncState *state, snByte *RoundKey))
 * The key extension function is used to generate sub keys required for each subsequent
 * round of encryption and decryption based on the initial user key.
 */
-SN_PRIVATE(snVoid) SNC_keyExtension SN_FUNC_OF((sn_u16 keySize, snByte *iv, snByte *key))
+WMKC_PRIVATE(wmkcVoid) SNC_keyExtension WMKC_OF((wmkc_u16 keySize, wmkcByte *iv, wmkcByte *key))
 {
-    static snSize i;
-    static snByte buf;
+    static wmkcSize i;
+    static wmkcByte buf;
 
     for(i = 0; i < keySize; ++i) {
         buf = 
@@ -450,8 +450,8 @@ SN_PRIVATE(snVoid) SNC_keyExtension SN_FUNC_OF((sn_u16 keySize, snByte *iv, snBy
 }
 
 // 为SNC对象申请内存空间
-SN_PUBLIC(snErr_ctx) SNC_new SN_OPEN_API
-SN_FUNC_OF((SNC_ctx **ctx, SNC_mode mode))
+WMKC_PUBLIC(snErr_ctx) SNC_new WMKC_OPEN_API
+WMKC_OF((SNC_ctx **ctx, SNC_mode mode))
 {
     snErr_ctx error;
 
@@ -459,21 +459,21 @@ SN_FUNC_OF((SNC_ctx **ctx, SNC_mode mode))
         snErr_return(error, snErr_ErrNULL, "ctx is NULL.");
     }
 
-    if(!snMemoryNew(SNC_ctx *, (*ctx), sizeof(SNC_ctx))) {
+    if(!wmkcMemoryNew(SNC_ctx *, (*ctx), sizeof(SNC_ctx))) {
         snErr_return(error, snErr_ErrMemory, "(*ctx) Failed to apply for memory.");
     }
 
     (*ctx)->mode = mode;
     (*ctx)->KN = SNC_KN[mode];
     (*ctx)->NR = SNC_NR[mode];
-    snMemoryZero((*ctx)->roundKey, sizeof((*ctx)->roundKey));
+    wmkcMemoryZero((*ctx)->roundKey, sizeof((*ctx)->roundKey));
 
     snErr_return(error, snErr_OK, "OK.");
 }
 
 // 释放SNC对象
-SN_PUBLIC(snErr_ctx) SNC_free SN_OPEN_API
-SN_FUNC_OF((SNC_ctx **ctx))
+WMKC_PUBLIC(snErr_ctx) SNC_free WMKC_OPEN_API
+WMKC_OF((SNC_ctx **ctx))
 {
     snErr_ctx error;
     if(!ctx) {
@@ -481,8 +481,8 @@ SN_FUNC_OF((SNC_ctx **ctx))
     }
 
     memset((*ctx)->iv, 0x00, SNC_BLOCKLEN);
-    snMemoryZero((*ctx)->roundKey, sizeof((*ctx)->roundKey));
-    snMemoryFree((*ctx));
+    wmkcMemoryZero((*ctx)->roundKey, sizeof((*ctx)->roundKey));
+    wmkcMemoryFree((*ctx));
 
     snErr_return(error, snErr_OK, "OK.");
 }
@@ -492,28 +492,28 @@ SN_FUNC_OF((SNC_ctx **ctx))
 * Function to initialize the SNC data structure, used to generate sub keys for each
 * round based on the basic key input by the user.
 */
-SN_PUBLIC(snErr_ctx) SNC_init SN_OPEN_API
-SN_FUNC_OF((SNC_ctx *ctx, snByte *keyBuf, snByte *ivBuf))
+WMKC_PUBLIC(snErr_ctx) SNC_init WMKC_OPEN_API
+WMKC_OF((SNC_ctx *ctx, wmkcByte *keyBuf, wmkcByte *ivBuf))
 {
     snErr_ctx error;
     if(!ctx || !keyBuf || !ivBuf) {
         snErr_return(error, snErr_ErrNULL, "ctx or keyBuf or ivBuf is NULL.");
     }
 
-    snByte *key = snNull;
-    snByte iv[SNC_BLOCKLEN];
-    sn_u32 r;
+    wmkcByte *key = wmkcNull;
+    wmkcByte iv[SNC_BLOCKLEN];
+    wmkc_u32 r;
     /*
-    * snByte *key = snNull;
+    * wmkcByte *key = wmkcNull;
     *     密钥副本，用于存放每轮的子密钥。
     *     Key copy, used to store sub keys for each round.
     *
-    * snByte iv[SNC_BLOCKLEN];
+    * wmkcByte iv[SNC_BLOCKLEN];
     *     初始向量副本，用于保证输入的初始向量不发生变化。
     *     The copy of Initialization vector is used to ensure that the input Initialization
     *     vector does not change.
     */
-    if(!snMemoryNew(snByte *, key, ctx->KN)) {
+    if(!wmkcMemoryNew(wmkcByte *, key, ctx->KN)) {
         snErr_return(error, snErr_ErrMemory, "key Failed to apply for memory.");
     }
 
@@ -548,19 +548,19 @@ SN_FUNC_OF((SNC_ctx *ctx, snByte *keyBuf, snByte *ivBuf))
     }
 
     //* 用于确保内存安全（Used to ensure memory security.）
-    snMemoryZero(key, ctx->KN);
-    snMemoryZero(iv, SNC_BLOCKLEN);
+    wmkcMemoryZero(key, ctx->KN);
+    wmkcMemoryZero(iv, SNC_BLOCKLEN);
     free(key);
-    key = snNull;
+    key = wmkcNull;
     snErr_return(error, snErr_OK, "OK.");
 }
 
 //* ECB模式加密
-SN_PUBLIC(snVoid) SNC_ECB_Encrypt SN_OPEN_API
-SN_FUNC_OF((SNC_ctx *ctx, snByte *buf, snSize size))
+WMKC_PUBLIC(wmkcVoid) SNC_ECB_Encrypt WMKC_OPEN_API
+WMKC_OF((SNC_ctx *ctx, wmkcByte *buf, wmkcSize size))
 {
-    snFast snSize r;
-    snFast snSize i;
+    wmkcFast wmkcSize r;
+    wmkcFast wmkcSize i;
 
     //* 将SNC的块结构指向输入的数据，用于提高性能和简化代码
     sncState *bufState = (sncState *)buf;
@@ -576,11 +576,11 @@ SN_FUNC_OF((SNC_ctx *ctx, snByte *buf, snSize size))
 }
 
 //* ECB模式解密
-SN_PUBLIC(snVoid) SNC_ECB_Decrypt SN_OPEN_API
-SN_FUNC_OF((SNC_ctx *ctx, snByte *buf, snSize size))
+WMKC_PUBLIC(wmkcVoid) SNC_ECB_Decrypt WMKC_OPEN_API
+WMKC_OF((SNC_ctx *ctx, wmkcByte *buf, wmkcSize size))
 {
-    snFast snSize r;
-    snFast snSize i;
+    wmkcFast wmkcSize r;
+    wmkcFast wmkcSize i;
 
     //* 将SNC的块结构指向输入的数据，用于提高性能和简化代码
     sncState *bufState = (sncState *)buf;
@@ -596,11 +596,11 @@ SN_FUNC_OF((SNC_ctx *ctx, snByte *buf, snSize size))
 }
 
 //* CBC模式加密
-SN_PUBLIC(snVoid) SNC_CBC_Encrypt SN_OPEN_API
-SN_FUNC_OF((SNC_ctx *ctx, snByte *buf, snSize size))
+WMKC_PUBLIC(wmkcVoid) SNC_CBC_Encrypt WMKC_OPEN_API
+WMKC_OF((SNC_ctx *ctx, wmkcByte *buf, wmkcSize size))
 {
-    snFast snSize r, i;
-    static snByte round_iv[SNC_BLOCKLEN];
+    wmkcFast wmkcSize r, i;
+    static wmkcByte round_iv[SNC_BLOCKLEN];
 
     sncState *bufState = (sncState *)buf;
     sncState *ivState = (sncState *)round_iv;
@@ -617,13 +617,13 @@ SN_FUNC_OF((SNC_ctx *ctx, snByte *buf, snSize size))
 }
 
 //* CBC模式解密
-SN_PUBLIC(snVoid) SNC_CBC_Decrypt SN_OPEN_API
-SN_FUNC_OF((SNC_ctx *ctx, snByte *buf, snSize size))
+WMKC_PUBLIC(wmkcVoid) SNC_CBC_Decrypt WMKC_OPEN_API
+WMKC_OF((SNC_ctx *ctx, wmkcByte *buf, wmkcSize size))
 {
-    snFast snSize r;
-    snFast snSize i;
-    static snByte round_iv[SNC_BLOCKLEN];
-    static snByte round_buf[SNC_BLOCKLEN];
+    wmkcFast wmkcSize r;
+    wmkcFast wmkcSize i;
+    static wmkcByte round_iv[SNC_BLOCKLEN];
+    static wmkcByte round_buf[SNC_BLOCKLEN];
 
     sncState *bufState = (sncState *)buf;
     sncState *ivState = (sncState *)round_iv;

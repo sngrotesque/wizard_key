@@ -16,39 +16,39 @@
 #endif
 
 // 冒泡排序，65536字节长度最坏情况，用时：15.66s
-SN_PUBLIC(snVoid) bubbleSort SN_OPEN_API
-SN_FUNC_OF((sn_32 *arr, snSize size));
+WMKC_PUBLIC(wmkcVoid) bubbleSort WMKC_OPEN_API
+WMKC_OF((wmkc_s32 *arr, wmkcSize size));
 
 // 选择排序，65536字节长度最坏情况，用时：8.53s
-SN_PUBLIC(snVoid) selectionSort SN_OPEN_API
-SN_FUNC_OF((sn_32 *arr, snSize size));
+WMKC_PUBLIC(wmkcVoid) selectionSort WMKC_OPEN_API
+WMKC_OF((wmkc_s32 *arr, wmkcSize size));
 
 // 插入排序，65536字节长度最坏情况，用时：1.31s
-SN_PUBLIC(snVoid) insertionSort SN_OPEN_API
-SN_FUNC_OF((sn_32 *arr, snSize size));
+WMKC_PUBLIC(wmkcVoid) insertionSort WMKC_OPEN_API
+WMKC_OF((wmkc_s32 *arr, wmkcSize size));
 
 // 归并排序，16777216字节长度最坏情况，用时（三次取最快）：0.80s
-SN_PUBLIC(snVoid) mergeSort SN_OPEN_API
-SN_FUNC_OF((sn_32 *arr, snSize size));
+WMKC_PUBLIC(wmkcVoid) mergeSort WMKC_OPEN_API
+WMKC_OF((wmkc_s32 *arr, wmkcSize size));
 
 // 希尔排序，16777216字节长度最坏情况，用时（三次取最快）：1.08s
-SN_PUBLIC(snVoid) shellSort SN_OPEN_API
-SN_FUNC_OF((sn_32 *arr, snSize size));
+WMKC_PUBLIC(wmkcVoid) shellSort WMKC_OPEN_API
+WMKC_OF((wmkc_s32 *arr, wmkcSize size));
 
 // 快速排序，16777216字节长度最坏情况，用时（三次取最快）：0.41s
-SN_PUBLIC(snVoid) quickSort SN_OPEN_API
-SN_FUNC_OF((sn_32 *arr, snSize first, snSize last));
+WMKC_PUBLIC(wmkcVoid) quickSort WMKC_OPEN_API
+WMKC_OF((wmkc_s32 *arr, wmkcSize first, wmkcSize last));
 
 // 堆排序，16777216字节长度最坏情况，用时（三次取最快）：2.14s
-SN_PUBLIC(snVoid) heapSort SN_OPEN_API
-SN_FUNC_OF((sn_32 *arr, snSize size));
+WMKC_PUBLIC(wmkcVoid) heapSort WMKC_OPEN_API
+WMKC_OF((wmkc_s32 *arr, wmkcSize size));
 
 // 计数排序，16777216字节长度最坏情况，用时（三次取最快）：0.09s
-SN_PUBLIC(snVoid) countSort SN_OPEN_API
-SN_FUNC_OF((sn_32 *arr, snSize size));
+WMKC_PUBLIC(wmkcVoid) countSort WMKC_OPEN_API
+WMKC_OF((wmkc_s32 *arr, wmkcSize size));
 
 // 双调排序，16777216字节长度最坏情况，用时（三次取最快）：4.00s
-SN_PUBLIC(snVoid) bitonicSort SN_OPEN_API
-SN_FUNC_OF((sn_32 *arr, snSize size));
+WMKC_PUBLIC(wmkcVoid) bitonicSort WMKC_OPEN_API
+WMKC_OF((wmkc_s32 *arr, wmkcSize size));
 
 #endif

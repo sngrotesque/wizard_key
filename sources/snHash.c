@@ -1,14 +1,14 @@
 #include <snHash.h>
 
-SN_PRIVATE(snErr_ctx) _snHash_init
-SN_FUNC_OF((snHash_ctx **obj, snSize size))
+WMKC_PRIVATE(snErr_ctx) _snHash_init
+WMKC_OF((snHash_ctx **obj, wmkcSize size))
 {
     snErr_ctx error;
     (*obj)->hexdigestSize = size << 1;
     (*obj)->digestSize = size;
 
-    (*obj)->hexdigest = snNull;
-    if(!snMemoryNew(snByte *, (*obj)->digest, size)) {
+    (*obj)->hexdigest = wmkcNull;
+    if(!wmkcMemoryNew(wmkcByte *, (*obj)->digest, size)) {
         snErr_return(error, snErr_ErrMemory,
             "_snHash_init: (*obj)->digest failed to apply for memory.");
     }
@@ -16,18 +16,18 @@ SN_FUNC_OF((snHash_ctx **obj, snSize size))
     snErr_return(error, snErr_OK, "OK.");
 }
 
-SN_PUBLIC(snErr_ctx) snHash_new SN_OPEN_API
-SN_FUNC_OF((snHash_ctx **obj, snHash_HashType hashType))
+WMKC_PUBLIC(snErr_ctx) snHash_new WMKC_OPEN_API
+WMKC_OF((snHash_ctx **obj, snHash_HashType hashType))
 {
     snErr_ctx error;
     if(!obj) {
         snErr_return(error, snErr_ErrNULL, "snHash_new: obj is NULL.");
     }
-    if((sn_u32)hashType > 5) {
+    if((wmkc_u32)hashType > 5) {
         snErr_return(error, snErr_ErrType,
             "snHash_new: Wrong hashType, must be 0 to 5.");
     }
-    if(!snMemoryNew(snHash_ctx *, (*obj), sizeof(snHash_ctx))) {
+    if(!wmkcMemoryNew(snHash_ctx *, (*obj), sizeof(snHash_ctx))) {
         snErr_return(error, snErr_ErrMemory,
             "snHash_new: (*obj) failed to apply for memory.");
     }
@@ -57,8 +57,8 @@ SN_FUNC_OF((snHash_ctx **obj, snHash_HashType hashType))
  * 为了不与本库（Shark Coast）产生冲突，不针对EVP相关功能进行
  * 返回值检查。
 */
-SN_PUBLIC(snErr_ctx) snHash SN_OPEN_API
-SN_FUNC_OF((snHash_ctx *hash, snByte *buf, snSize size))
+WMKC_PUBLIC(snErr_ctx) snHash WMKC_OPEN_API
+WMKC_OF((snHash_ctx *hash, wmkcByte *buf, wmkcSize size))
 {
     snErr_ctx error;
     if(!hash || !buf || !size) {
@@ -66,9 +66,9 @@ SN_FUNC_OF((snHash_ctx *hash, snByte *buf, snSize size))
     }
     EVP_MD_CTX *md_ctx = EVP_MD_CTX_new();
 
-    EVP_DigestInit_ex(md_ctx, hash->md, snNull);
+    EVP_DigestInit_ex(md_ctx, hash->md, wmkcNull);
     EVP_DigestUpdate(md_ctx, buf, size);
-    EVP_DigestFinal_ex(md_ctx, hash->digest, snNull);
+    EVP_DigestFinal_ex(md_ctx, hash->digest, wmkcNull);
     EVP_MD_CTX_free(md_ctx);
 
     error = snBinascii_b2a_hex(&hash->hexdigest, hash->digest, hash->digestSize);
@@ -79,28 +79,28 @@ SN_FUNC_OF((snHash_ctx *hash, snByte *buf, snSize size))
     snErr_return(error, snErr_OK, "OK.");
 }
 
-SN_PUBLIC(snErr_ctx) snHash_file SN_OPEN_API
-SN_FUNC_OF((snHash_ctx *hash, snFileString fn))
+WMKC_PUBLIC(snErr_ctx) snHash_file WMKC_OPEN_API
+WMKC_OF((snHash_ctx *hash, snFileString fn))
 {
     snErr_ctx error;
     if(!hash || !fn) {
         snErr_return(error, snErr_ErrNULL,
             "snHash_file: hash or fn is NULL.");
     }
-    EVP_MD_CTX *md_ctx = snNull;
-    snByte *buf = snNull;
-    snFile *fp = snNull;
-    snSize fileSize;
-    snSize quotient; // 文件长度除块大小的商
-    snSize leftover; // 文件剩余长度
-    snSize index;
+    EVP_MD_CTX *md_ctx = wmkcNull;
+    wmkcByte *buf = wmkcNull;
+    wmkcFile *fp = wmkcNull;
+    wmkcSize fileSize;
+    wmkcSize quotient; // 文件长度除块大小的商
+    wmkcSize leftover; // 文件剩余长度
+    wmkcSize index;
 
     error = snFile_fileSize(&fileSize, fn);
     if(error.code) {
         return error;
     }
 
-    if(!snMemoryNew(snByte *, buf, SN_HASH_BLOCKLEN)) {
+    if(!wmkcMemoryNew(wmkcByte *, buf, SN_HASH_BLOCKLEN)) {
         snErr_return(error, snErr_ErrMemory,
             "snHash_file: buf failed to apply for memory.");
     }
@@ -113,7 +113,7 @@ SN_FUNC_OF((snHash_ctx *hash, snFileString fn))
     }
 
     md_ctx = EVP_MD_CTX_new();
-    EVP_DigestInit_ex(md_ctx, hash->md, snNull);
+    EVP_DigestInit_ex(md_ctx, hash->md, wmkcNull);
 
     for(index = 0; index < quotient; ++index) {
         fread(buf, 1, SN_HASH_BLOCKLEN, fp);
@@ -123,7 +123,7 @@ SN_FUNC_OF((snHash_ctx *hash, snFileString fn))
         fread(buf, 1, leftover, fp);
         EVP_DigestUpdate(md_ctx, buf, leftover);
     }
-    EVP_DigestFinal_ex(md_ctx, hash->digest, snNull);
+    EVP_DigestFinal_ex(md_ctx, hash->digest, wmkcNull);
     EVP_MD_CTX_free(md_ctx);
 
     error = snBinascii_b2a_hex(&hash->hexdigest, hash->digest, hash->digestSize);
@@ -131,7 +131,7 @@ SN_FUNC_OF((snHash_ctx *hash, snFileString fn))
         return error;
     }
 
-    snMemoryFree(buf);
+    wmkcMemoryFree(buf);
     if(fclose(fp)) {
         snErr_return(error, snErr_FileClose, "snHash_file: File closing failed.");
     }
@@ -139,17 +139,17 @@ SN_FUNC_OF((snHash_ctx *hash, snFileString fn))
     snErr_return(error, snErr_OK, "OK.");
 }
 
-SN_PUBLIC(snErr_ctx) snHash_free SN_OPEN_API
-SN_FUNC_OF((snHash_ctx **obj))
+WMKC_PUBLIC(snErr_ctx) snHash_free WMKC_OPEN_API
+WMKC_OF((snHash_ctx **obj))
 {
     snErr_ctx error;
     if(!obj) {
         snErr_return(error, snErr_ErrNULL, "snHash_free: obj is NULL.");
     }
     if((*obj)->hexdigest) {
-        snMemoryFree((*obj)->hexdigest);
+        wmkcMemoryFree((*obj)->hexdigest);
     }
-    snMemoryFree((*obj)->digest);
-    snMemoryFree((*obj));
+    wmkcMemoryFree((*obj)->digest);
+    wmkcMemoryFree((*obj));
     snErr_return(error, snErr_OK, "OK.");
 }

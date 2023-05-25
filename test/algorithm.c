@@ -1,7 +1,7 @@
 #include <snConf.h>
 
 /* 递归算法 *** 开始 ***************************/
-int snAlgorithm_Recursion(snSize n)
+int snAlgorithm_Recursion(wmkcSize n)
 {
     if(n < 4096) {
         return snAlgorithm_Recursion(n << 1);
@@ -15,10 +15,10 @@ int snAlgorithm_Recursion(snSize n)
 
 void snAlgorithm_YangHuiTriangle()
 {
-    snSize array[YHT_height][YHT_width];
-    sn_u32 i, j, temp;
+    wmkcSize array[YHT_height][YHT_width];
+    wmkc_u32 i, j, temp;
 
-    snMemoryZero(array, (YHT_width * YHT_height) * sizeof(snSize));
+    wmkcMemoryZero(array, (YHT_width * YHT_height) * sizeof(wmkcSize));
     array[0][0] = 1;
 
     for(i = 1; i < YHT_height; ++i) {

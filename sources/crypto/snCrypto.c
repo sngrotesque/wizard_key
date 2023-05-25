@@ -1,11 +1,11 @@
 #include <crypto/snCrypto.h>
 
-SN_PUBLIC(snVoid) snCrypto_sbox_init SN_OPEN_API
-SN_FUNC_OF((snByte *sbox))
+WMKC_PUBLIC(wmkcVoid) snCrypto_sbox_init WMKC_OPEN_API
+WMKC_OF((wmkcByte *sbox))
 {
     snRand_Seed();
-    static sn_u32 r, x, left, right;
-    static snByte swap;
+    static wmkc_u32 r, x, left, right;
+    static wmkcByte swap;
 
     for(x = 0; x < 256; ++x)
         sbox[x] = x;
@@ -23,9 +23,9 @@ SN_FUNC_OF((snByte *sbox))
     }
 }
 
-SN_PUBLIC(snVoid) snCrypto_rsbox_init SN_OPEN_API
-SN_FUNC_OF((snByte *sbox, snByte *rsbox))
+WMKC_PUBLIC(wmkcVoid) snCrypto_rsbox_init WMKC_OPEN_API
+WMKC_OF((wmkcByte *sbox, wmkcByte *rsbox))
 {
-    for(sn_u32 x = 0; x < 256; ++x)
+    for(wmkc_u32 x = 0; x < 256; ++x)
         rsbox[sbox[x]] = x;
 }

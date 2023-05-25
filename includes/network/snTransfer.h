@@ -20,34 +20,34 @@
 #define SN_FT_BIND_TO 1   // 用于设定SO_REUSEADDR的超时时间
 
 // 信号：等待
-SN_PRIVATE_CONST(sn_u32) SN_FT_SIGNAL_WAIT = 0x74696177U;
+WMKC_PRIVATE_CONST(wmkc_u32) SN_FT_SIGNAL_WAIT = 0x74696177U;
 // 信号：完成
-SN_PRIVATE_CONST(sn_u32) SN_FT_SIGNAL_DONE = 0x656e6f64U;
+WMKC_PRIVATE_CONST(wmkc_u32) SN_FT_SIGNAL_DONE = 0x656e6f64U;
 
 #define SN_FT_DEFAULT_MAX_RETRY 5 // 默认最大重试次数为5
 #define SN_FT_DEFAULT_PORT 49281  // 默认端口
 
 typedef struct {
-    snString addr;     // 网络地址
-    sn_u16  port;     // 网络端口
-    sn_u32  maxRetry; // 失败重试次数
+    wmkcString addr;     // 网络地址
+    wmkc_u16  port;     // 网络端口
+    wmkc_u32  maxRetry; // 失败重试次数
     SNC_ctx *snc;     // SNC加密算法对象
 } snTransfer_ctx;
 
 // 为snTransfer对象申请内存空间
-SN_PUBLIC(snErr_ctx) snTransfer_new SN_OPEN_API
-SN_FUNC_OF((snTransfer_ctx **net, snString addr, sn_u16 port, sn_u32 maxRetry));
+WMKC_PUBLIC(snErr_ctx) snTransfer_new WMKC_OPEN_API
+WMKC_OF((snTransfer_ctx **net, wmkcString addr, wmkc_u16 port, wmkc_u32 maxRetry));
 
 // 释放snTransfer对象
-SN_PUBLIC(snErr_ctx) snTransfer_free SN_OPEN_API
-SN_FUNC_OF((snTransfer_ctx **net));
+WMKC_PUBLIC(snErr_ctx) snTransfer_free WMKC_OPEN_API
+WMKC_OF((snTransfer_ctx **net));
 
 // 接收端
-SN_PUBLIC(snErr_ctx) snTransfer_Listen SN_OPEN_API
-SN_FUNC_OF((snTransfer_ctx *net, snFileString fn));
+WMKC_PUBLIC(snErr_ctx) snTransfer_Listen WMKC_OPEN_API
+WMKC_OF((snTransfer_ctx *net, snFileString fn));
 
 // 发送端
-SN_PUBLIC(snErr_ctx) snTransfer_Client SN_OPEN_API
-SN_FUNC_OF((snTransfer_ctx *net, snFileString fn));
+WMKC_PUBLIC(snErr_ctx) snTransfer_Client WMKC_OPEN_API
+WMKC_OF((snTransfer_ctx *net, snFileString fn));
 
 #endif // #ifndef __SN_TRANSFER__

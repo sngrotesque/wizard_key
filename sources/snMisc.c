@@ -1,9 +1,9 @@
 #include <snMisc.h>
 
-SN_PUBLIC(snVoid) snMisc_PRINT SN_OPEN_API
-SN_FUNC_OF((snByte *data, snSize len, snSize num, snBool newline, snBool tableChar))
+WMKC_PUBLIC(wmkcVoid) snMisc_PRINT WMKC_OPEN_API
+WMKC_OF((wmkcByte *data, wmkcSize len, wmkcSize num, wmkcBool newline, wmkcBool tableChar))
 {
-    for(snSize x = 0; x < len; ++x) {
+    for(wmkcSize x = 0; x < len; ++x) {
         if(tableChar && x == 0)
             printf("\t");
         switch(data[x]) {
@@ -32,10 +32,10 @@ SN_FUNC_OF((snByte *data, snSize len, snSize num, snBool newline, snBool tableCh
         printf("\n");
 }
 
-SN_PUBLIC(snVoid) snMisc_PRINT_N SN_OPEN_API
-SN_FUNC_OF((sn_32 *arr, snSize size, snBool newline))
+WMKC_PUBLIC(wmkcVoid) snMisc_PRINT_N WMKC_OPEN_API
+WMKC_OF((wmkc_s32 *arr, wmkcSize size, wmkcBool newline))
 {
-    for(snSize x = 0; x < size; ++x) {
+    for(wmkcSize x = 0; x < size; ++x) {
         printf("%3d", x[arr]);
         if(!((x+1) % 32)) {
             printf("\n");
@@ -47,10 +47,10 @@ SN_FUNC_OF((sn_32 *arr, snSize size, snBool newline))
         printf("\n");
 }
 
-SN_PUBLIC(snVoid) snMisc_PRINT_BOX SN_OPEN_API
-SN_FUNC_OF((snByte *box, snSize size, snSize num, snBool newline))
+WMKC_PUBLIC(wmkcVoid) snMisc_PRINT_BOX WMKC_OPEN_API
+WMKC_OF((wmkcByte *box, wmkcSize size, wmkcSize num, wmkcBool newline))
 {
-    for(snSize x = 0; x < size; ++x) {
+    for(wmkcSize x = 0; x < size; ++x) {
         printf("0x%02x", box[x]);
         if((x + 1) != size) {
             if((x + 1) % num == 0) {
@@ -66,10 +66,10 @@ SN_FUNC_OF((snByte *box, snSize size, snSize num, snBool newline))
         printf("\n");
 }
 
-SN_PUBLIC(snVoid) snMisc_PRINT_RAW SN_OPEN_API
-SN_FUNC_OF((snByte *buf, snSize size, snBool newline))
+WMKC_PUBLIC(wmkcVoid) snMisc_PRINT_RAW WMKC_OPEN_API
+WMKC_OF((wmkcByte *buf, wmkcSize size, wmkcBool newline))
 {
-    snSize x;
+    wmkcSize x;
     for(x = 0; x < size; ++x) {
         if(buf[x] && buf[x] < 0x20)
             printf("\n");

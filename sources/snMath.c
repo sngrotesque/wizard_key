@@ -1,34 +1,34 @@
 #include <snMath.h>
 
 // 求n的m次方
-SN_PUBLIC(snSize) snMath_Pow SN_OPEN_API
-SN_FUNC_OF((snSize n, snSize m))
+WMKC_PUBLIC(wmkcSize) snMath_Pow WMKC_OPEN_API
+WMKC_OF((wmkcSize n, wmkcSize m))
 {
-    snSize buf = n, i;
+    wmkcSize buf = n, i;
     for(i = 1; i < m; ++i)
         buf *= n;
     return buf;
 }
 
 // 求一个范围内的质数
-SN_PUBLIC(snSize *) snMath_PrimeNumber SN_OPEN_API
-SN_FUNC_OF((snSize minValue, snSize maxValue))
+WMKC_PUBLIC(wmkcSize *) snMath_PrimeNumber WMKC_OPEN_API
+WMKC_OF((wmkcSize minValue, wmkcSize maxValue))
 {
-	snFast snSize x;
-	snFast snSize i;
-    snFast snSize count;
-    snSize *p;
+	wmkcFast wmkcSize x;
+	wmkcFast wmkcSize i;
+    wmkcFast wmkcSize count;
+    wmkcSize *p;
 
     if(minValue % 2 == 0 && minValue > 1)
         minValue += 1;
 
     if(minValue < 3) {
-        p = (snSize *)malloc(2 * sizeof(snSize));
+        p = (wmkcSize *)malloc(2 * sizeof(wmkcSize));
         *(p + 0) = 1;
         *(p + 1) = 2;
     }
 
-    p = (snSize *)malloc(sizeof(snSize));
+    p = (wmkcSize *)malloc(sizeof(wmkcSize));
     count = 0;
 
 	for(x = minValue; x <= maxValue; x += 2) {
@@ -37,7 +37,7 @@ SN_FUNC_OF((snSize minValue, snSize maxValue))
 				break;
 		if(i * i > x) {
             *(p + count) = x;
-            p = (snSize *)realloc(p, sizeof(snSize) * (count + 2));
+            p = (wmkcSize *)realloc(p, sizeof(wmkcSize) * (count + 2));
             ++count;
         }
 	}
@@ -47,15 +47,15 @@ SN_FUNC_OF((snSize minValue, snSize maxValue))
 }
 
 // 求n1和n2的公因数
-SN_PUBLIC(snSize *) snMath_CommonFactor SN_OPEN_API
-SN_FUNC_OF((snSize n1, snSize n2))
+WMKC_PUBLIC(wmkcSize *) snMath_CommonFactor WMKC_OPEN_API
+WMKC_OF((wmkcSize n1, wmkcSize n2))
 {
-    static snSize total;
-    static snSize n;
-    static snSize count;
-    static snSize *p;
+    static wmkcSize total;
+    static wmkcSize n;
+    static wmkcSize count;
+    static wmkcSize *p;
 
-    p = (snSize *)malloc(sizeof(snSize));
+    p = (wmkcSize *)malloc(sizeof(wmkcSize));
 
     if(n1 > n2)
         total = n2;
@@ -65,7 +65,7 @@ SN_FUNC_OF((snSize n1, snSize n2))
     for(count = 0, n = 2; n < total; ++n) {
         if(!((n1 % n) | (n2 % n))) {
             *(p + count) = n;
-            p = (snSize *)realloc(p, sizeof(snSize) * (count + 2));
+            p = (wmkcSize *)realloc(p, sizeof(wmkcSize) * (count + 2));
             ++count;
         }
     }
@@ -75,19 +75,19 @@ SN_FUNC_OF((snSize n1, snSize n2))
 }
 
 // 求_num的所有因数
-SN_PUBLIC(snSize *) snMath_Factor SN_OPEN_API
-SN_FUNC_OF((snSize _num))
+WMKC_PUBLIC(wmkcSize *) snMath_Factor WMKC_OPEN_API
+WMKC_OF((wmkcSize _num))
 {
-    static snSize n;
-    static snSize count;
-    static snSize *p;
+    static wmkcSize n;
+    static wmkcSize count;
+    static wmkcSize *p;
 
-    p = (snSize *)malloc(sizeof(snSize));
+    p = (wmkcSize *)malloc(sizeof(wmkcSize));
 
     for(count = 0, n = 2; n < _num; ++n) {
         if(!(_num % n)) {
             *(p + count) = n;
-            p = (snSize *)realloc(p, (sizeof(snSize) * (count + 2)));
+            p = (wmkcSize *)realloc(p, (sizeof(wmkcSize) * (count + 2)));
             ++count;
         }
     }

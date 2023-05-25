@@ -30,7 +30,7 @@ source_file_list = [
     'sources/snBase64.c',
     'sources/snBinascii.c',
     'sources/snDataString.c',
-    'sources/snFile.c',
+    'sources/wmkcFile.c',
     'sources/snHash.c',
     'sources/snHexdump.c',
     'sources/snKey.c',

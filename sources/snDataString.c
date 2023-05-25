@@ -1,7 +1,7 @@
 #include <snDataString.h>
 
-SN_PUBLIC(snErr_ctx) snString_Splicing SN_OPEN_API
-SN_FUNC_OF((snObject **dst, snObject *left, snObject *right))
+WMKC_PUBLIC(snErr_ctx) snString_Splicing WMKC_OPEN_API
+WMKC_OF((snObject **dst, snObject *left, snObject *right))
 {
     snErr_ctx error;
     if(!dst || !left || !right) {
@@ -22,8 +22,8 @@ SN_FUNC_OF((snObject **dst, snObject *left, snObject *right))
     snErr_return(error, snErr_OK, "OK.");
 }
 
-SN_PUBLIC(snErr_ctx) snString_Slice SN_OPEN_API
-SN_FUNC_OF((snObject **dst, snObject *src, snSSize start, snSSize end))
+WMKC_PUBLIC(snErr_ctx) snString_Slice WMKC_OPEN_API
+WMKC_OF((snObject **dst, snObject *src, wmkcSSize start, wmkcSSize end))
 {
     snErr_ctx error;
     if(end < 0) {
@@ -66,15 +66,15 @@ SN_FUNC_OF((snObject **dst, snObject *src, snSSize start, snSSize end))
     snErr_return(error, snErr_OK, "OK.");
 }
 
-SN_PUBLIC(snErr_ctx) snString_Scanf SN_OPEN_API
-SN_FUNC_OF((snByte *buf, snSize size))
+WMKC_PUBLIC(snErr_ctx) snString_Scanf WMKC_OPEN_API
+WMKC_OF((wmkcByte *buf, wmkcSize size))
 {
     snErr_ctx error;
     if(!buf || !size) {
         snErr_return(error, snErr_ErrNULL, "snString_Scanf: buf or size is NULL.");
     }
 
-    for(snSize x = 0; x < size; ++x) {
+    for(wmkcSize x = 0; x < size; ++x) {
         if((buf[x] = getchar()) == 0x0a) {
             buf[x] = 0x00;
             break;
@@ -87,15 +87,15 @@ SN_FUNC_OF((snByte *buf, snSize size))
     snErr_return(error, snErr_OK, "OK.");
 }
 
-SN_PUBLIC(snErr_ctx) snString_Reverse SN_OPEN_API
-SN_FUNC_OF((snByte *data, snSize size))
+WMKC_PUBLIC(snErr_ctx) snString_Reverse WMKC_OPEN_API
+WMKC_OF((wmkcByte *data, wmkcSize size))
 {
     snErr_ctx error;
     if(!data || !size) {
         snErr_return(error, snErr_ErrNULL, "snString_Reverse: buf or size is NULL.");
     }
-    snSize i;
-    snByte buf;
+    wmkcSize i;
+    wmkcByte buf;
     for(i = 0; i < size / 2; ++i) {
         buf = data[i];
         data[i] = data[size - i - 1];
@@ -104,20 +104,20 @@ SN_FUNC_OF((snByte *data, snSize size))
     snErr_return(error, snErr_OK, "OK.");
 }
 
-SN_PUBLIC(snErr_ctx) snString_Binary SN_OPEN_API
-SN_FUNC_OF((snByte **dst, snSize src))
+WMKC_PUBLIC(snErr_ctx) snString_Binary WMKC_OPEN_API
+WMKC_OF((wmkcByte **dst, wmkcSize src))
 {
     snErr_ctx error;
     if(!dst || !src) {
         snErr_return(error, snErr_ErrNULL, "snString_Binary: dst or src is NULL.");
     }
-    snSize temp;
-    snSize size;
-    snSize i;
+    wmkcSize temp;
+    wmkcSize size;
+    wmkcSize i;
 
     for(temp = src, size = 0; temp; size += 8, temp >>= 8) {}
 
-    if(!snMemoryNew(snByte *, (*dst), size + 1)) {
+    if(!wmkcMemoryNew(wmkcByte *, (*dst), size + 1)) {
         snErr_return(error, snErr_ErrMemory,
             "snString_Binary: (*dst) Failed to apply for memory.");
     }
@@ -132,23 +132,23 @@ SN_FUNC_OF((snByte **dst, snSize src))
     snErr_return(error, snErr_OK, "OK.");
 }
 
-SN_PUBLIC(snBool) snString_Compare SN_OPEN_API
-SN_FUNC_OF((snByte *src1, snByte *src2, snSize size))
+WMKC_PUBLIC(wmkcBool) snString_Compare WMKC_OPEN_API
+WMKC_OF((wmkcByte *src1, wmkcByte *src2, wmkcSize size))
 {
     if(!src1 || !src2 || size) {
         return false;
     }
-    if(!strncmp((snChar *)src1, (snChar *)src2, size)) {
+    if(!strncmp((wmkcChar *)src1, (wmkcChar *)src2, size)) {
         return true;
     } else {
         return false;
     }
 }
 
-SN_PUBLIC(sn_u32) snString_numlen SN_OPEN_API
-SN_FUNC_OF((snSize _n))
+WMKC_PUBLIC(wmkc_u32) snString_numlen WMKC_OPEN_API
+WMKC_OF((wmkcSize _n))
 {
-    snSize len = 0;
-    for(snSize num = _n; num > 0; ++len) num /= 10;
+    wmkcSize len = 0;
+    for(wmkcSize num = _n; num > 0; ++len) num /= 10;
     return len;
 }

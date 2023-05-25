@@ -17,7 +17,7 @@
 * 目前CBC模式性能测试结果（截止于北京时间2023年4月30日14:07）：
 * Current CBC mode performance test results (as of 14:07 Beijing time on April 30, 2023):
 *     平台（Platform）:
-*         OS:  Parrot Sec OS 5.2 amd64
+*         OS:  Windows 10.0 x64 22H2
 *         CPU: Intel(R) Core(TM) i5-4200U CPU @ 1.60GHz
 *         Mem: DDR3 1600MHZ 8GB (4 + 4)
 *         模式（Mode）:
@@ -42,63 +42,64 @@ extern "C" {
 #define SNC_NK 4 // 横向长度（Transverse length）
 
 //* 加解密轮数（Encryption or Decryption number of rounds.）
-SN_PRIVATE_CONST(snByte) SNC_NR[3] = {
+WMKC_PRIVATE_CONST(wmkcByte) SNC_NR[3] = {
     0x7, // 7 round
     0x8, // 8 round
     0x9  // 9 round
 };
 
 //* 密钥长度（Key Length.）
-SN_PRIVATE_CONST(snByte) SNC_KN[3] = {
+WMKC_PRIVATE_CONST(wmkcByte) SNC_KN[3] = {
     0x20, // 32 bytes
     0x40, // 64 bytes
     0x60  // 96 bytes
 };
 
+//* 密码类型（Cipher type.）
 typedef enum {
-    SNC_256, // 密钥长度：32字节（Key length: 32 bytes）
-    SNC_512, // 密钥长度：64字节（Key length: 64 bytes）
-    SNC_768  // 密钥长度：96字节（Key length: 96 bytes）
+    SNC_256,
+    SNC_512,
+    SNC_768
 } SNC_mode;
 
 // 声明区块类型（declare block type）
-typedef snByte sncState[SNC_NB][SNC_NK];
+typedef wmkcByte sncState[SNC_NB][SNC_NK];
 // 声明SNC算法的数据结构（declare SNC structure）
 typedef struct {
-    sn_u16 NR;
-    sn_u16 KN;
+    wmkc_u16 NR;
+    wmkc_u16 KN;
     SNC_mode mode;
-    snByte iv[SNC_BLOCKLEN];
-    snByte roundKey[864];
+    wmkcByte iv[SNC_BLOCKLEN];
+    wmkcByte roundKey[864];
 } SNC_ctx;
 
 // 为SNC对象申请内存空间
-SN_PUBLIC(snErr_ctx) SNC_new SN_OPEN_API
-SN_FUNC_OF((SNC_ctx **ctx, SNC_mode mode));
+WMKC_PUBLIC(snErr_ctx) SNC_new WMKC_OPEN_API
+WMKC_OF((SNC_ctx **ctx, SNC_mode mode));
 
 // 释放SNC对象
-SN_PUBLIC(snErr_ctx) SNC_free SN_OPEN_API
-SN_FUNC_OF((SNC_ctx **ctx));
+WMKC_PUBLIC(snErr_ctx) SNC_free WMKC_OPEN_API
+WMKC_OF((SNC_ctx **ctx));
 
 // 初始化SNC对象
-SN_PUBLIC(snErr_ctx) SNC_init SN_OPEN_API
-SN_FUNC_OF((SNC_ctx *ctx, snByte *keyBuf, snByte *ivBuf));
+WMKC_PUBLIC(snErr_ctx) SNC_init WMKC_OPEN_API
+WMKC_OF((SNC_ctx *ctx, wmkcByte *keyBuf, wmkcByte *ivBuf));
 
 // ECB加密
-SN_PUBLIC(snVoid) SNC_ECB_Encrypt SN_OPEN_API
-SN_FUNC_OF((SNC_ctx *ctx, snByte *buf, snSize size));
+WMKC_PUBLIC(wmkcVoid) SNC_ECB_Encrypt WMKC_OPEN_API
+WMKC_OF((SNC_ctx *ctx, wmkcByte *buf, wmkcSize size));
 
 // ECB解密
-SN_PUBLIC(snVoid) SNC_ECB_Decrypt SN_OPEN_API
-SN_FUNC_OF((SNC_ctx *ctx, snByte *buf, snSize size));
+WMKC_PUBLIC(wmkcVoid) SNC_ECB_Decrypt WMKC_OPEN_API
+WMKC_OF((SNC_ctx *ctx, wmkcByte *buf, wmkcSize size));
 
 // CBC加密
-SN_PUBLIC(snVoid) SNC_CBC_Encrypt SN_OPEN_API
-SN_FUNC_OF((SNC_ctx *ctx, snByte *buf, snSize size));
+WMKC_PUBLIC(wmkcVoid) SNC_CBC_Encrypt WMKC_OPEN_API
+WMKC_OF((SNC_ctx *ctx, wmkcByte *buf, wmkcSize size));
 
 // CBC解密
-SN_PUBLIC(snVoid) SNC_CBC_Decrypt SN_OPEN_API
-SN_FUNC_OF((SNC_ctx *ctx, snByte *buf, snSize size));
+WMKC_PUBLIC(wmkcVoid) SNC_CBC_Decrypt WMKC_OPEN_API
+WMKC_OF((SNC_ctx *ctx, wmkcByte *buf, wmkcSize size));
 
 #ifdef __cplusplus
 }

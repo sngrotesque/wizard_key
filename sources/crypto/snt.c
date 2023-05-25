@@ -5,7 +5,7 @@
 */
 #include <crypto/snt.h>
 
-SN_PRIVATE_CONST(snByte) SNT_sbox[256] = {
+WMKC_PRIVATE_CONST(wmkcByte) SNT_sbox[256] = {
     // 0     1     2     3     4     5     6     7     8     9     A     B     C     D     E     F
     0x25, 0xd1, 0x84, 0xb8, 0x48, 0x35, 0x4a, 0x78, 0x79, 0x74, 0x60, 0xc7, 0x0e, 0xbc, 0x32, 0x30,
     0x91, 0x18, 0xe5, 0xdc, 0xe4, 0x90, 0x81, 0xc8, 0x65, 0x2b, 0xc3, 0x9d, 0x67, 0xa5, 0xf9, 0xdf,
@@ -26,7 +26,7 @@ SN_PRIVATE_CONST(snByte) SNT_sbox[256] = {
 };
 
 // 用于将通过置换盒的数据还原的逆置换盒
-SN_PRIVATE_CONST(snByte) SNT_rsbox[256] = {
+WMKC_PRIVATE_CONST(wmkcByte) SNT_rsbox[256] = {
     // 0     1     2     3     4     5     6     7     8     9     A     B     C     D     E     F
     0xee, 0x47, 0xbf, 0xb1, 0x3e, 0x91, 0x9f, 0xff, 0x94, 0xe4, 0x56, 0x6d, 0x92, 0x76, 0x0c, 0x98,
     0x82, 0x49, 0xef, 0x20, 0xe9, 0xf7, 0x37, 0x4c, 0x11, 0x81, 0xaf, 0x22, 0x4d, 0xa3, 0x45, 0x32,
@@ -49,14 +49,14 @@ SN_PRIVATE_CONST(snByte) SNT_rsbox[256] = {
 #define SNT_SBOX(x) (SNT_sbox[(x)])
 #define SNT_RSBOX(x) (SNT_rsbox[(x)])
 
-SN_PRIVATE_CONST(snByte) SNT_CON64_TABLE[4][8] = {
+WMKC_PRIVATE_CONST(wmkcByte) SNT_CON64_TABLE[4][8] = {
     {0x14, 0x34, 0x95, 0xa7, 0xc6, 0x35, 0x9c, 0xb6},
     {0x58, 0x1b, 0x91, 0xf9, 0x5d, 0xf4, 0x9d, 0xd7},
     {0x97, 0x33, 0x3e, 0xa7, 0x59, 0xa9, 0x85, 0x67},
     {0xd5, 0x32, 0xad, 0x1c, 0x65, 0x3d, 0x89, 0x5e}
 };
 
-SN_PRIVATE_CONST(snByte) SNT_CON32_TABLE[8][4] = {
+WMKC_PRIVATE_CONST(wmkcByte) SNT_CON32_TABLE[8][4] = {
     {0x1f, 0x35, 0x1e, 0x55},
     {0x3f, 0x50, 0xcb, 0xad},
     {0x52, 0x57, 0xe1, 0x91},
@@ -110,10 +110,10 @@ SN_PRIVATE_CONST(snByte) SNT_CON32_TABLE[8][4] = {
 }
 
 // 按照列的方式进行置换
-SN_PRIVATE(snVoid) SNT_SubBytes
-SN_FUNC_OF((SNT_State *state))
+WMKC_PRIVATE(wmkcVoid) SNT_SubBytes
+WMKC_OF((SNT_State *state))
 {
-    snFast sn_u32 i;
+    wmkcFast wmkc_u32 i;
     for(i = 0; i < SNT_NK; ++i) {
         (*state)[0][i] = SNT_SBOX((*state)[0][i]);
         (*state)[1][i] = SNT_SBOX((*state)[1][i]);
@@ -126,10 +126,10 @@ SN_FUNC_OF((SNT_State *state))
     }
 }
 
-SN_PRIVATE(snVoid) SNT_BlockConfusion
-SN_FUNC_OF((SNT_State *state))
+WMKC_PRIVATE(wmkcVoid) SNT_BlockConfusion
+WMKC_OF((SNT_State *state))
 {
-    snFast sn_u32 i;
+    wmkcFast wmkc_u32 i;
     for(i = 0; i < SNT_NK; ++i) {
         SNT_CONFUSION64(i,
             (*state)[0][i], (*state)[1][i], (*state)[2][i], (*state)[3][i],
@@ -156,9 +156,9 @@ SN_FUNC_OF((SNT_State *state))
     SNT_MIX32(7, 0, state);
 }
 
-SN_PRIVATE(snVoid) SNT_XorWithIV SN_FUNC_OF((SNT_State *buf, SNT_State *iv))
+WMKC_PRIVATE(wmkcVoid) SNT_XorWithIV WMKC_OF((SNT_State *buf, SNT_State *iv))
 {
-    snFast sn_u32 i;
+    wmkcFast wmkc_u32 i;
     for(i = 0; i < SNT_NK; ++i) {
         (*buf)[0][i] ^= (*iv)[0][i];
         (*buf)[1][i] ^= (*iv)[1][i];
@@ -171,10 +171,10 @@ SN_PRIVATE(snVoid) SNT_XorWithIV SN_FUNC_OF((SNT_State *buf, SNT_State *iv))
     }
 }
 
-SN_PRIVATE(snVoid) SNT_Cipher
-SN_FUNC_OF((SNT_mode mode, SNT_State *state, snByte *roundkey))
+WMKC_PRIVATE(wmkcVoid) SNT_Cipher
+WMKC_OF((SNT_mode mode, SNT_State *state, wmkcByte *roundkey))
 {
-    snFast sn_u32 i;
+    wmkcFast wmkc_u32 i;
     SNT_SubBytes(state);
     for(i = 0; i < SNT_NK; ++i) {
         (*state)[0][i] ^= *(roundkey + (SNT_NK * 0 + i));
@@ -211,10 +211,10 @@ SN_FUNC_OF((SNT_mode mode, SNT_State *state, snByte *roundkey))
     SNT_BlockConfusion(state);
 }
 
-SN_PRIVATE(snVoid) SNT_keyExtension SN_FUNC_OF((sn_u16 keySize, snByte *iv, snByte *key))
+WMKC_PRIVATE(wmkcVoid) SNT_keyExtension WMKC_OF((wmkc_u16 keySize, wmkcByte *iv, wmkcByte *key))
 {
-    static snSize i;
-    static snByte buf;
+    static wmkcSize i;
+    static wmkcByte buf;
 
     for(i = 0; i < keySize; ++i) {
         buf = 
@@ -262,8 +262,8 @@ SN_PRIVATE(snVoid) SNT_keyExtension SN_FUNC_OF((sn_u16 keySize, snByte *iv, snBy
     }
 }
 
-SN_PUBLIC(snErr_ctx) SNT_new SN_OPEN_API
-SN_FUNC_OF((SNT_ctx **ctx, SNT_mode mode))
+WMKC_PUBLIC(snErr_ctx) SNT_new WMKC_OPEN_API
+WMKC_OF((SNT_ctx **ctx, SNT_mode mode))
 {
     if(!(*ctx)) {
         if(!((*ctx) = (SNT_ctx *)malloc(sizeof(SNT_ctx)))) {
@@ -274,28 +274,28 @@ SN_FUNC_OF((SNT_ctx **ctx, SNT_mode mode))
     (*ctx)->mode = mode;
     (*ctx)->KN = SNT_KN[mode];
     (*ctx)->NR = SNT_NR[mode];
-    snMemoryZero((*ctx)->roundKey, 1056);
+    wmkcMemoryZero((*ctx)->roundKey, 1056);
 
     return snErr_OK;
 }
 
-SN_PUBLIC(snErr_ctx) SNT_release SN_OPEN_API
-SN_FUNC_OF((SNT_ctx **ctx))
+WMKC_PUBLIC(snErr_ctx) SNT_release WMKC_OPEN_API
+WMKC_OF((SNT_ctx **ctx))
 {
-    snMemoryZero((*ctx)->iv, SNT_BLOCKLEN);
-    snMemoryZero((*ctx)->roundKey, 1056);
+    wmkcMemoryZero((*ctx)->iv, SNT_BLOCKLEN);
+    wmkcMemoryZero((*ctx)->roundKey, 1056);
     free((*ctx));
-    (*ctx) = snNull;
+    (*ctx) = wmkcNull;
 
     return snErr_OK;
 }
 
-SN_PUBLIC(snVoid) SNT_init SN_OPEN_API
-SN_FUNC_OF((SNT_ctx *ctx, snByte *keyBuf, snByte *ivBuf))
+WMKC_PUBLIC(wmkcVoid) SNT_init WMKC_OPEN_API
+WMKC_OF((SNT_ctx *ctx, wmkcByte *keyBuf, wmkcByte *ivBuf))
 {
-    snByte *key = (snByte *)malloc(ctx->KN);
-    snByte iv[SNT_BLOCKLEN];
-    sn_u32 r;
+    wmkcByte *key = (wmkcByte *)malloc(ctx->KN);
+    wmkcByte iv[SNT_BLOCKLEN];
+    wmkc_u32 r;
 
     memcpy(ctx->iv, ivBuf, SNT_BLOCKLEN);
     memcpy(key, keyBuf, ctx->KN);
@@ -315,17 +315,17 @@ SN_FUNC_OF((SNT_ctx *ctx, snByte *keyBuf, snByte *ivBuf))
         SNT_Cipher(ctx->mode, (SNT_State *)iv, key);
     }
 
-    snMemoryZero(key, ctx->KN);
-    snMemoryZero(iv, SNT_BLOCKLEN);
+    wmkcMemoryZero(key, ctx->KN);
+    wmkcMemoryZero(iv, SNT_BLOCKLEN);
     free(key);
-    key = snNull;
+    key = wmkcNull;
 }
 
-SN_PUBLIC(snVoid) SNT_CBC_Encrypt SN_OPEN_API
-SN_FUNC_OF((SNT_ctx *ctx, snByte *buf, snSize size))
+WMKC_PUBLIC(wmkcVoid) SNT_CBC_Encrypt WMKC_OPEN_API
+WMKC_OF((SNT_ctx *ctx, wmkcByte *buf, wmkcSize size))
 {
-    snFast snSize r, i;
-    static snByte round_iv[SNT_BLOCKLEN];
+    wmkcFast wmkcSize r, i;
+    static wmkcByte round_iv[SNT_BLOCKLEN];
 
     SNT_State *bufState = (SNT_State *)buf;
     SNT_State *ivState = (SNT_State *)round_iv;

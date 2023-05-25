@@ -7,11 +7,11 @@
 #endif
 
 // 用来将二进制数据转为HEX字符串："123abc" -> 313233616263
-SN_PUBLIC(snErr_ctx) snBinascii_b2a_hex SN_OPEN_API
-SN_FUNC_OF((snByte **dst, snByte *src, snSize srcSize));
+WMKC_PUBLIC(snErr_ctx) snBinascii_b2a_hex WMKC_OPEN_API
+WMKC_OF((wmkcByte **dst, wmkcByte *src, wmkcSize srcSize));
 
 // 用来将HEX字符串转为二进制数据：313233616263 -> "123abc"
-SN_PUBLIC(snErr_ctx) snBinascii_a2b_hex SN_OPEN_API
-SN_FUNC_OF((snByte **dst, snByte *src, snSize srcSize));
+WMKC_PUBLIC(snErr_ctx) snBinascii_a2b_hex WMKC_OPEN_API
+WMKC_OF((wmkcByte **dst, wmkcByte *src, wmkcSize srcSize));
 
 #endif

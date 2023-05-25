@@ -104,16 +104,16 @@
 /**
  *  用来判断当前计算机是大端排序还是小端排序。
  *  小端返回True，大端返回False。
- *  snNum_PlatformEnd -> snBool:
+ *  snNum_PlatformEnd -> wmkcBool:
  *      Parameter: void
 */
-SN_PUBLIC(snBool) snNum_PlatformEnd SN_OPEN_API
-SN_FUNC_OF((void));
+WMKC_PUBLIC(wmkcBool) snNum_PlatformEnd WMKC_OPEN_API
+WMKC_OF((void));
 
-SN_PUBLIC(snErr_ctx) snNum_pack SN_OPEN_API
-SN_FUNC_OF((snString format, snByte *dst, snSize src));
+WMKC_PUBLIC(snErr_ctx) snNum_pack WMKC_OPEN_API
+WMKC_OF((wmkcString format, wmkcByte *dst, wmkcSize src));
 
-SN_PUBLIC(snErr_ctx) snNum_unpack SN_OPEN_API
-SN_FUNC_OF((snString format, snVoid *dst, snByte *src));
+WMKC_PUBLIC(snErr_ctx) snNum_unpack WMKC_OPEN_API
+WMKC_OF((wmkcString format, wmkcVoid *dst, wmkcByte *src));
 
 #endif

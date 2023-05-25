@@ -8,17 +8,17 @@
 #define PNG_IEND "\x00\x00\x00\x00\x49\x45\x4E\x44\xAE\x42\x60\x82"
 
 typedef struct snPng_block {
-    snByte size[4];
-    snSize dataSize;
-    snByte *data;
-    snByte crc[4];
+    wmkcByte size[4];
+    wmkcSize dataSize;
+    wmkcByte *data;
+    wmkcByte crc[4];
 } snPng_block;
 
-SN_PUBLIC(snErr_ctx) snPng_new SN_OPEN_API
-SN_FUNC_OF((snPng_block **obj));
+WMKC_PUBLIC(snErr_ctx) snPng_new WMKC_OPEN_API
+WMKC_OF((snPng_block **obj));
 
-SN_PUBLIC(snErr_ctx) snPng_free SN_OPEN_API
-SN_FUNC_OF((snPng_block **obj));
+WMKC_PUBLIC(snErr_ctx) snPng_free WMKC_OPEN_API
+WMKC_OF((snPng_block **obj));
 
 
 #endif

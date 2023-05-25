@@ -1,7 +1,7 @@
 #ifndef __SN_HEXDUMP__
 #define __SN_HEXDUMP__
 
-#include <snFile.h>
+#include <wmkcFile.h>
 
 #define SN_HEXDUMP_SIZE 32
 #define SN_HEXDUMP_PRINT_HEX_SET \
@@ -12,7 +12,7 @@
 #define SM_HEXDUMP_PRINT_PLAINTEXT \
     (*(buf + i) >= 0x20 && *(buf + i) < 0x7f)?(printf("%c", *(buf + i))):(printf("."))
 
-SN_PUBLIC(snErr_ctx) snHexdump SN_OPEN_API
-SN_FUNC_OF((snFileString fn));
+WMKC_PUBLIC(snErr_ctx) snHexdump WMKC_OPEN_API
+WMKC_OF((snFileString fn));
 
 #endif

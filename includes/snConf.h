@@ -1,11 +1,5 @@
-/**
- *  我完全放弃了一些东西：
- *      float类型，默认采用double类型。
- *      signed char类型，默认使用char类型。
- *      uint64_t类型，默认使用size_t代替，因此不会提供32位系统支持。
-*/
-#ifndef __SN_CONF__
-#define __SN_CONF__
+#ifndef WMKC
+#define WMKC // Wizard Magic Key Cyber（网络巫师的魔法钥匙）
 
 #include <stdio.h>    // 标准输入输出库
 #include <string.h>   // 标准字符串库
@@ -18,257 +12,177 @@
 #define register
 #endif
 
-// 判断是否是64位系统及以上（如果有的话）
-#if defined(__SIZEOF_SIZE_T__) && (__SIZEOF_SIZE_T__ >= 8)
+// 判断是否是64位系统，不是的话，不进行支持。
+#if (__SIZEOF_SIZE_T__ == 8) || defined(__x86_64__) || defined(__LP64__)
+//  如果是Linux或Windows操作系统，那么支持。否则不支持。
+#if defined(__linux) || defined(__linux__)
+#   define WMKC_LINUX_SUPPORT
+#   define WMKC_SUPPORT true
+#elif defined(_WIN32) || defined(_WIN64)
+#   define WMKC_WINDOWS_SUPPORT
+#   define WMKC_SUPPORT true
+#else
+#   define WMKC_SUPPORT false
+#endif // #if defined(__linux) || defined(__linux__)
 
-#define SHARK_COAST_VERSION     "v4.8.0"
-#define SHARK_COAST_VERNUM       0x480
-#define SHARK_COAST_VER_MAJOR    4
-#define SHARK_COAST_VER_MINOR    8
-#define SHARK_COAST_VER_REVISION 0
-#define SHARK_COAST_SUPPORT      true
+// 定义版本号
+#define WMKC_VERSION     "v5.0.0"
+#define WMKC_VERNUM       0x500
+#define WMKC_VER_MAJOR    5
+#define WMKC_VER_MINOR    0
+#define WMKC_VER_REVISION 0
 
-#define SN_PRIVATE_INLINE(type) static inline type // 静态内联函数
-#define SN_PRIVATE_CONST(type)  static const  type // 静态常量
-#define SN_PRIVATE(type)        static type        // 静态函数（私有函数）
-#define SN_PUBLIC(type)         type               // 动态函数（公共函数）
-#define SN_FUNC_OF(args)        args               // 函数取消调用消耗
-#define SN_OPEN_API                                // 公共函数请加上此宏用于标识
+// 定义一些一般类型
+#ifndef WMKC_TYPE_DEFINED
+#define WMKC_TYPE_DEFINED
+#define WMKC_OPEN_API             // 公共函数请加上此宏用于标识
+#define WMKC_PRIVATE_INLINE(type) static inline type // 静态内联函数
+#define WMKC_PRIVATE_CONST(type)  static const  type // 静态常量
+#define WMKC_PRIVATE(type)        static type // 静态函数（私有函数）
+#define WMKC_PUBLIC(type)         type        // 动态函数（公共函数）
+#define WMKC_OF(args)             args        // 函数取消调用消耗
+#define wmkcNull                  NULL        // 空指针
+#define wmkcFast                  register    // 寄存器类型
+typedef const char *              wmkcString; // 固定字符串类型
+typedef char                      wmkcChar;   // 字符类型
+typedef uint8_t                   wmkcByte;   // 字节类型
+typedef double                    wmkcFloat;  // 浮点数类型
+typedef int64_t                   wmkcSSize;  // 长整数类型
+typedef size_t                    wmkcSize;   // 长度类型
+typedef void                      wmkcVoid;   // 空类型
+typedef bool                      wmkcBool;   // 布尔类型
+typedef FILE                      wmkcFile;   // 文件类型
+typedef int16_t                   wmkc_s16;   // 宽字节类型
+typedef int32_t                   wmkc_s32;   // 整数类型
+typedef uint16_t                  wmkc_u16;   // 无符号宽字节类型
+typedef uint32_t                  wmkc_u32;   // 无符号整数类型
+#endif // #ifndef WMKC_TYPE_DEFINED
 
-#ifndef _SHARK_COAST_DEFINED
-#define _SHARK_COAST_DEFINED
-#define snNull      NULL      // 空指针
-#define snFast      register  // 寄存器类型
-typedef const char *snString; // 固定字符串类型
-typedef char        snChar;   // 字符类型
-typedef uint8_t     snByte;   // 字节类型
-typedef double      snFloat;  // 浮点数类型
-typedef int64_t     snSSize;  // 长整数类型
-typedef size_t      snSize;   // 长度类型
-typedef int16_t     sn_16;    // 宽字节类型
-typedef int32_t     sn_32;    // 整数类型
-typedef uint16_t    sn_u16;   // 无符号宽字节类型
-typedef uint32_t    sn_u32;   // 无符号整数类型
-typedef void        snVoid;   // 空类型
-typedef bool        snBool;   // 布尔类型
-typedef FILE        snFile;   // 文件类型
-#endif // #ifndef _SHARK_COAST_DEFINED
-
+// 定义宏函数
 /***字节交换：0x91 -> 0x19 ****************************/
-#define snSwapByte(x) ((((x) & 0xf) << 4) ^ ((x) >> 4))
+#define wmkcSwapByte(x) ((((x) & 0xf) << 4) ^ ((x) >> 4))
 /***宽字交换：0x91ba -> 0xab19 ********************************************/
-#define snSwapWord(x) ((snSwapByte((x) & 0xff) << 8) ^ snSwapByte((x) >> 8))
+#define wmkcSwapWord(x) ((wmkcSwapByte((x) & 0xff) << 8) ^ wmkcSwapByte((x) >> 8))
 /***长字交换：0x91ba4951 -> 0x1594ab19 ***************************************/
-#define snSwapLong(x) ((snSwapWord(x & 0xffff) << 16) ^ (snSwapWord(x >> 16)))
+#define wmkcSwapLong(x) ((wmkcSwapWord(x & 0xffff) << 16) ^ (wmkcSwapWord(x >> 16)))
 /***内存空间申请 ********************************************/
-#define snMemoryNew(type, x, size) (x = (type)malloc((size)))
+#define wmkcMemoryNew(type, x, size) (x = (type)malloc((size)))
 /***内存空间释放 **************************/
-#define snMemoryFree(x) free(x); x = snNull
+#define wmkcMemoryFree(x) free(x); x = wmkcNull
 /***内存内容初始化为零 **************************/
-#define snMemoryZero(x, s) memset((x), 0x00, (s))
+#define wmkcMemoryZero(x, s) memset((x), 0x00, (s))
 
+// 定义错误类型
+#ifndef WMKC_ERROR_CODE
+#define WMKC_ERROR_CODE
+// 用于返回错误信息的数据类型
+typedef struct {
+    wmkcString message;
+    wmkcSSize code;
+} snErr_ctx;
 
-#ifndef SN_ERROR_CODE
-#define SN_ERROR_CODE
-/****************************************************************************
- * 代表一切正常，不需要注意任何错误（但可能会有隐藏的错误，这需要代码编写者的
- * 额外注意，尤其是指针参数）
-*****************************************************************************/
+// 表示一切正常，不需要注意任何错误。
 #define snErr_OK                0ULL
-
-/****************************************************************************
- * 一般的错误，用于表示64位的错误代码，通常用作判断一些库函数的返回值是否是-1。
-*****************************************************************************/
-#define snErr_Err64            -1ULL  // 一般：64位的错误
-
-/****************************************************************************
- * 一般的错误，用于表示32位的错误代码，通常用作判断一些库函数的返回值是否是-1。
-*****************************************************************************/
-#define snErr_Err32            -1U    // 一般：32位的错误
-
-/****************************************************************************
- * 错误的空数据，通常用作表示用户不应该传入一个空的数据，这个数据包含指针类型。
-*****************************************************************************/
+// 一般的错误，用于表示64位的错误代码。
+#define snErr_Err64            -1ULL
+// 一般的错误，用于表示32位的错误代码。
+#define snErr_Err32            -1U
+// 错误的空数据，表示不应该传入一个空的数据（包含指针）。
 #define snErr_ErrNULL          -2ULL
-
-/****************************************************************************
- * 错误的类型，代表用户传入的参数和函数要求的参数类型不一致。比如要求hex串，但
- * 字符串中包含了0-f以外的字符。或是长度与函数要求的不一致。或是函数要求的格式
- * 类型与用户传入的格式类型不相同等等。
-*****************************************************************************/
+// 错误的类型，表示传入的参数和函数要求的参数类型不一致。
 #define snErr_ErrType          -3ULL
-
-/****************************************************************************
- * 错误的范围，代表用户传入的范围参数超过函数规定的最大范围。
-*****************************************************************************/
+// 错误的范围，表示传入的范围参数超过函数规定的最大范围。
 #define snErr_ErrOutRange      -4ULL
-
-/****************************************************************************
- * 错误的范围，代表用户传入的范围参数中起始下标超过了末尾下标。
-*****************************************************************************/
+// 错误的范围，表示传入的范围参数中起始下标超过了末尾下标。
 #define snErr_ErrInvalidRange  -5ULL
-
-/****************************************************************************
- * 内存错误（Memory failure），只能用作申请内存失败时。
-*****************************************************************************/
+// 错误的内存，只能用作申请内存失败时。
 #define snErr_ErrMemory        -6ULL
-
-/****************************************************************************
- * 解析域名时出现了错误，只能用作需要解析域名的函数中。
-*****************************************************************************/
+// 解析域名时出现了错误，只能用作需要解析域名的函数中。
 #define snErr_NetDomainResolv   1ULL
-
-/****************************************************************************
- * 为套接字赋值时出现错误，只能用作未能成功且正确的使用socket函数时。
-*****************************************************************************/
+// 为套接字赋值时出现错误，只能用作未能成功且正确的使用socket函数时。
 #define snErr_NetSocket         2ULL
-
-/****************************************************************************
- * 套接字连接失败，只能用作未能成功且正确的使用connect函数时。
-*****************************************************************************/
+// 套接字连接失败，只能用作未能成功且正确的使用connect函数时。
 #define snErr_NetConnect        5ULL
-
-/****************************************************************************
- * 套接字绑定失败，只能用作未能成功且正确的使用bind函数时。
-*****************************************************************************/
+// 套接字绑定失败，只能用作未能成功且正确的使用bind函数时。
 #define snErr_NetBind           6ULL
-
-/****************************************************************************
- * 套接字监听失败，只能用作未能成功且正确的使用listen函数时。
-*****************************************************************************/
+// 套接字监听失败，只能用作未能成功且正确的使用listen函数时。
 #define snErr_NetListen         7ULL
-
-/****************************************************************************
- * 套接字接受连接失败，只能用作未能成功且正确的使用accept函数时。
-*****************************************************************************/
+// 套接字接受连接失败，只能用作未能成功且正确的使用accept函数时。
 #define snErr_NetAccept         8ULL
-
-/****************************************************************************
- * 错误的套接字类型，只能用作：函数要求是TCP但传入的是UDP套接字或反过来。
-*****************************************************************************/
+// 错误的套接字类型，只能用作：函数要求是TCP但传入的是UDP套接字或相反。
 #define snErr_NetSockfdType     9ULL
-
-/****************************************************************************
- * 套接字发送数据失败，只能用作未能成功且正确的使用send函数时。
-*****************************************************************************/
+// 套接字发送数据失败，只能用作未能成功且正确的使用send函数时。
 #define snErr_NetSend           10ULL
-
-/****************************************************************************
- * 套接字接收数据失败，只能用作未能成功且正确的使用recv函数时。
-*****************************************************************************/
+// 套接字接收数据失败，只能用作未能成功且正确的使用recv函数时。
 #define snErr_NetRecv           11ULL
-
-/****************************************************************************
- * 套接字接收数据失败，用作自己实现的关闭套接字的函数中。
-*****************************************************************************/
+// 套接字接收数据失败，用作自己实现的关闭套接字的函数中。
 #define snErr_NetClose          12ULL
-
-/****************************************************************************
- * 代表启动调用WSAStartup函数时出现错误。
-*****************************************************************************/
+// 表示启动调用WSAStartup函数时出现错误。
 #define snErr_NetWsaData        13ULL
-
-/****************************************************************************
- * 错误的网络家族，应使用AF_INET（PF_INET）或AF_INET6（PF_INET6）
-*****************************************************************************/
+// 错误的网络家族，应使用AF_INET（PF_INET）或AF_INET6（PF_INET6）
 #define snErr_NetFamily         14ULL
-
-/****************************************************************************
- * 代表启动调用setsockopt函数时出现错误。
-*****************************************************************************/
+// 表示启动调用setsockopt函数时出现错误。
 #define snErr_NetSetSockOpt     15ULL
-
-/****************************************************************************
- * 错误的路径，此错误类型表示用户指定的路径没有文件或（和）文件夹。
-*****************************************************************************/
+// 错误的路径，此错误类型表示用户指定的路径没有文件或（和）文件夹。
 #define snErr_FileFolderPath    32ULL
-
-/****************************************************************************
- * 此值表示用户不应该读取一个空文件或不应该写入一个空的数据到文件。
-*****************************************************************************/
+// 此值表示用户不应该读取一个空文件或不应该写入一个空的数据到文件。
 #define snErr_FileNull          33ULL
-
-/****************************************************************************
- * 此值表示调用fopen函数或_wfopen来打开文件失败了。
-*****************************************************************************/
+// 此值表示调用fopen函数或_wfopen来打开文件失败了。
 #define snErr_FileOpen          34ULL
-
-/****************************************************************************
- * 此值表示调用fclose函数来关闭文件失败了。
-*****************************************************************************/
+// 此值表示调用fclose函数来关闭文件失败了。
 #define snErr_FileClose         35ULL
-
-/****************************************************************************
- * 将snErr对象赋值并作为返回值返回。
-*****************************************************************************/
+// 将snErr对象赋值并作为返回值返回。
 #define snErr_return(error, _code, _message) \
     error.message = _message; error.code = _code; return error
+#endif // #ifndef WMKC_ERROR_CODE
 
-typedef struct {
-    snString message; // 错误消息
-    snSSize code;     // 错误代码
-} snErr_ctx;
-#endif // #ifndef SN_ERROR_CODE
-
-#define SN_ENABLE_FEATURES
-#if defined(SN_ENABLE_FEATURES)
-#   define __SN_MEMORY
-#   define __SN_ISO646
-#   define __SN_LOCALE
-#   define __SN_COLOR
-#   if defined(__SN_MEMORY)
+// 定义功能
+#define WMKC_ENABLE_FEATURES
+#if defined(WMKC_ENABLE_FEATURES)
+#   define WMKC_MEMORY
+#   define WMKC_COLOR
+#   if defined(WMKC_MEMORY)
 #       include <stdlib.h>
-#       if !defined(__linux)
-#           include <intrin.h>
-#       endif
 #       include <malloc.h>
 #   endif
-#   if defined(__SN_LOCALE)
-#       include <locale.h>
-#   endif
-#   if defined(__SN_ISO646)
-#       include <iso646.h>
-#   endif
-#   if defined(__SN_COLOR)
-#       define SN_ALL_COLOR_RESET         "\x1b[0m"  // 重置所有颜色
-#       define SN_ALL_COLOR_FLICKER       "\x1b[5m"  // 闪烁的字符
-#       define SN_FORE_COLOR_BLACK        "\x1b[30m" // 黑色（前景）
-#       define SN_FORE_COLOR_RED          "\x1b[31m" // 红色（前景）
-#       define SN_FORE_COLOR_GREEN        "\x1b[32m" // 绿色（前景）
-#       define SN_FORE_COLOR_YELLOW       "\x1b[33m" // 黄色（前景）
-#       define SN_FORE_COLOR_BLUE         "\x1b[34m" // 蓝色（前景）
-#       define SN_FORE_COLOR_MAGENTA      "\x1b[35m" // 紫色（前景）
-#       define SN_FORE_COLOR_CYAN         "\x1b[36m" // 青色（前景）
-#       define SN_FORE_COLOR_WHITE        "\x1b[37m" // 白色（前景）
-#       define SN_FORE_COLOR_LIGHTBLACK   "\x1b[90m" // 亮黑色（前景）
-#       define SN_FORE_COLOR_LIGHTRED     "\x1b[91m" // 亮红色（前景）
-#       define SN_FORE_COLOR_LIGHTGREEN   "\x1b[92m" // 亮绿色（前景）
-#       define SN_FORE_COLOR_LIGHTYELLOW  "\x1b[93m" // 亮黄色（前景）
-#       define SN_FORE_COLOR_LIGHTBLUE    "\x1b[94m" // 亮蓝色（前景）
-#       define SN_FORE_COLOR_LIGHTMAGENTA "\x1b[95m" // 亮紫色（前景）
-#       define SN_FORE_COLOR_LIGHTCYAN    "\x1b[96m" // 亮青色（前景）
-#       define SN_FORE_COLOR_LIGHTWHITE   "\x1b[97m" // 亮白色（前景）
-#       define SN_BACK_COLOR_RED          "\x1b[41m" // 红色（背景）
-#       define SN_BACK_COLOR_GREEN        "\x1b[42m" // 绿色（背景）
-#       define SN_BACK_COLOR_YELLOW       "\x1b[43m" // 黄色（背景）
-#       define SN_BACK_COLOR_BLUE         "\x1b[44m" // 蓝色（背景）
-#       define SN_BACK_COLOR_MAGENTA      "\x1b[45m" // 紫色（背景）
-#       define SN_BACK_COLOR_CYAN         "\x1b[46m" // 青色（背景）
-#       define SN_BACK_COLOR_WHITE        "\x1b[47m" // 白色（背景）
-#       define SN_BACK_COLOR_LIGHTBLACK   "\x1b[100m" // 亮黑色（背景）
-#       define SN_BACK_COLOR_LIGHTRED     "\x1b[101m" // 亮红色（背景）
-#       define SN_BACK_COLOR_LIGHTGREEN   "\x1b[102m" // 亮绿色（背景）
-#       define SN_BACK_COLOR_LIGHTYELLOW  "\x1b[103m" // 亮黄色（背景）
-#       define SN_BACK_COLOR_LIGHTBLUE    "\x1b[104m" // 亮蓝色（背景）
-#       define SN_BACK_COLOR_LIGHTMAGENTA "\x1b[105m" // 亮紫色（背景）
-#       define SN_BACK_COLOR_LIGHTCYAN    "\x1b[106m" // 亮青色（背景）
-#       define SN_BACK_COLOR_LIGHTWHITE   "\x1b[107m" // 亮白色（背景）
-#       define SN_SET_TEXT_COLOR(color, text) color text SN_ALL_COLOR_RESET
-#   endif // #if defined(__SN_COLOR)
-#endif // #if defined(SN_ENABLE_FEATURES)
-
-#else // #if defined(__SIZEOF_SIZE_T__) && (__SIZEOF_SIZE_T__ >= 8)
-#define SHARK_COAST_SUPPORT      false
-#endif // #if defined(__SIZEOF_SIZE_T__) && (__SIZEOF_SIZE_T__ >= 8)
-
-#endif // #ifndef __SN_CONF__
+#   if defined(WMKC_COLOR)
+#       define WMKC_ALL_COLOR_RESET         "\x1b[0m"  // 重置所有颜色
+#       define WMKC_ALL_COLOR_FLICKER       "\x1b[5m"  // 闪烁的字符
+#       define WMKC_FORE_COLOR_BLACK        "\x1b[30m" // 黑色（前景）
+#       define WMKC_FORE_COLOR_RED          "\x1b[31m" // 红色（前景）
+#       define WMKC_FORE_COLOR_GREEN        "\x1b[32m" // 绿色（前景）
+#       define WMKC_FORE_COLOR_YELLOW       "\x1b[33m" // 黄色（前景）
+#       define WMKC_FORE_COLOR_BLUE         "\x1b[34m" // 蓝色（前景）
+#       define WMKC_FORE_COLOR_MAGENTA      "\x1b[35m" // 紫色（前景）
+#       define WMKC_FORE_COLOR_CYAN         "\x1b[36m" // 青色（前景）
+#       define WMKC_FORE_COLOR_WHITE        "\x1b[37m" // 白色（前景）
+#       define WMKC_FORE_COLOR_LIGHTBLACK   "\x1b[90m" // 亮黑色（前景）
+#       define WMKC_FORE_COLOR_LIGHTRED     "\x1b[91m" // 亮红色（前景）
+#       define WMKC_FORE_COLOR_LIGHTGREEN   "\x1b[92m" // 亮绿色（前景）
+#       define WMKC_FORE_COLOR_LIGHTYELLOW  "\x1b[93m" // 亮黄色（前景）
+#       define WMKC_FORE_COLOR_LIGHTBLUE    "\x1b[94m" // 亮蓝色（前景）
+#       define WMKC_FORE_COLOR_LIGHTMAGENTA "\x1b[95m" // 亮紫色（前景）
+#       define WMKC_FORE_COLOR_LIGHTCYAN    "\x1b[96m" // 亮青色（前景）
+#       define WMKC_FORE_COLOR_LIGHTWHITE   "\x1b[97m" // 亮白色（前景）
+#       define WMKC_BACK_COLOR_RED          "\x1b[41m" // 红色（背景）
+#       define WMKC_BACK_COLOR_GREEN        "\x1b[42m" // 绿色（背景）
+#       define WMKC_BACK_COLOR_YELLOW       "\x1b[43m" // 黄色（背景）
+#       define WMKC_BACK_COLOR_BLUE         "\x1b[44m" // 蓝色（背景）
+#       define WMKC_BACK_COLOR_MAGENTA      "\x1b[45m" // 紫色（背景）
+#       define WMKC_BACK_COLOR_CYAN         "\x1b[46m" // 青色（背景）
+#       define WMKC_BACK_COLOR_WHITE        "\x1b[47m" // 白色（背景）
+#       define WMKC_BACK_COLOR_LIGHTBLACK   "\x1b[100m" // 亮黑色（背景）
+#       define WMKC_BACK_COLOR_LIGHTRED     "\x1b[101m" // 亮红色（背景）
+#       define WMKC_BACK_COLOR_LIGHTGREEN   "\x1b[102m" // 亮绿色（背景）
+#       define WMKC_BACK_COLOR_LIGHTYELLOW  "\x1b[103m" // 亮黄色（背景）
+#       define WMKC_BACK_COLOR_LIGHTBLUE    "\x1b[104m" // 亮蓝色（背景）
+#       define WMKC_BACK_COLOR_LIGHTMAGENTA "\x1b[105m" // 亮紫色（背景）
+#       define WMKC_BACK_COLOR_LIGHTCYAN    "\x1b[106m" // 亮青色（背景）
+#       define WMKC_BACK_COLOR_LIGHTWHITE   "\x1b[107m" // 亮白色（背景）
+#       define WMKC_SET_TEXT_COLOR(color, text) color text WMKC_ALL_COLOR_RESET
+#   endif // #if defined(WMKC_COLOR)
+#endif // #if defined(WMKC_ENABLE_FEATURES)
+#else
+#   define WMKC_SUPPORT false
+#endif
+#endif // #ifndef WMKC_CONF__

@@ -30,8 +30,8 @@
  *          (-123) +   234  ==    234 - 123 =  111
  *          (-123) +   111  ==    111 - 123 =  -12
 */
-SN_PUBLIC(snErr_ctx) snBigNum_add SN_OPEN_API
-SN_FUNC_OF((snChar **dst, snChar *_src1, snChar *_src2));
+WMKC_PUBLIC(snErr_ctx) snBigNum_add WMKC_OPEN_API
+WMKC_OF((wmkcChar **dst, wmkcChar *_src1, wmkcChar *_src2));
 
 /**
  *  大数减法
@@ -45,8 +45,8 @@ SN_FUNC_OF((snChar **dst, snChar *_src1, snChar *_src2));
  *      如果需要取前一位的值，那么就是最大的数的长度减一。
  *      否则长度等于最大的数的长度。
 */
-SN_PUBLIC(snErr_ctx) snBigNum_sub SN_OPEN_API
-SN_FUNC_OF((snChar **dst, snChar *_src1, snChar *_src2));
+WMKC_PUBLIC(snErr_ctx) snBigNum_sub WMKC_OPEN_API
+WMKC_OF((wmkcChar **dst, wmkcChar *_src1, wmkcChar *_src2));
 
 /**
  *  关于乘法
@@ -57,20 +57,20 @@ SN_FUNC_OF((snChar **dst, snChar *_src1, snChar *_src2));
  *      ( 6,  5, 10)        315984 *         10923 =                 3451493232
  *      (13, 13, 26) 3598209485189 * 5389829038094 = 19393733968416934809789766
 */
-SN_PUBLIC(snErr_ctx) snBigNum_mul SN_OPEN_API
-SN_FUNC_OF((snChar **dst, snChar *_src1, snChar *_src2));
+WMKC_PUBLIC(snErr_ctx) snBigNum_mul WMKC_OPEN_API
+WMKC_OF((wmkcChar **dst, wmkcChar *_src1, wmkcChar *_src2));
 
 /**
  *  关于除法
 */
-SN_PUBLIC(snErr_ctx) snBigNum_div SN_OPEN_API
-SN_FUNC_OF((snChar **dst, snChar *_src1, snChar *_src2));
+WMKC_PUBLIC(snErr_ctx) snBigNum_div WMKC_OPEN_API
+WMKC_OF((wmkcChar **dst, wmkcChar *_src1, wmkcChar *_src2));
 
 /**
  *  关于模运算
 */
-SN_PUBLIC(snErr_ctx) snBigNum_mod SN_OPEN_API
-SN_FUNC_OF((snChar **dst, snChar *_src1, snChar *_src2));
+WMKC_PUBLIC(snErr_ctx) snBigNum_mod WMKC_OPEN_API
+WMKC_OF((wmkcChar **dst, wmkcChar *_src1, wmkcChar *_src2));
 
 /**
  *  关于次方
@@ -80,7 +80,7 @@ SN_FUNC_OF((snChar **dst, snChar *_src1, snChar *_src2));
  *  暂时并没有想到该如何计算次方的结果长度
  *  
 */
-SN_PUBLIC(snErr_ctx) snBigNum_pow SN_OPEN_API
-SN_FUNC_OF((snChar **dst, snChar *_src1, snChar *_src2));
+WMKC_PUBLIC(snErr_ctx) snBigNum_pow WMKC_OPEN_API
+WMKC_OF((wmkcChar **dst, wmkcChar *_src1, wmkcChar *_src2));
 
 #endif

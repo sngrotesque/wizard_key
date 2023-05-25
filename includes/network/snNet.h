@@ -55,9 +55,9 @@ typedef struct sockaddr     SOCKADDR;     // 套接字地址结构
 typedef struct addrinfo     ADDRINFO;     // 域名解析结构
 typedef struct sockaddr_in  SOCKADDR_IN;  // IPv4网络结构
 typedef struct sockaddr_in6 SOCKADDR_IN6; // IPv6网络结构
-typedef sn_u32 snNetSocket;               // snNet的socket类型
-typedef snVoid snNetTimer;                // snNet的计时类型
-typedef snByte snNetBuf;                  // snNet的缓冲区类型
+typedef wmkc_u32 snNetSocket;               // snNet的socket类型
+typedef wmkcVoid snNetTimer;                // snNet的计时类型
+typedef wmkcByte snNetBuf;                  // snNet的缓冲区类型
 #endif // #if defined(__linux)
 
 #if defined(_WIN32)
@@ -68,11 +68,11 @@ typedef snByte snNetBuf;                  // snNet的缓冲区类型
 #include <WS2tcpip.h>
 #pragma comment(lib, "WS2_32.lib")
 typedef SOCKET  snNetSocket; // snNet的socket类型
-typedef snChar  snNetTimer;  // snNet的计时类型
-typedef snChar  snNetBuf;    // snNet的缓冲区类型
+typedef wmkcChar  snNetTimer;  // snNet的计时类型
+typedef wmkcChar  snNetBuf;    // snNet的缓冲区类型
 #endif // #if defined(_WIN32)
 
-typedef snFloat   snNetTime; // snNet的时间类型
+typedef wmkcFloat   snNetTime; // snNet的时间类型
 typedef socklen_t snNetSize; // snNet的长度类型
 
 // snNet对象类型
@@ -85,55 +85,55 @@ typedef struct {
 } snNet_ctx;
 
 // 申请snNet对象的内存空间
-SN_PUBLIC(snErr_ctx) snNet_new SN_OPEN_API
-SN_FUNC_OF((snNet_ctx **ctx, sn_u32 family));
+WMKC_PUBLIC(snErr_ctx) snNet_new WMKC_OPEN_API
+WMKC_OF((snNet_ctx **ctx, wmkc_u32 family));
 
 // 释放snNet对象。
-SN_PUBLIC(snErr_ctx) snNet_free SN_OPEN_API
-SN_FUNC_OF((snNet_ctx **ctx));
+WMKC_PUBLIC(snErr_ctx) snNet_free WMKC_OPEN_API
+WMKC_OF((snNet_ctx **ctx));
 
 // 初始化snNet对象（需提前申请内存空间）
-SN_PUBLIC(snErr_ctx) snNet_init SN_OPEN_API
-SN_FUNC_OF((snNet_ctx *ctx, snString hostname, sn_u16 port, snBool UDP));
+WMKC_PUBLIC(snErr_ctx) snNet_init WMKC_OPEN_API
+WMKC_OF((snNet_ctx *ctx, wmkcString hostname, wmkc_u16 port, wmkcBool UDP));
 
 // 使用snNet对象解析域名信息
-SN_PUBLIC(snErr_ctx) snNet_resolveAddress
-SN_FUNC_OF((snNet_ctx *net, snString hostname));
+WMKC_PUBLIC(snErr_ctx) snNet_resolveAddress
+WMKC_OF((snNet_ctx *net, wmkcString hostname));
 
 // 设置发送与接收超时时间
-SN_PUBLIC(snErr_ctx) snNet_timeout SN_OPEN_API
-SN_FUNC_OF((snNet_ctx *ctx, snNetTime _user_TimeOut));
+WMKC_PUBLIC(snErr_ctx) snNet_timeout WMKC_OPEN_API
+WMKC_OF((snNet_ctx *ctx, snNetTime _user_TimeOut));
 
 // 连接函数
-SN_PUBLIC(snErr_ctx) snNet_connect SN_OPEN_API
-SN_FUNC_OF((snNet_ctx *ctx));
+WMKC_PUBLIC(snErr_ctx) snNet_connect WMKC_OPEN_API
+WMKC_OF((snNet_ctx *ctx));
 
 // 绑定函数
-SN_PUBLIC(snErr_ctx) snNet_bind SN_OPEN_API
-SN_FUNC_OF((snNet_ctx *ctx, snNetTime _user_TimeOut));
+WMKC_PUBLIC(snErr_ctx) snNet_bind WMKC_OPEN_API
+WMKC_OF((snNet_ctx *ctx, snNetTime _user_TimeOut));
 
 // 监听函数
-SN_PUBLIC(snErr_ctx) snNet_listen SN_OPEN_API
-SN_FUNC_OF((snNet_ctx *ctx, sn_u32 _Listen));
+WMKC_PUBLIC(snErr_ctx) snNet_listen WMKC_OPEN_API
+WMKC_OF((snNet_ctx *ctx, wmkc_u32 _Listen));
 
 // 等待连接函数
-SN_PUBLIC(snErr_ctx) snNet_accept SN_OPEN_API
-SN_FUNC_OF((snNet_ctx *dst, snNet_ctx *src));
+WMKC_PUBLIC(snErr_ctx) snNet_accept WMKC_OPEN_API
+WMKC_OF((snNet_ctx *dst, snNet_ctx *src));
 
 // 发送函数，_tSize用来保存本次传输的长度（可以为空）
-SN_PUBLIC(snErr_ctx) snNet_send SN_OPEN_API
-SN_FUNC_OF((snNet_ctx *ctx, snNetSize *_tSize, snNetBuf *buf, snNetSize size));
+WMKC_PUBLIC(snErr_ctx) snNet_send WMKC_OPEN_API
+WMKC_OF((snNet_ctx *ctx, snNetSize *_tSize, snNetBuf *buf, snNetSize size));
 
 // 全部发送函数
-SN_PUBLIC(snErr_ctx) snNet_sendall SN_OPEN_API
-SN_FUNC_OF((snNet_ctx *ctx, snNetBuf *buf, snNetSize size));
+WMKC_PUBLIC(snErr_ctx) snNet_sendall WMKC_OPEN_API
+WMKC_OF((snNet_ctx *ctx, snNetBuf *buf, snNetSize size));
 
 // 接收函数，_tSize用来保存本次传输的长度（可以为空）
-SN_PUBLIC(snErr_ctx) snNet_recv SN_OPEN_API
-SN_FUNC_OF((snNet_ctx* ctx, snNetSize *_tSize, snNetBuf *buf, snNetSize size));
+WMKC_PUBLIC(snErr_ctx) snNet_recv WMKC_OPEN_API
+WMKC_OF((snNet_ctx* ctx, snNetSize *_tSize, snNetBuf *buf, snNetSize size));
 
 // 关闭套接字函数
-SN_PUBLIC(snErr_ctx) snNet_close SN_OPEN_API
-SN_FUNC_OF((snNet_ctx *ctx));
+WMKC_PUBLIC(snErr_ctx) snNet_close WMKC_OPEN_API
+WMKC_OF((snNet_ctx *ctx));
 
 #endif // #ifndef __SN_NETWORK__

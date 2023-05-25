@@ -16,19 +16,19 @@
 #endif
 
 // 设置时间随机数种子
-SN_PUBLIC(snVoid) snRand_Seed SN_OPEN_API
-SN_FUNC_OF((snVoid));
+WMKC_PUBLIC(wmkcVoid) snRand_Seed WMKC_OPEN_API
+WMKC_OF((wmkcVoid));
 
 // 随机数生成
-SN_PUBLIC(snSize) snRand_Rand SN_OPEN_API
-SN_FUNC_OF((snVoid));
+WMKC_PUBLIC(wmkcSize) snRand_Rand WMKC_OPEN_API
+WMKC_OF((wmkcVoid));
 
 // 范围随机数生成
-SN_PUBLIC(snSize) snRand_Randint SN_OPEN_API
-SN_FUNC_OF((snSize min, snSize max));
+WMKC_PUBLIC(wmkcSize) snRand_Randint WMKC_OPEN_API
+WMKC_OF((wmkcSize min, wmkcSize max));
 
 // 安全随机数生成
-SN_PUBLIC(snVoid) snRand_Urandom SN_OPEN_API
-SN_FUNC_OF((snByte *buf, sn_u32 size));
+WMKC_PUBLIC(wmkcVoid) snRand_Urandom WMKC_OPEN_API
+WMKC_OF((wmkcByte *buf, wmkc_u32 size));
 
 #endif // #ifndef __SN_RANDOM__

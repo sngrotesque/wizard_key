@@ -1,42 +1,11 @@
-#include <snFile.h>
+#include <wmkcFile.h>
 
-SN_PUBLIC(snErr_ctx) snFile_new SN_OPEN_API
-SN_FUNC_OF((snFile_ctx **obj))
+/**
+ * 这个函数仅供snFile_exists调用。
+*/
+WMKC_PRIVATE(wmkcBool) _snFile_exists
+WMKC_OF((snFileString fn))
 {
-    snErr_ctx error;
-    if(!obj) {
-        snErr_return(error, snErr_ErrNULL, "snFile_new: obj is NULL.");
-    }
-    if(!snMemoryNew(snFile_ctx *, (*obj), sizeof(snFile_ctx))) {
-        snErr_return(error, snErr_ErrMemory,
-            "snFile_new: (*obj) Failed to apply for memory.");
-    }
-    (*obj)->data = snNull;
-
-    snErr_return(error, snErr_OK, "OK.");
-}
-
-SN_PUBLIC(snErr_ctx) snFile_free SN_OPEN_API
-SN_FUNC_OF((snFile_ctx **obj))
-{
-    snErr_ctx error;
-    if(!obj) {
-        snErr_return(error, snErr_ErrNULL, "snFile_free: obj is NULL.");
-    }
-    if((*obj)->data) {
-        snMemoryFree((*obj)->data);
-    }
-    snMemoryFree((*obj));
-    snErr_return(error, snErr_OK, "OK.");
-}
-
-SN_PUBLIC(snBool) snFile_exists SN_OPEN_API
-SN_FUNC_OF((snFileString fn))
-{
-    if(!fn) {
-        return false;
-    }
-
 #   ifdef __linux
     if(access(fn, F_OK) == 0) {
         return true;
@@ -46,12 +15,71 @@ SN_FUNC_OF((snFileString fn))
         return true;
     }
 #   endif
-
     return false;
 }
 
-SN_PUBLIC(snErr_ctx) snFile_fileSize SN_OPEN_API
-SN_FUNC_OF((snSize *size, snFileString fn))
+/**
+ * 这个函数仅供snFile_fileSize调用。
+*/
+WMKC_PRIVATE(wmkcSize) _snFile_fileSize
+WMKC_OF((snFileString fn))
+{
+#   if defined(__linux)
+    struct stat info;
+    stat(fn, &info);
+    return (wmkcSize)info.st_size;
+#   elif defined(_WIN32)
+    LARGE_INTEGER W_size;
+    HANDLE        hFile;
+
+    hFile = CreateFileW(fn, GENERIC_READ, FILE_SHARE_READ, wmkcNull,
+        OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, wmkcNull);
+    GetFileSizeEx(hFile, &W_size);
+    CloseHandle(hFile);
+    return (wmkcSize)W_size.QuadPart;
+#   endif
+}
+
+WMKC_PUBLIC(snErr_ctx) snFile_new WMKC_OPEN_API
+WMKC_OF((snFile_ctx **obj))
+{
+    snErr_ctx error;
+    if(!obj) {
+        snErr_return(error, snErr_ErrNULL, "snFile_new: obj is NULL.");
+    }
+    if(!wmkcMemoryNew(snFile_ctx *, (*obj), sizeof(snFile_ctx))) {
+        snErr_return(error, snErr_ErrMemory,
+            "snFile_new: (*obj) Failed to apply for memory.");
+    }
+    (*obj)->data = wmkcNull;
+    snErr_return(error, snErr_OK, "OK.");
+}
+
+WMKC_PUBLIC(snErr_ctx) snFile_free WMKC_OPEN_API
+WMKC_OF((snFile_ctx **obj))
+{
+    snErr_ctx error;
+    if(!obj) {
+        snErr_return(error, snErr_ErrNULL, "snFile_free: obj is NULL.");
+    }
+    if((*obj)->data) {
+        wmkcMemoryFree((*obj)->data);
+    }
+    wmkcMemoryFree((*obj));
+    snErr_return(error, snErr_OK, "OK.");
+}
+
+WMKC_PUBLIC(wmkcBool) snFile_exists WMKC_OPEN_API
+WMKC_OF((snFileString fn))
+{
+    if(!fn) {
+        return false;
+    }
+    return _snFile_exists(fn);
+}
+
+WMKC_PUBLIC(snErr_ctx) snFile_fileSize WMKC_OPEN_API
+WMKC_OF((wmkcSize *size, snFileString fn))
 {
     snErr_ctx error;
     if(!snFile_exists(fn)) {
@@ -61,41 +89,26 @@ SN_FUNC_OF((snSize *size, snFileString fn))
     if(!size) {
         snErr_return(error, snErr_ErrNULL, "snFile_fileSize: size is NULL.");
     }
-
-#   if defined(__linux)
-    struct stat info;
-    stat(fn, &info);
-    *size = (snSize)info.st_size;
-#   elif defined(_WIN32)
-    HANDLE hFile = CreateFileW(fn, GENERIC_READ, FILE_SHARE_READ, snNull, OPEN_EXISTING,
-        FILE_ATTRIBUTE_NORMAL, snNull);
-    LARGE_INTEGER W_size;
-    GetFileSizeEx(hFile, &W_size);
-    *size = (snSize)W_size.QuadPart;
-    CloseHandle(hFile);
-#   endif
-
-    if(!(*size)) {
+    if(!(*size = _snFile_fileSize(fn))) {
         snErr_return(error, snErr_FileNull, "snFile_fileSize: The file is empty.");
     }
-
     snErr_return(error, snErr_OK, "OK.");
 }
 
-SN_PUBLIC(snErr_ctx) snFile_fread SN_OPEN_API
-SN_FUNC_OF((snFile_ctx *obj, snFileString fn))
+WMKC_PUBLIC(snErr_ctx) snFile_fread WMKC_OPEN_API
+WMKC_OF((snFile_ctx *obj, snFileString fn))
 {
     snErr_ctx error;
-    snByte *fileData_ptr = snNull;
-    snFile *fp = snNull;
-    snSize x;
+    wmkcByte *fileData_ptr = wmkcNull;
+    wmkcFile *fp = wmkcNull;
+    wmkcSize x;
 
     error = snFile_fileSize(&obj->size, fn);
     if(error.code) {
         return error;
     }
     if(!obj->data) {
-        if(!snMemoryNew(snByte *, obj->data, obj->size + 1)) {
+        if(!wmkcMemoryNew(wmkcByte *, obj->data, obj->size + 1)) {
             snErr_return(error, snErr_ErrMemory,
                 "snFile_fread: obj->data Failed to apply for memory.");
         }
@@ -124,17 +137,17 @@ SN_FUNC_OF((snFile_ctx *obj, snFileString fn))
     snErr_return(error, snErr_OK, "OK.");
 }
 
-SN_PUBLIC(snErr_ctx) snFile_fwrite SN_OPEN_API
-SN_FUNC_OF((snFile_ctx *obj, snFileString fn))
+WMKC_PUBLIC(snErr_ctx) snFile_fwrite WMKC_OPEN_API
+WMKC_OF((snFile_ctx *obj, snFileString fn))
 {
     snErr_ctx error;
     if(!obj || !obj->data || !obj->size || !fn) {
         snErr_return(error, snErr_ErrNULL,
             "snFile_fwrite: obj or obj->data or obj->size or fn is NULL.");
     }
-    snByte *fileData_ptr = snNull;
-    snFile *fp = snNull;
-    snSize x;
+    wmkcByte *fileData_ptr = wmkcNull;
+    wmkcFile *fp = wmkcNull;
+    wmkcSize x;
 
     fileData_ptr = obj->data;
     obj->quotient = obj->size / SN_FILE_BLOCKLEN;

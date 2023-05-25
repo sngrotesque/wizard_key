@@ -2,16 +2,16 @@
 #define __SN_MISC__
 #include <snConf.h>
 
-SN_PUBLIC(snVoid) snMisc_PRINT SN_OPEN_API
-SN_FUNC_OF((snByte *data, snSize len, snSize num, snBool newline, snBool tableChar));
+WMKC_PUBLIC(wmkcVoid) snMisc_PRINT WMKC_OPEN_API
+WMKC_OF((wmkcByte *data, wmkcSize len, wmkcSize num, wmkcBool newline, wmkcBool tableChar));
 
-SN_PUBLIC(snVoid) snMisc_PRINT_N SN_OPEN_API
-SN_FUNC_OF((sn_32 *arr, snSize size, snBool newline));
+WMKC_PUBLIC(wmkcVoid) snMisc_PRINT_N WMKC_OPEN_API
+WMKC_OF((wmkc_s32 *arr, wmkcSize size, wmkcBool newline));
 
-SN_PUBLIC(snVoid) snMisc_PRINT_BOX SN_OPEN_API
-SN_FUNC_OF((snByte *box, snSize size, snSize num, snBool newline));
+WMKC_PUBLIC(wmkcVoid) snMisc_PRINT_BOX WMKC_OPEN_API
+WMKC_OF((wmkcByte *box, wmkcSize size, wmkcSize num, wmkcBool newline));
 
-SN_PUBLIC(snVoid) snMisc_PRINT_RAW SN_OPEN_API
-SN_FUNC_OF((snByte *buf, snSize size, snBool newline));
+WMKC_PUBLIC(wmkcVoid) snMisc_PRINT_RAW WMKC_OPEN_API
+WMKC_OF((wmkcByte *buf, wmkcSize size, wmkcBool newline));
 
 #endif

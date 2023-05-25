@@ -13,20 +13,20 @@ extern "C" {
 #endif
 
 // 求n的m次方
-SN_PUBLIC(snSize) snMath_Pow SN_OPEN_API
-SN_FUNC_OF((snSize n, snSize m));
+WMKC_PUBLIC(wmkcSize) snMath_Pow WMKC_OPEN_API
+WMKC_OF((wmkcSize n, wmkcSize m));
 
 // 求一个范围内的质数
-SN_PUBLIC(snSize *) snMath_PrimeNumber SN_OPEN_API
-SN_FUNC_OF((snSize minValue, snSize maxValue));
+WMKC_PUBLIC(wmkcSize *) snMath_PrimeNumber WMKC_OPEN_API
+WMKC_OF((wmkcSize minValue, wmkcSize maxValue));
 
 // 求n1和n2的公因数
-SN_PUBLIC(snSize *) snMath_CommonFactor SN_OPEN_API
-SN_FUNC_OF((snSize n1, snSize n2));
+WMKC_PUBLIC(wmkcSize *) snMath_CommonFactor WMKC_OPEN_API
+WMKC_OF((wmkcSize n1, wmkcSize n2));
 
 // 求_num的所有因数
-SN_PUBLIC(snSize *) snMath_Factor SN_OPEN_API
-SN_FUNC_OF((snSize _num));
+WMKC_PUBLIC(wmkcSize *) snMath_Factor WMKC_OPEN_API
+WMKC_OF((wmkcSize _num));
 
 #ifdef __cplusplus
 }

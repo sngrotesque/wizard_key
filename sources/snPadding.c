@@ -1,11 +1,11 @@
 #include <snPadding.h>
 
-SN_PUBLIC(snVoid) snPadding_add SN_OPEN_API
-SN_FUNC_OF((snByte *buf, snSize *size, sn_u16 BlockSize, snBool randomPadding))
+WMKC_PUBLIC(wmkcVoid) snPadding_add WMKC_OPEN_API
+WMKC_OF((wmkcByte *buf, wmkcSize *size, wmkc_u16 BlockSize, wmkcBool randomPadding))
 {
-    snSize padoffset;
-    snSize totalSize;
-    snSize index;
+    wmkcSize padoffset;
+    wmkcSize totalSize;
+    wmkcSize index;
 
     padoffset = snPadding_offset(BlockSize, *size);
     totalSize = padoffset + *size;
@@ -31,11 +31,11 @@ SN_FUNC_OF((snByte *buf, snSize *size, sn_u16 BlockSize, snBool randomPadding))
     }
 }
 
-SN_PUBLIC(snVoid) snPadding_remove SN_OPEN_API
-SN_FUNC_OF((snByte *buf, snSize *size))
+WMKC_PUBLIC(wmkcVoid) snPadding_remove WMKC_OPEN_API
+WMKC_OF((wmkcByte *buf, wmkcSize *size))
 {
-    snSize padoffset;
-    snSize index;
+    wmkcSize padoffset;
+    wmkcSize index;
 
     padoffset = buf[*size - 1];
 
@@ -48,12 +48,12 @@ SN_FUNC_OF((snByte *buf, snSize *size))
     *size = *size - padoffset;
 }
 
-SN_PUBLIC(snVoid) snPadding_keyAdd SN_OPEN_API
-SN_FUNC_OF((snByte *token, sn_u16 BlockSize))
+WMKC_PUBLIC(wmkcVoid) snPadding_keyAdd WMKC_OPEN_API
+WMKC_OF((wmkcByte *token, wmkc_u16 BlockSize))
 {
-    sn_u16 tokenSize;
-    sn_u16 tokenIndex;
-    sn_u16 index;
+    wmkc_u16 tokenSize;
+    wmkc_u16 tokenIndex;
+    wmkc_u16 index;
     tokenSize = strlen((char *)token) & 0xffff;
     for(index = tokenSize, tokenIndex = 0; index < BlockSize; ++index, ++tokenIndex) {
         if(tokenIndex == tokenSize)

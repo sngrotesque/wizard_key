@@ -1,7 +1,7 @@
 #include <snBinascii.h>
 
 // sn_a2b_hex函数的解码表
-SN_PRIVATE_CONST(snByte) _a2b_hex_table[256] = {
+WMKC_PRIVATE_CONST(wmkcByte) _a2b_hex_table[256] = {
     31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31,
     31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31,
     31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31,
@@ -20,8 +20,8 @@ SN_PRIVATE_CONST(snByte) _a2b_hex_table[256] = {
     31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31
 };
 
-SN_PRIVATE(snByte) _sn_binascii_to_top
-SN_FUNC_OF((snByte c))
+WMKC_PRIVATE(wmkcByte) _sn_binascii_to_top
+WMKC_OF((wmkcByte c))
 {
     if((c >> 4) < 0x0a)
         return (c >> 4) + 0x30;
@@ -29,8 +29,8 @@ SN_FUNC_OF((snByte c))
         return (c >> 4) + 0x57;
 }
 
-SN_PRIVATE(snByte) _sn_binascii_to_bot
-SN_FUNC_OF((snByte c))
+WMKC_PRIVATE(wmkcByte) _sn_binascii_to_bot
+WMKC_OF((wmkcByte c))
 {
     if((c & 0x0f) < 0x0a)
         return (c & 0x0f) + 0x30;
@@ -38,8 +38,8 @@ SN_FUNC_OF((snByte c))
         return (c & 0x0f) + 0x57;
 }
 
-SN_PUBLIC(snErr_ctx) snBinascii_b2a_hex SN_OPEN_API
-SN_FUNC_OF((snByte **dst, snByte *src, snSize srcSize))
+WMKC_PUBLIC(snErr_ctx) snBinascii_b2a_hex WMKC_OPEN_API
+WMKC_OF((wmkcByte **dst, wmkcByte *src, wmkcSize srcSize))
 {
     snErr_ctx error;
 
@@ -47,9 +47,9 @@ SN_FUNC_OF((snByte **dst, snByte *src, snSize srcSize))
         snErr_return(error, snErr_ErrNULL,
             "snBinascii_b2a_hex: dst or src or srcSize is NULL.");
     }
-    snFast snSize i;
+    wmkcFast wmkcSize i;
 
-    if(!snMemoryNew(snByte *, (*dst), (srcSize << 1) + 1)) {
+    if(!wmkcMemoryNew(wmkcByte *, (*dst), (srcSize << 1) + 1)) {
         snErr_return(error, snErr_ErrMemory,
             "snBinascii_b2a_hex: (*dst) Failed to apply for memory.");
     }
@@ -64,8 +64,8 @@ SN_FUNC_OF((snByte **dst, snByte *src, snSize srcSize))
     snErr_return(error, snErr_OK, "OK.");
 }
 
-SN_PUBLIC(snErr_ctx) snBinascii_a2b_hex SN_OPEN_API
-SN_FUNC_OF((snByte **dst, snByte *src, snSize srcSize))
+WMKC_PUBLIC(snErr_ctx) snBinascii_a2b_hex WMKC_OPEN_API
+WMKC_OF((wmkcByte **dst, wmkcByte *src, wmkcSize srcSize))
 {
     snErr_ctx error;
 
@@ -73,15 +73,15 @@ SN_FUNC_OF((snByte **dst, snByte *src, snSize srcSize))
         snErr_return(error, snErr_ErrNULL,
             "snBinascii_a2b_hex: dst or src or srcSize is NULL.");
     }
-    static snSize src_i, dst_i;
-    static sn_32 top, bot;
+    static wmkcSize src_i, dst_i;
+    static wmkc_s32 top, bot;
 
     if (srcSize % 2) {
         snErr_return(error, snErr_ErrType,
             "snBinascii_a2b_hex: Wrong type, should not be an odd length.");
     }
 
-    if(!snMemoryNew(snByte *, (*dst), (srcSize >> 1) + 1)) {
+    if(!wmkcMemoryNew(wmkcByte *, (*dst), (srcSize >> 1) + 1)) {
         snErr_return(error, snErr_ErrMemory,
             "snBinascii_a2b_hex: (*dst) Failed to apply for memory.");
     }

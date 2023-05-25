@@ -1,9 +1,9 @@
 #include <snHexdump.h>
 
-SN_PRIVATE(snVoid) _hexdump
-SN_FUNC_OF((snSize offset, snByte *buf, sn_u32 size))
+WMKC_PRIVATE(wmkcVoid) _hexdump
+WMKC_OF((wmkcSize offset, wmkcByte *buf, wmkc_u32 size))
 {
-    sn_u32 i;
+    wmkc_u32 i;
     printf("%012"PRIx64" ", offset);
     for(i = 0; i < SN_HEXDUMP_SIZE; ++i) {
         SN_HEXDUMP_PRINT_HEX_SET;}
@@ -12,17 +12,17 @@ SN_FUNC_OF((snSize offset, snByte *buf, sn_u32 size))
     printf("\n");
 }
 
-SN_PUBLIC(snErr_ctx) snHexdump SN_OPEN_API
-SN_FUNC_OF((snFileString fn))
+WMKC_PUBLIC(snErr_ctx) snHexdump WMKC_OPEN_API
+WMKC_OF((snFileString fn))
 {
     snErr_ctx error;
     if(!fn) {
         snErr_return(error, snErr_ErrNULL, "snHexdump: fn is NULL.");
     }
-    snFile *fp = snNull;
-    snByte buf[SN_HEXDUMP_SIZE];
-    snSize offset = 0;
-    snSize nRead = 0;
+    wmkcFile *fp = wmkcNull;
+    wmkcByte buf[SN_HEXDUMP_SIZE];
+    wmkcSize offset = 0;
+    wmkcSize nRead = 0;
 
     if(!(fp = snFile_fopen(fn, snFile_text("rb")))) {
         snErr_return(error, snErr_FileOpen, "snHexdump: File opening failed.");

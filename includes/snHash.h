@@ -34,7 +34,7 @@
 */
 #ifndef __SN_HASH__
 #define __SN_HASH__
-#include <snFile.h>
+#include <wmkcFile.h>
 #include <snBinascii.h>
 #include <openssl/evp.h>
 
@@ -42,10 +42,10 @@
 
 typedef struct {
     const EVP_MD *md;
-    sn_u32 digestSize;
-    sn_u32 hexdigestSize;
-    snByte *digest;
-    snByte *hexdigest;
+    wmkc_u32 digestSize;
+    wmkc_u32 hexdigestSize;
+    wmkcByte *digest;
+    wmkcByte *hexdigest;
 } snHash_ctx;
 
 typedef enum {
@@ -57,7 +57,7 @@ typedef enum {
     snHash_HashType_SHA512
 } snHash_HashType;
 
-SN_PRIVATE_CONST(sn_u32) snHash_SIZE[6] = {
+WMKC_PRIVATE_CONST(wmkc_u32) snHash_SIZE[6] = {
     16,  // MD5
     20,  // SHA-1
     28,  // SHA-224
@@ -67,19 +67,19 @@ SN_PRIVATE_CONST(sn_u32) snHash_SIZE[6] = {
 };
 
 // 初始化snHash对象
-SN_PUBLIC(snErr_ctx) snHash_new SN_OPEN_API
-SN_FUNC_OF((snHash_ctx **obj, snHash_HashType hashType));
+WMKC_PUBLIC(snErr_ctx) snHash_new WMKC_OPEN_API
+WMKC_OF((snHash_ctx **obj, snHash_HashType hashType));
 
 // 根据你选择的算法进行哈希计算
-SN_PUBLIC(snErr_ctx) snHash SN_OPEN_API
-SN_FUNC_OF((snHash_ctx *hash, snByte *buf, snSize size));
+WMKC_PUBLIC(snErr_ctx) snHash WMKC_OPEN_API
+WMKC_OF((snHash_ctx *hash, wmkcByte *buf, wmkcSize size));
 
 // 根据你选择的算法对文件进行哈希计算
-SN_PUBLIC(snErr_ctx) snHash_file SN_OPEN_API
-SN_FUNC_OF((snHash_ctx *hash, snFileString fn));
+WMKC_PUBLIC(snErr_ctx) snHash_file WMKC_OPEN_API
+WMKC_OF((snHash_ctx *hash, snFileString fn));
 
 // 释放掉snHash对象
-SN_PUBLIC(snErr_ctx) snHash_free SN_OPEN_API
-SN_FUNC_OF((snHash_ctx **obj));
+WMKC_PUBLIC(snErr_ctx) snHash_free WMKC_OPEN_API
+WMKC_OF((snHash_ctx **obj));
 
 #endif // #ifndef __SN_HASH__

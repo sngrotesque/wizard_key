@@ -1,27 +1,27 @@
 #include <snObject.h>
 
-SN_PUBLIC(snErr_ctx) snObject_new SN_OPEN_API
-SN_FUNC_OF((snObject **obj, snSize _memory_size, snBool _Clear_memory))
+WMKC_PUBLIC(snErr_ctx) snObject_new WMKC_OPEN_API
+WMKC_OF((snObject **obj, wmkcSize _memory_size, wmkcBool _Clear_memory))
 {
     snErr_ctx error;
     if(!obj) {
         snErr_return(error, snErr_ErrNULL, "snObject_new: obj is NULL.");
     }
 
-    if(!snMemoryNew(snObject *, (*obj), sizeof(snObject))) {
+    if(!wmkcMemoryNew(snObject *, (*obj), sizeof(snObject))) {
         snErr_return(error, snErr_ErrMemory,
             "snObject_new: (*obj) failed to apply for memory.");
     }
 
     if(_memory_size) {
-        if(!snMemoryNew(snByte *, (*obj)->buf, _memory_size)) {
+        if(!wmkcMemoryNew(wmkcByte *, (*obj)->buf, _memory_size)) {
             snErr_return(error, snErr_ErrMemory,
                 "snObject_new: (*obj)->buf failed to apply for memory.");
         }
         if(_Clear_memory)
             memset((*obj)->buf, 0x00, _memory_size);
     } else {
-        (*obj)->buf = snNull;
+        (*obj)->buf = wmkcNull;
         (*obj)->size = 0;
     }
     (*obj)->memSize = _memory_size;
@@ -29,8 +29,8 @@ SN_FUNC_OF((snObject **obj, snSize _memory_size, snBool _Clear_memory))
     snErr_return(error, snErr_OK, "OK.");
 }
 
-SN_PUBLIC(snErr_ctx) snObject_free SN_OPEN_API
-SN_FUNC_OF((snObject **obj))
+WMKC_PUBLIC(snErr_ctx) snObject_free WMKC_OPEN_API
+WMKC_OF((snObject **obj))
 {
     snErr_ctx error;
     if(!obj) {
@@ -38,9 +38,9 @@ SN_FUNC_OF((snObject **obj))
     }
 
     if((*obj)->buf) {
-        snMemoryFree((*obj)->buf);
+        wmkcMemoryFree((*obj)->buf);
     }
-    snMemoryFree((*obj));
+    wmkcMemoryFree((*obj));
 
     snErr_return(error, snErr_OK, "OK.");
 }
