@@ -61,10 +61,3 @@ if __name__ == '__main__':
         mkdir(OUT_PATH)
     
     run_code(program, para)
-
-
-
-
-
-
-
