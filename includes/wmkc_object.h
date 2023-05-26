@@ -3,6 +3,7 @@
 
 #include <wmkc_conf.h>
 
+// wmkc对象，它不需要添加_obj后缀，因为它是唯一的wmkc对象
 typedef struct {
     wmkcByte *buf;
     wmkcSize size;
