@@ -1,7 +1,10 @@
 # Wizard Magic Key Cyber
 > Wizard Magic Key Cyber by SN-Grotesque
 
-# Author(s): SN-Grotesque
+```text
+Author(s):
+    SN-Grotesque
+```
 
 ### 特别鸣谢
  - [OpenSSL](https://github.com/openssl/openssl)
