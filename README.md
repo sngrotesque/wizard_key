@@ -4,7 +4,6 @@
 ### Author(s):
  - [SN-Grotesque](https://github.com/sngrotesque)
 
-
 ### 特别鸣谢
  - [OpenSSL](https://github.com/openssl/openssl)
  - [libpng](http://libpng.org/pub/png/)
@@ -17,6 +16,9 @@
 > 并且顺序必须按照此项列出的方式排序。  
 > 函数声明与实现的注释必须一样。  
 > 如果一个函数没有编写完成就将其推送至仓库，应当在注释中的note字段中说明。
+ -  关于可读性：
+> 所有代码在单行超过90（不含90）个字符时，应当进行换行。  
+> 此条不是强制性的。
  -  关于返回值：
 > 所有应检查参数的函数都应使用wmkcErr_obj对象来返回对应的信息。  
 > 并且所有message指针指向的字符串中必须在开头包含对应函数的完整名称。

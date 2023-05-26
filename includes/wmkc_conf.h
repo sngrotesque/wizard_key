@@ -99,8 +99,10 @@ typedef struct {
 #define wmkcErr_ErrOutRange      -4ULL
 // 错误的范围，表示传入的范围参数中起始下标超过了末尾下标。
 #define wmkcErr_ErrInvalidRange  -5ULL
+// 错误的调用，表示调用的这个系统函数出现了错误。
+#define wmkcErr_ErrSysFunc       -6ULL
 // 错误的内存，只能用作申请内存失败时。
-#define wmkcErr_ErrMemory        -6ULL
+#define wmkcErr_ErrMemory        -7ULL
 // 解析域名时出现了错误，只能用作需要解析域名的函数中。
 #define wmkcErr_NetDomainResolv   1ULL
 // 为套接字赋值时出现错误，只能用作未能成功且正确的使用socket函数时。

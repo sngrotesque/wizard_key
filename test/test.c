@@ -57,7 +57,9 @@ static wmkcByte iv[32] = {
 
 void test()
 {
-    wmkcRandom_seed();
+    wmkcByte buf[32];
+    wmkcRandom_urandom(buf, 32);
+    wmkcMisc_PRINT(buf, 32, 16, 1, 0);
 }
 
 int main(int argc, char **argv)

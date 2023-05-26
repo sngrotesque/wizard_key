@@ -29,6 +29,7 @@ WMKC_OF((wmkcVoid))
     timeTotal = (li.QuadPart - 116444736000000000ULL) / 10;
 #endif
 
+    // 此处应可以更好的实现，因为srand函数接受的值范围实在太小。
     srand((unsigned int)timeTotal);
 }
 
@@ -47,6 +48,8 @@ WMKC_OF((wmkcVoid))
 {
     wmkcSize n, num[32];
     wmkc_u32 x, count;
+
+    n = 0;
 
     for(x = 0; x < 32; ++x) {
         num[x] = rand() ^ (rand() ^ (rand() & rand()));
@@ -91,26 +94,44 @@ WMKC_OF((wmkcSize min, wmkcSize max))
  * 可用作加密算法密钥等需要安全性的随机序列。
  * 
  * @note 无
- * @param buf 这是一个指针，指向用于报错结果的序列的地址。
+ * @param buf 这是一个指针，指向用于保存结果的序列的地址。
  * @param size 这是一个长度，代表buf指针指向的内容的长度
  *            （需要获取的随机序列的长度）。
- * @return 返回一个wmkcErr_ctx对象，用于告知使用者是否出错。
+ * @return 返回一个wmkcErr_ctx对象，code为0代表无错误，如果为
+ *         其他值，那么需检查message与code。
 */
 WMKC_PUBLIC(wmkcErr_ctx) wmkcRandom_urandom WMKC_OPEN_API
 WMKC_OF((wmkcByte *buf, wmkc_u32 size))
 {
     wmkcErr_ctx error;
     if(!buf || !size) {
-        wmkcErr_return(error, wmkcErr_ErrNULL, "");
+        wmkcErr_return(error, wmkcErr_ErrNULL,
+            "wmkcRandom_urandom: buf or size is NULL.");
     }
 
 #   if defined(WMKC_PLATFORM_WINOS)
     HCRYPTPROV hProv;
-    CryptAcquireContext(&hProv, NULL, NULL, PROV_RSA_FULL, 0);
-    CryptGenRandom(hProv, size, buf);
-    CryptReleaseContext(hProv, 0);
+    if(!CryptAcquireContext(&hProv, NULL, NULL, PROV_RSA_FULL, 0)) {
+        wmkcErr_return(error, wmkcErr_ErrSysFunc,
+            "wmkcRandom_urandom: An error occurred while calling the system's "
+            "CryptAcquireContext function.");
+    }
+    if(!CryptGenRandom(hProv, size, buf)) {
+        wmkcErr_return(error, wmkcErr_ErrSysFunc,
+            "wmkcRandom_urandom: An error occurred while calling the system's "
+            "CryptGenRandom function.");
+    }
+    if(!CryptReleaseContext(hProv, 0)) {
+        wmkcErr_return(error, wmkcErr_ErrSysFunc,
+            "wmkcRandom_urandom: An error occurred while calling the system's "
+            "CryptReleaseContext function.");
+    }
 #   elif defined(WMKC_PLATFORM_LINUX)
-    getrandom(buf, size, GRND_RANDOM);
+    if(getrandom(buf, size, GRND_RANDOM) == wmkcErr_Err32) {
+        wmkcErr_return(error, wmkcErr_ErrSysFunc,
+            "wmkcRandom_urandom: An error occurred while calling the system's "
+            "getrandom function.");
+    }
 #   endif
 
     wmkcErr_return(error, wmkcErr_OK, "OK.");
