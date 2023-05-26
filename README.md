@@ -21,19 +21,28 @@
 > 如果使用了任何第三方库，请在对应的文件中列出，并在此文档的`特别鸣谢`中指出库的名称与对应的链接。
 4.  关于C++：
 > 此库不应包含任何C++代码。除非非常必要，否则没有商量余地。
-5.  对于函数，应全部使用文件名的形式表示。示例：  
-    wmkc_duck.c  
-    wmkcDuck_quack();
-6.  对于对象类型，应使用名称+下划线+obj，延续上一条的示例：  
-    typedef struct {...} wmkcDuck_obj;
-7.  所有函数中都不应使用static将变量声明为静态变量。
-8.  所有代码头文件的首部应使用预处理指令进行预处理，延续上一条示例：  
-    #if WMKC_SUPPORT
-    #ifndef WMKC_DUCK  
-    #define WMKC_DUCK  
-    #endif  
-    #endif
-9.  所有代码文件应在最后一行留出一个空行，方便下次编写。
+5.  关于定义与实现：
+```c
+// 所有函数内部都不应使用static将变量声明为静态变量。
+
+// 对于函数，应全部使用文件名的形式表示。示例：
+// wmkc_duck.h   wmkc_duck.c
+WMKC_PUBLIC(wmkcVoid) wmkcDuck_quack WMKC_OPEN_API
+WMKC_OF((wmkcVoid));
+
+// 对于对象类型，应使用名称+下划线+obj的方式命名，示例：
+typedef struct {
+    ...
+} wmkcDuck_obj;
+
+// 所有代码头文件的头部应使用预处理指令进行预处理，示例：
+#if WMKC_SUPPORT  // 此条是为了确保此库可以支持使用者的设备
+#ifndef WMKC_DUCK // 判断当前库的宏是否被定义，如果没有
+#define WMKC_DUCK // 声明当前库的宏
+#endif /* WMKC_DUCK */     // 必须使用此格式来表示endif对应哪一条#if语句。
+#endif /* WMKC_SUPPORT */
+```
+6.  所有代码文件应在最后一行留出一个空行，方便下次编写。
 
 ### 版本更新日志
 
