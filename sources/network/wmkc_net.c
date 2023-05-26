@@ -1,16 +1,16 @@
 #include <network/wmkc_net.h>
 
 // 申请wmkcNet对象的内存空间
-WMKC_PUBLIC(wmkcErr_ctx) wmkcNet_new WMKC_OPEN_API
-WMKC_OF((wmkcNet_ctx **net, wmkc_u32 family))
+WMKC_PUBLIC(wmkcErr_obj) wmkcNet_new WMKC_OPEN_API
+WMKC_OF((wmkcNet_obj **net, wmkc_u32 family))
 {
-    wmkcErr_ctx error;
+    wmkcErr_obj error;
 
     if(!net) {
         wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcNet_new: net is NULL.");
     }
 
-    if(!wmkcMemoryNew(wmkcNet_ctx *, (*net), sizeof(wmkcNet_ctx))) {
+    if(!wmkcMemoryNew(wmkcNet_obj *, (*net), sizeof(wmkcNet_obj))) {
         wmkcErr_return(error, wmkcErr_ErrMemory,
             "wmkcNet_new: (*net) Failed to apply for memory.");
     }
@@ -35,10 +35,10 @@ WMKC_OF((wmkcNet_ctx **net, wmkc_u32 family))
     wmkcErr_return(error, wmkcErr_OK, "OK.");
 }
 
-WMKC_PUBLIC(wmkcErr_ctx) wmkcNet_free WMKC_OPEN_API
-WMKC_OF((wmkcNet_ctx **net))
+WMKC_PUBLIC(wmkcErr_obj) wmkcNet_free WMKC_OPEN_API
+WMKC_OF((wmkcNet_obj **net))
 {
-    wmkcErr_ctx error;
+    wmkcErr_obj error;
     if(!net) {
         wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcNet_free: net is NULL.");
     }
@@ -54,10 +54,10 @@ WMKC_OF((wmkcNet_ctx **net))
 }
 
 // 初始化wmkcNet对象（需提前申请内存空间）
-WMKC_PUBLIC(wmkcErr_ctx) wmkcNet_init WMKC_OPEN_API
-WMKC_OF((wmkcNet_ctx *net, wmkcString hostname, wmkc_u16 port, wmkcBool UDP))
+WMKC_PUBLIC(wmkcErr_obj) wmkcNet_init WMKC_OPEN_API
+WMKC_OF((wmkcNet_obj *net, wmkcString hostname, wmkc_u16 port, wmkcBool UDP))
 {
-    wmkcErr_ctx error;
+    wmkcErr_obj error;
 
     if(!net) {
         wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcNet_init: net is NULL.");
@@ -115,10 +115,10 @@ WMKC_OF((wmkcNet_ctx *net, wmkcString hostname, wmkc_u16 port, wmkcBool UDP))
 }
 
 // 域名解析函数
-WMKC_PUBLIC(wmkcErr_ctx) wmkcNet_resolveAddress
-WMKC_OF((wmkcNet_ctx *net, wmkcString hostname))
+WMKC_PUBLIC(wmkcErr_obj) wmkcNet_resolveAddress
+WMKC_OF((wmkcNet_obj *net, wmkcString hostname))
 {
-    wmkcErr_ctx error;
+    wmkcErr_obj error;
 
     if(!net || !hostname || !net->addr_info) {
         wmkcErr_return(error, wmkcErr_ErrNULL,
@@ -148,10 +148,10 @@ WMKC_OF((wmkcNet_ctx *net, wmkcString hostname))
 }
 
 // 设置发送与接收超时时间
-WMKC_PUBLIC(wmkcErr_ctx) wmkcNet_timeout WMKC_OPEN_API
-WMKC_OF((wmkcNet_ctx *net, wmkcNetTime _user_TimeOut))
+WMKC_PUBLIC(wmkcErr_obj) wmkcNet_timeout WMKC_OPEN_API
+WMKC_OF((wmkcNet_obj *net, wmkcNetTime _user_TimeOut))
 {
-    wmkcErr_ctx error;
+    wmkcErr_obj error;
     if(!net) {
         wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcNet_timeout: net is NULL.");
     }
@@ -176,10 +176,10 @@ WMKC_OF((wmkcNet_ctx *net, wmkcNetTime _user_TimeOut))
 }
 
 // 连接函数
-WMKC_PUBLIC(wmkcErr_ctx) wmkcNet_connect WMKC_OPEN_API
-WMKC_OF((wmkcNet_ctx *net))
+WMKC_PUBLIC(wmkcErr_obj) wmkcNet_connect WMKC_OPEN_API
+WMKC_OF((wmkcNet_obj *net))
 {
-    wmkcErr_ctx error;
+    wmkcErr_obj error;
     if(!net) {
         wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcNet_connect: net is NULL.");
     }
@@ -198,10 +198,10 @@ WMKC_OF((wmkcNet_ctx *net))
 }
 
 // 绑定函数
-WMKC_PUBLIC(wmkcErr_ctx) wmkcNet_bind WMKC_OPEN_API
-WMKC_OF((wmkcNet_ctx *net, wmkcNetTime _user_TimeOut))
+WMKC_PUBLIC(wmkcErr_obj) wmkcNet_bind WMKC_OPEN_API
+WMKC_OF((wmkcNet_obj *net, wmkcNetTime _user_TimeOut))
 {
-    wmkcErr_ctx error;
+    wmkcErr_obj error;
     if(!net) {
         wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcNet_bind: net is NULL.");
     }
@@ -229,10 +229,10 @@ WMKC_OF((wmkcNet_ctx *net, wmkcNetTime _user_TimeOut))
 }
 
 // 监听函数
-WMKC_PUBLIC(wmkcErr_ctx) wmkcNet_listen WMKC_OPEN_API
-WMKC_OF((wmkcNet_ctx *net, wmkc_u32 _Listen))
+WMKC_PUBLIC(wmkcErr_obj) wmkcNet_listen WMKC_OPEN_API
+WMKC_OF((wmkcNet_obj *net, wmkc_u32 _Listen))
 {
-    wmkcErr_ctx error;
+    wmkcErr_obj error;
     if(!net) {
         wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcNet_listen: net is NULL.");
     }
@@ -255,10 +255,10 @@ WMKC_OF((wmkcNet_ctx *net, wmkc_u32 _Listen))
 }
 
 // 等待连接函数
-WMKC_PUBLIC(wmkcErr_ctx) wmkcNet_accept WMKC_OPEN_API
-WMKC_OF((wmkcNet_ctx *dst, wmkcNet_ctx *src))
+WMKC_PUBLIC(wmkcErr_obj) wmkcNet_accept WMKC_OPEN_API
+WMKC_OF((wmkcNet_obj *dst, wmkcNet_obj *src))
 {
-    wmkcErr_ctx error;
+    wmkcErr_obj error;
     if(!dst || !src) {
         wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcNet_accept: dst or src is NULL.");
     }
@@ -283,10 +283,10 @@ WMKC_OF((wmkcNet_ctx *dst, wmkcNet_ctx *src))
 }
 
 // 发送函数
-WMKC_PUBLIC(wmkcErr_ctx) wmkcNet_send WMKC_OPEN_API
-WMKC_OF((wmkcNet_ctx *net, wmkcNetSize *_tSize, wmkcNetBuf *buf, wmkcNetSize size))
+WMKC_PUBLIC(wmkcErr_obj) wmkcNet_send WMKC_OPEN_API
+WMKC_OF((wmkcNet_obj *net, wmkcNetSize *_tSize, wmkcNetBuf *buf, wmkcNetSize size))
 {
-    wmkcErr_ctx error;
+    wmkcErr_obj error;
     if(!net || !buf || !size) {
         wmkcErr_return(error, wmkcErr_ErrNULL,
             "wmkcNet_send: net or buf or size is NULL.");
@@ -322,10 +322,10 @@ WMKC_OF((wmkcNet_ctx *net, wmkcNetSize *_tSize, wmkcNetBuf *buf, wmkcNetSize siz
 }
 
 // 全部发送函数
-WMKC_PUBLIC(wmkcErr_ctx) wmkcNet_sendall WMKC_OPEN_API
-WMKC_OF((wmkcNet_ctx *net, wmkcNetBuf *buf, wmkcNetSize size))
+WMKC_PUBLIC(wmkcErr_obj) wmkcNet_sendall WMKC_OPEN_API
+WMKC_OF((wmkcNet_obj *net, wmkcNetBuf *buf, wmkcNetSize size))
 {
-    wmkcErr_ctx error;
+    wmkcErr_obj error;
     if(!net || !buf || !size) {
         wmkcErr_return(error, wmkcErr_ErrNULL,
             "wmkcNet_sendall: net or buf or size is NULL.");
@@ -358,10 +358,10 @@ WMKC_OF((wmkcNet_ctx *net, wmkcNetBuf *buf, wmkcNetSize size))
 }
 
 // 接收函数
-WMKC_PUBLIC(wmkcErr_ctx) wmkcNet_recv WMKC_OPEN_API
-WMKC_OF((wmkcNet_ctx* net, wmkcNetSize *_tSize, wmkcNetBuf *buf, wmkcNetSize size))
+WMKC_PUBLIC(wmkcErr_obj) wmkcNet_recv WMKC_OPEN_API
+WMKC_OF((wmkcNet_obj* net, wmkcNetSize *_tSize, wmkcNetBuf *buf, wmkcNetSize size))
 {
-    wmkcErr_ctx error;
+    wmkcErr_obj error;
     if(!net || !buf || !size) {
         wmkcErr_return(error, wmkcErr_ErrNULL,
             "wmkcNet_recv: net or buf or size is NULL.");
@@ -396,10 +396,10 @@ WMKC_OF((wmkcNet_ctx* net, wmkcNetSize *_tSize, wmkcNetBuf *buf, wmkcNetSize siz
 }
 
 // 关闭套接字函数
-WMKC_PUBLIC(wmkcErr_ctx) wmkcNet_close WMKC_OPEN_API
-WMKC_OF((wmkcNet_ctx *net))
+WMKC_PUBLIC(wmkcErr_obj) wmkcNet_close WMKC_OPEN_API
+WMKC_OF((wmkcNet_obj *net))
 {
-    wmkcErr_ctx error;
+    wmkcErr_obj error;
     if(!net) {
         wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcNet_close: net is NULL.");
     }

@@ -19,10 +19,10 @@ WMKC_OF((wmkcSize offset, wmkcByte *buf, wmkc_u32 size))
     printf("\n");
 }
 
-WMKC_PUBLIC(wmkcErr_ctx) wmkcHexdump WMKC_OPEN_API
+WMKC_PUBLIC(wmkcErr_obj) wmkcHexdump WMKC_OPEN_API
 WMKC_OF((wmkcFileString fn))
 {
-    wmkcErr_ctx error;
+    wmkcErr_obj error;
     if(!fn) {
         wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcHexdump: fn is NULL.");
     }

@@ -44,9 +44,12 @@ typedef struct {
 } wmkcDuck_obj;
 
 // 所有代码头文件的头部应使用预处理指令进行预处理，示例：
+#include <wmkc_conf.h>
+
 #if WMKC_SUPPORT  // 此条是为了确保此库可以支持使用者的设备
 #ifndef WMKC_DUCK // 判断当前库的宏是否被定义，如果没有
 #define WMKC_DUCK // 声明当前库的宏
+// 代码
 #endif /* WMKC_DUCK */     // 必须使用此格式来表示endif对应哪一条#if语句。
 #endif /* WMKC_SUPPORT */
 

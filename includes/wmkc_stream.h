@@ -9,7 +9,7 @@
  *  dst            可以不用申请内存空间，传入之后会自动申请。
  *  left, right    要拼接的两个内容
 */
-WMKC_PUBLIC(wmkcErr_ctx) wmkcStream_Splicing WMKC_OPEN_API
+WMKC_PUBLIC(wmkcErr_obj) wmkcStream_Splicing WMKC_OPEN_API
 WMKC_OF((wmkcObject **dst, wmkcObject *left, wmkcObject *right));
 
 /**
@@ -18,7 +18,7 @@ WMKC_OF((wmkcObject **dst, wmkcObject *left, wmkcObject *right));
  *  src    需要切片的内容
  *  start  切片开始处
 */
-WMKC_PUBLIC(wmkcErr_ctx) wmkcStream_Slice WMKC_OPEN_API
+WMKC_PUBLIC(wmkcErr_obj) wmkcStream_Slice WMKC_OPEN_API
 WMKC_OF((wmkcObject **dst, wmkcObject *src, wmkcSSize start, wmkcSSize end));
 
 /**
@@ -26,7 +26,7 @@ WMKC_OF((wmkcObject **dst, wmkcObject *src, wmkcSSize start, wmkcSSize end));
  *  buf     缓冲区
  *  size    缓冲区长度
 */
-WMKC_PUBLIC(wmkcErr_ctx) wmkcStream_Scanf WMKC_OPEN_API
+WMKC_PUBLIC(wmkcErr_obj) wmkcStream_Scanf WMKC_OPEN_API
 WMKC_OF((wmkcByte *buf, wmkcSize size));
 
 /**
@@ -34,7 +34,7 @@ WMKC_OF((wmkcByte *buf, wmkcSize size));
  *  buf     缓冲区
  *  size    缓冲区长度
 */
-WMKC_PUBLIC(wmkcErr_ctx) wmkcStream_Reverse WMKC_OPEN_API
+WMKC_PUBLIC(wmkcErr_obj) wmkcStream_Reverse WMKC_OPEN_API
 WMKC_OF((wmkcByte *data, wmkcSize size));
 
 /**
@@ -42,7 +42,7 @@ WMKC_OF((wmkcByte *data, wmkcSize size));
  *  dst     结果缓冲区，不用手动申请内存空间
  *  src     数字
 */
-WMKC_PUBLIC(wmkcErr_ctx) wmkcStream_Binary WMKC_OPEN_API
+WMKC_PUBLIC(wmkcErr_obj) wmkcStream_Binary WMKC_OPEN_API
 WMKC_OF((wmkcByte **dst, wmkcSize src));
 
 /**

@@ -262,7 +262,7 @@ WMKC_PRIVATE(wmkcVoid) SNT_keyExtension WMKC_OF((wmkc_u16 keySize, wmkcByte *iv,
     }
 }
 
-WMKC_PUBLIC(wmkcErr_ctx) SNT_new WMKC_OPEN_API
+WMKC_PUBLIC(wmkcErr_obj) SNT_new WMKC_OPEN_API
 WMKC_OF((SNT_ctx **ctx, SNT_mode mode))
 {
     if(!(*ctx)) {
@@ -279,7 +279,7 @@ WMKC_OF((SNT_ctx **ctx, SNT_mode mode))
     return wmkcErr_OK;
 }
 
-WMKC_PUBLIC(wmkcErr_ctx) SNT_release WMKC_OPEN_API
+WMKC_PUBLIC(wmkcErr_obj) SNT_release WMKC_OPEN_API
 WMKC_OF((SNT_ctx **ctx))
 {
     wmkcMemoryZero((*ctx)->iv, SNT_BLOCKLEN);

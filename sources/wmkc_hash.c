@@ -1,9 +1,9 @@
 #include <wmkc_hash.h>
 
-WMKC_PRIVATE(wmkcErr_ctx) _wmkcHash_init
-WMKC_OF((wmkcHash_ctx **obj, wmkcSize size))
+WMKC_PRIVATE(wmkcErr_obj) _wmkcHash_init
+WMKC_OF((wmkcHash_obj **obj, wmkcSize size))
 {
-    wmkcErr_ctx error;
+    wmkcErr_obj error;
     (*obj)->hexdigestSize = size << 1;
     (*obj)->digestSize = size;
 
@@ -22,14 +22,14 @@ WMKC_OF((wmkcHash_ctx **obj, wmkcSize size))
  *
  * 此函数创建一个新的哈希对象，并使用指定的哈希算法类型对其进行初始化。
  *
- * @param obj是wmkcHash_ctx对象指针的地址。成功后它将指向新创建的哈希对象。
+ * @param obj是wmkcHash_obj对象指针的地址。成功后它将指向新创建的哈希对象。
  * @param hashType为哈希算法类型，此值必须介于[0, 5]。
- * @return 成功和失败都将返回一个wmkcErr_ctx对象，其中包含错误代码和消息。
+ * @return 成功和失败都将返回一个wmkcErr_obj对象，其中包含错误代码和消息。
 **/
-WMKC_PUBLIC(wmkcErr_ctx) wmkcHash_new WMKC_OPEN_API
-WMKC_OF((wmkcHash_ctx **obj, wmkcHash_HashType hashType))
+WMKC_PUBLIC(wmkcErr_obj) wmkcHash_new WMKC_OPEN_API
+WMKC_OF((wmkcHash_obj **obj, wmkcHash_HashType hashType))
 {
-    wmkcErr_ctx error;
+    wmkcErr_obj error;
     if(!obj) {
         wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcHash_new: obj is NULL.");
     }
@@ -37,7 +37,7 @@ WMKC_OF((wmkcHash_ctx **obj, wmkcHash_HashType hashType))
         wmkcErr_return(error, wmkcErr_ErrType,
             "wmkcHash_new: Wrong hashType, must be 0 to 5.");
     }
-    if(!wmkcMemoryNew(wmkcHash_ctx *, (*obj), sizeof(wmkcHash_ctx))) {
+    if(!wmkcMemoryNew(wmkcHash_obj *, (*obj), sizeof(wmkcHash_obj))) {
         wmkcErr_return(error, wmkcErr_ErrMemory,
             "wmkcHash_new: (*obj) failed to apply for memory.");
     }
@@ -67,10 +67,10 @@ WMKC_OF((wmkcHash_ctx **obj, wmkcHash_HashType hashType))
  * 为了不与本库产生冲突，不针对EVP相关功能进行
  * 返回值检查。
 */
-WMKC_PUBLIC(wmkcErr_ctx) wmkcHash WMKC_OPEN_API
-WMKC_OF((wmkcHash_ctx *hash, wmkcByte *buf, wmkcSize size))
+WMKC_PUBLIC(wmkcErr_obj) wmkcHash WMKC_OPEN_API
+WMKC_OF((wmkcHash_obj *hash, wmkcByte *buf, wmkcSize size))
 {
-    wmkcErr_ctx error;
+    wmkcErr_obj error;
     if(!hash || !buf || !size) {
         wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcHash: hash or buf or size is NULL.");
     }
@@ -89,10 +89,10 @@ WMKC_OF((wmkcHash_ctx *hash, wmkcByte *buf, wmkcSize size))
     wmkcErr_return(error, wmkcErr_OK, "OK.");
 }
 
-WMKC_PUBLIC(wmkcErr_ctx) wmkcHash_file WMKC_OPEN_API
-WMKC_OF((wmkcHash_ctx *hash, wmkcFileString fn))
+WMKC_PUBLIC(wmkcErr_obj) wmkcHash_file WMKC_OPEN_API
+WMKC_OF((wmkcHash_obj *hash, wmkcFileString fn))
 {
-    wmkcErr_ctx error;
+    wmkcErr_obj error;
     if(!hash || !fn) {
         wmkcErr_return(error, wmkcErr_ErrNULL,
             "wmkcHash_file: hash or fn is NULL.");
@@ -149,10 +149,10 @@ WMKC_OF((wmkcHash_ctx *hash, wmkcFileString fn))
     wmkcErr_return(error, wmkcErr_OK, "OK.");
 }
 
-WMKC_PUBLIC(wmkcErr_ctx) wmkcHash_free WMKC_OPEN_API
-WMKC_OF((wmkcHash_ctx **obj))
+WMKC_PUBLIC(wmkcErr_obj) wmkcHash_free WMKC_OPEN_API
+WMKC_OF((wmkcHash_obj **obj))
 {
-    wmkcErr_ctx error;
+    wmkcErr_obj error;
     if(!obj) {
         wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcHash_free: obj is NULL.");
     }

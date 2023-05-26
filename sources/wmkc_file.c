@@ -35,14 +35,14 @@ WMKC_OF((wmkcFileString fn))
 #   endif
 }
 
-WMKC_PUBLIC(wmkcErr_ctx) wmkcFile_new WMKC_OPEN_API
-WMKC_OF((wmkcFile_ctx **obj))
+WMKC_PUBLIC(wmkcErr_obj) wmkcFile_new WMKC_OPEN_API
+WMKC_OF((wmkcFile_obj **obj))
 {
-    wmkcErr_ctx error;
+    wmkcErr_obj error;
     if(!obj) {
         wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcFile_new: obj is NULL.");
     }
-    if(!wmkcMemoryNew(wmkcFile_ctx *, (*obj), sizeof(wmkcFile_ctx))) {
+    if(!wmkcMemoryNew(wmkcFile_obj *, (*obj), sizeof(wmkcFile_obj))) {
         wmkcErr_return(error, wmkcErr_ErrMemory,
             "wmkcFile_new: (*obj) Failed to apply for memory.");
     }
@@ -50,10 +50,10 @@ WMKC_OF((wmkcFile_ctx **obj))
     wmkcErr_return(error, wmkcErr_OK, "OK.");
 }
 
-WMKC_PUBLIC(wmkcErr_ctx) wmkcFile_free WMKC_OPEN_API
-WMKC_OF((wmkcFile_ctx **obj))
+WMKC_PUBLIC(wmkcErr_obj) wmkcFile_free WMKC_OPEN_API
+WMKC_OF((wmkcFile_obj **obj))
 {
-    wmkcErr_ctx error;
+    wmkcErr_obj error;
     if(!obj) {
         wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcFile_free: obj is NULL.");
     }
@@ -73,10 +73,10 @@ WMKC_OF((wmkcFileString fn))
     return _wmkcFile_exists(fn);
 }
 
-WMKC_PUBLIC(wmkcErr_ctx) wmkcFile_fileSize WMKC_OPEN_API
+WMKC_PUBLIC(wmkcErr_obj) wmkcFile_fileSize WMKC_OPEN_API
 WMKC_OF((wmkcSize *size, wmkcFileString fn))
 {
-    wmkcErr_ctx error;
+    wmkcErr_obj error;
     if(!wmkcFile_exists(fn)) {
         wmkcErr_return(error, wmkcErr_FileFolderPath,
             "wmkcFile_fileSize: No files or directories.");
@@ -90,10 +90,10 @@ WMKC_OF((wmkcSize *size, wmkcFileString fn))
     wmkcErr_return(error, wmkcErr_OK, "OK.");
 }
 
-WMKC_PUBLIC(wmkcErr_ctx) wmkcFile_fread WMKC_OPEN_API
-WMKC_OF((wmkcFile_ctx *obj, wmkcFileString fn))
+WMKC_PUBLIC(wmkcErr_obj) wmkcFile_fread WMKC_OPEN_API
+WMKC_OF((wmkcFile_obj *obj, wmkcFileString fn))
 {
-    wmkcErr_ctx error;
+    wmkcErr_obj error;
     wmkcByte *fileData_ptr = wmkcNull;
     wmkcFile *fp = wmkcNull;
     wmkcSize x;
@@ -132,10 +132,10 @@ WMKC_OF((wmkcFile_ctx *obj, wmkcFileString fn))
     wmkcErr_return(error, wmkcErr_OK, "OK.");
 }
 
-WMKC_PUBLIC(wmkcErr_ctx) wmkcFile_fwrite WMKC_OPEN_API
-WMKC_OF((wmkcFile_ctx *obj, wmkcFileString fn))
+WMKC_PUBLIC(wmkcErr_obj) wmkcFile_fwrite WMKC_OPEN_API
+WMKC_OF((wmkcFile_obj *obj, wmkcFileString fn))
 {
-    wmkcErr_ctx error;
+    wmkcErr_obj error;
     if(!obj || !obj->data || !obj->size || !fn) {
         wmkcErr_return(error, wmkcErr_ErrNULL,
             "wmkcFile_fwrite: obj or obj->data or obj->size or fn is NULL.");

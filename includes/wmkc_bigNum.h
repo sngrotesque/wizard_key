@@ -16,7 +16,7 @@
  *          (-123) +   234  ==    234 - 123 =  111
  *          (-123) +   111  ==    111 - 123 =  -12
 */
-WMKC_PUBLIC(wmkcErr_ctx) wmkcBigNum_add WMKC_OPEN_API
+WMKC_PUBLIC(wmkcErr_obj) wmkcBigNum_add WMKC_OPEN_API
 WMKC_OF((wmkcChar **dst, wmkcChar *_src1, wmkcChar *_src2));
 
 /**
@@ -31,7 +31,7 @@ WMKC_OF((wmkcChar **dst, wmkcChar *_src1, wmkcChar *_src2));
  *      如果需要取前一位的值，那么就是最大的数的长度减一。
  *      否则长度等于最大的数的长度。
 */
-WMKC_PUBLIC(wmkcErr_ctx) wmkcBigNum_sub WMKC_OPEN_API
+WMKC_PUBLIC(wmkcErr_obj) wmkcBigNum_sub WMKC_OPEN_API
 WMKC_OF((wmkcChar **dst, wmkcChar *_src1, wmkcChar *_src2));
 
 /**
@@ -43,19 +43,19 @@ WMKC_OF((wmkcChar **dst, wmkcChar *_src1, wmkcChar *_src2));
  *      ( 6,  5, 10)        315984 *         10923 =                 3451493232
  *      (13, 13, 26) 3598209485189 * 5389829038094 = 19393733968416934809789766
 */
-WMKC_PUBLIC(wmkcErr_ctx) wmkcBigNum_mul WMKC_OPEN_API
+WMKC_PUBLIC(wmkcErr_obj) wmkcBigNum_mul WMKC_OPEN_API
 WMKC_OF((wmkcChar **dst, wmkcChar *_src1, wmkcChar *_src2));
 
 /**
  *  关于除法
 */
-WMKC_PUBLIC(wmkcErr_ctx) wmkcBigNum_div WMKC_OPEN_API
+WMKC_PUBLIC(wmkcErr_obj) wmkcBigNum_div WMKC_OPEN_API
 WMKC_OF((wmkcChar **dst, wmkcChar *_src1, wmkcChar *_src2));
 
 /**
  *  关于模运算
 */
-WMKC_PUBLIC(wmkcErr_ctx) wmkcBigNum_mod WMKC_OPEN_API
+WMKC_PUBLIC(wmkcErr_obj) wmkcBigNum_mod WMKC_OPEN_API
 WMKC_OF((wmkcChar **dst, wmkcChar *_src1, wmkcChar *_src2));
 
 /**
@@ -66,7 +66,7 @@ WMKC_OF((wmkcChar **dst, wmkcChar *_src1, wmkcChar *_src2));
  *  暂时并没有想到该如何计算次方的结果长度
  *  
 */
-WMKC_PUBLIC(wmkcErr_ctx) wmkcBigNum_pow WMKC_OPEN_API
+WMKC_PUBLIC(wmkcErr_obj) wmkcBigNum_pow WMKC_OPEN_API
 WMKC_OF((wmkcChar **dst, wmkcChar *_src1, wmkcChar *_src2));
 
 #endif

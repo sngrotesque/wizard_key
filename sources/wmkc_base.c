@@ -34,15 +34,15 @@ WMKC_OF((wmkcObject *src))
         return src->size / 4 * 3;
 }
 
-WMKC_PUBLIC(wmkcErr_ctx) wmkcBase64_new WMKC_OPEN_API
-WMKC_OF((wmkcBase64_ctx **obj))
+WMKC_PUBLIC(wmkcErr_obj) wmkcBase64_new WMKC_OPEN_API
+WMKC_OF((wmkcBase64_obj **obj))
 {
-    wmkcErr_ctx error;
+    wmkcErr_obj error;
 
     if(!obj) {
         wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcBase64_new: obj is NULL.");
     }
-    if(!wmkcMemoryNew(wmkcBase64_ctx *, (*obj), sizeof(wmkcBase64_ctx))) {
+    if(!wmkcMemoryNew(wmkcBase64_obj *, (*obj), sizeof(wmkcBase64_obj))) {
         wmkcErr_return(error, wmkcErr_ErrMemory,
             "wmkcBase64_new: (*obj) Failed to apply for memory.");
     }
@@ -58,10 +58,10 @@ WMKC_OF((wmkcBase64_ctx **obj))
     wmkcErr_return(error, wmkcErr_OK, "OK.");
 }
 
-WMKC_PUBLIC(wmkcErr_ctx) wmkcBase64_free WMKC_OPEN_API
-WMKC_OF((wmkcBase64_ctx **obj))
+WMKC_PUBLIC(wmkcErr_obj) wmkcBase64_free WMKC_OPEN_API
+WMKC_OF((wmkcBase64_obj **obj))
 {
-    wmkcErr_ctx error;
+    wmkcErr_obj error;
 
     if(!obj) {
         wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcBase64_free: obj is NULL.");
@@ -73,10 +73,10 @@ WMKC_OF((wmkcBase64_ctx **obj))
     wmkcErr_return(error, wmkcErr_OK, "OK.");
 }
 
-WMKC_PUBLIC(wmkcErr_ctx) wmkcBase64_Encode WMKC_OPEN_API
+WMKC_PUBLIC(wmkcErr_obj) wmkcBase64_Encode WMKC_OPEN_API
 WMKC_OF((wmkcObject *dst, wmkcObject *src))
 {
-    wmkcErr_ctx error;
+    wmkcErr_obj error;
     if(!dst || !src) {
         wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcBase64_Encode: dst or src is null.");
     }
@@ -110,10 +110,10 @@ WMKC_OF((wmkcObject *dst, wmkcObject *src))
     wmkcErr_return(error, wmkcErr_OK, "OK.");
 }
 
-WMKC_PUBLIC(wmkcErr_ctx) wmkcBase64_Decode WMKC_OPEN_API
+WMKC_PUBLIC(wmkcErr_obj) wmkcBase64_Decode WMKC_OPEN_API
 WMKC_OF((wmkcObject *dst, wmkcObject *src))
 {
-    wmkcErr_ctx error;
+    wmkcErr_obj error;
     if(!dst || !src) {
         wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcBase64_Decode: dst or src is null.");
     }

@@ -1,9 +1,9 @@
 #include <wmkc_object.h>
 
-WMKC_PUBLIC(wmkcErr_ctx) wmkcObject_new WMKC_OPEN_API
+WMKC_PUBLIC(wmkcErr_obj) wmkcObject_new WMKC_OPEN_API
 WMKC_OF((wmkcObject **obj, wmkcSize _memory_size, wmkcBool _Clear_memory))
 {
-    wmkcErr_ctx error;
+    wmkcErr_obj error;
     if(!obj) {
         wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcObject_new: obj is NULL.");
     }
@@ -29,10 +29,10 @@ WMKC_OF((wmkcObject **obj, wmkcSize _memory_size, wmkcBool _Clear_memory))
     wmkcErr_return(error, wmkcErr_OK, "OK.");
 }
 
-WMKC_PUBLIC(wmkcErr_ctx) wmkcObject_free WMKC_OPEN_API
+WMKC_PUBLIC(wmkcErr_obj) wmkcObject_free WMKC_OPEN_API
 WMKC_OF((wmkcObject **obj))
 {
-    wmkcErr_ctx error;
+    wmkcErr_obj error;
     if(!obj) {
         wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcObject_new: obj is NULL.");
     }

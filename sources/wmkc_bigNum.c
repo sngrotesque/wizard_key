@@ -1,9 +1,9 @@
 #include <wmkc_bigNum.h>
 
-WMKC_PRIVATE(wmkcErr_ctx) wmkcBigNum_ArrayReversal
+WMKC_PRIVATE(wmkcErr_obj) wmkcBigNum_ArrayReversal
 WMKC_OF((wmkcChar *number_string, wmkcSize size))
 {
-    wmkcErr_ctx error;
+    wmkcErr_obj error;
     if(!number_string || !size) {
         wmkcErr_return(error, wmkcErr_ErrNULL,
             "wmkcBigNum_ArrayReversal: number_string or size is NULL.");
@@ -20,7 +20,7 @@ WMKC_OF((wmkcChar *number_string, wmkcSize size))
     wmkcErr_return(error, wmkcErr_OK, "OK.");
 }
 
-WMKC_PUBLIC(wmkcErr_ctx) wmkcBigNum_add WMKC_OPEN_API
+WMKC_PUBLIC(wmkcErr_obj) wmkcBigNum_add WMKC_OPEN_API
 WMKC_OF((wmkcChar **dst, wmkcChar *src1, wmkcChar *src2))
 {
     /**
@@ -58,7 +58,7 @@ WMKC_OF((wmkcChar **dst, wmkcChar *src1, wmkcChar *src2))
      * res -> Reversal -> {     123, 45611024, 26536950, 15907018, 26708830, 42992195}
      * res -> String   -> "1234561102426536950159070182670883042992195"
     */
-    wmkcErr_ctx error;
+    wmkcErr_obj error;
     if(!dst || !src1 || !src2) {
         wmkcErr_return(error, wmkcErr_ErrNULL,
             "wmkcBigNum_add: dst or src1 or src2 is NULL.");
@@ -74,40 +74,40 @@ WMKC_OF((wmkcChar **dst, wmkcChar *src1, wmkcChar *src2))
     wmkcErr_return(error, wmkcErr_OK, "OK.");
 }
 
-WMKC_PUBLIC(wmkcErr_ctx) wmkcBigNum_sub WMKC_OPEN_API
+WMKC_PUBLIC(wmkcErr_obj) wmkcBigNum_sub WMKC_OPEN_API
 WMKC_OF((wmkcChar **dst, wmkcChar *src1, wmkcChar *src2))
 {
-    wmkcErr_ctx error;
+    wmkcErr_obj error;
     wmkcErr_return(error, wmkcErr_OK, "OK.");
 }
 
-WMKC_PUBLIC(wmkcErr_ctx) wmkcBigNum_mul WMKC_OPEN_API
+WMKC_PUBLIC(wmkcErr_obj) wmkcBigNum_mul WMKC_OPEN_API
 WMKC_OF((wmkcChar **dst, wmkcChar *src1, wmkcChar *src2))
 {
     /**
      * 可参考wmkcBigNum_add。
     */
-    wmkcErr_ctx error;
+    wmkcErr_obj error;
     wmkcErr_return(error, wmkcErr_OK, "OK.");
 }
 
-WMKC_PUBLIC(wmkcErr_ctx) wmkcBigNum_div WMKC_OPEN_API
+WMKC_PUBLIC(wmkcErr_obj) wmkcBigNum_div WMKC_OPEN_API
 WMKC_OF((wmkcChar **dst, wmkcChar *src1, wmkcChar *src2))
 {
-    wmkcErr_ctx error;
+    wmkcErr_obj error;
     wmkcErr_return(error, wmkcErr_OK, "OK.");
 }
 
-WMKC_PUBLIC(wmkcErr_ctx) wmkcBigNum_mod WMKC_OPEN_API
+WMKC_PUBLIC(wmkcErr_obj) wmkcBigNum_mod WMKC_OPEN_API
 WMKC_OF((wmkcChar **dst, wmkcChar *src1, wmkcChar *src2))
 {
-    wmkcErr_ctx error;
+    wmkcErr_obj error;
     wmkcErr_return(error, wmkcErr_OK, "OK.");
 }
 
-WMKC_PUBLIC(wmkcErr_ctx) wmkcBigNum_pow WMKC_OPEN_API
+WMKC_PUBLIC(wmkcErr_obj) wmkcBigNum_pow WMKC_OPEN_API
 WMKC_OF((wmkcChar **dst, wmkcChar *src1, wmkcChar *src2))
 {
-    wmkcErr_ctx error;
+    wmkcErr_obj error;
     wmkcErr_return(error, wmkcErr_OK, "OK.");
 }

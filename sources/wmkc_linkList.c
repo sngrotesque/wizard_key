@@ -1,9 +1,9 @@
 #include <wmkc_linkList.h>
 
-WMKC_PUBLIC(wmkcErr_ctx) wmkcLinkList_new WMKC_OPEN_API
+WMKC_PUBLIC(wmkcErr_obj) wmkcLinkList_new WMKC_OPEN_API
 WMKC_OF((wmkcLink **obj, wmkcSize length))
 {
-    wmkcErr_ctx error;
+    wmkcErr_obj error;
     if(!obj || !length) {
         wmkcErr_return(error, wmkcErr_ErrNULL,
             "wmkcLinkList_new: obj or length is NULL.");
@@ -34,10 +34,10 @@ WMKC_OF((wmkcLink **obj, wmkcSize length))
     wmkcErr_return(error, wmkcErr_OK, "OK.");
 }
 
-WMKC_PUBLIC(wmkcErr_ctx) wmkcLinkList_free WMKC_OPEN_API
+WMKC_PUBLIC(wmkcErr_obj) wmkcLinkList_free WMKC_OPEN_API
 WMKC_OF((wmkcLink **obj))
 {
-    wmkcErr_ctx error;
+    wmkcErr_obj error;
     if(!obj) {
         wmkcErr_return(error, wmkcErr_ErrNULL,
             "wmkcLinkList_free: obj or length is NULL.");

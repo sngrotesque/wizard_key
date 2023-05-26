@@ -10,11 +10,11 @@ typedef struct {
 } wmkcObject;
 
 // 初始化wmkcObject对象
-WMKC_PUBLIC(wmkcErr_ctx) wmkcObject_new WMKC_OPEN_API
+WMKC_PUBLIC(wmkcErr_obj) wmkcObject_new WMKC_OPEN_API
 WMKC_OF((wmkcObject **obj, wmkcSize _memory_size, wmkcBool _Clear_memory));
 
 // 释放wmkcObject对象
-WMKC_PUBLIC(wmkcErr_ctx) wmkcObject_free WMKC_OPEN_API
+WMKC_PUBLIC(wmkcErr_obj) wmkcObject_free WMKC_OPEN_API
 WMKC_OF((wmkcObject **obj));
 
 #endif

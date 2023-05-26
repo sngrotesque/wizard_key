@@ -1,6 +1,8 @@
+#include <wmkc_conf.h>
+
+#if WMKC_SUPPORT
 #ifndef WMKC_CRYPTO
 #define WMKC_CRYPTO
-#include <wmkc_conf.h>
 #include <wmkc_random.h>
 
 /**
@@ -32,4 +34,5 @@ WMKC_OF((wmkcByte *sbox));
 WMKC_PUBLIC(wmkcVoid) wmkcCrypto_rsbox_init WMKC_OPEN_API
 WMKC_OF((wmkcByte *sbox, wmkcByte *rsbox));
 
-#endif // snCrypto
+#endif /* WMKC_CRYPTO */
+#endif /* WMKC_SUPPORT */

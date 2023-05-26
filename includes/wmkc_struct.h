@@ -105,10 +105,10 @@
 WMKC_PUBLIC(wmkcBool) wmkcStruct_PlatformEnd WMKC_OPEN_API
 WMKC_OF((void));
 
-WMKC_PUBLIC(wmkcErr_ctx) wmkcStruct_pack WMKC_OPEN_API
+WMKC_PUBLIC(wmkcErr_obj) wmkcStruct_pack WMKC_OPEN_API
 WMKC_OF((wmkcString format, wmkcByte *dst, wmkcSize src));
 
-WMKC_PUBLIC(wmkcErr_ctx) wmkcStruct_unpack WMKC_OPEN_API
+WMKC_PUBLIC(wmkcErr_obj) wmkcStruct_unpack WMKC_OPEN_API
 WMKC_OF((wmkcString format, wmkcVoid *dst, wmkcByte *src));
 
 #endif

@@ -1,9 +1,9 @@
 #include <wmkc_stream.h>
 
-WMKC_PUBLIC(wmkcErr_ctx) wmkcStream_Splicing WMKC_OPEN_API
+WMKC_PUBLIC(wmkcErr_obj) wmkcStream_Splicing WMKC_OPEN_API
 WMKC_OF((wmkcObject **dst, wmkcObject *left, wmkcObject *right))
 {
-    wmkcErr_ctx error;
+    wmkcErr_obj error;
     if(!dst || !left || !right) {
         wmkcErr_return(error, wmkcErr_ErrNULL,
             "wmkcStream_Splicing: dst or left or right is NULL.");
@@ -22,10 +22,10 @@ WMKC_OF((wmkcObject **dst, wmkcObject *left, wmkcObject *right))
     wmkcErr_return(error, wmkcErr_OK, "OK.");
 }
 
-WMKC_PUBLIC(wmkcErr_ctx) wmkcStream_Slice WMKC_OPEN_API
+WMKC_PUBLIC(wmkcErr_obj) wmkcStream_Slice WMKC_OPEN_API
 WMKC_OF((wmkcObject **dst, wmkcObject *src, wmkcSSize start, wmkcSSize end))
 {
-    wmkcErr_ctx error;
+    wmkcErr_obj error;
     if(end < 0) {
         if((end = src->size + end) > src->size) {
             wmkcErr_return(error, wmkcErr_ErrOutRange,
@@ -66,10 +66,10 @@ WMKC_OF((wmkcObject **dst, wmkcObject *src, wmkcSSize start, wmkcSSize end))
     wmkcErr_return(error, wmkcErr_OK, "OK.");
 }
 
-WMKC_PUBLIC(wmkcErr_ctx) wmkcStream_Scanf WMKC_OPEN_API
+WMKC_PUBLIC(wmkcErr_obj) wmkcStream_Scanf WMKC_OPEN_API
 WMKC_OF((wmkcByte *buf, wmkcSize size))
 {
-    wmkcErr_ctx error;
+    wmkcErr_obj error;
     if(!buf || !size) {
         wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcStream_Scanf: buf or size is NULL.");
     }
@@ -87,10 +87,10 @@ WMKC_OF((wmkcByte *buf, wmkcSize size))
     wmkcErr_return(error, wmkcErr_OK, "OK.");
 }
 
-WMKC_PUBLIC(wmkcErr_ctx) wmkcStream_Reverse WMKC_OPEN_API
+WMKC_PUBLIC(wmkcErr_obj) wmkcStream_Reverse WMKC_OPEN_API
 WMKC_OF((wmkcByte *data, wmkcSize size))
 {
-    wmkcErr_ctx error;
+    wmkcErr_obj error;
     if(!data || !size) {
         wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcStream_Reverse: buf or size is NULL.");
     }
@@ -104,10 +104,10 @@ WMKC_OF((wmkcByte *data, wmkcSize size))
     wmkcErr_return(error, wmkcErr_OK, "OK.");
 }
 
-WMKC_PUBLIC(wmkcErr_ctx) wmkcStream_Binary WMKC_OPEN_API
+WMKC_PUBLIC(wmkcErr_obj) wmkcStream_Binary WMKC_OPEN_API
 WMKC_OF((wmkcByte **dst, wmkcSize src))
 {
-    wmkcErr_ctx error;
+    wmkcErr_obj error;
     if(!dst || !src) {
         wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcStream_Binary: dst or src is NULL.");
     }

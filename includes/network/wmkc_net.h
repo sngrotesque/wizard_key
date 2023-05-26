@@ -82,58 +82,58 @@ typedef struct {
     wmkcNetSize   sockfdType;     // 套接字网络类型（TCP or UDP）
     wmkcNetSize   addr_info_size; // 网络地址信息结构体的长度
     SOCKADDR     *addr_info;      // 用于保留地址信息的结构体【size: 8】
-} wmkcNet_ctx;
+} wmkcNet_obj;
 
 // 申请wmkcNet对象的内存空间
-WMKC_PUBLIC(wmkcErr_ctx) wmkcNet_new WMKC_OPEN_API
-WMKC_OF((wmkcNet_ctx **ctx, wmkc_u32 family));
+WMKC_PUBLIC(wmkcErr_obj) wmkcNet_new WMKC_OPEN_API
+WMKC_OF((wmkcNet_obj **ctx, wmkc_u32 family));
 
 // 释放wmkcNet对象。
-WMKC_PUBLIC(wmkcErr_ctx) wmkcNet_free WMKC_OPEN_API
-WMKC_OF((wmkcNet_ctx **ctx));
+WMKC_PUBLIC(wmkcErr_obj) wmkcNet_free WMKC_OPEN_API
+WMKC_OF((wmkcNet_obj **ctx));
 
 // 初始化wmkcNet对象（需提前申请内存空间）
-WMKC_PUBLIC(wmkcErr_ctx) wmkcNet_init WMKC_OPEN_API
-WMKC_OF((wmkcNet_ctx *ctx, wmkcString hostname, wmkc_u16 port, wmkcBool UDP));
+WMKC_PUBLIC(wmkcErr_obj) wmkcNet_init WMKC_OPEN_API
+WMKC_OF((wmkcNet_obj *ctx, wmkcString hostname, wmkc_u16 port, wmkcBool UDP));
 
 // 使用wmkcNet对象解析域名信息
-WMKC_PUBLIC(wmkcErr_ctx) wmkcNet_resolveAddress
-WMKC_OF((wmkcNet_ctx *net, wmkcString hostname));
+WMKC_PUBLIC(wmkcErr_obj) wmkcNet_resolveAddress
+WMKC_OF((wmkcNet_obj *net, wmkcString hostname));
 
 // 设置发送与接收超时时间
-WMKC_PUBLIC(wmkcErr_ctx) wmkcNet_timeout WMKC_OPEN_API
-WMKC_OF((wmkcNet_ctx *ctx, wmkcNetTime _user_TimeOut));
+WMKC_PUBLIC(wmkcErr_obj) wmkcNet_timeout WMKC_OPEN_API
+WMKC_OF((wmkcNet_obj *ctx, wmkcNetTime _user_TimeOut));
 
 // 连接函数
-WMKC_PUBLIC(wmkcErr_ctx) wmkcNet_connect WMKC_OPEN_API
-WMKC_OF((wmkcNet_ctx *ctx));
+WMKC_PUBLIC(wmkcErr_obj) wmkcNet_connect WMKC_OPEN_API
+WMKC_OF((wmkcNet_obj *ctx));
 
 // 绑定函数
-WMKC_PUBLIC(wmkcErr_ctx) wmkcNet_bind WMKC_OPEN_API
-WMKC_OF((wmkcNet_ctx *ctx, wmkcNetTime _user_TimeOut));
+WMKC_PUBLIC(wmkcErr_obj) wmkcNet_bind WMKC_OPEN_API
+WMKC_OF((wmkcNet_obj *ctx, wmkcNetTime _user_TimeOut));
 
 // 监听函数
-WMKC_PUBLIC(wmkcErr_ctx) wmkcNet_listen WMKC_OPEN_API
-WMKC_OF((wmkcNet_ctx *ctx, wmkc_u32 _Listen));
+WMKC_PUBLIC(wmkcErr_obj) wmkcNet_listen WMKC_OPEN_API
+WMKC_OF((wmkcNet_obj *ctx, wmkc_u32 _Listen));
 
 // 等待连接函数
-WMKC_PUBLIC(wmkcErr_ctx) wmkcNet_accept WMKC_OPEN_API
-WMKC_OF((wmkcNet_ctx *dst, wmkcNet_ctx *src));
+WMKC_PUBLIC(wmkcErr_obj) wmkcNet_accept WMKC_OPEN_API
+WMKC_OF((wmkcNet_obj *dst, wmkcNet_obj *src));
 
 // 发送函数，_tSize用来保存本次传输的长度（可以为空）
-WMKC_PUBLIC(wmkcErr_ctx) wmkcNet_send WMKC_OPEN_API
-WMKC_OF((wmkcNet_ctx *ctx, wmkcNetSize *_tSize, wmkcNetBuf *buf, wmkcNetSize size));
+WMKC_PUBLIC(wmkcErr_obj) wmkcNet_send WMKC_OPEN_API
+WMKC_OF((wmkcNet_obj *ctx, wmkcNetSize *_tSize, wmkcNetBuf *buf, wmkcNetSize size));
 
 // 全部发送函数
-WMKC_PUBLIC(wmkcErr_ctx) wmkcNet_sendall WMKC_OPEN_API
-WMKC_OF((wmkcNet_ctx *ctx, wmkcNetBuf *buf, wmkcNetSize size));
+WMKC_PUBLIC(wmkcErr_obj) wmkcNet_sendall WMKC_OPEN_API
+WMKC_OF((wmkcNet_obj *ctx, wmkcNetBuf *buf, wmkcNetSize size));
 
 // 接收函数，_tSize用来保存本次传输的长度（可以为空）
-WMKC_PUBLIC(wmkcErr_ctx) wmkcNet_recv WMKC_OPEN_API
-WMKC_OF((wmkcNet_ctx* ctx, wmkcNetSize *_tSize, wmkcNetBuf *buf, wmkcNetSize size));
+WMKC_PUBLIC(wmkcErr_obj) wmkcNet_recv WMKC_OPEN_API
+WMKC_OF((wmkcNet_obj* ctx, wmkcNetSize *_tSize, wmkcNetBuf *buf, wmkcNetSize size));
 
 // 关闭套接字函数
-WMKC_PUBLIC(wmkcErr_ctx) wmkcNet_close WMKC_OPEN_API
-WMKC_OF((wmkcNet_ctx *ctx));
+WMKC_PUBLIC(wmkcErr_obj) wmkcNet_close WMKC_OPEN_API
+WMKC_OF((wmkcNet_obj *ctx));
 
 #endif

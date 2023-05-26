@@ -38,10 +38,10 @@ WMKC_OF((wmkcByte c))
         return (c & 0x0f) + 0x57;
 }
 
-WMKC_PUBLIC(wmkcErr_ctx) wmkcBinascii_b2a_hex WMKC_OPEN_API
+WMKC_PUBLIC(wmkcErr_obj) wmkcBinascii_b2a_hex WMKC_OPEN_API
 WMKC_OF((wmkcByte **dst, wmkcByte *src, wmkcSize srcSize))
 {
-    wmkcErr_ctx error;
+    wmkcErr_obj error;
     if(!dst || !src || !srcSize) {
         wmkcErr_return(error, wmkcErr_ErrNULL,
             "wmkcBinascii_b2a_hex: dst or src or srcSize is NULL.");
@@ -63,10 +63,10 @@ WMKC_OF((wmkcByte **dst, wmkcByte *src, wmkcSize srcSize))
     wmkcErr_return(error, wmkcErr_OK, "OK.");
 }
 
-WMKC_PUBLIC(wmkcErr_ctx) wmkcBinascii_a2b_hex WMKC_OPEN_API
+WMKC_PUBLIC(wmkcErr_obj) wmkcBinascii_a2b_hex WMKC_OPEN_API
 WMKC_OF((wmkcByte **dst, wmkcByte *src, wmkcSize srcSize))
 {
-    wmkcErr_ctx error;
+    wmkcErr_obj error;
     if(!dst || !src || !srcSize) {
         wmkcErr_return(error, wmkcErr_ErrNULL,
             "wmkcBinascii_a2b_hex: dst or src or srcSize is NULL.");

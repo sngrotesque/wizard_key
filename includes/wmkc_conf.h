@@ -83,7 +83,7 @@ typedef uint32_t                  wmkc_u32;   // 无符号整数类型
 typedef struct {
     wmkcString message;
     wmkcSSize code;
-} wmkcErr_ctx;
+} wmkcErr_obj;
 
 // 表示一切正常，不需要注意任何错误。
 #define wmkcErr_OK                0ULL

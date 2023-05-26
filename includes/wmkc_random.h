@@ -1,9 +1,9 @@
-#if WMKC_SUPPORT
+#include <wmkc_conf.h>
 
+#if WMKC_SUPPORT
 #ifndef WMKC_RANDOM
 #define WMKC_RANDOM
 
-#include <wmkc_conf.h>
 #include <wmkc_time.h>
 
 #if defined(WMKC_PLATFORM_LINUX)
@@ -64,10 +64,10 @@ WMKC_OF((wmkcSize min, wmkcSize max));
  * @param buf 这是一个指针，指向用于报错结果的序列的地址。
  * @param size 这是一个长度，代表buf指针指向的内容的长度
  *            （需要获取的随机序列的长度）。
- * @return 返回一个wmkcErr_ctx对象，code为0代表无错误，如果为
+ * @return 返回一个wmkcErr_obj对象，code为0代表无错误，如果为
  *         其他值，那么需检查message与code。
 */
-WMKC_PUBLIC(wmkcErr_ctx) wmkcRandom_urandom WMKC_OPEN_API
+WMKC_PUBLIC(wmkcErr_obj) wmkcRandom_urandom WMKC_OPEN_API
 WMKC_OF((wmkcByte *buf, wmkc_u32 size));
 
 #endif /* WMKC_RANDOM */

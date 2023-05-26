@@ -28,29 +28,29 @@ typedef struct {
     wmkcSize size;     // 文件长度
     wmkcSize quotient; // 文件长度除块大小的商
     wmkcSize leftover; // 文件剩余长度
-} wmkcFile_ctx;
+} wmkcFile_obj;
 
 // 初始化wmkcFile对象
-WMKC_PUBLIC(wmkcErr_ctx) wmkcFile_new WMKC_OPEN_API
-WMKC_OF((wmkcFile_ctx **obj));
+WMKC_PUBLIC(wmkcErr_obj) wmkcFile_new WMKC_OPEN_API
+WMKC_OF((wmkcFile_obj **obj));
 
 // 释放wmkcFile对象
-WMKC_PUBLIC(wmkcErr_ctx) wmkcFile_free WMKC_OPEN_API
-WMKC_OF((wmkcFile_ctx **obj));
+WMKC_PUBLIC(wmkcErr_obj) wmkcFile_free WMKC_OPEN_API
+WMKC_OF((wmkcFile_obj **obj));
 
 // 检查路径是否存在
 WMKC_PUBLIC(wmkcBool) wmkcFile_exists WMKC_OPEN_API
 WMKC_OF((wmkcFileString fn));
 
 // 获取文件大小
-WMKC_PUBLIC(wmkcErr_ctx) wmkcFile_fileSize WMKC_OPEN_API
+WMKC_PUBLIC(wmkcErr_obj) wmkcFile_fileSize WMKC_OPEN_API
 WMKC_OF((wmkcSize *size, wmkcFileString fn));
 
 // 整个读取文件
-WMKC_PUBLIC(wmkcErr_ctx) wmkcFile_fread WMKC_OPEN_API
-WMKC_OF((wmkcFile_ctx *obj, wmkcFileString fn));
+WMKC_PUBLIC(wmkcErr_obj) wmkcFile_fread WMKC_OPEN_API
+WMKC_OF((wmkcFile_obj *obj, wmkcFileString fn));
 
 // 整个写入文件
-WMKC_PUBLIC(wmkcErr_ctx) wmkcFile_fwrite WMKC_OPEN_API
-WMKC_OF((wmkcFile_ctx *obj, wmkcFileString fn));
+WMKC_PUBLIC(wmkcErr_obj) wmkcFile_fwrite WMKC_OPEN_API
+WMKC_OF((wmkcFile_obj *obj, wmkcFileString fn));
 #endif

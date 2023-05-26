@@ -33,22 +33,22 @@ typedef struct {
     wmkc_u16  port;     // 网络端口
     wmkc_u32  maxRetry; // 失败重试次数
     SNC_ctx *snc;       // SNC加密算法对象
-} wmkcTp_ctx;
+} wmkcTp_obj;
 
 // 为wmkcTp对象申请内存空间
-WMKC_PUBLIC(wmkcErr_ctx) wmkcTp_new WMKC_OPEN_API
-WMKC_OF((wmkcTp_ctx **net, wmkcString addr, wmkc_u16 port, wmkc_u32 maxRetry));
+WMKC_PUBLIC(wmkcErr_obj) wmkcTp_new WMKC_OPEN_API
+WMKC_OF((wmkcTp_obj **net, wmkcString addr, wmkc_u16 port, wmkc_u32 maxRetry));
 
 // 释放wmkcTp对象
-WMKC_PUBLIC(wmkcErr_ctx) wmkcTp_free WMKC_OPEN_API
-WMKC_OF((wmkcTp_ctx **net));
+WMKC_PUBLIC(wmkcErr_obj) wmkcTp_free WMKC_OPEN_API
+WMKC_OF((wmkcTp_obj **net));
 
 // 接收端
-WMKC_PUBLIC(wmkcErr_ctx) wmkcTp_Listen WMKC_OPEN_API
-WMKC_OF((wmkcTp_ctx *net, wmkcFileString fn));
+WMKC_PUBLIC(wmkcErr_obj) wmkcTp_Listen WMKC_OPEN_API
+WMKC_OF((wmkcTp_obj *net, wmkcFileString fn));
 
 // 发送端
-WMKC_PUBLIC(wmkcErr_ctx) wmkcTp_Client WMKC_OPEN_API
-WMKC_OF((wmkcTp_ctx *net, wmkcFileString fn));
+WMKC_PUBLIC(wmkcErr_obj) wmkcTp_Client WMKC_OPEN_API
+WMKC_OF((wmkcTp_obj *net, wmkcFileString fn));
 
 #endif

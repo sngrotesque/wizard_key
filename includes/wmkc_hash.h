@@ -53,7 +53,7 @@ typedef struct {
     wmkc_u32 hexdigestSize;
     wmkcByte *digest;
     wmkcByte *hexdigest;
-} wmkcHash_ctx;
+} wmkcHash_obj;
 
 typedef enum {
     wmkcHash_HashType_MD5,
@@ -74,19 +74,19 @@ WMKC_PRIVATE_CONST(wmkc_u32) wmkcHash_SIZE[6] = {
 };
 
 // 初始化wmkcHash对象
-WMKC_PUBLIC(wmkcErr_ctx) wmkcHash_new WMKC_OPEN_API
-WMKC_OF((wmkcHash_ctx **obj, wmkcHash_HashType hashType));
+WMKC_PUBLIC(wmkcErr_obj) wmkcHash_new WMKC_OPEN_API
+WMKC_OF((wmkcHash_obj **obj, wmkcHash_HashType hashType));
 
 // 根据你选择的算法进行哈希计算
-WMKC_PUBLIC(wmkcErr_ctx) wmkcHash WMKC_OPEN_API
-WMKC_OF((wmkcHash_ctx *hash, wmkcByte *buf, wmkcSize size));
+WMKC_PUBLIC(wmkcErr_obj) wmkcHash WMKC_OPEN_API
+WMKC_OF((wmkcHash_obj *hash, wmkcByte *buf, wmkcSize size));
 
 // 根据你选择的算法对文件进行哈希计算
-WMKC_PUBLIC(wmkcErr_ctx) wmkcHash_file WMKC_OPEN_API
-WMKC_OF((wmkcHash_ctx *hash, wmkcFileString fn));
+WMKC_PUBLIC(wmkcErr_obj) wmkcHash_file WMKC_OPEN_API
+WMKC_OF((wmkcHash_obj *hash, wmkcFileString fn));
 
 // 释放掉wmkcHash对象
-WMKC_PUBLIC(wmkcErr_ctx) wmkcHash_free WMKC_OPEN_API
-WMKC_OF((wmkcHash_ctx **obj));
+WMKC_PUBLIC(wmkcErr_obj) wmkcHash_free WMKC_OPEN_API
+WMKC_OF((wmkcHash_obj **obj));
 
 #endif

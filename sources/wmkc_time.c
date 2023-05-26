@@ -1,9 +1,9 @@
 #include <wmkc_time.h>
 
-WMKC_PUBLIC(wmkcErr_ctx) wmkcTime_GetNowTime WMKC_OPEN_API
+WMKC_PUBLIC(wmkcErr_obj) wmkcTime_GetNowTime WMKC_OPEN_API
 WMKC_OF((wmkcChar **dst))
 {
-    wmkcErr_ctx error;
+    wmkcErr_obj error;
     if(!dst) {
         wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcTime_GetNowTime: dst is NULL.");
     }
@@ -39,7 +39,7 @@ WMKC_OF((wmkcChar **dst))
 // }
 
 WMKC_PUBLIC(wmkcVoid) wmkcTime_TimerBegin WMKC_OPEN_API
-WMKC_OF((wmkcTime_ctx *timer))
+WMKC_OF((wmkcTime_obj *timer))
 {
 #if defined(WMKC_PLATFORM_LINUX)
     gettimeofday(&timer->start, wmkcNull);
@@ -49,7 +49,7 @@ WMKC_OF((wmkcTime_ctx *timer))
 }
 
 WMKC_PUBLIC(wmkcVoid) wmkcTime_TimerEnd WMKC_OPEN_API
-WMKC_OF((wmkcTime_ctx *timer))
+WMKC_OF((wmkcTime_obj *timer))
 {
 #if defined(WMKC_PLATFORM_LINUX)
     gettimeofday(&timer->stop, wmkcNull);
@@ -64,7 +64,7 @@ WMKC_OF((wmkcTime_ctx *timer))
 }
 
 WMKC_PUBLIC(wmkcVoid) wmkcTime_TimerPrint WMKC_OPEN_API
-WMKC_OF((wmkcString text, wmkcTime_ctx *timer))
+WMKC_OF((wmkcString text, wmkcTime_obj *timer))
 {
     printf("%s%.2lfs.\n", text, timer->totalTime);
 }

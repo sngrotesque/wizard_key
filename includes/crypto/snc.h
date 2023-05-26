@@ -74,15 +74,15 @@ typedef struct {
 } SNC_ctx;
 
 // 为SNC对象申请内存空间
-WMKC_PUBLIC(wmkcErr_ctx) SNC_new WMKC_OPEN_API
+WMKC_PUBLIC(wmkcErr_obj) SNC_new WMKC_OPEN_API
 WMKC_OF((SNC_ctx **ctx, SNC_mode mode));
 
 // 释放SNC对象
-WMKC_PUBLIC(wmkcErr_ctx) SNC_free WMKC_OPEN_API
+WMKC_PUBLIC(wmkcErr_obj) SNC_free WMKC_OPEN_API
 WMKC_OF((SNC_ctx **ctx));
 
 // 初始化SNC对象
-WMKC_PUBLIC(wmkcErr_ctx) SNC_init WMKC_OPEN_API
+WMKC_PUBLIC(wmkcErr_obj) SNC_init WMKC_OPEN_API
 WMKC_OF((SNC_ctx *ctx, wmkcByte *keyBuf, wmkcByte *ivBuf));
 
 // ECB加密

@@ -20,26 +20,26 @@ typedef struct {
     wmkcByte *key; // 密钥指针
     wmkcByte size; // 密钥长度
     wmkcBool mode; // true: Encrypt, false: Decrypt
-} wmkcKey_ctx;
+} wmkcKey_obj;
 
 // 初始化wmkcKey对象
-WMKC_PUBLIC(wmkcErr_ctx) wmkcKey_new WMKC_OPEN_API
-WMKC_OF((wmkcKey_ctx **obj, wmkcByte *key, wmkcSize keySize, wmkcBool mode));
+WMKC_PUBLIC(wmkcErr_obj) wmkcKey_new WMKC_OPEN_API
+WMKC_OF((wmkcKey_obj **obj, wmkcByte *key, wmkcSize keySize, wmkcBool mode));
 
 // 释放wmkcKey对象
-WMKC_PUBLIC(wmkcErr_ctx) wmkcKey_free WMKC_OPEN_API
-WMKC_OF((wmkcKey_ctx **obj));
+WMKC_PUBLIC(wmkcErr_obj) wmkcKey_free WMKC_OPEN_API
+WMKC_OF((wmkcKey_obj **obj));
 
 // 密钥加密函数（只能处理4的倍数长度的密钥）
-WMKC_PUBLIC(wmkcErr_ctx) wmkcKey_CryptKey WMKC_OPEN_API
-WMKC_OF((wmkcKey_ctx *obj));
+WMKC_PUBLIC(wmkcErr_obj) wmkcKey_CryptKey WMKC_OPEN_API
+WMKC_OF((wmkcKey_obj *obj));
 
 // 导入密钥
-WMKC_PUBLIC(wmkcErr_ctx) wmkcKey_loadKey WMKC_OPEN_API
-WMKC_OF((wmkcKey_ctx *obj, wmkcString fn));
+WMKC_PUBLIC(wmkcErr_obj) wmkcKey_loadKey WMKC_OPEN_API
+WMKC_OF((wmkcKey_obj *obj, wmkcString fn));
 
 // 保存密钥
-WMKC_PUBLIC(wmkcErr_ctx) wmkcKey_saveKey WMKC_OPEN_API
-WMKC_OF((wmkcKey_ctx *obj, wmkcString fn));
+WMKC_PUBLIC(wmkcErr_obj) wmkcKey_saveKey WMKC_OPEN_API
+WMKC_OF((wmkcKey_obj *obj, wmkcString fn));
 
 #endif

@@ -49,10 +49,10 @@ WMKC_OF((void))
     return false;
 }
 
-WMKC_PUBLIC(wmkcErr_ctx) wmkcStruct_pack WMKC_OPEN_API
+WMKC_PUBLIC(wmkcErr_obj) wmkcStruct_pack WMKC_OPEN_API
 WMKC_OF((wmkcString format, wmkcByte *dst, wmkcSize src))
 {
-    wmkcErr_ctx error;
+    wmkcErr_obj error;
     if(!format || !dst || !src) {
         wmkcErr_return(error, wmkcErr_ErrNULL,
             "wmkcStruct_pack: format or dst or src is NULL");
@@ -117,7 +117,7 @@ WMKC_OF((wmkcString format, wmkcByte *dst, wmkcSize src))
     wmkcErr_return(error, wmkcErr_OK, "OK.");
 }
 
-WMKC_PUBLIC(wmkcErr_ctx) wmkcStruct_unpack WMKC_OPEN_API
+WMKC_PUBLIC(wmkcErr_obj) wmkcStruct_unpack WMKC_OPEN_API
 WMKC_OF((wmkcString format, wmkcVoid *dst, wmkcByte *src))
 {
     /**
@@ -126,7 +126,7 @@ WMKC_OF((wmkcString format, wmkcVoid *dst, wmkcByte *src))
      * 比如如果本机是小端序，而用户指定的格式字符也是小端序，那么
      * 就不需要翻转，直接内存复制到数字变量中就行。
     */
-    wmkcErr_ctx error;
+    wmkcErr_obj error;
     if(!format || !dst || !src) {
         wmkcErr_return(error, wmkcErr_ErrNULL,
             "wmkcStruct_unpack: format or dst or src is NULL");

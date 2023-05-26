@@ -106,15 +106,15 @@ WMKC_OF((wmkcKey_state *buf))
     }
 }
 
-WMKC_PUBLIC(wmkcErr_ctx) wmkcKey_new WMKC_OPEN_API
-WMKC_OF((wmkcKey_ctx **obj, wmkcByte *key, wmkcSize keySize, wmkcBool mode))
+WMKC_PUBLIC(wmkcErr_obj) wmkcKey_new WMKC_OPEN_API
+WMKC_OF((wmkcKey_obj **obj, wmkcByte *key, wmkcSize keySize, wmkcBool mode))
 {
-    wmkcErr_ctx error;
+    wmkcErr_obj error;
     if(!obj) {
         wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcKey_new: obj is NULL.");
     }
 
-    if(!wmkcMemoryNew(wmkcKey_ctx *, (*obj), sizeof(wmkcKey_ctx))) {
+    if(!wmkcMemoryNew(wmkcKey_obj *, (*obj), sizeof(wmkcKey_obj))) {
         wmkcErr_return(error, wmkcErr_ErrMemory,
             "wmkcKey_new: (*obj) failed to apply for memory.");
     }
@@ -136,10 +136,10 @@ WMKC_OF((wmkcKey_ctx **obj, wmkcByte *key, wmkcSize keySize, wmkcBool mode))
     wmkcErr_return(error, wmkcErr_OK, "OK.");
 }
 
-WMKC_PUBLIC(wmkcErr_ctx) wmkcKey_free WMKC_OPEN_API
-WMKC_OF((wmkcKey_ctx **obj))
+WMKC_PUBLIC(wmkcErr_obj) wmkcKey_free WMKC_OPEN_API
+WMKC_OF((wmkcKey_obj **obj))
 {
-    wmkcErr_ctx error;
+    wmkcErr_obj error;
     if(!obj) {
         wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcKey_free: obj is NULL.");
     }
@@ -152,10 +152,10 @@ WMKC_OF((wmkcKey_ctx **obj))
     wmkcErr_return(error, wmkcErr_OK, "OK.");
 }
 
-WMKC_PUBLIC(wmkcErr_ctx) wmkcKey_CryptKey WMKC_OPEN_API
-WMKC_OF((wmkcKey_ctx *obj))
+WMKC_PUBLIC(wmkcErr_obj) wmkcKey_CryptKey WMKC_OPEN_API
+WMKC_OF((wmkcKey_obj *obj))
 {
-    wmkcErr_ctx error;
+    wmkcErr_obj error;
     if(!obj) {
         wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcKey_CryptKey: obj is NULL.");
     }
@@ -176,19 +176,19 @@ WMKC_OF((wmkcKey_ctx *obj))
     wmkcErr_return(error, wmkcErr_OK, "OK.");
 }
 
-WMKC_PUBLIC(wmkcErr_ctx) wmkcKey_loadKey WMKC_OPEN_API
-WMKC_OF((wmkcKey_ctx *obj, wmkcString fn))
+WMKC_PUBLIC(wmkcErr_obj) wmkcKey_loadKey WMKC_OPEN_API
+WMKC_OF((wmkcKey_obj *obj, wmkcString fn))
 {
-    wmkcErr_ctx error;
+    wmkcErr_obj error;
     wmkcErr_return(error, wmkcErr_OK, "OK.");
 }
 
-WMKC_PUBLIC(wmkcErr_ctx) wmkcKey_saveKey WMKC_OPEN_API
-WMKC_OF((wmkcKey_ctx *obj, wmkcString fn))
+WMKC_PUBLIC(wmkcErr_obj) wmkcKey_saveKey WMKC_OPEN_API
+WMKC_OF((wmkcKey_obj *obj, wmkcString fn))
 {
-    wmkcErr_ctx error;
-    wmkcBase64_ctx *base64 = wmkcNull;
-    wmkcFile_ctx *file = wmkcNull;
+    wmkcErr_obj error;
+    wmkcBase64_obj *base64 = wmkcNull;
+    wmkcFile_obj *file = wmkcNull;
     wmkcBase64_new(&base64);
     wmkcFile_new(&file);
 

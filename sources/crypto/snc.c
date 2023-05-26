@@ -450,10 +450,10 @@ WMKC_PRIVATE(wmkcVoid) SNC_keyExtension WMKC_OF((wmkc_u16 keySize, wmkcByte *iv,
 }
 
 // 为SNC对象申请内存空间
-WMKC_PUBLIC(wmkcErr_ctx) SNC_new WMKC_OPEN_API
+WMKC_PUBLIC(wmkcErr_obj) SNC_new WMKC_OPEN_API
 WMKC_OF((SNC_ctx **ctx, SNC_mode mode))
 {
-    wmkcErr_ctx error;
+    wmkcErr_obj error;
 
     if(!ctx) {
         wmkcErr_return(error, wmkcErr_ErrNULL, "ctx is NULL.");
@@ -472,10 +472,10 @@ WMKC_OF((SNC_ctx **ctx, SNC_mode mode))
 }
 
 // 释放SNC对象
-WMKC_PUBLIC(wmkcErr_ctx) SNC_free WMKC_OPEN_API
+WMKC_PUBLIC(wmkcErr_obj) SNC_free WMKC_OPEN_API
 WMKC_OF((SNC_ctx **ctx))
 {
-    wmkcErr_ctx error;
+    wmkcErr_obj error;
     if(!ctx) {
         wmkcErr_return(error, wmkcErr_ErrNULL, "ctx is NULL.");
     }
@@ -492,10 +492,10 @@ WMKC_OF((SNC_ctx **ctx))
 * Function to initialize the SNC data structure, used to generate sub keys for each
 * round based on the basic key input by the user.
 */
-WMKC_PUBLIC(wmkcErr_ctx) SNC_init WMKC_OPEN_API
+WMKC_PUBLIC(wmkcErr_obj) SNC_init WMKC_OPEN_API
 WMKC_OF((SNC_ctx *ctx, wmkcByte *keyBuf, wmkcByte *ivBuf))
 {
-    wmkcErr_ctx error;
+    wmkcErr_obj error;
     if(!ctx || !keyBuf || !ivBuf) {
         wmkcErr_return(error, wmkcErr_ErrNULL, "ctx or keyBuf or ivBuf is NULL.");
     }

@@ -30,8 +30,8 @@ int main(int argc, char **argv)
         0x93, 0x0b, 0x3b, 0x6e, 0x09, 0xd0, 0x56, 0x33, 0xf4, 0x4e, 0x81, 0xd8, 0x53, 0x47, 0x6e, 0x2c};
     static wmkcStreamfn_src = "misc/img/building2014851.jpg";
     static wmkcStreamfn_dst = "misc/img/building2014852.jpg";
-    static wmkcHash_ctx *hash = wmkcNull;
-    static wmkcFile_ctx *file = wmkcNull;
+    static wmkcHash_obj *hash = wmkcNull;
+    static wmkcFile_obj *file = wmkcNull;
     static SNC_ctx *snc = wmkcNull;
     static wmkcByte *buf = wmkcNull;
     static wmkcSize size;
