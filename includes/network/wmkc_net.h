@@ -43,7 +43,7 @@
 #include <openssl/ossl_typ.h>
 #endif
 
-#if defined(WMKC_LINUX_SUPPORT)
+#if defined(WMKC_PLATFORM_LINUX)
 #include <netdb.h>
 #include <unistd.h>
 #include <sys/time.h>
@@ -58,9 +58,9 @@ typedef struct sockaddr_in6 SOCKADDR_IN6;  // IPv6网络结构
 typedef        wmkc_u32     wmkcNetSocket; // wmkcNet的socket类型
 typedef        wmkcVoid     wmkcNetTimer;  // wmkcNet的计时类型
 typedef        wmkcByte     wmkcNetBuf;    // wmkcNet的缓冲区类型
-#endif // #if defined(WMKC_LINUX_SUPPORT)
+#endif // #if defined(WMKC_PLATFORM_LINUX)
 
-#if defined(WMKC_WINDOWS_SUPPORT)
+#if defined(WMKC_PLATFORM_WINOS)
 /**
  *  如果在使用此库的同时使用其他库，那么请确保此库为第一个导入的。
  *  或者请不要同时使用那些会导入Windows.h库的库。
@@ -70,7 +70,7 @@ typedef        wmkcByte     wmkcNetBuf;    // wmkcNet的缓冲区类型
 typedef SOCKET    wmkcNetSocket; // wmkcNet的socket类型
 typedef wmkcChar  wmkcNetTimer;  // wmkcNet的计时类型
 typedef wmkcChar  wmkcNetBuf;    // wmkcNet的缓冲区类型
-#endif // #if defined(WMKC_WINDOWS_SUPPORT)
+#endif // #if defined(WMKC_PLATFORM_WINOS)
 
 typedef wmkcFloat wmkcNetTime; // wmkcNet的时间类型
 typedef socklen_t wmkcNetSize; // wmkcNet的长度类型

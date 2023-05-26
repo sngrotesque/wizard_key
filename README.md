@@ -1,10 +1,7 @@
 # Wizard Magic Key Cyber
 > Wizard Magic Key Cyber by SN-Grotesque
 
-```text
-这是由SN-Grotesque自主开发的代码框架，用于开发未来的程序。
-当然给开源给所有人使用，但请遵守此仓库使用的开源协议。
-```
+# Author(s): SN-Grotesque
 
 ### 特别鸣谢
  - [OpenSSL](https://github.com/openssl/openssl)
@@ -12,9 +9,41 @@
  - [Python](https://www.python.org/)
  - [Zlib](https://github.com/madler/zlib)
 
+### 开发文档
+-   关于注释：  
+> 此库统一使用Doxygen风格的注释，且必须包含brief，authors，note，param，return这些字段。  
+> 并且顺序必须按照此项列出的方式排序。  
+> 函数声明与实现的注释必须一样。  
+> 如果一个函数没有编写完成就将其推送至仓库，应当在注释中的note字段中说明。
+-   关于更新：
+> 此库的所有更新必须写在更新日志中。
+-   关于第三方库：
+> 如果使用了任何第三方库，请在对应的文件中列出，并在此文档的`特别鸣谢`中指出库的名称与对应的链接。
+4.  关于C++：
+> 此库不应包含任何C++代码。除非非常必要，否则没有商量余地。
+5.  对于函数，应全部使用文件名的形式表示。示例：  
+    wmkc_duck.c  
+    wmkcDuck_quack();
+6.  对于对象类型，应使用名称+下划线+obj，延续上一条的示例：  
+    typedef struct {...} wmkcDuck_obj;
+7.  所有函数中都不应使用static将变量声明为静态变量。
+8.  所有代码头文件的首部应使用预处理指令进行预处理，延续上一条示例：  
+    #if WMKC_SUPPORT
+    #ifndef WMKC_DUCK  
+    #define WMKC_DUCK  
+    #endif  
+    #endif
+9.  所有代码文件应在最后一行留出一个空行，方便下次编写。
+
 ### 版本更新日志
 
+#### v5.1.0
+1.  修改了wmkc_random，wmkc_time库的实现。
+2.  修复了wmkc_base库的错误信息不全的问题。
+3.  修改了对于系统宏的名称标识。
+5.  增加了适当的文档与注释。
+
 #### v5.0.0
-1. 将库更名为Wizard Magic Key Cyber，原因是与目前某一组织名称重合。
-2. 将库函数与一般变量类型与宏函数做了更名。
-3. 修改了一些针对不同操作系统的支持。
+1.  将库更名为Wizard Magic Key Cyber，原因是与目前某一组织名称重合。
+2.  将库函数与一般变量类型与宏函数做了更名。
+3.  修改了一些针对不同操作系统的支持。

@@ -16,6 +16,16 @@ WMKC_OF((wmkcHash_ctx **obj, wmkcSize size))
     wmkcErr_return(error, wmkcErr_OK, "OK.");
 }
 
+/**
+ * @brief 创建一个新的哈希对象。
+ * @authors SN-Grotesque
+ *
+ * 此函数创建一个新的哈希对象，并使用指定的哈希算法类型对其进行初始化。
+ *
+ * @param obj是wmkcHash_ctx对象指针的地址。成功后它将指向新创建的哈希对象。
+ * @param hashType为哈希算法类型，此值必须介于[0, 5]。
+ * @return 成功和失败都将返回一个wmkcErr_ctx对象，其中包含错误代码和消息。
+**/
 WMKC_PUBLIC(wmkcErr_ctx) wmkcHash_new WMKC_OPEN_API
 WMKC_OF((wmkcHash_ctx **obj, wmkcHash_HashType hashType))
 {

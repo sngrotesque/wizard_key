@@ -57,33 +57,7 @@ static wmkcByte iv[32] = {
 
 void test()
 {
-    wmkcNetBuf *sendbuf = (wmkcNetBuf *)(
-        "GET / HTTP/1.1\r\n"
-        "Host: www.bilibili.com\r\n"
-        "User-Agent: Android\r\n\r\n"
-    );
-    wmkcNetBuf recvbuf[4096] = {0};
-    wmkcNet_ctx *net = wmkcNull;
-    wmkcErr_ctx error;
-
-    error = wmkcNet_new(&net, AF_INET6);
-    if(error.code) printf("%s\n", error.message);
-    error = wmkcNet_init(net, "www.bilibili.com", 80, false);
-    if(error.code) printf("%s\n", error.message);
-
-    error = wmkcNet_connect(net);
-    if(error.code) printf("%s\n", error.message);
-    error = wmkcNet_send(net, wmkcNull, sendbuf, (wmkcNetSize)strlen(sendbuf));
-    if(error.code) printf("%s\n", error.message);
-    error = wmkcNet_recv(net, wmkcNull, recvbuf, 4096);
-    if(error.code) printf("%s\n", error.message);
-
-    printf("%s\n", recvbuf);
-
-    error = wmkcNet_close(net);
-    if(error.code) printf("%s\n", error.message);
-    error = wmkcNet_free(&net);
-    if(error.code) printf("%s\n", error.message);
+    wmkcRandom_seed();
 }
 
 int main(int argc, char **argv)

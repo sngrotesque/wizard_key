@@ -67,7 +67,7 @@ WMKC_OF((wmkcNet_ctx *net, wmkcString hostname, wmkc_u16 port, wmkcBool UDP))
             "wmkcNet_init: The type of socket must be AF_INET or AF_INET6.");
     }
 
-#   if defined(WMKC_WINDOWS_SUPPORT)
+#   if defined(WMKC_PLATFORM_WINOS)
     // 如果是Windows系统就初始化并启动WSADATA对象。
     WSADATA ws;
     if (WSAStartup(MAKEWORD(2, 2), &ws)) {
@@ -406,11 +406,11 @@ WMKC_OF((wmkcNet_ctx *net))
 
     // 判断系统类型，根据对应系统使用不同的关闭函数将Socket与WSADATA进行关闭
     // 如果错误，就返回错误代码
-#if defined(WMKC_LINUX_SUPPORT)
+#if defined(WMKC_PLATFORM_LINUX)
     if((shutdown(net->sockfd, 2) | close(net->sockfd)) == wmkcErr_Err32) {
         wmkcErr_return(error, wmkcErr_NetClose, "wmkcNet_close: Socket close failed.");
     }
-#elif defined(WMKC_WINDOWS_SUPPORT)
+#elif defined(WMKC_PLATFORM_WINOS)
     if((closesocket(net->sockfd) | WSACleanup()) == wmkcErr_Err32) {
         wmkcErr_return(error, wmkcErr_NetClose, "wmkcNet_close: Socket close failed.");
     }

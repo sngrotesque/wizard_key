@@ -115,13 +115,15 @@ WMKC_OF((wmkcObject *dst, wmkcObject *src))
 {
     wmkcErr_ctx error;
     if(!dst || !src) {
-        wmkcErr_return(error, wmkcErr_ErrNULL, "dst or src is null.");
+        wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcBase64_Decode: dst or src is null.");
     }
     if(!dst->buf || !src->buf) {
-        wmkcErr_return(error, wmkcErr_ErrNULL, "dst->buf or src->buf is null.");
+        wmkcErr_return(error, wmkcErr_ErrNULL,
+            "wmkcBase64_Decode: dst->buf or src->buf is null.");
     }
     if(!dst->size || !src->size) {
-        wmkcErr_return(error, wmkcErr_ErrNULL, "dst->size or src->size is null.");
+        wmkcErr_return(error, wmkcErr_ErrNULL,
+            "wmkcBase64_Decode: dst->size or src->size is null.");
     }
     wmkcSize src_i, dst_i;
 

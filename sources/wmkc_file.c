@@ -6,9 +6,9 @@
 WMKC_PRIVATE(wmkcBool) _wmkcFile_exists
 WMKC_OF((wmkcFileString fn))
 {
-#   ifdef WMKC_LINUX_SUPPORT
+#   ifdef WMKC_PLATFORM_LINUX
     if(access(fn, F_OK) == 0) return true;
-#   elif defined(WMKC_WINDOWS_SUPPORT)
+#   elif defined(WMKC_PLATFORM_WINOS)
     if(PathFileExistsW(fn)) return true;
 #   endif
     return false;
@@ -20,11 +20,11 @@ WMKC_OF((wmkcFileString fn))
 WMKC_PRIVATE(wmkcSize) _wmkcFile_fileSize
 WMKC_OF((wmkcFileString fn))
 {
-#   if defined(WMKC_LINUX_SUPPORT)
+#   if defined(WMKC_PLATFORM_LINUX)
     struct stat info;
     stat(fn, &info);
     return (wmkcSize)info.st_size;
-#   elif defined(WMKC_WINDOWS_SUPPORT)
+#   elif defined(WMKC_PLATFORM_WINOS)
     LARGE_INTEGER W_size; // Windows大整数类型
     HANDLE        hFile;  // Windows文件句柄
     hFile = CreateFileW(fn, GENERIC_READ, FILE_SHARE_READ, wmkcNull,

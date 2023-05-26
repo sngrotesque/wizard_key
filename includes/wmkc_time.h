@@ -6,19 +6,19 @@
 #include <time.h>
 #include <sys/timeb.h>
 
-#ifdef WMKC_WINDOWS_SUPPORT
+#ifdef WMKC_PLATFORM_WINOS
 #include <windows.h>
 #endif
 
-#if defined(WMKC_LINUX_SUPPORT)
+#if defined(WMKC_PLATFORM_LINUX)
 #include <sys/time.h>
 #endif
 
 typedef struct {
-#if defined(WMKC_LINUX_SUPPORT)
+#if defined(WMKC_PLATFORM_LINUX)
     struct timeval start;
     struct timeval stop;
-#elif defined(WMKC_WINDOWS_SUPPORT)
+#elif defined(WMKC_PLATFORM_WINOS)
     ULONGLONG start;
     ULONGLONG stop;
 #endif

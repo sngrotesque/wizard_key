@@ -3,10 +3,12 @@
 
 #include <stdio.h>    // 标准输入输出库
 #include <string.h>   // 标准字符串库
+#include <stdlib.h>   // 标准库
 #include <stdint.h>   // 标准数字类型库
 #include <signal.h>   // 信号库
 #include <stdbool.h>  // 标准布尔值库
 #include <inttypes.h> // 用于在跨平台打印同样的数据类型
+
 
 #if __cplusplus > 199711L
 #define register
@@ -16,10 +18,10 @@
 #if (__SIZEOF_SIZE_T__ == 8) || defined(__x86_64__) || defined(__LP64__)
 //  如果是Linux或Windows操作系统，那么支持。否则不支持。
 #if defined(__linux) || defined(__linux__)
-#   define WMKC_LINUX_SUPPORT
+#   define WMKC_PLATFORM_LINUX
 #   define WMKC_SUPPORT true
 #elif defined(_WIN32) || defined(_WIN64)
-#   define WMKC_WINDOWS_SUPPORT
+#   define WMKC_PLATFORM_WINOS
 #   define WMKC_SUPPORT true
 #else
 #   define WMKC_SUPPORT false
@@ -61,16 +63,18 @@ typedef uint32_t                  wmkc_u32;   // 无符号整数类型
 // 定义宏函数
 /***字节交换：0x91 -> 0x19 ****************************/
 #define wmkcSwapByte(x) ((((x) & 0xf) << 4) ^ ((x) >> 4))
-/***宽字交换：0x91ba -> 0xab19 ********************************************/
+/***宽字交换：0x91ba -> 0xab19 *************************************************/
 #define wmkcSwapWord(x) ((wmkcSwapByte((x) & 0xff) << 8) ^ wmkcSwapByte((x) >> 8))
-/***长字交换：0x91ba4951 -> 0x1594ab19 ***************************************/
+/***长字交换：0x91ba4951 -> 0x1594ab19 *******************************************/
 #define wmkcSwapLong(x) ((wmkcSwapWord(x & 0xffff) << 16) ^ (wmkcSwapWord(x >> 16)))
 /***内存空间申请 ********************************************/
 #define wmkcMemoryNew(type, x, size) (x = (type)malloc((size)))
-/***内存空间释放 **************************/
+/***内存空间释放 ****************************/
 #define wmkcMemoryFree(x) free(x); x = wmkcNull
 /***内存内容初始化为零 **************************/
 #define wmkcMemoryZero(x, s) memset((x), 0x00, (s))
+/***将x转为字符串********/
+#define wmkcToString(x) #x
 
 // 定义错误类型
 #ifndef WMKC_ERROR_CODE
@@ -139,12 +143,7 @@ typedef struct {
 // 定义功能
 #define WMKC_ENABLE_FEATURES
 #if defined(WMKC_ENABLE_FEATURES)
-#   define WMKC_MEMORY
 #   define WMKC_COLOR
-#   if defined(WMKC_MEMORY)
-#       include <stdlib.h>
-#       include <malloc.h>
-#   endif
 #   if defined(WMKC_COLOR)
 #       define WMKC_ALL_COLOR_RESET         "\x1b[0m"  // 重置所有颜色
 #       define WMKC_ALL_COLOR_FLICKER       "\x1b[5m"  // 闪烁的字符
