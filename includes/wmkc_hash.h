@@ -38,13 +38,6 @@
 #include <wmkc_binascii.h>
 #include <openssl/evp.h>
 
-/**
- *  @file wmkcHash.h
- *  @brief WMKC Hash Library
- *  
- *  This file contains the API for the WMKC Hash Library.
-*/
-
 #define SN_HASH_BLOCKLEN 0xfffffff // 256 MB
 
 typedef struct {
