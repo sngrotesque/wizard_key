@@ -97,7 +97,7 @@ WMKC_PUBLIC(wmkcErr_obj) wmkcNet_init WMKC_OPEN_API
 WMKC_OF((wmkcNet_obj *ctx, wmkcString hostname, wmkc_u16 port, wmkcBool UDP));
 
 // 使用wmkcNet对象解析域名信息
-WMKC_PUBLIC(wmkcErr_obj) wmkcNet_resolveAddress
+WMKC_PUBLIC(wmkcErr_obj) wmkcNet_resolveAddress WMKC_OPEN_API
 WMKC_OF((wmkcNet_obj *net, wmkcString hostname));
 
 // 设置发送与接收超时时间

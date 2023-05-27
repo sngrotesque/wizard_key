@@ -1,5 +1,18 @@
 #include <wmkc_hash.h>
 
+/**
+ * @brief 初始化wmkcHash对象
+ * @authors SN-Grotesque
+ * 
+ * 此函数将wmkcHash对象初始化，并为特定成员申请内存空间。
+ * 
+ * @note wmkcHash_new函数的私有函数，错误检查应在wmkcHash_new函数
+ *       中进行。
+ * @param obj 这是一个指针，指向wmkcHash对象指针的地址。
+ * @param size 是一个长度，代表当前哈希算法digest数据的长度。
+ * @return 返回一个wmkcErr_obj对象，code为0代表无错误，如果为
+ *         其他值，那么需检查message与code。
+*/
 WMKC_PRIVATE(wmkcErr_obj) _wmkcHash_init
 WMKC_OF((wmkcHash_obj **obj, wmkcSize size))
 {
@@ -17,17 +30,19 @@ WMKC_OF((wmkcHash_obj **obj, wmkcSize size))
 }
 
 /**
- * @brief 创建一个新的哈希对象。
+ * @brief 为wmkcHash对象申请内存
  * @authors SN-Grotesque
  *
  * 此函数创建一个新的哈希对象，并使用指定的哈希算法类型对其进行初始化。
  *
- * @param obj 是wmkcHash_obj对象指针的地址。成功后它将指向新创建的哈希对象。
+ * @note 无
+ * @param obj 这是一个指针，指向wmkcHash对象指针的地址。
  * @param hashType 为哈希算法类型，此值必须介于[0, 5]。
- * @return 成功和失败都将返回一个wmkcErr_obj对象，其中包含错误代码和消息。
+ * @return 返回一个wmkcErr_obj对象，code为0代表无错误，如果为
+ *         其他值，那么需检查message与code。
 **/
 WMKC_PUBLIC(wmkcErr_obj) wmkcHash_new WMKC_OPEN_API
-WMKC_OF((wmkcHash_obj **obj, wmkcHash_HashType hashType))
+WMKC_OF((wmkcHash_obj **obj, wmkcHash_Type hashType))
 {
     wmkcErr_obj error;
     if(!obj) {
@@ -43,13 +58,14 @@ WMKC_OF((wmkcHash_obj **obj, wmkcHash_HashType hashType))
     }
 
     const EVP_MD *wmkcHash_EVP_Type[6] = {
-        EVP_md5(),    // MD5
-        EVP_sha1(),   // SHA-1
-        EVP_sha224(), // SHA-224
-        EVP_sha256(), // SHA-256
-        EVP_sha384(), // SHA-384
-        EVP_sha512()  // SHA-512
-    };
+        EVP_md5(),    EVP_sha1(),   EVP_sha224(),
+        EVP_sha256(), EVP_sha384(), EVP_sha512()};
+
+    const wmkc_u32 wmkcHash_SIZE[6] = {
+    //  MD5      SHA-1      SHA-224
+    //  SHA-256  SHA-384    SHA-512
+        16,      20,        28,
+        32,      48,        64};
 
     (*obj)->md = wmkcHash_EVP_Type[hashType];
     error = _wmkcHash_init(obj, wmkcHash_SIZE[hashType]);
@@ -61,12 +77,21 @@ WMKC_OF((wmkcHash_obj **obj, wmkcHash_HashType hashType))
 }
 
 /**
- * https://www.openssl.org/docs/man1.1.1/man3/EVP_MD_CTX_new.html
- * 对于OpenSSL库提供的EVP相关功能，我查阅到OpenSSL库中的提示是
- * 返回值为1时表示无错误，为0时表示错误。
- * 为了不与本库产生冲突，不针对EVP相关功能进行
- * 返回值检查。
-*/
+ * @brief 求出一段完整数据的哈希值
+ * @authors SN-Grotesque
+ *
+ * 此函数得到传入的数据的哈希值后赋值到wmkcHash对象中。
+ *
+ * [EVP_MD_CTX_new](https://www.openssl.org/docs/man1.1.1/man3/EVP_MD_CTX_new.html)
+ * @note 对于OpenSSL库提供的EVP相关功能，我查阅到OpenSSL库中的提示是
+ *       返回值为1时表示无错误，为0时表示错误。
+ *       为了不与本库产生冲突，暂时不对EVP相关功能进行返回值检查。
+ * @param hash 这是一个指针，指向wmkcHash对象的地址。
+ * @param buf 这是一个指针，指向一段数据的地址。
+ * @param suze 这是一个长度，代表buf指向的内容的长度。
+ * @return 返回一个wmkcErr_obj对象，code为0代表无错误，如果为
+ *         其他值，那么需检查message与code。
+**/
 WMKC_PUBLIC(wmkcErr_obj) wmkcHash WMKC_OPEN_API
 WMKC_OF((wmkcHash_obj *hash, wmkcByte *buf, wmkcSize size))
 {
@@ -89,6 +114,23 @@ WMKC_OF((wmkcHash_obj *hash, wmkcByte *buf, wmkcSize size))
     wmkcErr_return(error, wmkcErr_OK, "OK.");
 }
 
+/**
+ * @brief 获取指定文件的哈希值
+ * @authors SN-Grotesque
+ *
+ * 此函数获取指定文件的哈希值后赋值到wmkcHash对象中。
+ * 当然你需要使用wmkcHash_new函数初始化一个新的wmkcHash对象。
+ *
+ * [EVP_MD_CTX_new](https://www.openssl.org/docs/man1.1.1/man3/EVP_MD_CTX_new.html)
+ * @note 对于OpenSSL库提供的EVP相关功能，我查阅到OpenSSL库中的提示是
+ *       返回值为1时表示无错误，为0时表示错误。
+ *       为了不与本库产生冲突，暂时不对EVP相关功能进行返回值检查。
+ * @param hash 这是一个指针，指向wmkcHash对象的地址。
+ * @param fn 这是一个指针，指向路径的字符串地址，如果传入字符串而不是指针，那么
+ *           应使用wmkcFile_text宏对字符串进行转换。
+ * @return 返回一个wmkcErr_obj对象，code为0代表无错误，如果为
+ *         其他值，那么需检查message与code。
+**/
 WMKC_PUBLIC(wmkcErr_obj) wmkcHash_file WMKC_OPEN_API
 WMKC_OF((wmkcHash_obj *hash, wmkcFileString fn))
 {
@@ -149,6 +191,17 @@ WMKC_OF((wmkcHash_obj *hash, wmkcFileString fn))
     wmkcErr_return(error, wmkcErr_OK, "OK.");
 }
 
+/**
+ * @brief 为wmkcHash对象释放内存
+ * @authors SN-Grotesque
+ *
+ * 此函数为wmkcHash对象释放内存。
+ *
+ * @note 无
+ * @param obj 这是一个指针，指向wmkcHash对象指针的地址。
+ * @return 返回一个wmkcErr_obj对象，code为0代表无错误，如果为
+ *         其他值，那么需检查message与code。
+**/
 WMKC_PUBLIC(wmkcErr_obj) wmkcHash_free WMKC_OPEN_API
 WMKC_OF((wmkcHash_obj **obj))
 {

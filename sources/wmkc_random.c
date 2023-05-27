@@ -18,7 +18,7 @@ WMKC_OF((wmkcVoid))
 
 #if defined(WMKC_PLATFORM_LINUX)
     struct timeval tv;
-    mingw_gettimeofday(&tv, wmkcNull);
+    gettimeofday(&tv, wmkcNull);
     timeTotal = (wmkcSize)tv.tv_sec * 1000000ULL + (wmkcSize)tv.tv_usec;
 #elif defined(WMKC_PLATFORM_WINOS)
     FILETIME ft;

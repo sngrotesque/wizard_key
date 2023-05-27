@@ -115,7 +115,7 @@ WMKC_OF((wmkcNet_obj *net, wmkcString hostname, wmkc_u16 port, wmkcBool UDP))
 }
 
 // 域名解析函数
-WMKC_PUBLIC(wmkcErr_obj) wmkcNet_resolveAddress
+WMKC_PUBLIC(wmkcErr_obj) wmkcNet_resolveAddress WMKC_OPEN_API
 WMKC_OF((wmkcNet_obj *net, wmkcString hostname))
 {
     wmkcErr_obj error;
