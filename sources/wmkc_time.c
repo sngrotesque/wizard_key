@@ -1,5 +1,16 @@
 #include <wmkc_time.h>
 
+/**
+ * @brief 获取当前的时间
+ * @authors SN-Grotesque
+ * 
+ * 获取当前的时间，默认格式为：年月日-时分秒
+ * 
+ * @note 后续可以添加一个格式参数，由使用者自行决定时间格式。
+ * @param dst 这是一个指针，指向结果指针的地址。
+ * @return 返回一个wmkcErr对象，code为0代表无错误，如果为
+ *         其他值，那么需检查message与code。
+ */
 WMKC_PUBLIC(wmkcErr_obj) wmkcTime_GetNowTime WMKC_OPEN_API
 WMKC_OF((wmkcChar **dst))
 {
@@ -24,20 +35,16 @@ WMKC_OF((wmkcChar **dst))
     wmkcErr_return(error, wmkcErr_OK, "OK.");
 }
 
-// WMKC_PUBLIC(wmkcFloat) wmkcTime_GetNowSec WMKC_OPEN_API
-// WMKC_OF((wmkcVoid))
-// {
-//     wmkcFloat elapsedTime = 0;
-// #   if defined(WMKC_PLATFORM_WINOS)
-//     LARGE_INTEGER frequency, timer;
-//     QueryPerformanceFrequency(&frequency);
-//     QueryPerformanceCounter(&timer);
-//     elapsedTime = (timer.QuadPart) * 1000000.0 / frequency.QuadPart;
-// #   endif
-
-//     return elapsedTime;
-// }
-
+/**
+ * @brief 计时开始函数
+ * @authors SN-Grotesque
+ * 
+ * 计时开始函数
+ * 
+ * @note 后续可以考虑使用Python的time.time()形式来实现不同批次的计时。
+ * @param timer 这是一个指针，指向wmkcTime对象的地址。
+ * @return 无
+ */
 WMKC_PUBLIC(wmkcVoid) wmkcTime_TimerBegin WMKC_OPEN_API
 WMKC_OF((wmkcTime_obj *timer))
 {
@@ -48,6 +55,16 @@ WMKC_OF((wmkcTime_obj *timer))
 #endif
 }
 
+/**
+ * @brief 计时结束函数
+ * @authors SN-Grotesque
+ * 
+ * 计时结束函数
+ * 
+ * @note 后续可以考虑使用Python的time.time()形式来实现不同批次的计时。
+ * @param timer 这是一个指针，指向wmkcTime对象的地址。
+ * @return 无
+ */
 WMKC_PUBLIC(wmkcVoid) wmkcTime_TimerEnd WMKC_OPEN_API
 WMKC_OF((wmkcTime_obj *timer))
 {
@@ -63,6 +80,18 @@ WMKC_OF((wmkcTime_obj *timer))
 #endif
 }
 
+/**
+ * @brief 用于打印计时结果的函数
+ * @authors SN-Grotesque
+ * 
+ * 用于打印计时结果的函数
+ * 
+ * @note 无
+ * @example wmkcTime_TimerPrint("timer: ", &timer);
+ * @param text 这是一个指针，指向文本字符串的地址（要说的话）。
+ * @param timer 这是一个指针，指向wmkcTime对象的地址。
+ * @return 无
+ */
 WMKC_PUBLIC(wmkcVoid) wmkcTime_TimerPrint WMKC_OPEN_API
 WMKC_OF((wmkcString text, wmkcTime_obj *timer))
 {

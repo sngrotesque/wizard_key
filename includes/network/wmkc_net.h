@@ -6,10 +6,16 @@
 *   编译指令：gcc main.c -lws2_32 -o main.exe
 *
 */
+
+/*
+* 这个函数的注释，慢慢来，不要着急。
+* 不要着急，不要着急，不要着急，就这一个了，不要慌。
+*/
+#include <wmkc_conf.h>
+
+#if WMKC_SUPPORT
 #ifndef WMKC_NETWORK
 #define WMKC_NETWORK
-
-#include <wmkc_conf.h>
 #include <math.h>
 
 // TCP套接字
@@ -24,8 +30,6 @@
 // 示例: wmkcNet_GetPort(server->sin_port :u_short) -> u_short
 #define wmkcNet_GetPort(info) ntohs(info)
 
-#define WMKC_NET_OPENSSL_API 0     // 是否启用OpenSSL的功能
-
 #define WMKC_NET_DEFAULT_LISTEN 5  // listen函数使用的默认值
 #define WMKC_NET_TCP_TYPE 0x54     // TCP类型
 #define WMKC_NET_UDP_TYPE 0x55     // UDP类型
@@ -33,6 +37,8 @@
 
 #define WMKC_NET_IPV4_ADDR_SIZE 16 // 用于储存IPv4信息的内存大小
 #define WMKC_NET_IPV6_ADDR_SIZE 28 // 用于储存IPv6信息的内存大小
+
+#define WMKC_NET_OPENSSL_API 0     // 是否启用OpenSSL的功能
 
 #if defined(WMKC_NET_OPENSSL_API) && (WMKC_NET_OPENSSL_API == 1)
 #include <openssl/ssl.h>
@@ -136,4 +142,5 @@ WMKC_OF((wmkcNet_obj* ctx, wmkcNetSize *_tSize, wmkcNetBuf *buf, wmkcNetSize siz
 WMKC_PUBLIC(wmkcErr_obj) wmkcNet_close WMKC_OPEN_API
 WMKC_OF((wmkcNet_obj *ctx));
 
-#endif
+#endif /* WMKC_NETWORK */
+#endif /* WMKC_SUPPORT */
