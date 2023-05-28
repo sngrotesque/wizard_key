@@ -1,63 +1,116 @@
-#ifndef WMKC_STRING
-#define WMKC_STRING
-
 #include <wmkc_conf.h>
+
+#if WMKC_SUPPORT
+#ifndef WMKC_STREAM
+#define WMKC_STREAM
+
 #include <wmkc_object.h>
 
 /**
- *  此函数：内容拼接（后续可以参考strncat_s函数）
- *  dst            可以不用申请内存空间，传入之后会自动申请。
- *  left, right    要拼接的两个内容
+ * @brief 此函数将参数二与参数三拼接
+ * @authors SN-Grotesque
+ * 
+ * 此函数将参数二与参数三拼接，会自动申请内存空间。
+ * 
+ * @note 无
+ * @param dst 这是一个指针，指向结果指针的地址。
+ * @param left 这是一个指针，指向左侧内容的wmkc对象的地址。
+ * @param right 这是一个指针，指向右侧内容的wmkc对象的地址。
+ * @return 返回一个wmkcErr对象，code为0代表无错误，如果为
+ *         其他值，那么需检查message与code。
 */
 WMKC_PUBLIC(wmkcErr_obj) wmkcStream_Splicing WMKC_OPEN_API
 WMKC_OF((wmkc_obj **dst, wmkc_obj *left, wmkc_obj *right));
 
 /**
- *  此函数：内容切片
- *  dst    可以不用申请内存空间，传入之后会自动申请。
- *  src    需要切片的内容
- *  start  切片开始处
+ * @brief 此函数将内容进行切片
+ * @authors SN-Grotesque
+ * 
+ * 此函数将内容进行切片，会自动申请内存空间。
+ * 
+ * @note 无
+ * @param dst 这是一个指针，指向结果指针的地址。
+ * @param src 这是一个指针，指向源内容wmkc对象的地址。
+ * @param start 这是起始下标，用于标注切片的起始位置。
+ * @param end 这是末尾下标，用于标注切片的末尾位置。
+ * @return 返回一个wmkcErr对象，code为0代表无错误，如果为
+ *         其他值，那么需检查message与code。
 */
 WMKC_PUBLIC(wmkcErr_obj) wmkcStream_Slice WMKC_OPEN_API
 WMKC_OF((wmkc_obj **dst, wmkc_obj *src, wmkcSSize start, wmkcSSize end));
 
 /**
- *  此函数：内容输入
- *  buf     缓冲区
- *  size    缓冲区长度
+ * @brief 此函数用于替换scanf函数
+ * @authors SN-Grotesque
+ * 
+ * 此函数内容与scanf函数类型，但更加安全。
+ * 
+ * @note 无
+ * @param buf 这是一个指针，指向缓冲区的地址。
+ * @param size 这是一个指针，代表需要输入至缓冲区的内容长度。
+ * @return 返回一个wmkcErr对象，code为0代表无错误，如果为
+ *         其他值，那么需检查message与code。
 */
 WMKC_PUBLIC(wmkcErr_obj) wmkcStream_Scanf WMKC_OPEN_API
 WMKC_OF((wmkcByte *buf, wmkcSize size));
 
 /**
- *  此函数：内容倒转
- *  buf     缓冲区
- *  size    缓冲区长度
+ * @brief 此函数用于反转缓冲区里的数据
+ * @authors SN-Grotesque
+ * 
+ * 此函数用于反转缓冲区里的数据。
+ * 
+ * @note 无
+ * @param buf 这是一个指针，指向缓冲区的地址。
+ * @param size 这是一个指针，代表缓冲区的长度。
+ * @return 返回一个wmkcErr对象，code为0代表无错误，如果为
+ *         其他值，那么需检查message与code。
 */
 WMKC_PUBLIC(wmkcErr_obj) wmkcStream_Reverse WMKC_OPEN_API
-WMKC_OF((wmkcByte *data, wmkcSize size));
+WMKC_OF((wmkcByte *buf, wmkcSize size));
 
 /**
- *  此函数：求出数字的二进制值
- *  dst     结果缓冲区，不用手动申请内存空间
- *  src     数字
+ * @brief 此函数用于求出指定数字的二进制值
+ * @authors SN-Grotesque
+ * 
+ * 此函数用于求出指定数字的二进制值并保存到dst指针指向的地址中。
+ * 
+ * @note 此函数后续可以考虑一下与大数库结合，或者将源数字类型改为wmkcFloat。
+ * @param dst 这是一个指针，指向结果指针的地址。
+ * @param src 这是一个数字，为源数字的内容。
+ * @return 返回一个wmkcErr对象，code为0代表无错误，如果为
+ *         其他值，那么需检查message与code。
 */
 WMKC_PUBLIC(wmkcErr_obj) wmkcStream_Binary WMKC_OPEN_API
 WMKC_OF((wmkcByte **dst, wmkcSize src));
 
 /**
- *  此函数：判断两个内容是否相同
- *  src1     第一个内容
- *  src2     第二个内容
- *  size     内容长度
- *  
- *  相同则返回true
+ * @brief 此函数用于判断两个内容是否相同
+ * @authors SN-Grotesque
+ * 
+ * 此函数用于判断两个内容是否相同，内部使用strncmp函数实现。
+ * 
+ * @note 无
+ * @param src1 这是一个指针，指向源数据1。
+ * @param src2 这是一个指针，指向源数据2。
+ * @param size 这是一个长度，代表源数据的长度（如果长度不同那你还比较什么呢？）
+ * @return 返回一个布尔值，为True时两个源数据相同，否则不同。
 */
 WMKC_PUBLIC(wmkcBool) wmkcStream_Compare WMKC_OPEN_API
 WMKC_OF((wmkcByte *src1, wmkcByte *src2, wmkcSize size));
 
-// 计算数字的长度
+/**
+ * @brief 此函数用于求出一个整数的长度位数
+ * @authors SN-Grotesque
+ * 
+ * 此函数用于求出一个整数的长度位数（通过除法判断）
+ * 
+ * @note 无
+ * @param src 这是源数字。
+ * @return 返回一个wmkc_u32值为长度。
+*/
 WMKC_PUBLIC(wmkc_u32) wmkcStream_numlen WMKC_OPEN_API
-WMKC_OF((wmkcSize _n));
+WMKC_OF((wmkcSize src));
 
-#endif
+#endif /* WMKC_STREAM */
+#endif /* WMKC_SUPPORT */

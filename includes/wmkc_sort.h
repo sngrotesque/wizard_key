@@ -7,6 +7,10 @@
  *  后续可能会提供更多的排序算法。
  *  所有的排序算法均为从网络上获得并修改。
 */
+
+/**
+ * @note 此库与wmkc_misc，wmkc_linkList库同理，不需要添加注释和别的什么。
+*/
 #ifndef WMKC_SORT
 #define WMKC_SORT
 

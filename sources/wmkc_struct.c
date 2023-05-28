@@ -1,16 +1,31 @@
 #include <wmkc_struct.h>
 
+// 端序的格式字符
 WMKC_PRIVATE_CONST(wmkcChar) wmkcStruct_byte_order[3] = {
     '@', // 按原样顺序
     '>', // 按大端序
     '<'  // 按小端序
 };
+// 数据格式的格式字符
 WMKC_PRIVATE_CONST(wmkcChar) wmkcStruct_format_symbol[5] = {
     'H', // unsigned short -> uint16_t
     'I', // unsigned int   -> uint32_t
     'Q', // unsigned long  -> uint64_t
 };
 
+/**
+ * @brief wmkcStruct库的私有函数，用于交换数组中的元素
+ * @authors SN-Grotesque
+ * 
+ * wmkcStruct库的私有函数，用于交换数组中的元素
+ * 
+ * @note 无
+ * @param array_1 这是一个指针，指向数组中元素的地址，并将
+ *                其与array_2指向的元素进行交换。
+ * @param array_2 这是一个指针，指向数组中元素的地址，并将
+ *                其与array_1指向的元素进行交换。
+ * @return 无
+ */
 WMKC_PRIVATE(wmkcVoid) wmkcStruct_swap_bytes
 WMKC_OF((wmkcByte *array_1, wmkcByte *array_2))
 {
@@ -19,6 +34,16 @@ WMKC_OF((wmkcByte *array_1, wmkcByte *array_2))
     *array_2 = swap;
 }
 
+/**
+ * @brief 检查格式符是否正确
+ * @authors SN-Grotesque
+ * 
+ * 此函数检查格式符是否正确
+ * 
+ * @note 此为wmkcStruct库的私有函数
+ * @param src 这是一个指针，指向格式符字符串的地址
+ * @return 返回一个布尔值，为True时代表格式符完全正确。
+ */
 WMKC_PRIVATE(wmkcBool) wmkcStruct_check_format
 WMKC_OF((wmkcString src))
 {
@@ -38,7 +63,16 @@ WMKC_OF((wmkcString src))
     return false;
 }
 
-// 用来判断当前计算机是大端排序还是小端排序。
+/**
+ * @brief 此函数用于判断本机端序
+ * @authors SN-Grotesque
+ * 
+ * 此函数用于判断本机是大端序还是小端序。
+ * 
+ * @note 无
+ * @param 无
+ * @return 返回值为一个布尔值，为True时，本机为小端序。否则为大端序。
+*/
 WMKC_PUBLIC(wmkcBool) wmkcStruct_PlatformEnd WMKC_OPEN_API
 WMKC_OF((void))
 {
@@ -49,6 +83,26 @@ WMKC_OF((void))
     return false;
 }
 
+/**
+ * @brief 此函数用于将数据“打包”
+ * @authors SN-Grotesque
+ * 
+ * 此函数用于将数据“打包”
+ * 
+ * @note 如果你感到一头雾水，那么请参考Python的struct.pack。
+ * @param format 此参数为格式符（必须包含端序符和格式符）。
+ *               在端序中，只支持【"\@"，">"，"<"】这三种。
+ *               "\@"为按本机原本的端序，也就是保持不变。
+ *               ">"为按大端序处理数据（如果本机是大端序，那么等同于"\@"）。
+ *               "<"为按小端序处理数据（如果本机是小端序，那么等同于"\@"）。
+ *               "H"为使用2字节长度的格式进行处理（uint16_t）。
+ *               "I"为使用4字节长度的格式进行处理（uint32_t）。
+ *               "Q"为使用8字节长度的格式进行处理（uint64_t）。
+ * @param dst 这是一个指针，指向结果的地址（结果可以只是8字节长度）。
+ * @param src 这是一个数字，它目前只能是整数。
+ * @return 返回一个wmkcErr对象，code为0代表无错误，如果为
+ *         其他值，那么需检查message与code。
+*/
 WMKC_PUBLIC(wmkcErr_obj) wmkcStruct_pack WMKC_OPEN_API
 WMKC_OF((wmkcString format, wmkcByte *dst, wmkcSize src))
 {
@@ -117,6 +171,26 @@ WMKC_OF((wmkcString format, wmkcByte *dst, wmkcSize src))
     wmkcErr_return(error, wmkcErr_OK, "OK.");
 }
 
+/**
+ * @brief 此函数用于将数据“解包”
+ * @authors SN-Grotesque
+ * 
+ * 此函数用于将数据“解包”
+ * 
+ * @note 如果你感到一头雾水，那么请参考Python的struct.unpack。
+ * @param format 此参数为格式符（必须包含端序符和格式符）。
+ *               在端序中，只支持【"\@"，">"，"<"】这三种。
+ *               "\@"为按本机原本的端序，也就是保持不变。
+ *               ">"为按大端序处理数据（如果本机是大端序，那么等同于"\@"）。
+ *               "<"为按小端序处理数据（如果本机是小端序，那么等同于"\@"）。
+ *               "H"为使用2字节长度的格式进行处理（uint16_t）。
+ *               "I"为使用4字节长度的格式进行处理（uint32_t）。
+ *               "Q"为使用8字节长度的格式进行处理（uint64_t）。
+ * @param dst 这是一个指针，指向结果的地址。
+ * @param src 这是一个指针，指向二进制缓冲区的地址。
+ * @return 返回一个wmkcErr对象，code为0代表无错误，如果为
+ *         其他值，那么需检查message与code。
+*/
 WMKC_PUBLIC(wmkcErr_obj) wmkcStruct_unpack WMKC_OPEN_API
 WMKC_OF((wmkcString format, wmkcVoid *dst, wmkcByte *src))
 {

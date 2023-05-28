@@ -1,7 +1,8 @@
+#include <wmkc_conf.h>
+
+#if WMKC_SUPPORT
 #ifndef WMKC_TIME
 #define WMKC_TIME
-
-#include <wmkc_conf.h>
 
 #include <time.h>
 #include <sys/timeb.h>
@@ -41,4 +42,5 @@ WMKC_OF((wmkcTime_obj *timer));
 WMKC_PUBLIC(wmkcVoid) wmkcTime_TimerPrint WMKC_OPEN_API
 WMKC_OF((wmkcString text, wmkcTime_obj *timer));
 
-#endif
+#endif /* WMKC_TIME */
+#endif /* WMKC_SUPPORT */

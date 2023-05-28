@@ -1,5 +1,6 @@
-/** Python Struct
- *  https://docs.python.org/zh-cn/3/library/struct.html
+/**
+ *  @brief Python Struct
+ *  @link https://docs.python.org/zh-cn/3/library/struct.html
  *  
  *  字节顺序，大小和对齐方法
  *  字符    字节顺序    大小        对齐方式
@@ -91,24 +92,70 @@
  *  对于 '?' 格式字符，返回值为 True 或 False。 在打包时将会使用参数对象的逻辑值。
  *  以本机或标准 bool 类型表示的 0 或 1 将被打包，任何非零值在解包时将为 True。
 */
-#ifndef WMKC_NUM
-#define WMKC_NUM
-
 #include <wmkc_conf.h>
 
+#if WMKC_SUPPORT
+#ifndef WMKC_STRUCT
+#define WMKC_STRUCT
+
 /**
- *  用来判断当前计算机是大端排序还是小端排序。
- *  小端返回True，大端返回False。
- *  wmkcStruct_PlatformEnd -> wmkcBool:
- *      Parameter: void
+ * @brief 此函数用于判断本机端序
+ * @authors SN-Grotesque
+ * 
+ * 此函数用于判断本机是大端序还是小端序。
+ * 
+ * @note 无
+ * @param 无
+ * @return 返回值为一个布尔值，为True时，本机为小端序。否则为大端序。
 */
 WMKC_PUBLIC(wmkcBool) wmkcStruct_PlatformEnd WMKC_OPEN_API
-WMKC_OF((void));
+WMKC_OF((wmkcVoid));
 
+/**
+ * @brief 此函数用于将数据“打包”
+ * @authors SN-Grotesque
+ * 
+ * 此函数用于将数据“打包”
+ * 
+ * @note 如果你感到一头雾水，那么请参考Python的struct.pack。
+ * @param format 此参数为格式符（必须包含端序符和格式符）。
+ *               在端序中，只支持【"\@"，">"，"<"】这三种。
+ *               "\@"为按本机原本的端序，也就是保持不变。
+ *               ">"为按大端序处理数据（如果本机是大端序，那么等同于"\@"）。
+ *               "<"为按小端序处理数据（如果本机是小端序，那么等同于"\@"）。
+ *               "H"为使用2字节长度的格式进行处理（uint16_t）。
+ *               "I"为使用4字节长度的格式进行处理（uint32_t）。
+ *               "Q"为使用8字节长度的格式进行处理（uint64_t）。
+ * @param dst 这是一个指针，指向结果的地址（结果可以只是8字节长度）。
+ * @param src 这是一个数字，它目前只能是整数。
+ * @return 返回一个wmkcErr对象，code为0代表无错误，如果为
+ *         其他值，那么需检查message与code。
+*/
 WMKC_PUBLIC(wmkcErr_obj) wmkcStruct_pack WMKC_OPEN_API
 WMKC_OF((wmkcString format, wmkcByte *dst, wmkcSize src));
 
+/**
+ * @brief 此函数用于将数据“解包”
+ * @authors SN-Grotesque
+ * 
+ * 此函数用于将数据“解包”
+ * 
+ * @note 如果你感到一头雾水，那么请参考Python的struct.unpack。
+ * @param format 此参数为格式符（必须包含端序符和格式符）。
+ *               在端序中，只支持【"\@"，">"，"<"】这三种。
+ *               "\@"为按本机原本的端序，也就是保持不变。
+ *               ">"为按大端序处理数据（如果本机是大端序，那么等同于"\@"）。
+ *               "<"为按小端序处理数据（如果本机是小端序，那么等同于"\@"）。
+ *               "H"为使用2字节长度的格式进行处理（uint16_t）。
+ *               "I"为使用4字节长度的格式进行处理（uint32_t）。
+ *               "Q"为使用8字节长度的格式进行处理（uint64_t）。
+ * @param dst 这是一个指针，指向结果的地址。
+ * @param src 这是一个指针，指向二进制缓冲区的地址。
+ * @return 返回一个wmkcErr对象，code为0代表无错误，如果为
+ *         其他值，那么需检查message与code。
+*/
 WMKC_PUBLIC(wmkcErr_obj) wmkcStruct_unpack WMKC_OPEN_API
 WMKC_OF((wmkcString format, wmkcVoid *dst, wmkcByte *src));
 
-#endif
+#endif /* WMKC_STRUCT */
+#endif /* WMKC_SUPPORT */
