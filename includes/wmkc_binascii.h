@@ -18,7 +18,7 @@
  * @param dst 这是一个指针，指向用于保存结果的指针的地址。
  * @param src 这是一个指针，指向源数据的地址。
  * @param srcSize 这是一个长度，表示源数据的长度。
- * @return 返回一个wmkcErr_obj对象，code为0代表无错误，如果为
+ * @return 返回一个wmkcErr对象，code为0代表无错误，如果为
  *         其他值，那么需检查message与code。
 */
 WMKC_PUBLIC(wmkcErr_obj) wmkcBinascii_b2a_hex WMKC_OPEN_API
@@ -38,7 +38,7 @@ WMKC_OF((wmkcByte **dst, wmkcByte *src, wmkcSize srcSize));
  * @param dst 这是一个指针，指向用于保存结果的指针的地址。
  * @param src 这是一个指针，指向源数据的地址。
  * @param srcSize 这是一个长度，表示源数据的长度。
- * @return 返回一个wmkcErr_obj对象，code为0代表无错误，如果为
+ * @return 返回一个wmkcErr对象，code为0代表无错误，如果为
  *         其他值，那么需检查message与code。
 */
 WMKC_PUBLIC(wmkcErr_obj) wmkcBinascii_a2b_hex WMKC_OPEN_API

@@ -1,3 +1,6 @@
+/**
+ * @note 此库具有实验性质，可以不编写注释。
+*/
 #include <wmkc_linkList.h>
 
 WMKC_PUBLIC(wmkcErr_obj) wmkcLinkList_new WMKC_OPEN_API

@@ -1,3 +1,6 @@
+/**
+ * @note 此库具有实验性质，可以不编写注释。
+*/
 #ifndef WMKC_LINKLIST
 #define WMKC_LINKLIST
 
@@ -8,15 +11,10 @@ typedef struct wmkcLink {
     struct wmkcLink *next;
 } wmkcLink;
 
+WMKC_PUBLIC(wmkcErr_obj) wmkcLinkList_new WMKC_OPEN_API
+WMKC_OF((wmkcLink **obj, wmkcSize length));
 
-
-
-
-
-
-
-
-
-
+WMKC_PUBLIC(wmkcErr_obj) wmkcLinkList_free WMKC_OPEN_API
+WMKC_OF((wmkcLink **obj));
 
 #endif

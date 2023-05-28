@@ -68,7 +68,7 @@ typedef enum {
  * @note 无
  * @param obj 这是一个指针，指向wmkcHash对象指针的地址。
  * @param hashType 为哈希算法类型，此值必须介于[0, 5]。
- * @return 返回一个wmkcErr_obj对象，code为0代表无错误，如果为
+ * @return 返回一个wmkcErr对象，code为0代表无错误，如果为
  *         其他值，那么需检查message与code。
 **/
 WMKC_PUBLIC(wmkcErr_obj) wmkcHash_new WMKC_OPEN_API
@@ -87,7 +87,7 @@ WMKC_OF((wmkcHash_obj **obj, wmkcHash_Type hashType));
  * @param hash 这是一个指针，指向wmkcHash对象的地址。
  * @param buf 这是一个指针，指向一段数据的地址。
  * @param suze 这是一个长度，代表buf指向的内容的长度。
- * @return 返回一个wmkcErr_obj对象，code为0代表无错误，如果为
+ * @return 返回一个wmkcErr对象，code为0代表无错误，如果为
  *         其他值，那么需检查message与code。
 **/
 WMKC_PUBLIC(wmkcErr_obj) wmkcHash WMKC_OPEN_API
@@ -107,7 +107,7 @@ WMKC_OF((wmkcHash_obj *hash, wmkcByte *buf, wmkcSize size));
  * @param hash 这是一个指针，指向wmkcHash对象的地址。
  * @param fn 这是一个指针，指向路径的字符串地址，如果传入字符串而不是指针，那么
  *           应使用wmkcFile_text宏对字符串进行转换。
- * @return 返回一个wmkcErr_obj对象，code为0代表无错误，如果为
+ * @return 返回一个wmkcErr对象，code为0代表无错误，如果为
  *         其他值，那么需检查message与code。
 **/
 WMKC_PUBLIC(wmkcErr_obj) wmkcHash_file WMKC_OPEN_API
@@ -121,7 +121,7 @@ WMKC_OF((wmkcHash_obj *hash, wmkcFileString fn));
  *
  * @note 无
  * @param obj 这是一个指针，指向wmkcHash对象指针的地址。
- * @return 返回一个wmkcErr_obj对象，code为0代表无错误，如果为
+ * @return 返回一个wmkcErr对象，code为0代表无错误，如果为
  *         其他值，那么需检查message与code。
 **/
 WMKC_PUBLIC(wmkcErr_obj) wmkcHash_free WMKC_OPEN_API

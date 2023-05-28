@@ -9,7 +9,7 @@
  * @note 私有函数。
  * @param number_string 此参数是一个wmkcChar指针，指向数字字符串的地址。
  * @param size 此参数是number_string的长度。
- * @return 返回一个wmkcErr_obj对象，code为0代表无错误，如果为
+ * @return 返回一个wmkcErr对象，code为0代表无错误，如果为
  *         其他值，那么需检查message与code。
 */
 WMKC_PRIVATE(wmkcErr_obj) wmkcBigNum_ArrayReversal
@@ -55,7 +55,7 @@ WMKC_OF((wmkcChar *number_string, wmkcSize size))
  * @param dst 此参数是一个wmkcChar指针的地址，指向结果指针的地址。
  * @param _src1 此参数是wmkcChar指针，指向第一个数字字符串的地址。
  * @param _src2 此参数是wmkcChar指针，指向第二个数字字符串的地址。
- * @return 返回一个wmkcErr_obj对象，code为0代表无错误，如果为
+ * @return 返回一个wmkcErr对象，code为0代表无错误，如果为
  *         其他值，那么需检查message与code。
 */
 WMKC_PUBLIC(wmkcErr_obj) wmkcBigNum_add WMKC_OPEN_API
@@ -135,7 +135,7 @@ WMKC_OF((wmkcChar **dst, wmkcChar *src1, wmkcChar *src2))
  * @param dst 此参数是一个wmkcChar指针的地址，指向结果指针的地址。
  * @param _src1 此参数是wmkcChar指针，指向第一个数字字符串的地址。
  * @param _src2 此参数是wmkcChar指针，指向第二个数字字符串的地址。
- * @return 返回一个wmkcErr_obj对象，code为0代表无错误，如果为
+ * @return 返回一个wmkcErr对象，code为0代表无错误，如果为
  *         其他值，那么需检查message与code。
 */
 WMKC_PUBLIC(wmkcErr_obj) wmkcBigNum_sub WMKC_OPEN_API
@@ -165,7 +165,7 @@ WMKC_OF((wmkcChar **dst, wmkcChar *src1, wmkcChar *src2))
  * @param dst 此参数是一个wmkcChar指针的地址，指向结果指针的地址。
  * @param _src1 此参数是wmkcChar指针，指向第一个数字字符串的地址。
  * @param _src2 此参数是wmkcChar指针，指向第二个数字字符串的地址。
- * @return 返回一个wmkcErr_obj对象，code为0代表无错误，如果为
+ * @return 返回一个wmkcErr对象，code为0代表无错误，如果为
  *         其他值，那么需检查message与code。
 */
 WMKC_PUBLIC(wmkcErr_obj) wmkcBigNum_mul WMKC_OPEN_API
@@ -192,7 +192,7 @@ WMKC_OF((wmkcChar **dst, wmkcChar *src1, wmkcChar *src2))
  * @param dst 此参数是一个wmkcChar指针的地址，指向结果指针的地址。
  * @param _src1 此参数是wmkcChar指针，指向第一个数字字符串的地址。
  * @param _src2 此参数是wmkcChar指针，指向第二个数字字符串的地址。
- * @return 返回一个wmkcErr_obj对象，code为0代表无错误，如果为
+ * @return 返回一个wmkcErr对象，code为0代表无错误，如果为
  *         其他值，那么需检查message与code。
 */
 WMKC_PUBLIC(wmkcErr_obj) wmkcBigNum_div WMKC_OPEN_API
@@ -216,7 +216,7 @@ WMKC_OF((wmkcChar **dst, wmkcChar *src1, wmkcChar *src2))
  * @param dst 此参数是一个wmkcChar指针的地址，指向结果指针的地址。
  * @param _src1 此参数是wmkcChar指针，指向第一个数字字符串的地址。
  * @param _src2 此参数是wmkcChar指针，指向第二个数字字符串的地址。
- * @return 返回一个wmkcErr_obj对象，code为0代表无错误，如果为
+ * @return 返回一个wmkcErr对象，code为0代表无错误，如果为
  *         其他值，那么需检查message与code。
 */
 WMKC_PUBLIC(wmkcErr_obj) wmkcBigNum_mod WMKC_OPEN_API
@@ -242,7 +242,7 @@ WMKC_OF((wmkcChar **dst, wmkcChar *src1, wmkcChar *src2))
  * @param dst 此参数是一个wmkcChar指针的地址，指向结果指针的地址。
  * @param _src1 此参数是wmkcChar指针，指向第一个数字字符串的地址。
  * @param _src2 此参数是wmkcChar指针，指向第二个数字字符串的地址。
- * @return 返回一个wmkcErr_obj对象，code为0代表无错误，如果为
+ * @return 返回一个wmkcErr对象，code为0代表无错误，如果为
  *         其他值，那么需检查message与code。
 */
 WMKC_PUBLIC(wmkcErr_obj) wmkcBigNum_pow WMKC_OPEN_API

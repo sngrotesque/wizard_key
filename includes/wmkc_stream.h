@@ -10,7 +10,7 @@
  *  left, right    要拼接的两个内容
 */
 WMKC_PUBLIC(wmkcErr_obj) wmkcStream_Splicing WMKC_OPEN_API
-WMKC_OF((wmkcObject **dst, wmkcObject *left, wmkcObject *right));
+WMKC_OF((wmkc_obj **dst, wmkc_obj *left, wmkc_obj *right));
 
 /**
  *  此函数：内容切片
@@ -19,7 +19,7 @@ WMKC_OF((wmkcObject **dst, wmkcObject *left, wmkcObject *right));
  *  start  切片开始处
 */
 WMKC_PUBLIC(wmkcErr_obj) wmkcStream_Slice WMKC_OPEN_API
-WMKC_OF((wmkcObject **dst, wmkcObject *src, wmkcSSize start, wmkcSSize end));
+WMKC_OF((wmkc_obj **dst, wmkc_obj *src, wmkcSSize start, wmkcSSize end));
 
 /**
  *  此函数：内容输入

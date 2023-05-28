@@ -10,8 +10,8 @@
 
 // wmkcBase64对象
 typedef struct {
-    wmkcObject *src;
-    wmkcObject *dst;
+    wmkc_obj *src;
+    wmkc_obj *dst;
 } wmkcBase64_obj;
 
 /**
@@ -26,7 +26,7 @@ typedef struct {
  * @return 此函数返回一个wmkcSize类型变量，代表编码后的长度值。
 */
 WMKC_PUBLIC(wmkcSize) wmkcBase64_encode_size WMKC_OPEN_API
-WMKC_OF((wmkcObject *src));
+WMKC_OF((wmkc_obj *src));
 
 /**
  * @brief 获取数据经过Base64解码后的长度
@@ -41,7 +41,7 @@ WMKC_OF((wmkcObject *src));
  * @return 此函数返回一个wmkcSize类型变量，代表解码后的长度值。
 */
 WMKC_PUBLIC(wmkcSize) wmkcBase64_decode_size WMKC_OPEN_API
-WMKC_OF((wmkcObject *src));
+WMKC_OF((wmkc_obj *src));
 
 /**
  * @brief 新建一个wmkcBase64对象
@@ -51,7 +51,7 @@ WMKC_OF((wmkcObject *src));
  * 
  * @note 无。
  * @param obj 此参数是一个wmkcBase64对象的地址。
- * @return 返回一个wmkcErr_obj对象，code为0代表无错误，如果为
+ * @return 返回一个wmkcErr对象，code为0代表无错误，如果为
  *         其他值，那么需检查message与code。
 */
 WMKC_PUBLIC(wmkcErr_obj) wmkcBase64_new WMKC_OPEN_API
@@ -65,7 +65,7 @@ WMKC_OF((wmkcBase64_obj **obj));
  * 
  * @note 无。
  * @param obj 此参数是一个wmkcBase64对象的地址。
- * @return 返回一个wmkcErr_obj对象，code为0代表无错误，如果为
+ * @return 返回一个wmkcErr对象，code为0代表无错误，如果为
  *         其他值，那么需检查message与code。
 */
 WMKC_PUBLIC(wmkcErr_obj) wmkcBase64_free WMKC_OPEN_API
@@ -80,11 +80,11 @@ WMKC_OF((wmkcBase64_obj **obj));
  * @note 无。
  * @param src 此参数是一个wmkc对象，应至少包含数据与数据长度。
  * @param dst 此参数是一个wmkc对象，应至少包含数据与数据长度。
- * @return 返回一个wmkcErr_obj对象，code为0代表无错误，如果为
+ * @return 返回一个wmkcErr对象，code为0代表无错误，如果为
  *         其他值，那么需检查message与code。
 */
 WMKC_PUBLIC(wmkcErr_obj) wmkcBase64_Encode WMKC_OPEN_API
-WMKC_OF((wmkcObject *dst, wmkcObject *src));
+WMKC_OF((wmkc_obj *dst, wmkc_obj *src));
 
 /**
  * @brief Base64解码函数
@@ -95,11 +95,11 @@ WMKC_OF((wmkcObject *dst, wmkcObject *src));
  * @note 无。
  * @param src 此参数是一个wmkc对象，应至少包含数据与数据长度。
  * @param dst 此参数是一个wmkc对象，应至少包含数据与数据长度。
- * @return 返回一个wmkcErr_obj对象，code为0代表无错误，如果为
+ * @return 返回一个wmkcErr对象，code为0代表无错误，如果为
  *         其他值，那么需检查message与code。
 */
 WMKC_PUBLIC(wmkcErr_obj) wmkcBase64_Decode WMKC_OPEN_API
-WMKC_OF((wmkcObject *dst, wmkcObject *src));
+WMKC_OF((wmkc_obj *dst, wmkc_obj *src));
 
 #endif /* WMKC_BASE */
 #endif /* WMKC_SUPPORT */

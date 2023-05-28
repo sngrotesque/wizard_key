@@ -1,3 +1,7 @@
+/**
+ * @note 此库是一个杂项库，可以不添加WMKC_SUPPORT宏进行强行
+ *       判断。也可以不添加注释。
+*/
 #include <wmkc_misc.h>
 
 WMKC_PUBLIC(wmkcVoid) wmkcMisc_PRINT WMKC_OPEN_API

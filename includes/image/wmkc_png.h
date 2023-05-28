@@ -27,7 +27,7 @@ typedef struct wmkcPng_block {
  * 
  * @note 未完成
  * @param obj wmkcPng对象的地址
- * @return 返回一个wmkcErr_obj对象，code为0代表无错误，如果为
+ * @return 返回一个wmkcErr对象，code为0代表无错误，如果为
  *         其他值，那么需检查message与code。
 */
 WMKC_PUBLIC(wmkcErr_obj) wmkcPng_new WMKC_OPEN_API
@@ -41,7 +41,7 @@ WMKC_OF((wmkcPng_block **obj));
  * 
  * @note 未完成
  * @param obj wmkcPng对象的地址
- * @return 返回一个wmkcErr_obj对象，code为0代表无错误，如果为
+ * @return 返回一个wmkcErr对象，code为0代表无错误，如果为
  *         其他值，那么需检查message与code。
 */
 WMKC_PUBLIC(wmkcErr_obj) wmkcPng_free WMKC_OPEN_API

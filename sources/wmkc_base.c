@@ -30,7 +30,7 @@ WMKC_PRIVATE_CONST(wmkcByte) _B64DT[123] = {
  * @return 此函数返回一个wmkcSize类型变量，代表编码后的长度值。
 */
 WMKC_PUBLIC(wmkcSize) wmkcBase64_encode_size WMKC_OPEN_API
-WMKC_OF((wmkcObject *src))
+WMKC_OF((wmkc_obj *src))
 {
     if(src->size % 3)
         return (src->size / 3 + 1) * 4;
@@ -50,7 +50,7 @@ WMKC_OF((wmkcObject *src))
  * @return 此函数返回一个wmkcSize类型变量，代表解码后的长度值。
 */
 WMKC_PUBLIC(wmkcSize) wmkcBase64_decode_size WMKC_OPEN_API
-WMKC_OF((wmkcObject *src))
+WMKC_OF((wmkc_obj *src))
 {
     if ((src->buf[src->size - 1] & src->buf[src->size - 2]) == WMKC_BASE64_PAD)
         return src->size / 4 * 3 - 2;
@@ -68,7 +68,7 @@ WMKC_OF((wmkcObject *src))
  * 
  * @note 无。
  * @param obj 此参数是一个wmkcBase64对象的地址。
- * @return 返回一个wmkcErr_obj对象，code为0代表无错误，如果为
+ * @return 返回一个wmkcErr对象，code为0代表无错误，如果为
  *         其他值，那么需检查message与code。
 */
 WMKC_PUBLIC(wmkcErr_obj) wmkcBase64_new WMKC_OPEN_API
@@ -83,11 +83,11 @@ WMKC_OF((wmkcBase64_obj **obj))
         wmkcErr_return(error, wmkcErr_ErrMemory,
             "wmkcBase64_new: (*obj) Failed to apply for memory.");
     }
-    if(!wmkcMemoryNew(wmkcObject *, (*obj)->src, sizeof(wmkcObject))) {
+    if(!wmkcMemoryNew(wmkc_obj *, (*obj)->src, sizeof(wmkc_obj))) {
         wmkcErr_return(error, wmkcErr_ErrMemory,
             "wmkcBase64_new: (*obj)->src Failed to apply for memory.");
     }
-    if(!wmkcMemoryNew(wmkcObject *, (*obj)->dst, sizeof(wmkcObject))) {
+    if(!wmkcMemoryNew(wmkc_obj *, (*obj)->dst, sizeof(wmkc_obj))) {
         wmkcErr_return(error, wmkcErr_ErrMemory,
             "wmkcBase64_new: (*obj)->dst Failed to apply for memory.");
     }
@@ -103,7 +103,7 @@ WMKC_OF((wmkcBase64_obj **obj))
  * 
  * @note 无。
  * @param obj 此参数是一个wmkcBase64对象的地址。
- * @return 返回一个wmkcErr_obj对象，code为0代表无错误，如果为
+ * @return 返回一个wmkcErr对象，code为0代表无错误，如果为
  *         其他值，那么需检查message与code。
 */
 WMKC_PUBLIC(wmkcErr_obj) wmkcBase64_free WMKC_OPEN_API
@@ -130,11 +130,11 @@ WMKC_OF((wmkcBase64_obj **obj))
  * @note 无。
  * @param src 此参数是一个wmkc对象，应至少包含数据与数据长度。
  * @param dst 此参数是一个wmkc对象，应至少包含数据与数据长度。
- * @return 返回一个wmkcErr_obj对象，code为0代表无错误，如果为
+ * @return 返回一个wmkcErr对象，code为0代表无错误，如果为
  *         其他值，那么需检查message与code。
 */
 WMKC_PUBLIC(wmkcErr_obj) wmkcBase64_Encode WMKC_OPEN_API
-WMKC_OF((wmkcObject *dst, wmkcObject *src))
+WMKC_OF((wmkc_obj *dst, wmkc_obj *src))
 {
     wmkcErr_obj error;
     if(!dst || !src) {
@@ -179,11 +179,11 @@ WMKC_OF((wmkcObject *dst, wmkcObject *src))
  * @note 无。
  * @param src 此参数是一个wmkc对象，应至少包含数据与数据长度。
  * @param dst 此参数是一个wmkc对象，应至少包含数据与数据长度。
- * @return 返回一个wmkcErr_obj对象，code为0代表无错误，如果为
+ * @return 返回一个wmkcErr对象，code为0代表无错误，如果为
  *         其他值，那么需检查message与code。
 */
 WMKC_PUBLIC(wmkcErr_obj) wmkcBase64_Decode WMKC_OPEN_API
-WMKC_OF((wmkcObject *dst, wmkcObject *src))
+WMKC_OF((wmkc_obj *dst, wmkc_obj *src))
 {
     wmkcErr_obj error;
     if(!dst || !src) {

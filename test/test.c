@@ -57,7 +57,12 @@ static wmkcByte iv[32] = {
 
 void test()
 {
-    wmkcHash(wmkcNull, wmkcNull, 0);
+    wmkcKey_obj *key = wmkcNull;
+    wmkcKey_new(&key, wmkcNull, 0, true);
+    key->key = (wmkcVoid *)0xffffffffffffffff;
+    key->mode = 0xeeeeeeee;
+    key->size = 0xdddddddd;
+    wmkcMisc_PRINT((wmkcByte *)key, sizeof(wmkcKey_obj), 16, 1, 0);
 }
 
 int main(int argc, char **argv)

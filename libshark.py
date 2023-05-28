@@ -37,7 +37,7 @@ source_file_list = [
     'sources/wmkcMath.c',
     'sources/wmkcMisc.c',
     'sources/wmkcStruct.c',
-    'sources/wmkcObject.c',
+    'sources/wmkc_obj.c',
     'sources/wmkcPad.c',
     'sources/snRand.c',
     'sources/snSort.c',

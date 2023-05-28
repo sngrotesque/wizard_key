@@ -38,6 +38,11 @@ WMKC_PRIVATE_CONST(wmkcByte) wmkcKey_RSBOX[256] = {
     0x5e, 0x3e, 0xde, 0x22, 0x51, 0x40, 0x17, 0x48, 0x9e, 0x15, 0x0f, 0x73, 0x06, 0xd2, 0x6a, 0x78
 };
 
+/**
+ * @brief 这堆私有函数的注释我实在不想写。
+ * @authors SN-Grotesque
+ * @example 反正就那样，也不需要写，这谁看不懂。
+*/
 WMKC_PRIVATE(wmkcVoid) _wmkcKey_SubBytes
 WMKC_OF((wmkcKey_state *buf))
 {
@@ -89,7 +94,7 @@ WMKC_OF((wmkcKey_state *buf))
 WMKC_PRIVATE(wmkcVoid) _wmkcKey_Cipher
 WMKC_OF((wmkcKey_state *buf))
 {
-    for(wmkc_u32 x = 0; x < WMKC_KEY_ROUND; ++x) {
+    for(wmkc_u32 x = 0; x < WMKC_KEY_CRYPTO_NR; ++x) {
         _wmkcKey_MatrixRows(buf);
         _wmkcKey_SubBytes(buf);
         _wmkcKey_MatrixMixs(buf);
@@ -99,15 +104,29 @@ WMKC_OF((wmkcKey_state *buf))
 WMKC_PRIVATE(wmkcVoid) _wmkcKey_InvCipher
 WMKC_OF((wmkcKey_state *buf))
 {
-    for(wmkc_u32 x = 0; x < WMKC_KEY_ROUND; ++x) {
+    for(wmkc_u32 x = 0; x < WMKC_KEY_CRYPTO_NR; ++x) {
         _wmkcKey_InvMatrixMixs(buf);
         _wmkcKey_InvSubBytes(buf);
         _wmkcKey_MatrixRows(buf);
     }
 }
 
+/**
+ * @brief 为wmkcKey对象申请内存空间
+ * @authors SN-Grotesque
+ * 
+ * 为wmkcKey对象申请内存空间并初始化
+ * 
+ * @note 如果key或者keySize为空，那么mode参数无效。
+ * @param obj 这是一个指针，指向wmkcKey对象指针的地址。
+ * @param key 这是一个指针，指向密钥数据的地址，可以为空。
+ * @param keySize 这是一个长度，为key指针指向的密钥数据的长度。
+ * @param mode 这是一个模式，1为加密，0为解密。
+ * @return 返回一个wmkcErr对象，code为0代表无错误，如果为
+ *         其他值，那么需检查message与code。
+*/
 WMKC_PUBLIC(wmkcErr_obj) wmkcKey_new WMKC_OPEN_API
-WMKC_OF((wmkcKey_obj **obj, wmkcByte *key, wmkcSize keySize, wmkcBool mode))
+WMKC_OF((wmkcKey_obj **obj, wmkcByte *key, wmkc_u32 keySize, wmkc_u32 mode))
 {
     wmkcErr_obj error;
     if(!obj) {
@@ -136,6 +155,17 @@ WMKC_OF((wmkcKey_obj **obj, wmkcByte *key, wmkcSize keySize, wmkcBool mode))
     wmkcErr_return(error, wmkcErr_OK, "OK.");
 }
 
+/**
+ * @brief 为wmkcKey对象释放内存空间
+ * @authors SN-Grotesque
+ * 
+ * 为wmkcKey对象释放内存空间
+ * 
+ * @note 无
+ * @param obj 这是一个指针，指向wmkcKey对象指针的地址。
+ * @return 返回一个wmkcErr对象，code为0代表无错误，如果为
+ *         其他值，那么需检查message与code。
+*/
 WMKC_PUBLIC(wmkcErr_obj) wmkcKey_free WMKC_OPEN_API
 WMKC_OF((wmkcKey_obj **obj))
 {
@@ -152,6 +182,17 @@ WMKC_OF((wmkcKey_obj **obj))
     wmkcErr_return(error, wmkcErr_OK, "OK.");
 }
 
+/**
+ * @brief 将密钥数据进行混淆与弱加密
+ * @authors SN-Grotesque
+ * 
+ * 混淆与弱加密wmkcKey对象key成员指针指向的密钥
+ * 
+ * @note 此函数只能处理长度为4的倍数的数据。
+ * @param obj 这是一个指针，指向wmkcKey对象指针的地址。
+ * @return 返回一个wmkcErr对象，code为0代表无错误，如果为
+ *         其他值，那么需检查message与code。
+*/
 WMKC_PUBLIC(wmkcErr_obj) wmkcKey_CryptKey WMKC_OPEN_API
 WMKC_OF((wmkcKey_obj *obj))
 {
@@ -159,23 +200,36 @@ WMKC_OF((wmkcKey_obj *obj))
     if(!obj) {
         wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcKey_CryptKey: obj is NULL.");
     }
-    if(obj->size % 4) {
+    if(obj->size % WMKC_KEY_CRYPTO_BLOCKLEN) {
         wmkcErr_return(error, wmkcErr_ErrType,
             "wmkcKey_CryptKey: The length of the key should be a multiple of 4.");
     }
-    wmkcSize x;
+    wmkc_u32 x;
 
     if(obj->mode) {
-        for(x = 0; x < obj->size; x += 4)
+        for(x = 0; x < obj->size; x += WMKC_KEY_CRYPTO_BLOCKLEN)
             _wmkcKey_Cipher((wmkcKey_state *)(obj->key + x));
     } else {
-        for(x = 0; x < obj->size; x += 4)
+        for(x = 0; x < obj->size; x += WMKC_KEY_CRYPTO_BLOCKLEN)
             _wmkcKey_InvCipher((wmkcKey_state *)(obj->key + x));
     }
 
     wmkcErr_return(error, wmkcErr_OK, "OK.");
 }
 
+/**
+ * @brief 导入密钥
+ * @authors SN-Grotesque
+ * 
+ * 根据指定的路径导入密钥，如果obj->mode等于false，那么会同时进行解密。
+ * 
+ * @note 未完成
+ * @param obj 这是一个指针，指向wmkcKey对象指针的地址。
+ * @param fn 这是一个指针，指向路径的字符串地址，如果传入字符串而不是指针，那么
+ *           应使用wmkcFile_text宏对字符串进行转换。
+ * @return 返回一个wmkcErr对象，code为0代表无错误，如果为
+ *         其他值，那么需检查message与code。
+*/
 WMKC_PUBLIC(wmkcErr_obj) wmkcKey_loadKey WMKC_OPEN_API
 WMKC_OF((wmkcKey_obj *obj, wmkcString fn))
 {
@@ -183,24 +237,22 @@ WMKC_OF((wmkcKey_obj *obj, wmkcString fn))
     wmkcErr_return(error, wmkcErr_OK, "OK.");
 }
 
+/**
+ * @brief 写入密钥
+ * @authors SN-Grotesque
+ * 
+ * 根据指定的路径写入密钥，如果obj->mode等于true，那么会同时进行加密。
+ * 
+ * @note 未完成
+ * @param obj 这是一个指针，指向wmkcKey对象指针的地址。
+ * @param fn 这是一个指针，指向路径的字符串地址，如果传入字符串而不是指针，那么
+ *           应使用wmkcFile_text宏对字符串进行转换。
+ * @return 返回一个wmkcErr对象，code为0代表无错误，如果为
+ *         其他值，那么需检查message与code。
+*/
 WMKC_PUBLIC(wmkcErr_obj) wmkcKey_saveKey WMKC_OPEN_API
 WMKC_OF((wmkcKey_obj *obj, wmkcString fn))
 {
     wmkcErr_obj error;
-    wmkcBase64_obj *base64 = wmkcNull;
-    wmkcFile_obj *file = wmkcNull;
-    wmkcBase64_new(&base64);
-    wmkcFile_new(&file);
-
-    // base64->src = obj->key;
-    // base64->srcSize = obj->size;
-
-    if(obj->mode == WMKC_KEY_MODE_ENCRYPT) {
-        wmkcKey_CryptKey(obj);
-    }
-
-
-    wmkcBase64_free(&base64);
-    wmkcFile_free(&file);
     wmkcErr_return(error, wmkcErr_OK, "OK.");
 }

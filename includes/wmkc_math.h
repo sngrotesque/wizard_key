@@ -1,35 +1,77 @@
+#include <wmkc_conf.h>
+
+#if WMKC_SUPPORT
 #ifndef WMKC_MATH
 #define WMKC_MATH
 
 #ifdef __cplusplus
 extern "C" {
-#endif
+#endif /* __cplusplus */
 
-#include <wmkc_conf.h>
 #include <math.h>
 
-#ifndef WMKC_MEMORY
-#include <stdlib.h>
-#endif
-
-// 求n的m次方
-WMKC_PUBLIC(wmkcSize) wmkcMath_Pow WMKC_OPEN_API
+/**
+ * @brief 求出n的m次方
+ * @authors SN-Grotesque
+ * 
+ * 使用for循环计算n的m次方
+ * 
+ * @note 此函数的存在是为了兼容部分Linux操作系统在
+ *       使用pow函数时需要额外链接一下的问题。
+ * @param n 是基数
+ * @param m 是幂
+ * @return 返回一个wmkcSize类型，为结果
+*/
+WMKC_PUBLIC(wmkcSize) wmkcMath_pow WMKC_OPEN_API
 WMKC_OF((wmkcSize n, wmkcSize m));
 
-// 求一个范围内的质数
-WMKC_PUBLIC(wmkcSize *) wmkcMath_PrimeNumber WMKC_OPEN_API
-WMKC_OF((wmkcSize minValue, wmkcSize maxValue));
+/**
+ * @brief 求范围内的所有质数
+ * @authors SN-Grotesque
+ * 
+ * 求指定范围内的所有质数
+ * 
+ * @note 此函数可能存在一些隐藏的BUG，请后续处理一下。
+ *       以及我认为这个函数后续可以通过链表等结构优化一下结果。
+ * @param min 范围的最小值
+ * @param max 范围的最大值
+ * @return 返回一个wmkcSize指针，指向结果数组的地址。
+*/
+WMKC_PUBLIC(wmkcSize *) wmkcMath_primeNumber WMKC_OPEN_API
+WMKC_OF((wmkcSize min, wmkcSize max));
 
-// 求n1和n2的公因数
-WMKC_PUBLIC(wmkcSize *) wmkcMath_CommonFactor WMKC_OPEN_API
+/**
+ * @brief 求n1和n2的所有公因数
+ * @authors SN-Grotesque
+ * 
+ * 求n1和n2的所有公因数
+ * 
+ * @note 此函数可能存在一些隐藏的BUG，请后续处理一下。
+ *       以及我认为这个函数后续可以通过链表等结构优化一下结果。
+ * @param n1 第一个数
+ * @param n2 第二个数
+ * @return 返回一个wmkcSize指针，指向结果数组的地址。
+*/
+WMKC_PUBLIC(wmkcSize *) wmkcMath_commonFactor WMKC_OPEN_API
 WMKC_OF((wmkcSize n1, wmkcSize n2));
 
-// 求_num的所有因数
-WMKC_PUBLIC(wmkcSize *) wmkcMath_Factor WMKC_OPEN_API
-WMKC_OF((wmkcSize _num));
+/**
+ * @brief 求n的所有因数
+ * @authors SN-Grotesque
+ * 
+ * 求n的所有因数
+ * 
+ * @note 此函数可能存在一些隐藏的BUG，请后续处理一下。
+ *       以及我认为这个函数后续可以通过链表等结构优化一下结果。
+ * @param n 一个正整数
+ * @return 返回一个wmkcSize指针，指向结果数组的地址。
+*/
+WMKC_PUBLIC(wmkcSize *) wmkcMath_factor WMKC_OPEN_API
+WMKC_OF((wmkcSize n));
 
 #ifdef __cplusplus
 }
-#endif
+#endif /* __cplusplus */
 
-#endif
+#endif /* WMKC_MATH */
+#endif /* WMKC_SUPPORT */

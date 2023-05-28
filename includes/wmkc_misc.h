@@ -1,4 +1,8 @@
-﻿#ifndef WMKC_MISC
+﻿/**
+ * @note 此库是一个杂项库，可以不添加WMKC_SUPPORT宏进行强行
+ *       判断。也可以不添加注释。
+*/
+#ifndef WMKC_MISC
 #define WMKC_MISC
 #include <wmkc_conf.h>
 

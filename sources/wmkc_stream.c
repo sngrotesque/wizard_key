@@ -1,7 +1,7 @@
 #include <wmkc_stream.h>
 
 WMKC_PUBLIC(wmkcErr_obj) wmkcStream_Splicing WMKC_OPEN_API
-WMKC_OF((wmkcObject **dst, wmkcObject *left, wmkcObject *right))
+WMKC_OF((wmkc_obj **dst, wmkc_obj *left, wmkc_obj *right))
 {
     wmkcErr_obj error;
     if(!dst || !left || !right) {
@@ -23,7 +23,7 @@ WMKC_OF((wmkcObject **dst, wmkcObject *left, wmkcObject *right))
 }
 
 WMKC_PUBLIC(wmkcErr_obj) wmkcStream_Slice WMKC_OPEN_API
-WMKC_OF((wmkcObject **dst, wmkcObject *src, wmkcSSize start, wmkcSSize end))
+WMKC_OF((wmkc_obj **dst, wmkc_obj *src, wmkcSSize start, wmkcSSize end))
 {
     wmkcErr_obj error;
     if(end < 0) {
