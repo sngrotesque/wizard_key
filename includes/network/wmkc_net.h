@@ -19,14 +19,20 @@
 #include <math.h>
 
 // TCP套接字
-#define wmkcNet_TCP_Socket(family, protocol) socket(family, SOCK_STREAM, protocol)
+#define wmkcNet_TCP_Socket(family, protocol) \
+    socket(family, SOCK_STREAM, protocol)
+
 // UDP套接字
-#define wmkcNet_UDP_Socket(family, protocol) socket(family, SOCK_DGRAM, protocol)
+#define wmkcNet_UDP_Socket(family, protocol) \
+    socket(family, SOCK_DGRAM, protocol)
 
 // 示例: wmkcNet_GetAddr(server->sin_addr :struct in_addr) -> cbar *
 #define wmkcNet_GetAddr(info) inet_ntoa(info)
+
 // 示例: wmkcNet_GetAddr6(server->sin6_addr :struct in6_addr, ipv6String :char *) -> char * || NULL
-#define wmkcNet_GetAddr6(info, ipv6String) inet_ntop(AF_INET6, info, ipv6String, INET6_ADDRSTRLEN)
+#define wmkcNet_GetAddr6(info, ipv6String) \
+    inet_ntop(AF_INET6, info, ipv6String, INET6_ADDRSTRLEN)
+
 // 示例: wmkcNet_GetPort(server->sin_port :u_short) -> u_short
 #define wmkcNet_GetPort(info) ntohs(info)
 
@@ -64,19 +70,13 @@ typedef struct sockaddr_in6 SOCKADDR_IN6;  // IPv6网络结构
 typedef        wmkc_u32     wmkcNetSocket; // wmkcNet的socket类型
 typedef        wmkcVoid     wmkcNetTimer;  // wmkcNet的计时类型
 typedef        wmkcByte     wmkcNetBuf;    // wmkcNet的缓冲区类型
-#endif // #if defined(WMKC_PLATFORM_LINUX)
-
-#if defined(WMKC_PLATFORM_WINOS)
-/**
- *  如果在使用此库的同时使用其他库，那么请确保此库为第一个导入的。
- *  或者请不要同时使用那些会导入Windows.h库的库。
-*/ 
+#elif defined(WMKC_PLATFORM_WINOS)
 #include <WS2tcpip.h>
 #pragma comment(lib, "WS2_32.lib")
 typedef SOCKET    wmkcNetSocket; // wmkcNet的socket类型
 typedef wmkcChar  wmkcNetTimer;  // wmkcNet的计时类型
 typedef wmkcChar  wmkcNetBuf;    // wmkcNet的缓冲区类型
-#endif // #if defined(WMKC_PLATFORM_WINOS)
+#endif /* #if defined(WMKC_PLATFORM_LINUX) */
 
 typedef wmkcFloat wmkcNetTime; // wmkcNet的时间类型
 typedef socklen_t wmkcNetSize; // wmkcNet的长度类型
@@ -90,37 +90,71 @@ typedef struct {
     SOCKADDR     *addr_info;      // 用于保留地址信息的结构体【size: 8】
 } wmkcNet_obj;
 
-// 申请wmkcNet对象的内存空间
+/**
+ * @brief 为wmkcNet对象申请内存空间
+ * @authors SN-Grotesque
+ * @note 无
+ * @param obj 这是一个指针，指向wmkcNet对象指针的地址。
+ * @param family 这是一个网络家族类型，只能是AF_INET或AF_INET6。
+ * @return 返回一个wmkcErr对象，code为0代表无错误，如果为
+ *         其他值，那么需检查message与code。
+ */
 WMKC_PUBLIC(wmkcErr_obj) wmkcNet_new WMKC_OPEN_API
-WMKC_OF((wmkcNet_obj **ctx, wmkc_u32 family));
+WMKC_OF((wmkcNet_obj **obj, wmkc_u32 family));
 
-// 释放wmkcNet对象。
+/**
+ * @brief 为wmkcNet对象释放内存空间
+ * @authors SN-Grotesque
+ * @note 无
+ * @param obj 这是一个指针，指向wmkcNet对象指针的地址。
+ * @return 返回一个wmkcErr对象，code为0代表无错误，如果为
+ *         其他值，那么需检查message与code。
+ */
 WMKC_PUBLIC(wmkcErr_obj) wmkcNet_free WMKC_OPEN_API
-WMKC_OF((wmkcNet_obj **ctx));
+WMKC_OF((wmkcNet_obj **obj));
 
-// 初始化wmkcNet对象（需提前申请内存空间）
+/**
+ * @brief 初始化wmkcNet对象
+ * @authors SN-Grotesque
+ * @note 需要使用wmkcNet_new函数提前申请内存空间
+ * @param obj 这是一个指针，指向wmkcNet对象的地址。
+ * @param hostname 这是一个指针，指向域名字符串的地址，会自动将域名解析并保存到wmkcNet对象中。
+ *                 如果为空，那么port参数失效，并且不会进行域名解析。
+ * @param port 这是一个端口号，为需要连接或绑定的端口。
+ * @param UDP 这是一个布尔值，为True时将套接字设置为UDP，否则TCP。
+ * @return 返回一个wmkcErr对象，code为0代表无错误，如果为
+ *         其他值，那么需检查message与code。
+ */
 WMKC_PUBLIC(wmkcErr_obj) wmkcNet_init WMKC_OPEN_API
-WMKC_OF((wmkcNet_obj *ctx, wmkcString hostname, wmkc_u16 port, wmkcBool UDP));
+WMKC_OF((wmkcNet_obj *obj, wmkcString hostname, wmkc_u16 port, wmkcBool UDP));
 
-// 使用wmkcNet对象解析域名信息
+/**
+ * @brief 解析域名并将IP地址储存到wmkcNet对象
+ * @authors SN-Grotesque
+ * @note 根据在wmkcNet_new函数中设定的family来解析对应的IPv4或IPv6地址。
+ * @param obj 这是一个指针，指向wmkcNet对象的地址。
+ * @param hostname 这是一个指针，指向域名字符串的地址，会自动将域名解析并保存到wmkcNet对象中。
+ * @return 返回一个wmkcErr对象，code为0代表无错误，如果为
+ *         其他值，那么需检查message与code。
+ */
 WMKC_PUBLIC(wmkcErr_obj) wmkcNet_resolveAddress WMKC_OPEN_API
-WMKC_OF((wmkcNet_obj *net, wmkcString hostname));
+WMKC_OF((wmkcNet_obj *obj, wmkcString hostname));
 
 // 设置发送与接收超时时间
 WMKC_PUBLIC(wmkcErr_obj) wmkcNet_timeout WMKC_OPEN_API
-WMKC_OF((wmkcNet_obj *ctx, wmkcNetTime _user_TimeOut));
+WMKC_OF((wmkcNet_obj *obj, wmkcNetTime _user_TimeOut));
 
 // 连接函数
 WMKC_PUBLIC(wmkcErr_obj) wmkcNet_connect WMKC_OPEN_API
-WMKC_OF((wmkcNet_obj *ctx));
+WMKC_OF((wmkcNet_obj *obj));
 
 // 绑定函数
 WMKC_PUBLIC(wmkcErr_obj) wmkcNet_bind WMKC_OPEN_API
-WMKC_OF((wmkcNet_obj *ctx, wmkcNetTime _user_TimeOut));
+WMKC_OF((wmkcNet_obj *obj, wmkcNetTime _user_TimeOut));
 
 // 监听函数
 WMKC_PUBLIC(wmkcErr_obj) wmkcNet_listen WMKC_OPEN_API
-WMKC_OF((wmkcNet_obj *ctx, wmkc_u32 _Listen));
+WMKC_OF((wmkcNet_obj *obj, wmkc_u32 _Listen));
 
 // 等待连接函数
 WMKC_PUBLIC(wmkcErr_obj) wmkcNet_accept WMKC_OPEN_API
@@ -128,19 +162,19 @@ WMKC_OF((wmkcNet_obj *dst, wmkcNet_obj *src));
 
 // 发送函数，_tSize用来保存本次传输的长度（可以为空）
 WMKC_PUBLIC(wmkcErr_obj) wmkcNet_send WMKC_OPEN_API
-WMKC_OF((wmkcNet_obj *ctx, wmkcNetSize *_tSize, wmkcNetBuf *buf, wmkcNetSize size));
+WMKC_OF((wmkcNet_obj *obj, wmkcNetSize *_tSize, wmkcNetBuf *buf, wmkcNetSize size));
 
 // 全部发送函数
 WMKC_PUBLIC(wmkcErr_obj) wmkcNet_sendall WMKC_OPEN_API
-WMKC_OF((wmkcNet_obj *ctx, wmkcNetBuf *buf, wmkcNetSize size));
+WMKC_OF((wmkcNet_obj *obj, wmkcNetBuf *buf, wmkcNetSize size));
 
 // 接收函数，_tSize用来保存本次传输的长度（可以为空）
 WMKC_PUBLIC(wmkcErr_obj) wmkcNet_recv WMKC_OPEN_API
-WMKC_OF((wmkcNet_obj* ctx, wmkcNetSize *_tSize, wmkcNetBuf *buf, wmkcNetSize size));
+WMKC_OF((wmkcNet_obj* obj, wmkcNetSize *_tSize, wmkcNetBuf *buf, wmkcNetSize size));
 
 // 关闭套接字函数
 WMKC_PUBLIC(wmkcErr_obj) wmkcNet_close WMKC_OPEN_API
-WMKC_OF((wmkcNet_obj *ctx));
+WMKC_OF((wmkcNet_obj *obj));
 
 #endif /* WMKC_NETWORK */
 #endif /* WMKC_SUPPORT */

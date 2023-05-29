@@ -2,52 +2,52 @@
 
 // 申请wmkcNet对象的内存空间
 WMKC_PUBLIC(wmkcErr_obj) wmkcNet_new WMKC_OPEN_API
-WMKC_OF((wmkcNet_obj **net, wmkc_u32 family))
+WMKC_OF((wmkcNet_obj **obj, wmkc_u32 family))
 {
     wmkcErr_obj error;
 
-    if(!net) {
-        wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcNet_new: net is NULL.");
+    if(!obj) {
+        wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcNet_new: obj is NULL.");
     }
 
-    if(!wmkcMemoryNew(wmkcNet_obj *, (*net), sizeof(wmkcNet_obj))) {
+    if(!wmkcMemoryNew(wmkcNet_obj *, (*obj), sizeof(wmkcNet_obj))) {
         wmkcErr_return(error, wmkcErr_ErrMemory,
-            "wmkcNet_new: (*net) Failed to apply for memory.");
+            "wmkcNet_new: (*obj) Failed to apply for memory.");
     }
 
     // 为结构体socket成员设定类型并将网络结构大小赋值
     // 如果即不是IPv4也不是IPv6就返回错误代码
     if(family == AF_INET) {
-        (*net)->sockfdFamily = AF_INET;
-        (*net)->addr_info_size = WMKC_NET_IPV4_ADDR_SIZE;
+        (*obj)->sockfdFamily = AF_INET;
+        (*obj)->addr_info_size = WMKC_NET_IPV4_ADDR_SIZE;
     } else if(family == AF_INET6) {
-        (*net)->sockfdFamily = AF_INET6;
-        (*net)->addr_info_size = WMKC_NET_IPV6_ADDR_SIZE;
+        (*obj)->sockfdFamily = AF_INET6;
+        (*obj)->addr_info_size = WMKC_NET_IPV6_ADDR_SIZE;
     } else {
         wmkcErr_return(error, wmkcErr_NetFamily,
             "wmkcNet_new: The type of socket must be AF_INET or AF_INET6.");
     }
-    if(!wmkcMemoryNew(SOCKADDR *, (*net)->addr_info, (*net)->addr_info_size)) {
+    if(!wmkcMemoryNew(SOCKADDR *, (*obj)->addr_info, (*obj)->addr_info_size)) {
         wmkcErr_return(error, wmkcErr_ErrMemory,
-            "wmkcNet_new: (*net)->addr_info Failed to apply for memory.");
+            "wmkcNet_new: (*obj)->addr_info Failed to apply for memory.");
     }
 
     wmkcErr_return(error, wmkcErr_OK, "OK.");
 }
 
 WMKC_PUBLIC(wmkcErr_obj) wmkcNet_free WMKC_OPEN_API
-WMKC_OF((wmkcNet_obj **net))
+WMKC_OF((wmkcNet_obj **obj))
 {
     wmkcErr_obj error;
-    if(!net) {
-        wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcNet_free: net is NULL.");
+    if(!obj) {
+        wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcNet_free: obj is NULL.");
     }
 
-    if((*net)->addr_info) {
-        wmkcMemoryFree((*net)->addr_info);
+    if((*obj)->addr_info) {
+        wmkcMemoryFree((*obj)->addr_info);
     }
-    if((*net)) {
-        wmkcMemoryFree((*net));
+    if((*obj)) {
+        wmkcMemoryFree((*obj));
     }
 
     wmkcErr_return(error, wmkcErr_OK, "OK.");
@@ -55,14 +55,14 @@ WMKC_OF((wmkcNet_obj **net))
 
 // 初始化wmkcNet对象（需提前申请内存空间）
 WMKC_PUBLIC(wmkcErr_obj) wmkcNet_init WMKC_OPEN_API
-WMKC_OF((wmkcNet_obj *net, wmkcString hostname, wmkc_u16 port, wmkcBool UDP))
+WMKC_OF((wmkcNet_obj *obj, wmkcString hostname, wmkc_u16 port, wmkcBool UDP))
 {
     wmkcErr_obj error;
 
-    if(!net) {
-        wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcNet_init: net is NULL.");
+    if(!obj) {
+        wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcNet_init: obj is NULL.");
     }
-    if((net->sockfdFamily != AF_INET) && (net->sockfdFamily != AF_INET6)) {
+    if((obj->sockfdFamily != AF_INET) && (obj->sockfdFamily != AF_INET6)) {
         wmkcErr_return(error, wmkcErr_NetFamily,
             "wmkcNet_init: The type of socket must be AF_INET or AF_INET6.");
     }
@@ -81,32 +81,32 @@ WMKC_OF((wmkcNet_obj *net, wmkcString hostname, wmkc_u16 port, wmkcBool UDP))
 
         if(UDP) {
             // 如果Socket是UDP类型
-            net->sockfd = wmkcNet_UDP_Socket(net->sockfdFamily, IPPROTO_IP);
-            net->sockfdType = WMKC_NET_UDP_TYPE;
+            obj->sockfd = wmkcNet_UDP_Socket(obj->sockfdFamily, IPPROTO_IP);
+            obj->sockfdType = WMKC_NET_UDP_TYPE;
         } else {
             // 否则Socket是TCP类型
-            net->sockfd = wmkcNet_TCP_Socket(net->sockfdFamily, IPPROTO_IP);
-            net->sockfdType = WMKC_NET_TCP_TYPE;
+            obj->sockfd = wmkcNet_TCP_Socket(obj->sockfdFamily, IPPROTO_IP);
+            obj->sockfdType = WMKC_NET_TCP_TYPE;
         }
         // 如果Socket申请失败就返回错误代码
-        if(net->sockfd == wmkcErr_Err32) {
+        if(obj->sockfd == wmkcErr_Err32) {
             wmkcErr_return(error, wmkcErr_NetSocket,
                 "wmkcNet_init: Unable to create socket.");
         }
 
         // 解析域名，如果失败就返回错误代码
-        error = wmkcNet_resolveAddress(net, hostname);
+        error = wmkcNet_resolveAddress(obj, hostname);
         if(error.code) {
             return error;
         }
 
-        if(net->sockfdFamily == AF_INET) {
+        if(obj->sockfdFamily == AF_INET) {
             // 如果是IPv4网络结构，那么使用IPv4网络结构的指针来设定端口号
-            ipv4 = (SOCKADDR_IN *)net->addr_info;
+            ipv4 = (SOCKADDR_IN *)obj->addr_info;
             ipv4->sin_port = htons(port);
-        } else if(net->sockfdFamily == AF_INET6) {
+        } else if(obj->sockfdFamily == AF_INET6) {
             // 如果是IPv6网络结构，那么使用IPv6网络结构的指针来设定端口号
-            ipv6 = (SOCKADDR_IN6 *)net->addr_info;
+            ipv6 = (SOCKADDR_IN6 *)obj->addr_info;
             ipv6->sin6_port = htons(port);
         }
     }
@@ -116,23 +116,23 @@ WMKC_OF((wmkcNet_obj *net, wmkcString hostname, wmkc_u16 port, wmkcBool UDP))
 
 // 域名解析函数
 WMKC_PUBLIC(wmkcErr_obj) wmkcNet_resolveAddress WMKC_OPEN_API
-WMKC_OF((wmkcNet_obj *net, wmkcString hostname))
+WMKC_OF((wmkcNet_obj *obj, wmkcString hostname))
 {
     wmkcErr_obj error;
 
-    if(!net || !hostname || !net->addr_info) {
+    if(!obj || !hostname || !obj->addr_info) {
         wmkcErr_return(error, wmkcErr_ErrNULL,
-            "wmkcNet_resolveAddress: net or hostname or net->addr_info is NULL.");
+            "wmkcNet_resolveAddress: obj or hostname or obj->addr_info is NULL.");
     }
 
     // 判断用户输入的网络家族是IPv4还是IPv6，如果都不是就返回错误代码
-    if((net->sockfdFamily != AF_INET) && (net->sockfdFamily != AF_INET6)) {
+    if((obj->sockfdFamily != AF_INET) && (obj->sockfdFamily != AF_INET6)) {
         wmkcErr_return(error, wmkcErr_NetFamily,
             "wmkcNet_resolveAddress: The type of socket must be AF_INET or AF_INET6.");
     }
 
     ADDRINFO *result = wmkcNull;
-    ADDRINFO hints = {.ai_family = net->sockfdFamily};
+    ADDRINFO hints = {.ai_family = obj->sockfdFamily};
 
     // 进行域名解析，解析失败就返回错误代码
     if(getaddrinfo(hostname, "echo", &hints, &result)) {
@@ -141,7 +141,7 @@ WMKC_OF((wmkcNet_obj *net, wmkcString hostname))
     }
 
     // 将解析结果保存至结构体成员中
-    memcpy(net->addr_info, result->ai_addr, net->addr_info_size);
+    memcpy(obj->addr_info, result->ai_addr, obj->addr_info_size);
 
     freeaddrinfo(result); // 释放掉已结束使用的解析数据
     wmkcErr_return(error, wmkcErr_OK, "OK.");
@@ -149,11 +149,11 @@ WMKC_OF((wmkcNet_obj *net, wmkcString hostname))
 
 // 设置发送与接收超时时间
 WMKC_PUBLIC(wmkcErr_obj) wmkcNet_timeout WMKC_OPEN_API
-WMKC_OF((wmkcNet_obj *net, wmkcNetTime _user_TimeOut))
+WMKC_OF((wmkcNet_obj *obj, wmkcNetTime _user_TimeOut))
 {
     wmkcErr_obj error;
-    if(!net) {
-        wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcNet_timeout: net is NULL.");
+    if(!obj) {
+        wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcNet_timeout: obj is NULL.");
     }
 
     wmkcNetSize optlen = sizeof(struct timeval);
@@ -165,8 +165,8 @@ WMKC_OF((wmkcNet_obj *net, wmkcNetTime _user_TimeOut))
 
     if(_user_TimeOut) {
         optval = (wmkcNetTimer *)&_timeout;
-        if(setsockopt(net->sockfd, SOL_SOCKET, SO_SNDTIMEO, optval, optlen) ||
-            setsockopt(net->sockfd, SOL_SOCKET, SO_RCVTIMEO, optval, optlen)) {
+        if(setsockopt(obj->sockfd, SOL_SOCKET, SO_SNDTIMEO, optval, optlen) ||
+            setsockopt(obj->sockfd, SOL_SOCKET, SO_RCVTIMEO, optval, optlen)) {
             wmkcErr_return(error, wmkcErr_NetSetSockOpt,
                 "wmkcNet_timeout: Error in setsockopt function.");
         }
@@ -177,19 +177,19 @@ WMKC_OF((wmkcNet_obj *net, wmkcNetTime _user_TimeOut))
 
 // 连接函数
 WMKC_PUBLIC(wmkcErr_obj) wmkcNet_connect WMKC_OPEN_API
-WMKC_OF((wmkcNet_obj *net))
+WMKC_OF((wmkcNet_obj *obj))
 {
     wmkcErr_obj error;
-    if(!net) {
-        wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcNet_connect: net is NULL.");
+    if(!obj) {
+        wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcNet_connect: obj is NULL.");
     }
-    if(net->sockfdType == WMKC_NET_UDP_TYPE) {
+    if(obj->sockfdType == WMKC_NET_UDP_TYPE) {
         wmkcErr_return(error, wmkcErr_NetSockfdType,
             "wmkcNet_connect: Wrong socket type, currently not expected to be UDP.");
     }
 
     // 连接至接收端，失败就返回错误代码
-    if(connect(net->sockfd, net->addr_info, net->addr_info_size) == wmkcErr_Err32) {
+    if(connect(obj->sockfd, obj->addr_info, obj->addr_info_size) == wmkcErr_Err32) {
         wmkcErr_return(error, wmkcErr_NetConnect,
             "wmkcNet_connect: Socket connection failed.");
     }
@@ -199,11 +199,11 @@ WMKC_OF((wmkcNet_obj *net))
 
 // 绑定函数
 WMKC_PUBLIC(wmkcErr_obj) wmkcNet_bind WMKC_OPEN_API
-WMKC_OF((wmkcNet_obj *net, wmkcNetTime _user_TimeOut))
+WMKC_OF((wmkcNet_obj *obj, wmkcNetTime _user_TimeOut))
 {
     wmkcErr_obj error;
-    if(!net) {
-        wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcNet_bind: net is NULL.");
+    if(!obj) {
+        wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcNet_bind: obj is NULL.");
     }
 
     wmkcNetTimer *optval = wmkcNull;
@@ -214,14 +214,14 @@ WMKC_OF((wmkcNet_obj *net, wmkcNetTime _user_TimeOut))
         _timeout.tv_usec = (long)(modf(_user_TimeOut, &_user_TimeOut) * 1000);
         optval = (wmkcNetTimer *)&_timeout;
 
-        if(setsockopt(net->sockfd, SOL_SOCKET, SO_REUSEADDR, optval, sizeof(_timeout))) {
+        if(setsockopt(obj->sockfd, SOL_SOCKET, SO_REUSEADDR, optval, sizeof(_timeout))) {
             wmkcErr_return(error, wmkcErr_NetSetSockOpt,
                 "wmkcNet_bind: Error in setsockopt function in wmkcNet_timeout function.");
         }
     }
 
     // 如果绑定失败就返回错误代码
-    if(bind(net->sockfd, net->addr_info, net->addr_info_size) == wmkcErr_Err32) {
+    if(bind(obj->sockfd, obj->addr_info, obj->addr_info_size) == wmkcErr_Err32) {
         wmkcErr_return(error, wmkcErr_NetBind, "wmkcNet_bind: Socket binding failed.");
     }
 
@@ -230,19 +230,19 @@ WMKC_OF((wmkcNet_obj *net, wmkcNetTime _user_TimeOut))
 
 // 监听函数
 WMKC_PUBLIC(wmkcErr_obj) wmkcNet_listen WMKC_OPEN_API
-WMKC_OF((wmkcNet_obj *net, wmkc_u32 _Listen))
+WMKC_OF((wmkcNet_obj *obj, wmkc_u32 _Listen))
 {
     wmkcErr_obj error;
-    if(!net) {
-        wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcNet_listen: net is NULL.");
+    if(!obj) {
+        wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcNet_listen: obj is NULL.");
     }
 
     // 监听连接，失败或者Socket类型不正确就返回错误代码
-    if(net->sockfdType == WMKC_NET_TCP_TYPE) {
+    if(obj->sockfdType == WMKC_NET_TCP_TYPE) {
         if(!_Listen) {
             _Listen = WMKC_NET_DEFAULT_LISTEN;
         }
-        if(listen(net->sockfd, _Listen) == wmkcErr_Err32) {
+        if(listen(obj->sockfd, _Listen) == wmkcErr_Err32) {
             wmkcErr_return(error, wmkcErr_NetListen,
                 "wmkcNet_listen: Socket listening failed.");
         }
@@ -284,12 +284,12 @@ WMKC_OF((wmkcNet_obj *dst, wmkcNet_obj *src))
 
 // 发送函数
 WMKC_PUBLIC(wmkcErr_obj) wmkcNet_send WMKC_OPEN_API
-WMKC_OF((wmkcNet_obj *net, wmkcNetSize *_tSize, wmkcNetBuf *buf, wmkcNetSize size))
+WMKC_OF((wmkcNet_obj *obj, wmkcNetSize *_tSize, wmkcNetBuf *buf, wmkcNetSize size))
 {
     wmkcErr_obj error;
-    if(!net || !buf || !size) {
+    if(!obj || !buf || !size) {
         wmkcErr_return(error, wmkcErr_ErrNULL,
-            "wmkcNet_send: net or buf or size is NULL.");
+            "wmkcNet_send: obj or buf or size is NULL.");
     }
     if(!_tSize) {
         wmkcNetSize size;
@@ -297,17 +297,17 @@ WMKC_OF((wmkcNet_obj *net, wmkcNetSize *_tSize, wmkcNetBuf *buf, wmkcNetSize siz
     }
 
     // 判断Socket类型，TCP或UDP。发送数据。如果返回错误代码就返回对应的错误代码。
-    switch(net->sockfdType) {
+    switch(obj->sockfdType) {
         case WMKC_NET_TCP_TYPE: // TCP
-            *_tSize = send(net->sockfd, buf, size, 0);
+            *_tSize = send(obj->sockfd, buf, size, 0);
             if(*_tSize == wmkcErr_Err32) {
                 wmkcErr_return(error, wmkcErr_NetSend,
                     "wmkcNet_send: The socket failed to send data.");
             }
             break;
         case WMKC_NET_UDP_TYPE: // UDP
-            *_tSize = sendto(net->sockfd, buf, size, 0,
-                net->addr_info, net->addr_info_size);
+            *_tSize = sendto(obj->sockfd, buf, size, 0,
+                obj->addr_info, obj->addr_info_size);
             if(*_tSize == wmkcErr_Err32) {
                 wmkcErr_return(error, wmkcErr_NetSend,
                     "wmkcNet_send: The socket failed to send data.");
@@ -323,12 +323,12 @@ WMKC_OF((wmkcNet_obj *net, wmkcNetSize *_tSize, wmkcNetBuf *buf, wmkcNetSize siz
 
 // 全部发送函数
 WMKC_PUBLIC(wmkcErr_obj) wmkcNet_sendall WMKC_OPEN_API
-WMKC_OF((wmkcNet_obj *net, wmkcNetBuf *buf, wmkcNetSize size))
+WMKC_OF((wmkcNet_obj *obj, wmkcNetBuf *buf, wmkcNetSize size))
 {
     wmkcErr_obj error;
-    if(!net || !buf || !size) {
+    if(!obj || !buf || !size) {
         wmkcErr_return(error, wmkcErr_ErrNULL,
-            "wmkcNet_sendall: net or buf or size is NULL.");
+            "wmkcNet_sendall: obj or buf or size is NULL.");
     }
     wmkcNetSize index, quotient, leftover, _tSize;
 
@@ -339,7 +339,7 @@ WMKC_OF((wmkcNet_obj *net, wmkcNetBuf *buf, wmkcNetSize size))
 
     for(index = 0; index < quotient; ++index) {
         // 如果发送错误就返回错误代码
-        error = wmkcNet_send(net, &_tSize, buf, WMKC_NET_BLOCKLEN);
+        error = wmkcNet_send(obj, &_tSize, buf, WMKC_NET_BLOCKLEN);
         if(error.code) {
             return error;
         }
@@ -348,7 +348,7 @@ WMKC_OF((wmkcNet_obj *net, wmkcNetBuf *buf, wmkcNetSize size))
 
     // 如果有剩下的数据包，那么就发送。如果发送错误就返回错误代码
     if(leftover) {
-        error = wmkcNet_send(net, &_tSize, buf, leftover);
+        error = wmkcNet_send(obj, &_tSize, buf, leftover);
         if(error.code) {
             return error;
         }
@@ -359,29 +359,29 @@ WMKC_OF((wmkcNet_obj *net, wmkcNetBuf *buf, wmkcNetSize size))
 
 // 接收函数
 WMKC_PUBLIC(wmkcErr_obj) wmkcNet_recv WMKC_OPEN_API
-WMKC_OF((wmkcNet_obj* net, wmkcNetSize *_tSize, wmkcNetBuf *buf, wmkcNetSize size))
+WMKC_OF((wmkcNet_obj* obj, wmkcNetSize *_tSize, wmkcNetBuf *buf, wmkcNetSize size))
 {
     wmkcErr_obj error;
-    if(!net || !buf || !size) {
+    if(!obj || !buf || !size) {
         wmkcErr_return(error, wmkcErr_ErrNULL,
-            "wmkcNet_recv: net or buf or size is NULL.");
+            "wmkcNet_recv: obj or buf or size is NULL.");
     }
     if(!_tSize) {
         wmkcNetSize size;
         _tSize = &size;
     }
 
-    switch(net->sockfdType) {
+    switch(obj->sockfdType) {
         case WMKC_NET_TCP_TYPE:
-            *_tSize = recv(net->sockfd, buf, size, 0);
+            *_tSize = recv(obj->sockfd, buf, size, 0);
             if(*_tSize == wmkcErr_Err32) {
                 wmkcErr_return(error, wmkcErr_NetRecv,
                     "wmkcNet_recv: The socket failed to receive data.");
             }
             break;
         case WMKC_NET_UDP_TYPE:
-            *_tSize = recvfrom(net->sockfd, buf, size, 0,
-                net->addr_info, &net->addr_info_size);
+            *_tSize = recvfrom(obj->sockfd, buf, size, 0,
+                obj->addr_info, &obj->addr_info_size);
             if(*_tSize == wmkcErr_Err32) {
                 wmkcErr_return(error, wmkcErr_NetRecv,
                     "wmkcNet_recv: The socket failed to receive data.");
@@ -397,21 +397,21 @@ WMKC_OF((wmkcNet_obj* net, wmkcNetSize *_tSize, wmkcNetBuf *buf, wmkcNetSize siz
 
 // 关闭套接字函数
 WMKC_PUBLIC(wmkcErr_obj) wmkcNet_close WMKC_OPEN_API
-WMKC_OF((wmkcNet_obj *net))
+WMKC_OF((wmkcNet_obj *obj))
 {
     wmkcErr_obj error;
-    if(!net) {
-        wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcNet_close: net is NULL.");
+    if(!obj) {
+        wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcNet_close: obj is NULL.");
     }
 
     // 判断系统类型，根据对应系统使用不同的关闭函数将Socket与WSADATA进行关闭
     // 如果错误，就返回错误代码
 #if defined(WMKC_PLATFORM_LINUX)
-    if((shutdown(net->sockfd, 2) | close(net->sockfd)) == wmkcErr_Err32) {
+    if((shutdown(obj->sockfd, 2) | close(obj->sockfd)) == wmkcErr_Err32) {
         wmkcErr_return(error, wmkcErr_NetClose, "wmkcNet_close: Socket close failed.");
     }
 #elif defined(WMKC_PLATFORM_WINOS)
-    if((closesocket(net->sockfd) | WSACleanup()) == wmkcErr_Err32) {
+    if((closesocket(obj->sockfd) | WSACleanup()) == wmkcErr_Err32) {
         wmkcErr_return(error, wmkcErr_NetClose, "wmkcNet_close: Socket close failed.");
     }
 #endif
