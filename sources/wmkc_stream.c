@@ -182,7 +182,7 @@ WMKC_OF((wmkcByte **dst, wmkcSize src))
 
     if(!wmkcMemoryNew(wmkcByte *, (*dst), size + 1)) {
         wmkcErr_return(error, wmkcErr_ErrMemory,
-            "wmkcStream_Binary: (*dst) Failed to apply for memory.");
+            "wmkcStream_Binary: (*dst) failed to apply for memory.");
     }
     (*dst)[size] = 0x00;
     memset((*dst), 0x30, size);

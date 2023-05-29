@@ -73,7 +73,7 @@ WMKC_OF((wmkcFile_obj **obj))
     }
     if(!wmkcMemoryNew(wmkcFile_obj *, (*obj), sizeof(wmkcFile_obj))) {
         wmkcErr_return(error, wmkcErr_ErrMemory,
-            "wmkcFile_new: (*obj) Failed to apply for memory.");
+            "wmkcFile_new: (*obj) failed to apply for memory.");
     }
     (*obj)->data = wmkcNull;
     wmkcErr_return(error, wmkcErr_OK, "OK.");
@@ -182,7 +182,7 @@ WMKC_OF((wmkcFile_obj *obj, wmkcFileString fn))
     if(!obj->data) {
         if(!wmkcMemoryNew(wmkcByte *, obj->data, obj->size + 1)) {
             wmkcErr_return(error, wmkcErr_ErrMemory,
-                "wmkcFile_fread: obj->data Failed to apply for memory.");
+                "wmkcFile_fread: obj->data failed to apply for memory.");
         }
     }
 

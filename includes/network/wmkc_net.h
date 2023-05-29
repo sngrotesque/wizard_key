@@ -7,10 +7,6 @@
 *
 */
 
-/*
-* 这个函数的注释，慢慢来，不要着急。
-* 不要着急，不要着急，不要着急，就这一个了，不要慌。
-*/
 #include <wmkc_conf.h>
 
 #if WMKC_SUPPORT
@@ -26,10 +22,10 @@
 #define wmkcNet_UDP_Socket(family, protocol) \
     socket(family, SOCK_DGRAM, protocol)
 
-// 示例: wmkcNet_GetAddr(server->sin_addr :struct in_addr) -> cbar *
+// 将SOCKADDR_IN结构体中的IP地址转为字符串
 #define wmkcNet_GetAddr(info) inet_ntoa(info)
 
-// 示例: wmkcNet_GetAddr6(server->sin6_addr :struct in6_addr, ipv6String :char *) -> char * || NULL
+// 将SOCKADDR_IN6结构体中的IP地址转为字符串
 #define wmkcNet_GetAddr6(info, ipv6String) \
     inet_ntop(AF_INET6, info, ipv6String, INET6_ADDRSTRLEN)
 
@@ -118,7 +114,8 @@ WMKC_OF((wmkcNet_obj **obj));
  * @authors SN-Grotesque
  * @note 需要使用wmkcNet_new函数提前申请内存空间
  * @param obj 这是一个指针，指向wmkcNet对象的地址。
- * @param hostname 这是一个指针，指向域名字符串的地址，会自动将域名解析并保存到wmkcNet对象中。
+ * @param hostname 这是一个指针，指向域名字符串的地址，
+ *                 会自动将域名解析并保存到wmkcNet对象中。
  *                 如果为空，那么port参数失效，并且不会进行域名解析。
  * @param port 这是一个端口号，为需要连接或绑定的端口。
  * @param UDP 这是一个布尔值，为True时将套接字设置为UDP，否则TCP。
@@ -133,46 +130,123 @@ WMKC_OF((wmkcNet_obj *obj, wmkcString hostname, wmkc_u16 port, wmkcBool UDP));
  * @authors SN-Grotesque
  * @note 根据在wmkcNet_new函数中设定的family来解析对应的IPv4或IPv6地址。
  * @param obj 这是一个指针，指向wmkcNet对象的地址。
- * @param hostname 这是一个指针，指向域名字符串的地址，会自动将域名解析并保存到wmkcNet对象中。
+ * @param hostname 这是一个指针，指向域名字符串的地址，
+ *                 会自动将域名解析并保存到wmkcNet对象中。
  * @return 返回一个wmkcErr对象，code为0代表无错误，如果为
  *         其他值，那么需检查message与code。
  */
 WMKC_PUBLIC(wmkcErr_obj) wmkcNet_resolveAddress WMKC_OPEN_API
 WMKC_OF((wmkcNet_obj *obj, wmkcString hostname));
 
-// 设置发送与接收超时时间
+/**
+ * @brief 设置发送与接收超时时间
+ * @authors SN-Grotesque
+ * @note 此函数目前并不能设置连接的超时时间，后续添加一下这个功能。
+ * @param obj 这是一个指针，指向wmkcNet对象的地址。
+ * @param _user_TimeOut 这是超时时间，原型为double类型。为0时不设置超时
+ *                     （当然直接不调用这个函数最方便）
+ * @return 返回一个wmkcErr对象，code为0代表无错误，如果为
+ *         其他值，那么需检查message与code。
+ */
 WMKC_PUBLIC(wmkcErr_obj) wmkcNet_timeout WMKC_OPEN_API
 WMKC_OF((wmkcNet_obj *obj, wmkcNetTime _user_TimeOut));
 
-// 连接函数
+/**
+ * @brief 连接函数（连接至目标主机与端口）
+ * @authors SN-Grotesque
+ * @note 无
+ * @param obj 这是一个指针，指向wmkcNet对象的地址。
+ * @return 返回一个wmkcErr对象，code为0代表无错误，如果为
+ *         其他值，那么需检查message与code。
+ */
 WMKC_PUBLIC(wmkcErr_obj) wmkcNet_connect WMKC_OPEN_API
 WMKC_OF((wmkcNet_obj *obj));
 
-// 绑定函数
+/**
+ * @brief 绑定函数（绑定主机与端口）
+ * @authors SN-Grotesque
+ * @note 无
+ * @param obj 这是一个指针，指向wmkcNet对象的地址。
+ * @param _user_TimeOut 这是超时时间，用于setsockopt函数设置SO_REUSEADDR时间。
+ * @return 返回一个wmkcErr对象，code为0代表无错误，如果为
+ *         其他值，那么需检查message与code。
+ */
 WMKC_PUBLIC(wmkcErr_obj) wmkcNet_bind WMKC_OPEN_API
 WMKC_OF((wmkcNet_obj *obj, wmkcNetTime _user_TimeOut));
 
-// 监听函数
+/**
+ * @brief 监听函数（监听主机与端口）
+ * @authors SN-Grotesque
+ * @note 无
+ * @param obj 这是一个指针，指向wmkcNet对象的地址。
+ * @param _Listen 这是一个整数，表示监听队列中的最多个数。
+ * @return 返回一个wmkcErr对象，code为0代表无错误，如果为
+ *         其他值，那么需检查message与code。
+ */
 WMKC_PUBLIC(wmkcErr_obj) wmkcNet_listen WMKC_OPEN_API
 WMKC_OF((wmkcNet_obj *obj, wmkc_u32 _Listen));
 
-// 等待连接函数
+/**
+ * @brief 等待连接函数
+ * @authors SN-Grotesque
+ * @note 此函数有两个wmkcNet对象的原因是为了更好的兼容多线程网络编程。
+ * @param dst 这是一个指针，指向用于接受连接信息的wmkcNet对象地址。
+ * @param src 这是一个指针，指向wmkcNet对象的地址，源wmkcNet对象。
+ * @return 返回一个wmkcErr对象，code为0代表无错误，如果为
+ *         其他值，那么需检查message与code。
+ */
 WMKC_PUBLIC(wmkcErr_obj) wmkcNet_accept WMKC_OPEN_API
 WMKC_OF((wmkcNet_obj *dst, wmkcNet_obj *src));
 
-// 发送函数，_tSize用来保存本次传输的长度（可以为空）
+/**
+ * @brief 发送函数
+ * @authors SN-Grotesque
+ * @note 无
+ * @param obj 这是一个指针，指向wmkcNet对象的地址。
+ * @param _tSize 这是一个指针，指向单次传输长度变量的地址。可以为空。
+ * @param buf 这是一个指针，指向缓冲区地址。
+ * @param size 这是一个长度，表示缓冲区内需要发送的内容的长度。
+ * @return 返回一个wmkcErr对象，code为0代表无错误，如果为
+ *         其他值，那么需检查message与code。
+ */
 WMKC_PUBLIC(wmkcErr_obj) wmkcNet_send WMKC_OPEN_API
 WMKC_OF((wmkcNet_obj *obj, wmkcNetSize *_tSize, wmkcNetBuf *buf, wmkcNetSize size));
 
-// 全部发送函数
+/**
+ * @brief 全部发送函数
+ * @authors SN-Grotesque
+ * @note 无
+ * @param obj 这是一个指针，指向wmkcNet对象的地址。
+ * @param buf 这是一个指针，指向缓冲区地址。
+ * @param size 这是一个长度，表示缓冲区内需要发送的内容的长度。
+ * @return 返回一个wmkcErr对象，code为0代表无错误，如果为
+ *         其他值，那么需检查message与code。
+ */
 WMKC_PUBLIC(wmkcErr_obj) wmkcNet_sendall WMKC_OPEN_API
 WMKC_OF((wmkcNet_obj *obj, wmkcNetBuf *buf, wmkcNetSize size));
 
-// 接收函数，_tSize用来保存本次传输的长度（可以为空）
+/**
+ * @brief 接收函数
+ * @authors SN-Grotesque
+ * @note 无
+ * @param obj 这是一个指针，指向wmkcNet对象的地址。
+ * @param _tSize 这是一个指针，指向单次传输长度变量的地址。可以为空。
+ * @param buf 这是一个指针，指向缓冲区地址。
+ * @param size 这是一个长度，表示缓冲区内可以接收的内容的长度。
+ * @return 返回一个wmkcErr对象，code为0代表无错误，如果为
+ *         其他值，那么需检查message与code。
+ */
 WMKC_PUBLIC(wmkcErr_obj) wmkcNet_recv WMKC_OPEN_API
 WMKC_OF((wmkcNet_obj* obj, wmkcNetSize *_tSize, wmkcNetBuf *buf, wmkcNetSize size));
 
-// 关闭套接字函数
+/**
+ * @brief 关闭套接字与WSADATA（如果有的话）的函数
+ * @authors SN-Grotesque
+ * @note 在有些情况下这个函数会返回一个错误代码，那是因为你的套接字没有使用。
+ * @param obj 这是一个指针，指向wmkcNet对象的地址。
+ * @return 返回一个wmkcErr对象，code为0代表无错误，如果为
+ *         其他值，那么需检查message与code。
+ */
 WMKC_PUBLIC(wmkcErr_obj) wmkcNet_close WMKC_OPEN_API
 WMKC_OF((wmkcNet_obj *obj));
 

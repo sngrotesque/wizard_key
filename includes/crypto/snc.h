@@ -28,6 +28,12 @@
 *     SNC_512    0.44 seconds
 *     SNC_768    0.55 seconds
 */
+
+/*
+* 这个加密算法的注释没必要转为Doxygen风格的注释，当然，要是谁有闲心的话
+* 可以考虑考虑帮我把注释改了。
+*/
+
 #ifndef WMKC_SNC
 #define WMKC_SNC
 

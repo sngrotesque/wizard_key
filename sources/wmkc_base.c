@@ -81,15 +81,15 @@ WMKC_OF((wmkcBase64_obj **obj))
     }
     if(!wmkcMemoryNew(wmkcBase64_obj *, (*obj), sizeof(wmkcBase64_obj))) {
         wmkcErr_return(error, wmkcErr_ErrMemory,
-            "wmkcBase64_new: (*obj) Failed to apply for memory.");
+            "wmkcBase64_new: (*obj) failed to apply for memory.");
     }
     if(!wmkcMemoryNew(wmkc_obj *, (*obj)->src, sizeof(wmkc_obj))) {
         wmkcErr_return(error, wmkcErr_ErrMemory,
-            "wmkcBase64_new: (*obj)->src Failed to apply for memory.");
+            "wmkcBase64_new: (*obj)->src failed to apply for memory.");
     }
     if(!wmkcMemoryNew(wmkc_obj *, (*obj)->dst, sizeof(wmkc_obj))) {
         wmkcErr_return(error, wmkcErr_ErrMemory,
-            "wmkcBase64_new: (*obj)->dst Failed to apply for memory.");
+            "wmkcBase64_new: (*obj)->dst failed to apply for memory.");
     }
 
     wmkcErr_return(error, wmkcErr_OK, "OK.");

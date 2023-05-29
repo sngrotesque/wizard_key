@@ -460,7 +460,7 @@ WMKC_OF((SNC_ctx **ctx, SNC_mode mode))
     }
 
     if(!wmkcMemoryNew(SNC_ctx *, (*ctx), sizeof(SNC_ctx))) {
-        wmkcErr_return(error, wmkcErr_ErrMemory, "(*ctx) Failed to apply for memory.");
+        wmkcErr_return(error, wmkcErr_ErrMemory, "(*ctx) failed to apply for memory.");
     }
 
     (*ctx)->mode = mode;
@@ -514,7 +514,7 @@ WMKC_OF((SNC_ctx *ctx, wmkcByte *keyBuf, wmkcByte *ivBuf))
     *     vector does not change.
     */
     if(!wmkcMemoryNew(wmkcByte *, key, ctx->KN)) {
-        wmkcErr_return(error, wmkcErr_ErrMemory, "key Failed to apply for memory.");
+        wmkcErr_return(error, wmkcErr_ErrMemory, "key failed to apply for memory.");
     }
 
     memcpy(ctx->iv, ivBuf, SNC_BLOCKLEN);

@@ -1,76 +1,116 @@
 #include <network/wmkc_tp.h>
 
+/**
+ * @brief 为wmkcTp对象申请内存空间
+ * @authors SN-Grotesque
+ * @note 未完成
+ * @param obj 这是一个指针，指向wmkcTp对象指针的地址。
+ * @param addr 这是一个指针，指向目标主机的域名（IP地址）字符串。
+ * @param port 这是一个端口，为目标主机的网络端口。
+ * @param maxRetry 这是一个数字，代表最大重试次数，为0时使用
+ *                 WMKC_TP_DEFAULT_MAX_RETRY的值。
+ * @return 返回一个wmkcErr对象，code为0代表无错误，如果为
+ *         其他值，那么需检查message与code。
+ */
 WMKC_PUBLIC(wmkcErr_obj) wmkcTp_new WMKC_OPEN_API
-WMKC_OF((wmkcTp_obj **net, wmkcString addr, wmkc_u16 port, wmkc_u32 maxRetry))
+WMKC_OF((wmkcTp_obj **obj, wmkcString addr, wmkc_u16 port, wmkc_u32 maxRetry))
 {
     wmkcErr_obj error;
 
-    if(!net || !addr) {
-        wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcTp_new: net or addr is NULL.");
+    if(!obj || !addr) {
+        wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcTp_new: obj or addr is NULL.");
     }
-    if(!wmkcMemoryNew(wmkcTp_obj *, (*net), sizeof(wmkcTp_obj))) {
+    if(!wmkcMemoryNew(wmkcTp_obj *, (*obj), sizeof(wmkcTp_obj))) {
         wmkcErr_return(error, wmkcErr_ErrMemory,
-            "wmkcTp_new: (*net) Failed to apply for memory.");
+            "wmkcTp_new: (*obj) failed to apply for memory.");
     }
 
-    (*net)->addr = addr;
+    (*obj)->addr = addr;
     if(port) {
-        (*net)->port = port;
+        (*obj)->port = port;
     } else {
-        (*net)->port = WMKC_TP_DEFAULT_PORT;
+        (*obj)->port = WMKC_TP_DEFAULT_PORT;
     }
     if(maxRetry) {
-        (*net)->maxRetry = maxRetry;
+        (*obj)->maxRetry = maxRetry;
     } else {
-        (*net)->maxRetry = WMKC_TP_DEFAULT_MAX_RETRY;
+        (*obj)->maxRetry = WMKC_TP_DEFAULT_MAX_RETRY;
     }
-    (*net)->snc = wmkcNull;
-    // SNC_new(&(*net)->snc, SNC_256);
+    (*obj)->snc = wmkcNull;
+    // SNC_new(&(*obj)->snc, SNC_256);
 
     wmkcErr_return(error, wmkcErr_OK, "OK.");
 }
 
+/**
+ * @brief 为wmkcTp对象释放内存空间
+ * @authors SN-Grotesque
+ * @note 无
+ * @param obj 这是一个指针，指向wmkcTp对象指针的地址。
+ * @return 返回一个wmkcErr对象，code为0代表无错误，如果为
+ *         其他值，那么需检查message与code。
+ */
 WMKC_PUBLIC(wmkcErr_obj) wmkcTp_free WMKC_OPEN_API
-WMKC_OF((wmkcTp_obj **net))
+WMKC_OF((wmkcTp_obj **obj))
 {
     wmkcErr_obj error;
-    if(!net) {
-        wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcTp_free: net is NULL.");
+    if(!obj) {
+        wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcTp_free: obj is NULL.");
     }
 
-    if((*net)->snc) {
-        SNC_release(&(*net)->snc);
+    if((*obj)->snc) {
+        SNC_release(&(*obj)->snc);
     }
-    wmkcMemoryFree((*net));
+    wmkcMemoryFree((*obj));
 
     wmkcErr_return(error, wmkcErr_OK, "OK.");
 }
 
+/**
+ * @brief 接收数据端函数
+ * @authors SN-Grotesque
+ * @note 未完成
+ * @param obj 这是一个指针，指向wmkcTp对象的地址。
+ * @param fn 这是一个指针，指向路径的字符串地址，如果传入字符串而不是指针，那么
+ *           应使用wmkcFile_text宏对字符串进行转换。
+ * @return 返回一个wmkcErr对象，code为0代表无错误，如果为
+ *         其他值，那么需检查message与code。
+ */
 WMKC_PUBLIC(wmkcErr_obj) wmkcTp_Listen WMKC_OPEN_API
-WMKC_OF((wmkcTp_obj *net, wmkcFileString fn))
+WMKC_OF((wmkcTp_obj *obj, wmkcFileString fn))
 {
     wmkcErr_obj error;
-    if(!net || !net->addr || !net->port || !fn) {
+    if(!obj || !obj->addr || !obj->port || !fn) {
         wmkcErr_return(error, wmkcErr_ErrNULL,
-            "wmkcTp_Listen: net or net->addr or net->port or fn is NULL.");
+            "wmkcTp_Listen: obj or obj->addr or obj->port or fn is NULL.");
     }
-    if(!net->maxRetry) {
-        net->maxRetry = WMKC_TP_DEFAULT_MAX_RETRY;
+    if(!obj->maxRetry) {
+        obj->maxRetry = WMKC_TP_DEFAULT_MAX_RETRY;
     }
 
     wmkcErr_return(error, wmkcErr_OK, "OK.");
 }
 
+/**
+ * @brief 发送数据端函数
+ * @authors SN-Grotesque
+ * @note 未完成
+ * @param obj 这是一个指针，指向wmkcTp对象的地址。
+ * @param fn 这是一个指针，指向路径的字符串地址，如果传入字符串而不是指针，那么
+ *           应使用wmkcFile_text宏对字符串进行转换。
+ * @return 返回一个wmkcErr对象，code为0代表无错误，如果为
+ *         其他值，那么需检查message与code。
+ */
 WMKC_PUBLIC(wmkcErr_obj) wmkcTp_Client WMKC_OPEN_API
-WMKC_OF((wmkcTp_obj *net, wmkcFileString fn))
+WMKC_OF((wmkcTp_obj *obj, wmkcFileString fn))
 {
     wmkcErr_obj error;
-    if(!net || !net->addr || !net->port || !fn) {
+    if(!obj || !obj->addr || !obj->port || !fn) {
         wmkcErr_return(error, wmkcErr_ErrNULL,
-            "wmkcTp_Listen: net or net->addr or net->port or fn is NULL.");
+            "wmkcTp_Listen: obj or obj->addr or obj->port or fn is NULL.");
     }
-    if(!net->maxRetry) {
-        net->maxRetry = WMKC_TP_DEFAULT_MAX_RETRY;
+    if(!obj->maxRetry) {
+        obj->maxRetry = WMKC_TP_DEFAULT_MAX_RETRY;
     }
 
     wmkcErr_return(error, wmkcErr_OK, "OK.");

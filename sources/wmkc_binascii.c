@@ -87,7 +87,7 @@ WMKC_OF((wmkcByte **dst, wmkcByte *src, wmkcSize srcSize))
 
     if(!wmkcMemoryNew(wmkcByte *, (*dst), (srcSize << 1) + 1)) {
         wmkcErr_return(error, wmkcErr_ErrMemory,
-            "wmkcBinascii_b2a_hex: (*dst) Failed to apply for memory.");
+            "wmkcBinascii_b2a_hex: (*dst) failed to apply for memory.");
     }
 
     (*dst)[srcSize << 1] = 0x00;
@@ -135,7 +135,7 @@ WMKC_OF((wmkcByte **dst, wmkcByte *src, wmkcSize srcSize))
 
     if(!wmkcMemoryNew(wmkcByte *, (*dst), (srcSize >> 1) + 1)) {
         wmkcErr_return(error, wmkcErr_ErrMemory,
-            "wmkcBinascii_a2b_hex: (*dst) Failed to apply for memory.");
+            "wmkcBinascii_a2b_hex: (*dst) failed to apply for memory.");
     }
     (*dst)[(srcSize >> 1)] = 0x00;
 
