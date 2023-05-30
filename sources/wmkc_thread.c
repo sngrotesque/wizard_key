@@ -1,3 +1,8 @@
+/**
+ * @brief 一些说明
+ * @note 此wmkc_thread库后续将实现为类似Python中的threading库的语法。
+ * @note 比如使用Thread函数直接创建一个线程，但是挂起。等待用户使用run或者start函数来唤醒。
+ */
 #include <wmkc_thread.h>
 
 WMKC_PRIVATE(wmkcBool) _wmkcThread_create
@@ -37,7 +42,7 @@ WMKC_OF((wmkcThread_obj *obj))
     if(ResumeThread(obj->th) == wmkcErr_Err32)
         return false;
 #   elif defined(WMKC_PLATFORM_LINUX)
-    
+
 #endif
     return true;
 }

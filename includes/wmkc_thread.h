@@ -1,7 +1,23 @@
-/*
-* https://learn.microsoft.com/zh-cn/windows/win32/api/processthreadsapi/nf-processthreadsapi-createthread
-*/
-
+/**
+ * @brief wmkc_thread库的参考链接
+ * @ref https://learn.microsoft.com/zh-cn/windows/win32/api/processthreadsapi/nf-processthreadsapi-createthread
+ * @ref https://learn.microsoft.com/zh-cn/windows/win32/api/processthreadsapi/nf-processthreadsapi-resumethread
+ * @ref https://man7.org/linux/man-pages/man3/pthread_create.3.html
+ * @ref https://man7.org/linux/man-pages/man3/pthread_join.3.html
+ * @ref https://man7.org/linux/man-pages/man3/pthread_kill.3.html
+ * @ref https://man7.org/linux/man-pages/man3/pthread_exit.3.html
+ * @ref https://man7.org/linux/man-pages/man3/pthread_self.3.html
+ * @ref https://man7.org/linux/man-pages/man3/pthread_mutexattr_init.3.html
+ * @ref https://man7.org/linux/man-pages/man3/pthread_mutex_lock.3p.html
+ * @ref https://man7.org/linux/man-pages/man3/pthread_mutexattr_setrobust.3.html
+ * @ref https://man7.org/linux/man-pages/man3/pthread_mutex_consistent.3.html
+ * @ref https://man7.org/linux/man-pages/man3/pthread_cond_signal.3p.html
+ * @ref https://man7.org/linux/man-pages/man3/sem_init.3.html
+ * @ref https://man7.org/linux/man-pages/man3/sem_wait.3.html
+ * @ref https://man7.org/linux/man-pages/man3/sem_post.3.html
+ * @ref https://man7.org/linux/man-pages/man3/sem_destroy.3.html
+ * @ref https://man7.org/linux/man-pages/man3/sem_close.3.html
+ */
 #include <wmkc_conf.h>
 
 #if WMKC_SUPPORT
@@ -61,7 +77,7 @@ WMKC_OF((wmkcThread_obj **obj));
 /**
  * @brief 创建线程并立即运行
  * @authors SN-Grotesque
- * @note 无
+ * @note 未完成
  * @param obj 这是一个指针，指向wmkcThread对象的地址。
  * @param func 这是一个指针，在Linux中为指针函数指针，在Win中为函数指针。
  * @param param 这是一个指针，代表func的参数，指向空类型的地址。
@@ -74,7 +90,7 @@ WMKC_OF((wmkcThread_obj *obj, wmkcThreadFunc func, wmkcThreadParam param));
 /**
  * @brief 等待线程执行完毕（阻塞线程）
  * @authors SN-Grotesque
- * @note 无
+ * @note 未完成
  * @param obj 这是一个指针，指向wmkcThread对象的地址。
  * @return 返回一个wmkcErr对象，code为0代表无错误，如果为
  *         其他值，那么需检查message与code。
