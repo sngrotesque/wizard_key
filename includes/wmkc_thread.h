@@ -13,6 +13,7 @@
  * @ref https://man7.org/linux/man-pages/man3/pthread_mutex_consistent.3.html
  * @ref https://man7.org/linux/man-pages/man3/pthread_cond_signal.3p.html
  * @ref https://man7.org/linux/man-pages/man3/sem_init.3.html
+ * @ref https://man7.org/linux/man-pages/man3/sem_open.3.html
  * @ref https://man7.org/linux/man-pages/man3/sem_wait.3.html
  * @ref https://man7.org/linux/man-pages/man3/sem_post.3.html
  * @ref https://man7.org/linux/man-pages/man3/sem_destroy.3.html
