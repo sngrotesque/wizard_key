@@ -51,15 +51,18 @@ static wmkcByte iv[32] = {
 
 wmkcThreadRet wmkcThread_test(wmkcThreadParam args)
 {
-    printf("hello, world.\n");
+    wmkcSize *number = (wmkcSize *)args;
+    printf("hello, world.\nnumber: %"PRIu64"\n", *number);
+#   ifdef WMKC_PLATFORM_LINUX
     return NULL;
+#   endif
 }
 
 void test()
 {
-    wmkcThread_obj *thread = \
-        wmkcMemoryNew(wmkcThread_obj *, thread, sizeof(wmkcThread_obj));
-    wmkcThread_create(thread, wmkcThread_test, NULL);
+    wmkcThread_obj *thread = wmkcMemoryNew(wmkcThread_obj *, thread, sizeof(wmkcThread_obj));
+    wmkcSize number = 177;
+    wmkcThread_create(thread, wmkcThread_test, &number);
     wmkcThread_join(thread);
     wmkcMemoryFree(thread);
 }
