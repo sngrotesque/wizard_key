@@ -62,8 +62,11 @@ void test()
 {
     wmkcThread_obj *thread = wmkcMemoryNew(wmkcThread_obj *, thread, sizeof(wmkcThread_obj));
     wmkcSize number = 177;
-    wmkcThread_create(thread, wmkcThread_test, &number);
-    wmkcThread_join(thread);
+    wmkcErr_obj error;
+    error = wmkcThread_create(thread, wmkcThread_test, &number);
+    if(error.code) printf("%s\n", error.message);
+    error = wmkcThread_join(thread);
+    if(error.code) printf("%s\n", error.message);
     wmkcMemoryFree(thread);
 }
 
