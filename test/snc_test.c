@@ -9,12 +9,12 @@
 
 #include <crypto/snc.c>
 #include <wmkc_binascii.c>
-#include <wmkcPad.c>
-#include <wmkcHash.c>
-#include <wmkcFile.c>
-#include <wmkcMisc.c>
-#include <wmkcTime.c>
-#include <wmkcRandom_rand.c>
+#include <wmkc_pad.c>
+#include <wmkc_hash.c>
+#include <wmkc_file.c>
+#include <wmkc_misc.c>
+#include <wmkc_time.c>
+#include <wmkc_randomc>
 
 int main(int argc, char **argv)
 {
@@ -28,8 +28,8 @@ int main(int argc, char **argv)
     static wmkcByte iv[32] = {
         0xf8, 0x8f, 0x42, 0x1d, 0xe1, 0xb5, 0x7a, 0xef, 0x09, 0xdd, 0x5a, 0xe1, 0x72, 0x2c, 0xb5, 0x42,
         0x93, 0x0b, 0x3b, 0x6e, 0x09, 0xd0, 0x56, 0x33, 0xf4, 0x4e, 0x81, 0xd8, 0x53, 0x47, 0x6e, 0x2c};
-    static wmkcStreamfn_src = "misc/img/building2014851.jpg";
-    static wmkcStreamfn_dst = "misc/img/building2014852.jpg";
+    static wmkcStream fn_src = "misc/img/building2014851.jpg";
+    static wmkcStream fn_dst = "misc/img/building2014852.jpg";
     static wmkcHash_obj *hash = wmkcNull;
     static wmkcFile_obj *file = wmkcNull;
     static SNC_ctx *snc = wmkcNull;
