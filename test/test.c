@@ -9,7 +9,7 @@
 #include <wmkc_thread.h>
 // #include <wmkc_base.h>
 // #include <wmkc_file.h>
-// #include <wmkc_misc.h>
+#include <wmkc_misc.h>
 // #include <wmkc_math.h>
 // #include <wmkc_time.h>
 // #include <wmkc_hash.h>
@@ -24,15 +24,17 @@
 // #include <wmkc_object.c>
 // #include <wmkc_random.c>
 // #include <wmkc_struct.c>
-// #include <wmkc_thread.c>
+#include <wmkc_thread.c>
 // #include <wmkc_base.c>
 // #include <wmkc_file.c>
-// #include <wmkc_misc.c>
+#include <wmkc_misc.c>
 // #include <wmkc_math.c>
 // #include <wmkc_time.c>
 // #include <wmkc_hash.c>
 // #include <wmkc_pad.c>
 // #include <wmkc_key.c>
+
+#include <semaphore.h>
 
 #define CIPHER_TEST false
 
@@ -49,21 +51,9 @@ static wmkcByte iv[32] = {
     0x3d, 0x41, 0x78, 0x35, 0x48, 0x50, 0x7d, 0x73, 0x60, 0x4e, 0x33, 0x6f, 0x23, 0x47, 0x4c, 0x36};
 #endif
 
-wmkcThreadRet wmkcThread_test(wmkcThreadParam args)
-{
-    wmkcSize *number = (wmkcSize *)args;
-    printf("hello, world.\nnumber: %"PRIu64"\n", *number);
-// #   ifdef WMKC_PLATFORM_LINUX
-    return NULL;
-// #   endif
-}
-
 void test()
 {
-    pthread_t th;
-    wmkcSize num = 177;
-    pthread_create(&th, NULL, wmkcThread_test, &num);
-    pthread_join(th, NULL);
+    
 }
 
 int main(int argc, char **argv)
