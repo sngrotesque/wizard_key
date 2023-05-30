@@ -8,6 +8,8 @@
 #ifndef WMKC_THREAD
 #define WMKC_THREAD
 
+#include <pthread.h>
+
 #if defined(WMKC_PLATFORM_WINOS)
 #include <Windows.h>
 typedef HANDLE        _wmkcThreadTh; // 线程句柄
