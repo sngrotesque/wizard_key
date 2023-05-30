@@ -8,7 +8,7 @@
 #ifndef WMKC_THREAD
 #define WMKC_THREAD
 
-#include <pthread.h>
+// #include <pthread.h>
 
 #if defined(WMKC_PLATFORM_WINOS)
 #include <Windows.h>
