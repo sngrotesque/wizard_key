@@ -1,6 +1,6 @@
 #include <wmkc_thread.h>
 
-WMKC_PUBLIC(wmkcBool) _wmkcThread_create WMKC_OPEN_API
+WMKC_PRIVATE(wmkcBool) _wmkcThread_create
 WMKC_OF((wmkcThread_obj *obj, wmkcThreadFunc func, wmkcThreadParam param))
 {
 #   if defined(WMKC_PLATFORM_WINOS)
@@ -44,7 +44,7 @@ WMKC_OF((wmkcThread_obj *obj, wmkcThreadFunc func, wmkcThreadParam param))
     wmkcErr_return(error, wmkcErr_OK, "OK.");
 }
 
-WMKC_PRIVATE(wmkcErr_obj) wmkcThread_join WMKC_OPEN_API
+WMKC_PUBLIC(wmkcErr_obj) wmkcThread_join WMKC_OPEN_API
 WMKC_OF((wmkcThread_obj *obj))
 {
     wmkcErr_obj error;

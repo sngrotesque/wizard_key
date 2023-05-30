@@ -24,7 +24,7 @@
 // #include <wmkc_object.c>
 // #include <wmkc_random.c>
 // #include <wmkc_struct.c>
-#include <wmkc_thread.c>
+// #include <wmkc_thread.c>
 // #include <wmkc_base.c>
 // #include <wmkc_file.c>
 // #include <wmkc_misc.c>
@@ -53,21 +53,17 @@ wmkcThreadRet wmkcThread_test(wmkcThreadParam args)
 {
     wmkcSize *number = (wmkcSize *)args;
     printf("hello, world.\nnumber: %"PRIu64"\n", *number);
-#   ifdef WMKC_PLATFORM_LINUX
+// #   ifdef WMKC_PLATFORM_LINUX
     return NULL;
-#   endif
+// #   endif
 }
 
 void test()
 {
-    wmkcThread_obj *thread = wmkcMemoryNew(wmkcThread_obj *, thread, sizeof(wmkcThread_obj));
-    wmkcSize number = 177;
-    wmkcErr_obj error;
-    error = wmkcThread_create(thread, wmkcThread_test, &number);
-    if(error.code) printf("%s\n", error.message);
-    error = wmkcThread_join(thread);
-    if(error.code) printf("%s\n", error.message);
-    wmkcMemoryFree(thread);
+    pthread_t th;
+    wmkcSize num = 177;
+    pthread_create(&th, NULL, wmkcThread_test, &num);
+    pthread_join(th, NULL);
 }
 
 int main(int argc, char **argv)
