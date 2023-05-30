@@ -62,7 +62,8 @@ typedef struct {
 1.  修改了wmkc_random，wmkc_time库的实现。
 2.  修复了wmkc_base库的错误信息不全的问题。
 3.  修改了对于系统宏的名称标识。
-5.  增加了适当的文档与注释。
+4.  增加了适当的文档与注释。
+5.  增加了wmkc_thread库用于多线程编程。
 
 #### v5.0.0
 1.  将库更名为Wizard Magic Key Cyber，原因是与目前某一组织名称重合。

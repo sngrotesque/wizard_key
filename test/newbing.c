@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 #include <windows.h>
 #include <process.h>
 #include <conio.h>
@@ -13,6 +14,7 @@ int timerest = 10; //设置初始时间
 char word[10]; //接收单词输入
 
 int main() {
+    system("cls");
     _beginthread(timec, 0, NULL); //启动倒计时显示线程
     _beginthread(inputc, 0, NULL); //启动输入单词线程
     while (isrun); //阻塞主线程，让子线程执行
@@ -22,11 +24,11 @@ int main() {
 //显示信息
 void update() {
     gotoxy(0, 0);
-    printf("\\n\\n 剩余时间：%d s", timerest);
-    printf("\\n\\n 中文：你好");
-    printf("\\n\\n "); //清空这一行
+    printf("\n\n 剩余时间：%d s", timerest);
+    printf("\n\n 中文：你好");
+    printf("\n\n "); //清空这一行
     gotoxy(0, 4);
-    printf("\\n\\n 英文：%s", word); //重新显示
+    printf("\n\n 英文：%s", word); //重新显示
 }
 
 //输入控制线程
@@ -41,20 +43,20 @@ void inputc(void*) {
             isrun = 0; //输入@，结束主线程，即程序结束
             _endthread();
         }
-        if (ch == '\\b') //检测是否为退格
+        if (ch == '\b') //检测是否为退格
         {
             if (i > 0) {
                 word[--i] = 0; //是的话将一个字符删掉并向前移动一位
-                putchar('\\b');
+                putchar('\b');
                 putchar(' ');
-                putchar('\\b'); //这三句实现删掉已经输出的字符
+                putchar('\b'); //这三句实现删掉已经输出的字符
             }
         } else {
             word[i] = ch; //放进数组
             putchar(ch);
             i++; //不是则向下移动并输出
         }
-        if (ch == '\\n') //检查是否输入完毕
+        if (ch == '\n') //检查是否输入完毕
         {
             if (strcmp(word, "hello")) //判断输入是否正确
             {

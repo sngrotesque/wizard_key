@@ -8,7 +8,7 @@
 #include <sys/timeb.h>
 
 #ifdef WMKC_PLATFORM_WINOS
-#include <windows.h>
+#include <Windows.h>
 #elif defined(WMKC_PLATFORM_LINUX)
 #include <sys/time.h>
 #endif
