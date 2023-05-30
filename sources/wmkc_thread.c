@@ -9,7 +9,7 @@ WMKC_OF((wmkcThread_obj *obj, wmkcThreadFunc func, wmkcThreadParam param))
         return false;
 #   elif defined(WMKC_PLATFORM_LINUX)
     // 类Unix系统中，这个函数则是成功时返回0。
-    if(pthread_create(*obj->th, 0, func, param))
+    if(pthread_create((*obj).th, 0, func, param))
         return false;
 #   endif
     return true;
