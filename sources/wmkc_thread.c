@@ -42,8 +42,8 @@ WMKC_OF((wmkcThread_obj *obj))
     if(ResumeThread(obj->th) == wmkcErr_Err32)
         return false;
 #   elif defined(WMKC_PLATFORM_LINUX)
-
-#endif
+    
+#   endif
     return true;
 }
 
