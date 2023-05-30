@@ -38,16 +38,14 @@ class git_process:
                 test.c
             '''
             self.path.remove('.git')
+            self.path.remove('snCompiled')
             self.path.remove('Reference')
             self.path.remove('Documents')
-            self.path.remove('snCompiled')
             self.path.remove('Temp')
             self.path.remove('misc')
-            # self.path.remove('test')
             self.path.remove('keys')
+            self.path.remove('libsnc.py')
             self.path.remove('test.py')
-            if os.path.exists('libshark.lib'):
-                self.path.remove('libshark.lib')
         except ValueError:
             pass
         deleteListData(self.path, '___')
