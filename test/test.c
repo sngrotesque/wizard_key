@@ -52,6 +52,7 @@ static wmkcByte iv[32] = {
 wmkcThreadRet wmkcThread_test(wmkcThreadParam args)
 {
     printf("hello, world.\n");
+    return NULL;
 }
 
 void test()
