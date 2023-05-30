@@ -137,6 +137,10 @@ typedef struct {
 #define wmkcErr_FileOpen          34ULL
 // 此值表示调用fclose函数来关闭文件失败了。
 #define wmkcErr_FileClose         35ULL
+// 此值表示线程创建时出现错误
+#define wmkcErr_ThreadCreate      48ULL
+// 此值表示线程阻塞出现错误
+#define wmkcErr_ThreadJoin        49ULL
 // 将wmkcErr对象赋值并作为返回值返回。
 #define wmkcErr_return(error, _code, _message) \
     error.message = _message; error.code = _code; return error
