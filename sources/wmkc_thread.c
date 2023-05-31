@@ -118,6 +118,7 @@ WMKC_OF((wmkcThread_obj *obj, wmkcThreadFunc funcAddr, wmkcThreadParam funcArgs)
         wmkcErr_return(error, wmkcErr_ThreadCreate,
             "wmkcThread_Thread: Error creating obj.");
     }
+    wmkcErr_return(error, wmkcErr_OK, "OK.");
 }
 
 WMKC_PUBLIC(wmkcErr_obj) wmkcThread_join WMKC_OPEN_API

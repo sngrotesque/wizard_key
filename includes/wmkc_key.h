@@ -4,8 +4,8 @@
 #ifndef WMKC_KEY
 #define WMKC_KEY
 
-#include <wmkc_base.h>
 #include <wmkc_file.h>
+#include <wmkc_base64.h>
 #include <wmkc_random.h>
 
 #define WMKC_KEY_CRYPTO_BLOCKLEN 4

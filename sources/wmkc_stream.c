@@ -80,10 +80,6 @@ WMKC_OF((wmkc_obj **dst, wmkc_obj *src, wmkcSSize start, wmkcSSize end))
         }
     }
 
-    // printf("size: %lld\n", src->size);
-    // printf("start: %lld\n", start);
-    // printf("end: %lld\n", end);
-
     wmkcObject_new(dst, (end - start) + 1, false);
     (*dst)->buf[end - start] = 0x00;
     (*dst)->size = (end - start);
