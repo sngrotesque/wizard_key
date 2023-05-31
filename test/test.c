@@ -51,34 +51,9 @@ static wmkcByte iv[32] = {
     0x3d, 0x41, 0x78, 0x35, 0x48, 0x50, 0x7d, 0x73, 0x60, 0x4e, 0x33, 0x6f, 0x23, 0x47, 0x4c, 0x36};
 #endif
 
-wmkcThreadRet wmkcThread_test(wmkcThreadParam args)
-{
-    wmkcThread_obj *thread = (wmkcThread_obj *)args;
-    wmkc_u32 number = *((wmkc_u32 *)thread->args);
-    sem_wait(&thread->handle->sem);
-    printf("wmkcThread_test args: %u\n", number);
-    return WMKC_THREAD_DEFAULT_RETUEN;
-}
-
 void test()
 {
-    wmkcThread_obj *thread = wmkcNull;
-    wmkc_u32 number = 166;
-
-    wmkcThread_new(&thread);
-    thread->args = &number;
-
-    sem_init(&thread->handle->sem, 0, 0);
-
-    wmkcThread_Thread(thread, wmkcThread_test);
-    sleep(3);
-
-    wmkcThread_start(thread);
-    wmkcThread_join(thread);
-
-    sem_destroy(&thread->handle->sem);
-
-    wmkcThread_free(&thread);
+    
 }
 
 int main(int argc, char **argv)

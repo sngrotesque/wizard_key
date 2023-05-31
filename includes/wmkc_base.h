@@ -12,6 +12,7 @@
 typedef struct {
     wmkc_obj *src;
     wmkc_obj *dst;
+    
 } wmkcBase64_obj;
 
 /**
