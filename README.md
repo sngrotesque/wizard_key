@@ -3,6 +3,7 @@
 
 ### Author(s):
  - [SN-Grotesque](https://github.com/sngrotesque)
+ - [R7](https://github.com/r7z7)
 
 ### 特别鸣谢
  - [OpenSSL](https://github.com/openssl/openssl)

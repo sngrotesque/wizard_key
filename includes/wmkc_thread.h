@@ -25,32 +25,39 @@
 #ifndef WMKC_THREAD
 #define WMKC_THREAD
 
+#include <semaphore.h>
+
 #if defined(WMKC_PLATFORM_WINOS)
 #include <Windows.h>
-typedef HANDLE        _wmkcThreadTh; // 线程句柄
-typedef DWORD         _wmkcThreadId; // 线程ID
-typedef LPTHREAD_START_ROUTINE _wmkcThreadFunc; // 函数指针
-typedef LPVOID     _wmkcThreadParam; // 函数参数
-typedef DWORD WINAPI _wmkcThreadRet; // 函数类型
+typedef HANDLE        wmkcThreadTh; // 线程句柄
+typedef DWORD         wmkcThreadId; // 线程ID
+typedef LPTHREAD_START_ROUTINE \
+                    wmkcThreadFunc; // 函数指针
+typedef DWORD WINAPI wmkcThreadRet; // 函数类型
+#define WMKC_THREAD_DEFAULT_RETUEN 0
 #elif defined(WMKC_PLATFORM_LINUX)
 #include <pthread.h>
-typedef pthread_t *  _wmkcThreadTh; // 线程句柄
-typedef wmkcSSize    _wmkcThreadId; // 线程ID
-typedef wmkcVoid *(*_wmkcThreadFunc)(wmkcVoid *); // 指针函数指针
-typedef wmkcVoid *_wmkcThreadParam; // 函数参数
-typedef wmkcVoid   *_wmkcThreadRet; // 函数类型
-#endif
+typedef pthread_t    wmkcThreadTh; // 线程句柄
+typedef wmkc_s32     wmkcThreadId; // 线程ID
+typedef wmkcVoid *(*wmkcThreadFunc)(wmkcVoid *); // 指针函数指针
+typedef wmkcVoid   *wmkcThreadRet; // 函数类型
+#define WMKC_THREAD_DEFAULT_RETUEN wmkcNull
+#endif /* WMKC_PLATFORM_WINOS */
 
-typedef _wmkcThreadTh    wmkcThreadTh;    // 线程句柄
-typedef _wmkcThreadId    wmkcThreadId;    // 线程ID
-typedef _wmkcThreadFunc  wmkcThreadFunc;  // 函数指针或指针函数指针
-typedef _wmkcThreadParam wmkcThreadParam; // 函数参数
-typedef _wmkcThreadRet   wmkcThreadRet;   // 函数类型
+typedef wmkcVoid *wmkcThreadParam; // 函数参数
+
+// wmkcThread句柄对象
+typedef struct {
+    wmkcThreadId id;
+    wmkcThreadId flags;
+    wmkcThreadTh th;
+    sem_t sem;
+} wmkcThread_handle_obj;
 
 // wmkcThread对象
 typedef struct {
-    wmkcThreadTh th; // 线程句柄
-    wmkcThreadId id; // 线程ID
+    wmkcThread_handle_obj *handle; // 线程句柄
+    wmkcThreadParam        args;   // 函数参数
 } wmkcThread_obj;
 
 /**
@@ -75,29 +82,14 @@ WMKC_OF((wmkcThread_obj **obj));
 WMKC_PUBLIC(wmkcErr_obj) wmkcThread_free WMKC_OPEN_API
 WMKC_OF((wmkcThread_obj **obj));
 
-/**
- * @brief 创建线程并立即运行
- * @authors SN-Grotesque
- * @note 未完成
- * @param obj 这是一个指针，指向wmkcThread对象的地址。
- * @param func 这是一个指针，在Linux中为指针函数指针，在Win中为函数指针。
- * @param param 这是一个指针，代表func的参数，指向空类型的地址。
- * @return 返回一个wmkcErr对象，code为0代表无错误，如果为
- *         其他值，那么需检查message与code。
- */
-WMKC_PUBLIC(wmkcErr_obj) wmkcThread_create WMKC_OPEN_API
-WMKC_OF((wmkcThread_obj *obj, wmkcThreadFunc func, wmkcThreadParam param));
+WMKC_PUBLIC(wmkcErr_obj) wmkcThread_Thread WMKC_OPEN_API
+WMKC_OF((wmkcThread_obj *thread, wmkcThreadFunc funcAddr));
 
-/**
- * @brief 等待线程执行完毕（阻塞线程）
- * @authors SN-Grotesque
- * @note 未完成
- * @param obj 这是一个指针，指向wmkcThread对象的地址。
- * @return 返回一个wmkcErr对象，code为0代表无错误，如果为
- *         其他值，那么需检查message与code。
- */
 WMKC_PUBLIC(wmkcErr_obj) wmkcThread_join WMKC_OPEN_API
-WMKC_OF((wmkcThread_obj *obj));
+WMKC_OF((wmkcThread_obj *thread));
+
+WMKC_PUBLIC(wmkcErr_obj) wmkcThread_start WMKC_OPEN_API
+WMKC_OF((wmkcThread_obj *thread));
 
 #endif /* WMKC_THREAD */
 #endif /* WMKC_SUPPORT */
