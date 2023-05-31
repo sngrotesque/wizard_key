@@ -29,7 +29,7 @@ WMKC_PRIVATE_CONST(wmkcByte) _B64DT[123] = {
  * @param src 此参数是一个wmkc对象，此函数通过此对象的size成员获取编码后的长度。
  * @return 此函数返回一个wmkcSize类型变量，代表编码后的长度值。
 */
-WMKC_PUBLIC(wmkcSize) wmkcBase64_encode_size WMKC_OPEN_API
+WMKC_PRIVATE(wmkcSize) _wmkcBase64_encodeSize WMKC_OPEN_API
 WMKC_OF((wmkc_obj *src))
 {
     if(src->size % 3)
@@ -49,7 +49,7 @@ WMKC_OF((wmkc_obj *src))
  * @param src 此参数是一个wmkc对象，此函数通过此对象的size成员获取解码后的长度。
  * @return 此函数返回一个wmkcSize类型变量，代表解码后的长度值。
 */
-WMKC_PUBLIC(wmkcSize) wmkcBase64_decode_size WMKC_OPEN_API
+WMKC_PRIVATE(wmkcSize) _wmkcBase64_decodeSize WMKC_OPEN_API
 WMKC_OF((wmkc_obj *src))
 {
     if ((src->buf[src->size - 1] & src->buf[src->size - 2]) == WMKC_BASE64_PAD)
@@ -58,67 +58,6 @@ WMKC_OF((wmkc_obj *src))
         return src->size / 4 * 3 - 1;
     else
         return src->size / 4 * 3;
-}
-
-/**
- * @brief 新建一个wmkcBase64对象
- * @authors SN-Grotesque
- * 
- * 此函数为wmkcBase64对象申请内存空间。
- * 
- * @note 无。
- * @param obj 此参数是一个wmkcBase64对象的地址。
- * @return 返回一个wmkcErr对象，code为0代表无错误，如果为
- *         其他值，那么需检查message与code。
-*/
-WMKC_PUBLIC(wmkcErr_obj) wmkcBase64_new WMKC_OPEN_API
-WMKC_OF((wmkcBase64_obj **obj))
-{
-    wmkcErr_obj error;
-
-    if(!obj) {
-        wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcBase64_new: obj is NULL.");
-    }
-    if(!wmkcMemoryNew(wmkcBase64_obj *, (*obj), sizeof(wmkcBase64_obj))) {
-        wmkcErr_return(error, wmkcErr_ErrMemory,
-            "wmkcBase64_new: (*obj) failed to apply for memory.");
-    }
-    if(!wmkcMemoryNew(wmkc_obj *, (*obj)->src, sizeof(wmkc_obj))) {
-        wmkcErr_return(error, wmkcErr_ErrMemory,
-            "wmkcBase64_new: (*obj)->src failed to apply for memory.");
-    }
-    if(!wmkcMemoryNew(wmkc_obj *, (*obj)->dst, sizeof(wmkc_obj))) {
-        wmkcErr_return(error, wmkcErr_ErrMemory,
-            "wmkcBase64_new: (*obj)->dst failed to apply for memory.");
-    }
-
-    wmkcErr_return(error, wmkcErr_OK, "OK.");
-}
-
-/**
- * @brief 释放一个wmkcBase64对象
- * @authors SN-Grotesque
- * 
- * 此函数为wmkcBase64对象释放内存空间。
- * 
- * @note 无。
- * @param obj 此参数是一个wmkcBase64对象的地址。
- * @return 返回一个wmkcErr对象，code为0代表无错误，如果为
- *         其他值，那么需检查message与code。
-*/
-WMKC_PUBLIC(wmkcErr_obj) wmkcBase64_free WMKC_OPEN_API
-WMKC_OF((wmkcBase64_obj **obj))
-{
-    wmkcErr_obj error;
-
-    if(!obj) {
-        wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcBase64_free: obj is NULL.");
-    }
-    wmkcMemoryFree((*obj)->src);
-    wmkcMemoryFree((*obj)->dst);
-    wmkcMemoryFree((*obj));
-
-    wmkcErr_return(error, wmkcErr_OK, "OK.");
 }
 
 /**
@@ -133,7 +72,7 @@ WMKC_OF((wmkcBase64_obj **obj))
  * @return 返回一个wmkcErr对象，code为0代表无错误，如果为
  *         其他值，那么需检查message与code。
 */
-WMKC_PUBLIC(wmkcErr_obj) wmkcBase64_Encode WMKC_OPEN_API
+WMKC_PRIVATE(wmkcErr_obj) _wmkcBase64_encode WMKC_OPEN_API
 WMKC_OF((wmkc_obj *dst, wmkc_obj *src))
 {
     wmkcErr_obj error;
@@ -182,7 +121,7 @@ WMKC_OF((wmkc_obj *dst, wmkc_obj *src))
  * @return 返回一个wmkcErr对象，code为0代表无错误，如果为
  *         其他值，那么需检查message与code。
 */
-WMKC_PUBLIC(wmkcErr_obj) wmkcBase64_Decode WMKC_OPEN_API
+WMKC_PRIVATE(wmkcErr_obj) _wmkcBase64_decode WMKC_OPEN_API
 WMKC_OF((wmkc_obj *dst, wmkc_obj *src))
 {
     wmkcErr_obj error;
@@ -204,6 +143,73 @@ WMKC_OF((wmkc_obj *dst, wmkc_obj *src))
         dst->buf[dst_i+1] = (_B64DT[src->buf[src_i+1]] << 4) | ((_B64DT[src->buf[src_i+2]]) >> 2);
         dst->buf[dst_i+2] = (_B64DT[src->buf[src_i+2]] << 6) |   _B64DT[src->buf[src_i+3]];
     }
+
+    wmkcErr_return(error, wmkcErr_OK, "OK.");
+}
+
+/**
+ * @brief 新建一个wmkcBase64对象
+ * @authors SN-Grotesque
+ * 
+ * 此函数为wmkcBase64对象申请内存空间。
+ * 
+ * @note 无。
+ * @param obj 此参数是一个wmkcBase64对象的地址。
+ * @return 返回一个wmkcErr对象，code为0代表无错误，如果为
+ *         其他值，那么需检查message与code。
+*/
+WMKC_PUBLIC(wmkcErr_obj) wmkcBase64_new WMKC_OPEN_API
+WMKC_OF((wmkcBase64_obj **obj))
+{
+    wmkcErr_obj error;
+
+    if(!obj) {
+        wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcBase64_new: obj is NULL.");
+    }
+    if(!wmkcMemoryNew(wmkcBase64_obj *, (*obj), sizeof(wmkcBase64_obj))) {
+        wmkcErr_return(error, wmkcErr_ErrMemory,
+            "wmkcBase64_new: (*obj) failed to apply for memory.");
+    }
+    if(!wmkcMemoryNew(wmkc_obj *, (*obj)->src, sizeof(wmkc_obj))) {
+        wmkcErr_return(error, wmkcErr_ErrMemory,
+            "wmkcBase64_new: (*obj)->src failed to apply for memory.");
+    }
+    if(!wmkcMemoryNew(wmkc_obj *, (*obj)->dst, sizeof(wmkc_obj))) {
+        wmkcErr_return(error, wmkcErr_ErrMemory,
+            "wmkcBase64_new: (*obj)->dst failed to apply for memory.");
+    }
+    (*obj)->encode = _wmkcBase64_encode;
+    (*obj)->decode = _wmkcBase64_decode;
+    (*obj)->encodeSize = _wmkcBase64_encodeSize;
+    (*obj)->decodeSize = _wmkcBase64_decodeSize;
+
+    wmkcErr_return(error, wmkcErr_OK, "OK.");
+}
+
+/**
+ * @brief 释放一个wmkcBase64对象
+ * @authors SN-Grotesque
+ * 
+ * 此函数为wmkcBase64对象释放内存空间。
+ * 
+ * @note 无。
+ * @param obj 此参数是一个wmkcBase64对象的地址。
+ * @return 返回一个wmkcErr对象，code为0代表无错误，如果为
+ *         其他值，那么需检查message与code。
+*/
+WMKC_PUBLIC(wmkcErr_obj) wmkcBase64_free WMKC_OPEN_API
+WMKC_OF((wmkcBase64_obj **obj))
+{
+    wmkcErr_obj error;
+
+    if(!obj) {
+        wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcBase64_free: obj is NULL.");
+    }
+    wmkcMemoryFree((*obj)->src);
+    wmkcMemoryFree((*obj)->dst);
+    wmkcMemoryFree((*obj));
+
+    wmkcMemoryFree((*obj)->encode);
 
     wmkcErr_return(error, wmkcErr_OK, "OK.");
 }

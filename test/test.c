@@ -6,10 +6,10 @@
 // #include <wmkc_object.h>
 // #include <wmkc_random.h>
 // #include <wmkc_struct.h>
-#include <wmkc_thread.h>
-// #include <wmkc_base.h>
+// #include <wmkc_thread.h>
+#include <wmkc_base.h>
 // #include <wmkc_file.h>
-#include <wmkc_misc.h>
+// #include <wmkc_misc.h>
 // #include <wmkc_math.h>
 // #include <wmkc_time.h>
 // #include <wmkc_hash.h>
@@ -24,10 +24,10 @@
 // #include <wmkc_object.c>
 // #include <wmkc_random.c>
 // #include <wmkc_struct.c>
-#include <wmkc_thread.c>
-// #include <wmkc_base.c>
+// #include <wmkc_thread.c>
+#include <wmkc_base.c>
 // #include <wmkc_file.c>
-#include <wmkc_misc.c>
+// #include <wmkc_misc.c>
 // #include <wmkc_math.c>
 // #include <wmkc_time.c>
 // #include <wmkc_hash.c>
@@ -53,7 +53,11 @@ static wmkcByte iv[32] = {
 
 void test()
 {
-    
+    wmkcBase64_obj *base64 = wmkcNull;
+    wmkcBase64_new(&base64);
+
+
+    wmkcBase64_free(&base64);
 }
 
 int main(int argc, char **argv)

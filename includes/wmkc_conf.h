@@ -28,10 +28,10 @@
 #endif // #if defined(__linux) || defined(__linux__)
 
 // 定义版本号
-#define WMKC_VERSION     "v5.1.0"
-#define WMKC_VERNUM       0x510
-#define WMKC_VER_MAJOR    5
-#define WMKC_VER_MINOR    1
+#define WMKC_VERSION     "v6.0.0"
+#define WMKC_VERNUM       0x600
+#define WMKC_VER_MAJOR    6
+#define WMKC_VER_MINOR    0
 #define WMKC_VER_REVISION 0
 
 // 定义一些一般类型
