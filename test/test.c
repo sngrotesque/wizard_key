@@ -53,17 +53,17 @@ static wmkcByte iv[32] = {
 
 void test()
 {
-    wmkcString string = "hello, world";
-    wmkcString symbol = ":";
+    wmkcChar string[32] = "021-5819-3948";
+    wmkcChar symbol     = '-';
 
     wmkcDict_obj *dict = wmkcNull;
     wmkcDict_new(&dict);
 
-    wmkcDict_read(dict, (wmkcChar *)string, (wmkcChar *)symbol);
+    wmkcDict_read(dict, string, symbol);
 
     printf("dict->key:       [%s]\n", dict->key);
     printf("dict->value:     [%s]\n", dict->value);
-    printf("dict->delimiter: [%s]\n", dict->delimiter);
+    printf("dict->delimiter: [%c]\n", dict->delimiter);
 
     wmkcDict_free(&dict);
 }

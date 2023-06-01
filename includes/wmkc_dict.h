@@ -5,9 +5,9 @@
 #define WMKC_DICT
 
 typedef struct wmkcDict_obj {
+    wmkcChar delimiter;
     wmkcChar *key;
     wmkcChar *value;
-    wmkcChar *delimiter;
     struct wmkcDict_obj *next;
 } wmkcDict_obj;
 
