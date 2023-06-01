@@ -66,6 +66,8 @@ typedef struct {
     不会添加Base85（因为此编码（又称Ascii85）目前还没有一个完美的标准）  
     并将Base64的编码与解码库重新设计，去掉了基于wmkc对象的形式。
 2.  添加了wmkc_dict库，更好的操作键值对类型的数据。
+3.  修改了关于颜色的宏。
+4.  修复了wmkc_misc库的BUG。
 
 #### v5.1.0
 1.  修改了wmkc_random，wmkc_time库的实现。
