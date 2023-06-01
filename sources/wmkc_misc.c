@@ -8,47 +8,34 @@ WMKC_PUBLIC(wmkcVoid) wmkcMisc_PRINT WMKC_OPEN_API
 WMKC_OF((wmkcByte *data, wmkcSize len, wmkcSize num, wmkcBool newline, wmkcBool tableChar))
 {
     for(wmkcSize x = 0; x < len; ++x) {
-        if(tableChar && x == 0)
-            printf("\t");
-        switch(data[x]) {
-            case 0:
-                printf("%s%02x%s", WMKC_FORE_COLOR_LIGHTRED, data[x], WMKC_ALL_COLOR_RESET);
-                break;
-            case 0xff:
-                printf("%s%02x%s", WMKC_FORE_COLOR_LIGHTYELLOW, data[x], WMKC_ALL_COLOR_RESET);
-                break;
-            default:
-                printf("%02x", data[x]);
-                break;
+        if(tableChar && ((x) % num == 0)) printf("\t");
+
+        if(!data[x]) {
+            printf(WMKC_SET_COLOR(WMKC_FORE_COLOR_LIGHTRED, "%02x"), data[x]);
+        } else if(!(data[x] ^ 0xff)) {
+            printf(WMKC_SET_COLOR(WMKC_FORE_COLOR_LIGHTYELLOW, "%02x"), data[x]);
+        } else {
+            printf("%02x", data[x]);
         }
-        switch((x + 1) % num) {
-            case 0:
-                printf("\n");
-                if(tableChar)
-                    printf("\t");
-                break;
-            default:
-                printf(" ");
-                break;
-        }
+
+        if((x + 1) % num) printf(" ");
+        else printf("\n");
     }
-    if(newline)
-        printf("\n");
+    if(newline) printf("\n");
 }
 
 WMKC_PUBLIC(wmkcVoid) wmkcMisc_PRINT_N WMKC_OPEN_API
-WMKC_OF((wmkc_s32 *arr, wmkcSize size, wmkcBool newline))
+WMKC_OF((wmkcByte *arr, wmkcSize size, wmkcBool newline))
 {
     for(wmkcSize x = 0; x < size; ++x) {
         printf("%3d", x[arr]);
-        if(!((x+1) % 32)) {
+        if(!((x + 1) % 32)) {
             printf("\n");
         } else {
             printf(" ");
         }
     }
-    if (newline)
-        printf("\n");
+    if(newline) printf("\n");
 }
 
 WMKC_PUBLIC(wmkcVoid) wmkcMisc_PRINT_BOX WMKC_OPEN_API

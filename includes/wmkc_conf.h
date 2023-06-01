@@ -187,7 +187,7 @@ typedef struct {
 #       define WMKC_BACK_COLOR_LIGHTMAGENTA "\x1b[105m" // 亮紫色（背景）
 #       define WMKC_BACK_COLOR_LIGHTCYAN    "\x1b[106m" // 亮青色（背景）
 #       define WMKC_BACK_COLOR_LIGHTWHITE   "\x1b[107m" // 亮白色（背景）
-#       define WMKC_SET_TEXT_COLOR(color, text) color text WMKC_ALL_COLOR_RESET
+#       define WMKC_SET_COLOR(color, text) color text WMKC_ALL_COLOR_RESET
 #   endif // #if defined(WMKC_COLOR)
 #endif // #if defined(WMKC_ENABLE_FEATURES)
 #else
