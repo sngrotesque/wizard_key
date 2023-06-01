@@ -1,22 +1,23 @@
-#include <network/wmkc_net.h>
-#include <image/wmkc_png.h>
-#include <crypto/snc.h>
-#include <wmkc_binascii.h>
-#include <wmkc_hexdump.h>
-#include <wmkc_object.h>
-#include <wmkc_random.h>
-#include <wmkc_struct.h>
-#include <wmkc_thread.h>
-#include <wmkc_base64.h>
-#include <wmkc_file.h>
-#include <wmkc_misc.h>
-#include <wmkc_math.h>
-#include <wmkc_time.h>
-#include <wmkc_hash.h>
-#include <wmkc_pad.h>
-#include <wmkc_key.h>
+// #include <network/wmkc_net.h>
+// #include <image/wmkc_png.h>
+// #include <crypto/snc.h>
+// #include <wmkc_binascii.h>
+// #include <wmkc_hexdump.h>
+// #include <wmkc_object.h>
+// #include <wmkc_random.h>
+// #include <wmkc_struct.h>
+// #include <wmkc_thread.h>
+// #include <wmkc_base64.h>
+// #include <wmkc_dict.h>
+// #include <wmkc_file.h>
+// #include <wmkc_misc.h>
+// #include <wmkc_math.h>
+// #include <wmkc_time.h>
+// #include <wmkc_hash.h>
+// #include <wmkc_pad.h>
+// #include <wmkc_key.h>
 
-#include <network/wmkc_net.c>
+// #include <network/wmkc_net.c>
 #include <image/wmkc_png.c>
 #include <crypto/snc.c>
 #include <wmkc_binascii.c>
@@ -26,6 +27,7 @@
 #include <wmkc_struct.c>
 #include <wmkc_thread.c>
 #include <wmkc_base64.c>
+#include <wmkc_dict.c>
 #include <wmkc_file.c>
 #include <wmkc_misc.c>
 #include <wmkc_math.c>
@@ -33,8 +35,6 @@
 #include <wmkc_hash.c>
 #include <wmkc_pad.c>
 #include <wmkc_key.c>
-
-#include <unistd.h>
 
 #define CIPHER_TEST false
 
@@ -53,7 +53,19 @@ static wmkcByte iv[32] = {
 
 void test()
 {
-    
+    wmkcString string = "hello, world";
+    wmkcString symbol = ":";
+
+    wmkcDict_obj *dict = wmkcNull;
+    wmkcDict_new(&dict);
+
+    wmkcDict_read(dict, (wmkcChar *)string, (wmkcChar *)symbol);
+
+    printf("dict->key:       [%s]\n", dict->key);
+    printf("dict->value:     [%s]\n", dict->value);
+    printf("dict->delimiter: [%s]\n", dict->delimiter);
+
+    wmkcDict_free(&dict);
 }
 
 int main(int argc, char **argv)

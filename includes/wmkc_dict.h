@@ -5,11 +5,11 @@
 #define WMKC_DICT
 
 typedef struct wmkcDict_obj {
-    wmkcByte *key;
-    wmkcByte *value;
+    wmkcChar *key;
+    wmkcChar *value;
+    wmkcChar *delimiter;
     struct wmkcDict_obj *next;
 } wmkcDict_obj;
-
 
 #endif /* WMKC_DICT */
 #endif /* WMKC_SUPPORT */
