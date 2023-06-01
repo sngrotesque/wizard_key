@@ -1,5 +1,31 @@
 #include <wmkc_dict.h>
 
+WMKC_PRIVATE(wmkcChar *) wmkcDict_trim
+WMKC_OF((wmkcChar *src, wmkcChar symbol))
+{
+    wmkcChar *end = wmkcNull;
+
+    while (*src == symbol) {
+        src++;
+    }
+
+    end = src + strlen(src) - 1;
+    while ((end > src) && (*end == symbol)) {
+        end--;
+    }
+
+    *(end + 1) = 0x00;
+    return src;
+}
+
+/**
+ * @brief 此函数需要优化一下，以免发生内存泄露
+ * @authors SN-Grotesque
+ * @note 无
+ * @param 无
+ * @return 返回一个wmkcErr对象，code为0代表无错误，如果为
+ *         其他值，那么需检查message与code。
+ */
 WMKC_PUBLIC(wmkcErr_obj) wmkcDict_read WMKC_OPEN_API
 WMKC_OF((wmkcDict_obj *dict, wmkcChar *string, wmkcChar delimiter))
 {
@@ -7,18 +33,24 @@ WMKC_OF((wmkcDict_obj *dict, wmkcChar *string, wmkcChar delimiter))
     if(!dict || !string) {
         wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcDict_read: dict or string is NULL.");
     }
-    dict->delimiter = delimiter;
+    dict->delimiter  = delimiter;
+    char *_key_tmp   = wmkcNull;
+    char *_value_tmp = wmkcNull;
 
-    wmkcChar *p = strchr(string, delimiter);
-    if(p) {
-        *p = 0x00;
-        dict->key = string;
-        dict->value = p + 1;
-    } else {
-        dict->key = wmkcNull;
-        dict->value = wmkcNull;
+    wmkcChar *stringCopy = strdup(string);
+    wmkcChar *p = strchr(stringCopy, delimiter);
+    if(!p) {
+        dict->key = dict->value = wmkcNull;
+        goto done;
     }
+    *p = 0x00;
+    _key_tmp = strdup(stringCopy);
+    _value_tmp = strdup(p + 1);
 
+    dict->key   = wmkcDict_trim(_key_tmp,   ' ');
+    dict->value = wmkcDict_trim(_value_tmp, ' ');
+
+done:
     wmkcErr_return(error, wmkcErr_OK, "OK.");
 }
 
