@@ -59,15 +59,17 @@ class git_process:
     def versionCheck(self):
         branch_version = RunPopen('git branch')
         
+        branch_name_0_regular = r'\s+(v[\d.]+\-\w+)'
         branch_name_1_regular = r'\s+(v[\d.]+_\w+)'
         branch_name_2_regular = r'\s+(v[\d.]+)'
         branch_name_3_regular = r'\s+(\w+\_v[\d.]+)'
         
+        versionList_0 = re.findall(branch_name_0_regular, branch_version, re.S)
         versionList_1 = re.findall(branch_name_1_regular, branch_version, re.S)
         versionList_2 = re.findall(branch_name_2_regular, branch_version, re.S)
         versionList_3 = re.findall(branch_name_3_regular, branch_version, re.S)
         
-        versionList = versionList_1 + versionList_2 + versionList_3
+        versionList = versionList_0 + versionList_1 + versionList_2 + versionList_3
         
         if self.DefinedVersion not in versionList:
             RunCommand(f'git checkout -b {self.DefinedVersion}')
