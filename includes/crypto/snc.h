@@ -77,35 +77,42 @@ typedef struct {
     SNC_mode mode;
     wmkcByte iv[SNC_BLOCKLEN];
     wmkcByte roundKey[864];
-} SNC_ctx;
+} wmkcSNC_obj;
 
-// 为SNC对象申请内存空间
+/**
+ * @brief 为SNC对象申请内存空间
+ * @authors SN-Grotesque
+ * @note 无
+ * @param 
+ * @return 返回一个wmkcErr对象，code为0代表无错误，如果为
+ *         其他值，那么需检查message与code。
+ */
 WMKC_PUBLIC(wmkcErr_obj) SNC_new WMKC_OPEN_API
-WMKC_OF((SNC_ctx **ctx, SNC_mode mode));
+WMKC_OF((wmkcSNC_obj **ctx, SNC_mode mode));
 
 // 释放SNC对象
 WMKC_PUBLIC(wmkcErr_obj) SNC_free WMKC_OPEN_API
-WMKC_OF((SNC_ctx **ctx));
+WMKC_OF((wmkcSNC_obj **ctx));
 
 // 初始化SNC对象
 WMKC_PUBLIC(wmkcErr_obj) SNC_init WMKC_OPEN_API
-WMKC_OF((SNC_ctx *ctx, wmkcByte *keyBuf, wmkcByte *ivBuf));
+WMKC_OF((wmkcSNC_obj *ctx, wmkcByte *keyBuf, wmkcByte *ivBuf));
 
 // ECB加密
 WMKC_PUBLIC(wmkcVoid) SNC_ECB_Encrypt WMKC_OPEN_API
-WMKC_OF((SNC_ctx *ctx, wmkcByte *buf, wmkcSize size));
+WMKC_OF((wmkcSNC_obj *ctx, wmkcByte *buf, wmkcSize size));
 
 // ECB解密
 WMKC_PUBLIC(wmkcVoid) SNC_ECB_Decrypt WMKC_OPEN_API
-WMKC_OF((SNC_ctx *ctx, wmkcByte *buf, wmkcSize size));
+WMKC_OF((wmkcSNC_obj *ctx, wmkcByte *buf, wmkcSize size));
 
 // CBC加密
 WMKC_PUBLIC(wmkcVoid) SNC_CBC_Encrypt WMKC_OPEN_API
-WMKC_OF((SNC_ctx *ctx, wmkcByte *buf, wmkcSize size));
+WMKC_OF((wmkcSNC_obj *ctx, wmkcByte *buf, wmkcSize size));
 
 // CBC解密
 WMKC_PUBLIC(wmkcVoid) SNC_CBC_Decrypt WMKC_OPEN_API
-WMKC_OF((SNC_ctx *ctx, wmkcByte *buf, wmkcSize size));
+WMKC_OF((wmkcSNC_obj *ctx, wmkcByte *buf, wmkcSize size));
 
 #ifdef __cplusplus
 }

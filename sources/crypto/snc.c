@@ -451,7 +451,7 @@ WMKC_PRIVATE(wmkcVoid) SNC_keyExtension WMKC_OF((wmkc_u16 keySize, wmkcByte *iv,
 
 // 为SNC对象申请内存空间
 WMKC_PUBLIC(wmkcErr_obj) SNC_new WMKC_OPEN_API
-WMKC_OF((SNC_ctx **ctx, SNC_mode mode))
+WMKC_OF((wmkcSNC_obj **ctx, SNC_mode mode))
 {
     wmkcErr_obj error;
 
@@ -459,7 +459,7 @@ WMKC_OF((SNC_ctx **ctx, SNC_mode mode))
         wmkcErr_return(error, wmkcErr_ErrNULL, "ctx is NULL.");
     }
 
-    if(!wmkcMemoryNew(SNC_ctx *, (*ctx), sizeof(SNC_ctx))) {
+    if(!wmkcMemoryNew(wmkcSNC_obj *, (*ctx), sizeof(wmkcSNC_obj))) {
         wmkcErr_return(error, wmkcErr_ErrMemory, "(*ctx) failed to apply for memory.");
     }
 
@@ -473,7 +473,7 @@ WMKC_OF((SNC_ctx **ctx, SNC_mode mode))
 
 // 释放SNC对象
 WMKC_PUBLIC(wmkcErr_obj) SNC_free WMKC_OPEN_API
-WMKC_OF((SNC_ctx **ctx))
+WMKC_OF((wmkcSNC_obj **ctx))
 {
     wmkcErr_obj error;
     if(!ctx) {
@@ -493,7 +493,7 @@ WMKC_OF((SNC_ctx **ctx))
 * round based on the basic key input by the user.
 */
 WMKC_PUBLIC(wmkcErr_obj) SNC_init WMKC_OPEN_API
-WMKC_OF((SNC_ctx *ctx, wmkcByte *keyBuf, wmkcByte *ivBuf))
+WMKC_OF((wmkcSNC_obj *ctx, wmkcByte *keyBuf, wmkcByte *ivBuf))
 {
     wmkcErr_obj error;
     if(!ctx || !keyBuf || !ivBuf) {
@@ -557,7 +557,7 @@ WMKC_OF((SNC_ctx *ctx, wmkcByte *keyBuf, wmkcByte *ivBuf))
 
 //* ECB模式加密
 WMKC_PUBLIC(wmkcVoid) SNC_ECB_Encrypt WMKC_OPEN_API
-WMKC_OF((SNC_ctx *ctx, wmkcByte *buf, wmkcSize size))
+WMKC_OF((wmkcSNC_obj *ctx, wmkcByte *buf, wmkcSize size))
 {
     wmkcFast wmkcSize r;
     wmkcFast wmkcSize i;
@@ -577,7 +577,7 @@ WMKC_OF((SNC_ctx *ctx, wmkcByte *buf, wmkcSize size))
 
 //* ECB模式解密
 WMKC_PUBLIC(wmkcVoid) SNC_ECB_Decrypt WMKC_OPEN_API
-WMKC_OF((SNC_ctx *ctx, wmkcByte *buf, wmkcSize size))
+WMKC_OF((wmkcSNC_obj *ctx, wmkcByte *buf, wmkcSize size))
 {
     wmkcFast wmkcSize r;
     wmkcFast wmkcSize i;
@@ -597,7 +597,7 @@ WMKC_OF((SNC_ctx *ctx, wmkcByte *buf, wmkcSize size))
 
 //* CBC模式加密
 WMKC_PUBLIC(wmkcVoid) SNC_CBC_Encrypt WMKC_OPEN_API
-WMKC_OF((SNC_ctx *ctx, wmkcByte *buf, wmkcSize size))
+WMKC_OF((wmkcSNC_obj *ctx, wmkcByte *buf, wmkcSize size))
 {
     wmkcFast wmkcSize r, i;
     static wmkcByte round_iv[SNC_BLOCKLEN];
@@ -618,7 +618,7 @@ WMKC_OF((SNC_ctx *ctx, wmkcByte *buf, wmkcSize size))
 
 //* CBC模式解密
 WMKC_PUBLIC(wmkcVoid) SNC_CBC_Decrypt WMKC_OPEN_API
-WMKC_OF((SNC_ctx *ctx, wmkcByte *buf, wmkcSize size))
+WMKC_OF((wmkcSNC_obj *ctx, wmkcByte *buf, wmkcSize size))
 {
     wmkcFast wmkcSize r;
     wmkcFast wmkcSize i;

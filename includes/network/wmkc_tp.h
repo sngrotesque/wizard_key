@@ -34,7 +34,7 @@ typedef struct {
     wmkcString addr;    // 网络地址
     wmkc_u16  port;     // 网络端口
     wmkc_u32  maxRetry; // 失败重试次数
-    SNC_ctx *snc;       // SNC加密算法对象
+    wmkcSNC_obj *snc;       // SNC加密算法对象
 } wmkcTp_obj;
 
 /**

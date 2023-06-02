@@ -1,3 +1,14 @@
+/**
+ * @file newbing.c
+ * @author New Bing
+ * @brief NewBing为我构建的一个多线程小游戏
+ * @version 0.1
+ * @date 2023-05-28
+ * 
+ * @copyright Copyright (c) 2023
+ * 
+ */
+
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>

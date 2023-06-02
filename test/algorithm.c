@@ -1,3 +1,14 @@
+/**
+ * @file algorithm.c
+ * @author SN-Grotesque
+ * @brief 算法
+ * @version 0.1
+ * @date 2023-06-02
+ * 
+ * @copyright Copyright (c) 2023
+ * 
+ */
+
 #include <wmkc_conf.h>
 
 /* 递归算法 *** 开始 ***************************/

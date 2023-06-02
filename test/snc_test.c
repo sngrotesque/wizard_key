@@ -1,5 +1,17 @@
+/**
+ * @file snc_test.c
+ * @author SN-Grotesque
+ * @brief SNC算法测试代码
+ * @version 0.1
+ * @date 2023-06-02
+ * 
+ * @copyright Copyright (c) 2023
+ * 
+ */
+
 #include <image/wmkc_png.c>
 #include <crypto/snc.c>
+#include <wmkc_file.c>
 #include <wmkc_random.c>
 #include <wmkc_base64.c>
 #include <wmkc_misc.c>
@@ -23,7 +35,7 @@ static wmkcByte testIv[32] = {
 
 void snc_speed_test()
 {
-    SNC_ctx *snc = wmkcNull;
+    wmkcSNC_obj *snc = wmkcNull;
     wmkcByte *buf = wmkcNull;
     wmkcTime_obj *timer = wmkcNull;
     wmkcSize size = 268435456; // 256 MB
@@ -52,7 +64,7 @@ void snc_speed_test()
 
 void snc_test()
 {
-    SNC_ctx  *snc = wmkcNull;
+    wmkcSNC_obj  *snc = wmkcNull;
     wmkcByte *buf = wmkcNull;
     wmkcFile *fp = wmkcNull;
     LPCWSTR pathSrc = wmkcNull;
@@ -113,7 +125,7 @@ void test()
     };
     wmkcByte *buf = (wmkcByte *)text;
     wmkcSize size = strlen(text);
-    SNC_ctx *snc  = wmkcNull;
+    wmkcSNC_obj *snc  = wmkcNull;
     wmkc_u32 encrypt_method = 2;
     wmkcSize group = 32;
 
