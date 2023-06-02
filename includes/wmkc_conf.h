@@ -28,7 +28,7 @@
 #endif // #if defined(__linux) || defined(__linux__)
 
 // 定义版本号
-#define WMKC_VERSION     "v6.0.0"
+#define WMKC_VERSION     "v6.0.0-dev"
 #define WMKC_VERNUM       0x600
 #define WMKC_VER_MAJOR    6
 #define WMKC_VER_MINOR    0

@@ -58,8 +58,12 @@ typedef struct {
 ```
 
 ### 版本更新日志
+> 修改了版本后需要更改的文件
+> includes/wmkc_conf.h  
+> upload.py  
+> READMKE.md
 
-### v6.0.0
+### v6.0.0-dev
 1.  将wmkc_base修改为wmkc_base64，因考虑到  
     不会添加base16（因为此编码可以使用wmkc_binascii库实现）  
     不会添加Base32（因为此编码实在没有必要添加）  
@@ -69,14 +73,14 @@ typedef struct {
 3.  修改了关于颜色的宏。
 4.  修复了wmkc_misc库的BUG。
 
-#### v5.1.0
+#### v5.1.0-dev
 1.  修改了wmkc_random，wmkc_time库的实现。
 2.  修复了wmkc_base库的错误信息不全的问题。
 3.  修改了对于系统宏的名称标识。
 4.  增加了适当的文档与注释。
 5.  增加了wmkc_thread库用于多线程编程。
 
-#### v5.0.0
+#### v5.0.0-dev
 1.  将库更名为Wizard Magic Key Cyber，原因是与目前某一组织名称重合。
 2.  将库函数与一般变量类型与宏函数做了更名。
 3.  修改了一些针对不同操作系统的支持。
