@@ -8,8 +8,8 @@
 ### 特别鸣谢
  - [OpenSSL](https://github.com/openssl/openssl) 本库使用了OpenSSL的哈希库。
  - [libpng](http://libpng.org/pub/png/) 本库参考过libpng库的代码来实现wmkcPng库。
- - [Python](https://www.python.org/) 本库的绝大多数语法和代码风格取自Python的源代码。
- - [Zlib](https://github.com/madler/zlib) 本库使用了Zlib库摘要算法库。
+ - [Python](https://www.python.org/) 本库的绝大多数语法和代码风格均参考过Python的源代码。
+ - [Zlib](https://github.com/madler/zlib) 本库使用了Zlib库摘要算法库以及参考过源代码的风格。
 
 ### 开发文档
  -  关于注释：  
