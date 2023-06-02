@@ -58,7 +58,7 @@ typedef struct {
 ```
 
 ### 版本更新日志
-> 修改了版本后需要更改的文件
+> 修改了版本后需要更改的文件  
 > includes/wmkc_conf.h  
 > upload.py  
 > READMKE.md
