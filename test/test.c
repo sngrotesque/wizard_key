@@ -53,47 +53,12 @@ static wmkcByte testIv[32] = {
 
 void test()
 {
-    wmkcChar text[2048] = {
-        "hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh"
-        "hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh"
-    };
-    wmkcByte *buf = (wmkcByte *)text;
-    wmkcSize size = strlen(text);
-    SNC_ctx *snc  = wmkcNull;
-    wmkc_u32 encrypt_method = 2;
-    wmkcSize group = 32;
-
-    SNC_new(&snc, SNC_768);
-    SNC_init(snc, testKey, testIv);
-
-    if(size % SNC_BLOCKLEN)
-        wmkcPad_add(buf, &size, SNC_BLOCKLEN, false);
-
-    printf("Cipher info:\n");
-    printf("\tMode: SNC"WMKC_SET_COLOR(WMKC_FORE_COLOR_LIGHTRED, "%u, "), (snc->mode + 1) * 256);
-    printf("\tKeySize: "WMKC_SET_COLOR(WMKC_FORE_COLOR_LIGHTCYAN, "%u, "),   snc->KN);
-    printf("\tRounds:  "WMKC_SET_COLOR(WMKC_FORE_COLOR_LIGHTMAGENTA, "%u")"\n", snc->NR);
-
-    printf("Plaintext:\n"); wmkcMisc_PRINT(buf, size, group, 0, true);
-    printf("Key used: \n"); wmkcMisc_PRINT(snc->roundKey, snc->KN, group, 0, true);
-    printf("Iv used:  \n"); wmkcMisc_PRINT(snc->iv, SNC_BLOCKLEN, group, 0, true);
-
-    printf("Encrypt method:\n");
-    if(encrypt_method == 1) {
-        printf("\tECB (Electronic Codebook).\n");
-        SNC_ECB_Encrypt(snc, buf, size);
-    } else if(encrypt_method == 2) {
-        printf("\tCBC (Cipher Block Chaining).\n");
-        SNC_CBC_Encrypt(snc, buf, size);
-    }
-
-    printf("Ciphertext:\n"); wmkcMisc_PRINT(buf, size, group, 0, true);
-
-    SNC_free(&snc);
+    
 }
 
 int main(int argc, char **argv)
 {
     test();
+
     return 0;
 }
