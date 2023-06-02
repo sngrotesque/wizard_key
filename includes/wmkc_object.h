@@ -8,7 +8,7 @@
 typedef struct {
     wmkcByte *buf; // 缓冲区数据
     wmkcSize size; // 缓冲区长度
-    wmkcSize memSize; // 内存长度
+    wmkcSize memSize; // 内存长度（申请成功的内存空间长度）
 } wmkc_obj;
 
 /**
