@@ -36,7 +36,9 @@
 #include <wmkc_pad.c>
 #include <wmkc_key.c>
 
-#define CIPHER_TEST true
+#include <libpng/include/png.h>
+
+#define CIPHER_TEST false
 
 #if defined(WMKC_SNC) && (CIPHER_TEST)
 static wmkcByte testKey[96] = {
@@ -53,12 +55,37 @@ static wmkcByte testIv[32] = {
 
 void test()
 {
-    
+    WCHAR *path = L"p:/Pixiv/7599643/2021_10_21_03_02_21_93580317_p0.jpg";
+    SystemParametersInfoW(SPI_SETDESKWALLPAPER, 0, path, SPIF_UPDATEINIFILE | SPIF_SENDCHANGE);
+}
+
+void png_test() {
+    // 打开图像文件
+    FILE *fp = fopen("p:/-3e7f44b459fa15c2.png", "rb");
+
+    // 创建读取结构
+    png_structp png_ptr = png_create_read_struct(PNG_LIBPNG_VER_STRING, wmkcNull, wmkcNull, wmkcNull);
+    png_infop info_ptr = png_create_info_struct(png_ptr); // 创建信息结构
+    png_init_io(png_ptr, fp);         // 初始化 I/O
+    png_read_info(png_ptr, info_ptr); // 读取图像信息
+
+    // 获取图像宽度和高度
+    png_uint_32 width = png_get_image_width(png_ptr, info_ptr);
+    png_uint_32 height = png_get_image_height(png_ptr, info_ptr);
+
+    // 打印图像宽度和高度
+    printf("Image width:  %u\n", width);
+    printf("Image height: %u\n", height);
+
+    // 清理资源
+    png_destroy_read_struct(&png_ptr, &info_ptr, wmkcNull);
+    fclose(fp);
 }
 
 int main(int argc, char **argv)
 {
-    test();
+    // test();
+    png_test();
 
     return 0;
 }
