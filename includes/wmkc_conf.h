@@ -76,6 +76,16 @@ typedef uint32_t                  wmkc_u32;   // 无符号整数类型
 /***将x转为字符串********/
 #define wmkcToString(x) #x
 
+#ifdef WMKC_WTEXT
+#undef WMKC_WTEXT
+#endif /* WMKC_WTEXT */
+
+#ifdef WMKC_PLATFORM_WINOS
+#define WMKC_WTEXT(x) L ## x
+#else
+#define WMKC_WTEXT(x) x
+#endif /* WMKC_PLATFORM_WINOS */
+
 // 定义错误类型
 #ifndef WMKC_ERROR_CODE
 #define WMKC_ERROR_CODE

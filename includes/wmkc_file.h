@@ -14,13 +14,13 @@
 #if defined(WMKC_PLATFORM_WINOS)
 #include <Windows.h>
 #include <shlwapi.h> // -lshlwapi
-#define wmkcFile_text(x) L ## x
+#define wmkcFile_text(x) WMKC_WTEXT(x)
 #define wmkcFile_fopen(fn, mode) _wfopen(fn, mode)
 typedef LPCWSTR _wmkcFileString;
 #elif defined(WMKC_PLATFORM_LINUX)
 #include <sys/stat.h>
 #include <unistd.h>
-#define wmkcFile_text(x) x
+#define wmkcFile_text(x) WMKC_WTEXT(x)
 #define wmkcFile_fopen(fn, mode) fopen(fn, mode)
 typedef wmkcString _wmkcFileString;
 #endif

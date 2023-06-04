@@ -1,27 +1,9 @@
-// #include <network/wmkc_net.h>
-// #include <image/wmkc_png.h>
-// #include <crypto/snc.h>
-// #include <wmkc_binascii.h>
-// #include <wmkc_hexdump.h>
-// #include <wmkc_object.h>
-// #include <wmkc_random.h>
-// #include <wmkc_struct.h>
-// #include <wmkc_thread.h>
-// #include <wmkc_base64.h>
-// #include <wmkc_dict.h>
-// #include <wmkc_file.h>
-// #include <wmkc_misc.h>
-// #include <wmkc_math.h>
-// #include <wmkc_time.h>
-// #include <wmkc_hash.h>
-// #include <wmkc_pad.h>
-// #include <wmkc_key.h>
-
-// #include <network/wmkc_net.c>
+#include <network/wmkc_net.c>
 #include <image/wmkc_png.c>
 #include <crypto/snc.c>
 #include <wmkc_binascii.c>
 #include <wmkc_hexdump.c>
+#include <wmkc_winapi.c>
 #include <wmkc_object.c>
 #include <wmkc_random.c>
 #include <wmkc_struct.c>
@@ -57,15 +39,14 @@ static wmkcByte testIv[32] = {
 
 void test()
 {
-    wmkcString text = "hello, world.";
-    wmkcByte *buf = (wmkcByte *)text;
-    wmkcSize size = strlen(text);
+    wmkcByte salt[16];
+    wmkcByte key[32];
 
-    wmkcByte hashValue[SHA_DIGEST_LENGTH];
-    wmkcMemoryZero(hashValue, SHA_DIGEST_LENGTH);
-    SHA1(buf, size, hashValue);
+    wmkcRandom_urandom(salt, 16);
 
-    wmkcMisc_PRINT(hashValue, SHA_DIGEST_LENGTH, SHA_DIGEST_LENGTH, 0, 0);
+    PKCS5_PBKDF2_HMAC("1234568,", 8, salt, 16, 8, EVP_sha384(), 32, key);
+
+    wmkcMisc_PRINT(key, 32, 16, 0, 0);
 }
 
 int main(int argc, char **argv)

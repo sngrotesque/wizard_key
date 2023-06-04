@@ -103,7 +103,7 @@ WMKC_OF((wmkcNet_obj *obj, wmkcString hostname, wmkc_u16 port, wmkcBool UDP))
     }
 #   endif
 
-    if(hostname || *hostname) {
+    if(hostname && *hostname) {
         SOCKADDR_IN *ipv4 = wmkcNull; // 一个IPv4网络结构的指针
         SOCKADDR_IN6 *ipv6 = wmkcNull; // 一个IPv6网络结构的指针
 

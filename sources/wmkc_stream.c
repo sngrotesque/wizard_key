@@ -142,11 +142,11 @@ WMKC_OF((wmkcByte *buf, wmkcSize size))
         wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcStream_Reverse: buf or size is NULL.");
     }
     wmkcSize i;
-    wmkcByte buf;
+    wmkcByte swap;
     for(i = 0; i < size / 2; ++i) {
-        buf = buf[i];
+        swap = buf[i];
         buf[i] = buf[size - i - 1];
-        buf[size - i - 1] = buf;
+        buf[size - i - 1] = swap;
     }
     wmkcErr_return(error, wmkcErr_OK, "OK.");
 }
