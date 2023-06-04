@@ -7,41 +7,44 @@ OUT_PATH = "snCompiled"
 if platform == 'win32':
     PATH_SYMBOL = '\\'
     PROGRAM_NAME = 'main.exe'
-    ZLIB_NAME = 'zdll'
 else:
     PATH_SYMBOL = '/'
     PROGRAM_NAME = 'main'
-    ZLIB_NAME = 'z'
 
 def run(cmd :str):
     call(cmd, shell=True)
 
 def run_code(program :str, parameters :list):
-    parameters.append('-lssl')
-    parameters.append('-lcrypto')
-    parameters.append(f'-l{ZLIB_NAME}')
-    parameters.append('-lm')
-
     parameters.append('-I includes')
     parameters.append('-I sources')
 
-    parameters.append(f'-L includes{PATH_SYMBOL}openssl')
-    parameters.append(f'-L includes{PATH_SYMBOL}zlib')
+    parameters.append('-lssl')    # OpenSSL
+    parameters.append('-lcrypto') # OpenSSL
+    parameters.append('-lz')      # Zlib
+    parameters.append('-lm')      # Math
+    parameters.append('-lpng16')  # Libpng
+
+    parameters.append('-L includes/zlib')    # Referer: Zlib
+    parameters.append('-L includes/openssl') # Referer: OpenSSL
+    parameters.append('-L includes/libpng')  # Referer: Libpng
 
     if program == 'gcc':
+        # C Programming Language
         inPath = f'test{PATH_SYMBOL}test.c'
     elif program == 'g++':
+        # C++ Programming Language
         inPath = f'test{PATH_SYMBOL}test.cpp'
 
-    outPath = f'{OUT_PATH}{PATH_SYMBOL}{PROGRAM_NAME}'
+    outPath = f'{OUT_PATH}{PATH_SYMBOL}{PROGRAM_NAME}' # Output path
 
+    # View overall command parameters
     if '--print-args' in parameters:
         parameters.remove("--print-args")
         print(f'{program} {inPath} {" ".join(parameters)} -o {outPath}')
 
     text = f'{program} {inPath} {" ".join(parameters)} -o {outPath}'
-    run(text)
-    run(outPath)
+    run(text)     # Compile Code
+    run(outPath)  # Run Program
 
 if __name__ == '__main__':
     if len(argv) < 2:

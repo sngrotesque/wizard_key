@@ -57,7 +57,8 @@ typedef HANDLE        wmkcThreadTh; // 线程句柄
 typedef DWORD         wmkcThreadId; // 线程ID
 typedef LPTHREAD_START_ROUTINE \
                     wmkcThreadFunc; // 函数指针
-typedef DWORD WINAPI wmkcThreadRet; // 函数类型
+// typedef DWORD        wmkcThreadRet; // 函数类型
+#define wmkcThreadRet DWORD WINAPI // 函数类型
 #define WMKC_THREAD_DEFAULT_RETUEN 0
 #elif defined(WMKC_PLATFORM_LINUX)
 #include <pthread.h>
