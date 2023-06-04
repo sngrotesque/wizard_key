@@ -74,6 +74,7 @@ typedef struct {
 2.  添加了wmkc_dict库，更好的操作键值对类型的数据。
 3.  修改了关于颜色的宏。
 4.  修复了wmkc_misc库的BUG。
+5.  部署了libpng库，重新构建了zlib库文件。
 
 #### v5.1.0-dev
 1.  修改了wmkc_random，wmkc_time库的实现。
