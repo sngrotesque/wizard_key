@@ -155,7 +155,7 @@ WMKC_OF((WizChat_obj *obj))
     printf("请输入用户名(Max: %u bytes.)：", WIZ_CHAT_USERNAME_SIZE);
     wmkcStream_Scanf((wmkcByte *)name, WIZ_CHAT_USERNAME_SIZE);
     printf("请输入密码(Max: %u bytes.)：", WIZ_CHAT_PASSWORD_SIZE);
-    wmkcStream_Scanf((wmkcByte *)name, WIZ_CHAT_PASSWORD_SIZE);
+    wmkcStream_Scanf((wmkcByte *)pass, WIZ_CHAT_PASSWORD_SIZE);
 
     WizChat_salt(obj, pass);
 
