@@ -467,6 +467,7 @@ WMKC_OF((wmkcSNC_obj **ctx, SNC_mode mode))
     (*ctx)->KN = SNC_KN[mode];
     (*ctx)->NR = SNC_NR[mode];
     wmkcMemoryZero((*ctx)->roundKey, sizeof((*ctx)->roundKey));
+    wmkcMemoryZero((*ctx)->iv, SNC_BLOCKLEN);
 
     wmkcErr_return(error, wmkcErr_OK, "OK.");
 }
@@ -480,7 +481,7 @@ WMKC_OF((wmkcSNC_obj **ctx))
         wmkcErr_return(error, wmkcErr_ErrNULL, "ctx is NULL.");
     }
 
-    memset((*ctx)->iv, 0x00, SNC_BLOCKLEN);
+    wmkcMemoryZero((*ctx)->iv, SNC_BLOCKLEN);
     wmkcMemoryZero((*ctx)->roundKey, sizeof((*ctx)->roundKey));
     wmkcMemoryFree((*ctx));
 
