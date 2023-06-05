@@ -31,6 +31,7 @@ def run_code(program :str, parameters :list):
     if program == 'gcc':
         # C Programming Language
         inPath = f'test{PATH_SYMBOL}test.c'
+        inPath = f'test{PATH_SYMBOL}WizChat.c'
     elif program == 'g++':
         # C++ Programming Language
         inPath = f'test{PATH_SYMBOL}test.cpp'

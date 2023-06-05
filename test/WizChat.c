@@ -26,7 +26,7 @@
 #define WIZ_CHAT_HASH_SIZE 32 // 哈希摘要的十六进制串长度
 #define WIZ_CHAT_SALT_SIZE 32 // 盐的长度
 
-#define WIZ_CHAT_CIPHER_MODE SNC_512
+#define WIZ_CHAT_CIPHER_MODE SNC_256
 
 typedef struct {
     wmkcSize  uid;     // 用户ID
@@ -198,19 +198,29 @@ WMKC_OF((WizChat_obj *obj))
     }
 
     // 声明用户名变量与密码口令变量
-    wmkcChar name[WIZ_CHAT_USERNAME_SIZE];
-    wmkcChar pass[WIZ_CHAT_PASSWORD_SIZE];
-    // 声明用户ID变量
-    wmkcByte uid[8];
+    wmkcChar name[WIZ_CHAT_USERNAME_SIZE + 1];
+    wmkcChar pass[WIZ_CHAT_PASSWORD_SIZE + 1];
 
     // 将name与pass指向的内存地址的内容清零
-    wmkcMemoryZero(name, WIZ_CHAT_USERNAME_SIZE);
-    wmkcMemoryZero(pass, WIZ_CHAT_PASSWORD_SIZE);
+    wmkcMemoryZero(name, WIZ_CHAT_USERNAME_SIZE + 1);
+    wmkcMemoryZero(pass, WIZ_CHAT_PASSWORD_SIZE + 1);
 
+    /*
+    * 现在这里有个问题，如果name输入的长度过长那么会将pass赋值
+    * 并且无法将内容输入pass数组，以及如果name没有过长，但是pass过长的话会
+    * 影响下一次的wmkcStream_Scanf函数传入的数组。
+    * 虽然不会发生数组越界，但是这个问题急需解决！！！
+    * 否则会影响下一次的wmkcStream_Scanf函数的输入！！！
+    */
     printf("请输入用户名(Max: %u bytes.)：", WIZ_CHAT_USERNAME_SIZE);
     wmkcStream_Scanf((wmkcByte *)name, WIZ_CHAT_USERNAME_SIZE);
     printf("请输入密码(Max: %u bytes.)：", WIZ_CHAT_PASSWORD_SIZE);
     wmkcStream_Scanf((wmkcByte *)pass, WIZ_CHAT_PASSWORD_SIZE);
+
+    printf("测试语句 -> 名称：%s\n", name);
+    printf("测试语句 -> 密码：%s\n", pass);
+    printf("测试语句 -> 名称：\n");
+    wmkcMisc_PRINT((wmkcByte *)name, 111, 16, 1, 1);
 
     // 将用户名复制到WizChat对象的name成员中
     memcpy(obj->name, name, strlen(name));
@@ -221,9 +231,9 @@ WMKC_OF((WizChat_obj *obj))
         return error;
     }
 
-    // 使用安全随机函数生成UID
-    wmkcRandom_urandom(uid, 8);
-    wmkcStruct_unpack(">Q", &obj->uid, uid);
+    // 使用随机函数生成UID
+    wmkcRandom_seed();
+    obj->uid = wmkcRandom_randint(1, 999999);
 
     // 将密码口令清零并交由操作系统释放
     wmkcMemoryZero(pass, WIZ_CHAT_PASSWORD_SIZE);
@@ -283,8 +293,12 @@ wmkcErr_obj WizChat_main()
 {
     wmkcErr_obj error;
     WizChat_obj *wiz = wmkcNull;
+    wmkcSize key_size;
 
     WizChat_new(&wiz);
+
+    key_size = wiz->snc->KN * wiz->snc->NR;
+    // key_size = wiz->snc->KN;
 
     WizChat_createUser(wiz);
     WizChat_getUserHash(wiz);
@@ -292,13 +306,13 @@ wmkcErr_obj WizChat_main()
     printf("用户名：%s\n", wiz->name);
     printf("用户ID：%llu\n", wiz->uid);
     printf("用户盐：\n");
-    wmkcMisc_PRINT(wiz->salt, WIZ_CHAT_SALT_SIZE, 16, true, true);
-    printf("用户哈希：\n");
-    wmkcMisc_PRINT(wiz->hash, WIZ_CHAT_HASH_SIZE, 16, true, true);
+    wmkcMisc_PRINT(wiz->salt, WIZ_CHAT_SALT_SIZE, 32, false, true);
     printf("用户加密算法密钥：\n");
-    wmkcMisc_PRINT(wiz->snc->roundKey, wiz->snc->KN * wiz->snc->NR, 16, true, true);
+    wmkcMisc_PRINT(wiz->snc->roundKey, key_size, 32, false, true);
     printf("用户加密算法初始向量：\n");
-    wmkcMisc_PRINT(wiz->snc->iv, SNC_BLOCKLEN, 16, true, true);
+    wmkcMisc_PRINT(wiz->snc->iv, SNC_BLOCKLEN, 32, false, true);
+    printf("用户哈希：\n");
+    wmkcMisc_PRINT(wiz->hash, WIZ_CHAT_HASH_SIZE, 32, false, true);
 
     WizChat_free(&wiz);
     wmkcErr_return(error, wmkcErr_OK, "OK.");
