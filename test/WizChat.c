@@ -29,7 +29,7 @@
 #define WIZ_CHAT_CIPHER_MODE SNC_256
 
 typedef struct {
-    wmkcSize  uid;     // 用户ID
+    wmkcSize  uid;    // 用户ID
     wmkcChar *name;   // 用户名
     wmkcByte *hash;   // 用户哈希值，用于查找用户
     wmkcByte *salt;   // 用户的盐，用于生成固定的密钥
@@ -205,22 +205,10 @@ WMKC_OF((WizChat_obj *obj))
     wmkcMemoryZero(name, WIZ_CHAT_USERNAME_SIZE + 1);
     wmkcMemoryZero(pass, WIZ_CHAT_PASSWORD_SIZE + 1);
 
-    /*
-    * 现在这里有个问题，如果name输入的长度过长那么会将pass赋值
-    * 并且无法将内容输入pass数组，以及如果name没有过长，但是pass过长的话会
-    * 影响下一次的wmkcStream_Scanf函数传入的数组。
-    * 虽然不会发生数组越界，但是这个问题急需解决！！！
-    * 否则会影响下一次的wmkcStream_Scanf函数的输入！！！
-    */
     printf("请输入用户名(Max: %u bytes.)：", WIZ_CHAT_USERNAME_SIZE);
     wmkcStream_Scanf((wmkcByte *)name, WIZ_CHAT_USERNAME_SIZE);
     printf("请输入密码(Max: %u bytes.)：", WIZ_CHAT_PASSWORD_SIZE);
     wmkcStream_Scanf((wmkcByte *)pass, WIZ_CHAT_PASSWORD_SIZE);
-
-    printf("测试语句 -> 名称：%s\n", name);
-    printf("测试语句 -> 密码：%s\n", pass);
-    printf("测试语句 -> 名称：\n");
-    wmkcMisc_PRINT((wmkcByte *)name, 111, 16, 1, 1);
 
     // 将用户名复制到WizChat对象的name成员中
     memcpy(obj->name, name, strlen(name));
@@ -267,7 +255,7 @@ WMKC_OF((WizChat_obj *obj))
 
     /*
     * 使用以下内容来计算一个用户的哈希值
-    *     obj->uid              size of 8
+    *     obj->uid             size of 8
     *     obj->name            size of strlen(obj->name)
     *     obj->salt            size of WIZ_CHAT_SALT_SIZE
     *     obj->snc->iv         size of SNC_BLOCKLEN

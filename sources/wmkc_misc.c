@@ -32,7 +32,7 @@ WMKC_OF((wmkcByte *arr, wmkcSize size, wmkcBool newline))
         if(!((x + 1) % 32)) {
             printf("\n");
         } else {
-            printf(" ");
+            printf(", ");
         }
     }
     if(newline) printf("\n");

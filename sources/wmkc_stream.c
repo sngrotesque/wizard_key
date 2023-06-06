@@ -92,10 +92,7 @@ WMKC_OF((wmkc_obj **dst, wmkc_obj *src, wmkcSSize start, wmkcSSize end))
 /**
  * @brief 此函数用于替换scanf函数
  * @authors SN-Grotesque
- * 
- * 此函数内容与scanf函数类型，但更加安全。
- * 
- * @note 无
+ * @note 此函数不会发生数组越界
  * @param buf 这是一个指针，指向缓冲区的地址。
  * @param size 这是一个指针，代表需要输入至缓冲区的内容长度。
  * @return 返回一个wmkcErr对象，code为0代表无错误，如果为
@@ -115,6 +112,11 @@ WMKC_OF((wmkcByte *buf, wmkcSize size))
             break;
         }
     }
+
+    // 清空输入缓冲区，以免影响下一次的此函数调用
+    // 如果不清空输入缓冲区的话，第一次调用时如果超出了数组范围
+    // 那么就会影响第二次调用此函数时的数组
+    fflush(stdin);
 
     if(!(*buf)) {
         wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcStream_Scanf: buf is NULL.");

@@ -15,6 +15,7 @@
 #include <wmkc_math.c>
 #include <wmkc_time.c>
 #include <wmkc_hash.c>
+#include <wmkc_sort.c>
 #include <wmkc_pad.c>
 #include <wmkc_key.c>
 
@@ -39,14 +40,19 @@ static wmkcByte testIv[32] = {
 
 void test()
 {
-    wmkcByte salt[16];
-    wmkcByte key[32];
+    wmkcRandom_seed();
 
-    wmkcRandom_urandom(salt, 16);
+    wmkc_u32 num[1024];
 
-    PKCS5_PBKDF2_HMAC("1234568,", 8, salt, 16, 8, EVP_sha384(), 32, key);
+    for(int x = 0; x < 1024; ++x) {
+        num[x] = wmkcRandom_randint(0, 65537);
+    }
 
-    wmkcMisc_PRINT(key, 32, 16, 0, 0);
+    shellSort(num, 1024);
+
+    for(int x = 0; x < 256; ++x) {
+        printf("%6u", num[x]);
+    }
 }
 
 int main(int argc, char **argv)
