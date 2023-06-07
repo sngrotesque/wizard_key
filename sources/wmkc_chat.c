@@ -46,8 +46,8 @@ WMKC_OF((wmkcChat_obj *obj, wmkcString password))
     memcpy(obj->salt, salt, WMKC_CHAT_SALT_SIZE);
 
     // 通过用户密码口令和盐生成SNC加密算法的密钥和初始向量并储存至缓冲区。
-    PKCS5_PBKDF2_HMAC(password, strlen(password), obj->salt, WMKC_CHAT_SALT_SIZE, 16,
-        EVP_sha384(), obj->snc->KN + SNC_BLOCKLEN, buf);
+    PKCS5_PBKDF2_HMAC(password, strlen(password), obj->salt, WMKC_CHAT_SALT_SIZE,
+        WMKC_CHAT_ITERATIONS, EVP_sha384(), obj->snc->KN + SNC_BLOCKLEN, buf);
 
     // 使用缓冲区内的密钥与初始向量来初始化SNC加密算法
     SNC_init(obj->snc, _key, _iv);
@@ -153,12 +153,12 @@ WMKC_OF((wmkcChat_obj **obj))
  * @return 返回一个wmkcErr对象，code为0代表无错误，如果为
  *         其他值，那么需检查message与code。
  */
-WMKC_PUBLIC(wmkcErr_obj) wmkcChat_createUser WMKC_OPEN_API
+WMKC_PUBLIC(wmkcErr_obj) wmkcChat_signup WMKC_OPEN_API
 WMKC_OF((wmkcChat_obj *obj))
 {
     wmkcErr_obj error;
     if(!obj) {
-        wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcChat_createUser: obj is NULL.");
+        wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcChat_signup: obj is NULL.");
     }
 
     // 声明用户名变量与密码口令变量
@@ -170,9 +170,9 @@ WMKC_OF((wmkcChat_obj *obj))
     wmkcMemoryZero(pass, WMKC_CHAT_PASSWORD_SIZE + 1);
 
     printf("请输入用户名(Max: %u bytes.)：", WMKC_CHAT_USERNAME_SIZE);
-    wmkcStream_Scanf((wmkcByte *)name, WMKC_CHAT_USERNAME_SIZE);
+    wmkc_scanf((wmkcByte *)name, WMKC_CHAT_USERNAME_SIZE);
     printf("请输入密码(Max: %u bytes.)：", WMKC_CHAT_PASSWORD_SIZE);
-    wmkcStream_Scanf((wmkcByte *)pass, WMKC_CHAT_PASSWORD_SIZE);
+    wmkc_scanf((wmkcByte *)pass, WMKC_CHAT_PASSWORD_SIZE);
 
     // 将用户名复制到wmkcChat对象的name成员中
     memcpy(obj->name, name, strlen(name));
@@ -240,3 +240,34 @@ WMKC_OF((wmkcChat_obj *obj))
 
     wmkcErr_return(error, wmkcErr_OK, "OK.");
 }
+
+WMKC_PUBLIC(wmkcErr_obj) wmkcChat_loadUserInfo WMKC_OPEN_API
+WMKC_OF((wmkcChat_obj *obj))
+{
+    wmkcErr_obj error;
+    if(!obj) {
+        wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcChat_getUserHash: obj is NULL.");
+    }
+
+
+    wmkcErr_return(error, wmkcErr_OK, "OK.");
+}
+
+// 保存用户信息时，应该仅保存哈希值与盐值，否则会占用比较多的空间。
+WMKC_PUBLIC(wmkcErr_obj) wmkcChat_saveUserInfo WMKC_OPEN_API
+WMKC_OF((wmkcChat_obj *obj))
+{
+    wmkcErr_obj error;
+    if(!obj) {
+        wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcChat_getUserHash: obj is NULL.");
+    }
+
+
+    wmkcErr_return(error, wmkcErr_OK, "OK.");
+}
+
+
+
+
+
+

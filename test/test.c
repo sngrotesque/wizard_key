@@ -3,6 +3,7 @@
 #include <crypto/snc.c>
 #include <wmkc_binascii.c>
 #include <wmkc_hexdump.c>
+#include <wmkc_common.c>
 #include <wmkc_winapi.c>
 #include <wmkc_object.c>
 #include <wmkc_random.c>
@@ -43,29 +44,29 @@ static wmkcByte testIv[32] = {
 wmkcErr_obj wmkcChat_main()
 {
     wmkcErr_obj error;
-    wmkcChat_obj *wiz = wmkcNull;
+    wmkcChat_obj *chat = wmkcNull;
     wmkcSize key_size;
 
-    wmkcChat_new(&wiz);
+    wmkcChat_new(&chat);
 
-    key_size = wiz->snc->KN * wiz->snc->NR;
-    // key_size = wiz->snc->KN;
+    key_size = chat->snc->KN * chat->snc->NR;
+    // key_size = chat->snc->KN;
 
-    wmkcChat_createUser(wiz);
-    wmkcChat_getUserHash(wiz);
+    wmkcChat_signup(chat);
+    wmkcChat_getUserHash(chat);
 
-    printf("用户名：%s\n", wiz->name);
-    printf("用户ID：%llu\n", wiz->uid);
+    printf("用户名：%s\n", chat->name);
+    printf("用户ID：%llu\n", chat->uid);
     printf("用户盐：\n");
-    wmkcMisc_PRINT(wiz->salt, WMKC_CHAT_SALT_SIZE, 32, false, true);
+    wmkcMisc_PRINT(chat->salt, WMKC_CHAT_SALT_SIZE, 32, false, true);
     printf("用户加密算法密钥：\n");
-    wmkcMisc_PRINT(wiz->snc->roundKey, key_size, 32, false, true);
+    wmkcMisc_PRINT(chat->snc->roundKey, key_size, 32, false, true);
     printf("用户加密算法初始向量：\n");
-    wmkcMisc_PRINT(wiz->snc->iv, SNC_BLOCKLEN, 32, false, true);
+    wmkcMisc_PRINT(chat->snc->iv, SNC_BLOCKLEN, 32, false, true);
     printf("用户哈希：\n");
-    wmkcMisc_PRINT(wiz->hash, WMKC_CHAT_HASH_SIZE, 32, false, true);
+    wmkcMisc_PRINT(chat->hash, WMKC_CHAT_HASH_SIZE, 32, false, true);
 
-    wmkcChat_free(&wiz);
+    wmkcChat_free(&chat);
     wmkcErr_return(error, wmkcErr_OK, "OK.");
 }
 
@@ -76,7 +77,7 @@ void test()
 
 int main(int argc, char **argv)
 {
-    wmkcChat_main();
+    // wmkcChat_main();
     test();
 
     return 0;

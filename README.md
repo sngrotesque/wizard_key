@@ -74,7 +74,8 @@ typedef struct {
 3.  修改了关于颜色的宏。
 4.  修复了wmkc_misc库的BUG。
 5.  部署了libpng库，重新构建了zlib库文件。
-6.  修复了wmkc_stream库中wmkcStream_Scanf函数的隐藏BUG。
+6.  修复了wmkc_stream库中wmkc_scanf函数的隐藏BUG。
+7.  将wmkcStream库中的wmkcStream_scanf函数移动到wmkc_common库并更名为wmkc_scanf。
 
 #### v5.1.0-dev
 1.  修改了wmkc_random，wmkc_time库的实现。

@@ -90,70 +90,6 @@ WMKC_OF((wmkc_obj **dst, wmkc_obj *src, wmkcSSize start, wmkcSSize end))
 }
 
 /**
- * @brief 此函数用于替换scanf函数
- * @authors SN-Grotesque
- * @note 此函数不会发生数组越界
- * @param buf 这是一个指针，指向缓冲区的地址。
- * @param size 这是一个指针，代表需要输入至缓冲区的内容长度。
- * @return 返回一个wmkcErr对象，code为0代表无错误，如果为
- *         其他值，那么需检查message与code。
-*/
-WMKC_PUBLIC(wmkcErr_obj) wmkcStream_Scanf WMKC_OPEN_API
-WMKC_OF((wmkcByte *buf, wmkcSize size))
-{
-    wmkcErr_obj error;
-    if(!buf || !size) {
-        wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcStream_Scanf: buf or size is NULL.");
-    }
-
-    for(wmkcSize x = 0; x < size; ++x) {
-        if((buf[x] = getchar()) == 0x0a) {
-            buf[x] = 0x00;
-            break;
-        }
-    }
-
-    // 清空输入缓冲区，以免影响下一次的此函数调用
-    // 如果不清空输入缓冲区的话，第一次调用时如果超出了数组范围
-    // 那么就会影响第二次调用此函数时的数组
-    fflush(stdin);
-
-    if(!(*buf)) {
-        wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcStream_Scanf: buf is NULL.");
-    }
-    wmkcErr_return(error, wmkcErr_OK, "OK.");
-}
-
-/**
- * @brief 此函数用于反转缓冲区里的数据
- * @authors SN-Grotesque
- * 
- * 此函数用于反转缓冲区里的数据。
- * 
- * @note 无
- * @param buf 这是一个指针，指向缓冲区的地址。
- * @param size 这是一个指针，代表缓冲区的长度。
- * @return 返回一个wmkcErr对象，code为0代表无错误，如果为
- *         其他值，那么需检查message与code。
-*/
-WMKC_PUBLIC(wmkcErr_obj) wmkcStream_Reverse WMKC_OPEN_API
-WMKC_OF((wmkcByte *buf, wmkcSize size))
-{
-    wmkcErr_obj error;
-    if(!buf || !size) {
-        wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcStream_Reverse: buf or size is NULL.");
-    }
-    wmkcSize i;
-    wmkcByte swap;
-    for(i = 0; i < size / 2; ++i) {
-        swap = buf[i];
-        buf[i] = buf[size - i - 1];
-        buf[size - i - 1] = swap;
-    }
-    wmkcErr_return(error, wmkcErr_OK, "OK.");
-}
-
-/**
  * @brief 此函数用于求出指定数字的二进制值
  * @authors SN-Grotesque
  * 
@@ -176,7 +112,7 @@ WMKC_OF((wmkcByte **dst, wmkcSize src))
     wmkcSize size;
     wmkcSize i;
 
-    for(temp = src, size = 0; temp; size += 8, temp >>= 8) {}
+    for(temp = src, size = 0; temp; size += 8, temp >>= 8);
 
     if(!wmkcMemoryNew(wmkcByte *, (*dst), size + 1)) {
         wmkcErr_return(error, wmkcErr_ErrMemory,
@@ -189,7 +125,7 @@ WMKC_OF((wmkcByte **dst, wmkcSize src))
         (*dst)[i] = (src & 0x1) + 0x30;
     }
 
-    wmkcStream_Reverse((*dst), size);
+    wmkc_reverse((*dst), size, 1);
     wmkcErr_return(error, wmkcErr_OK, "OK.");
 }
 

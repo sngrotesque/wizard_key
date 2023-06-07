@@ -5,6 +5,7 @@
 #define WMKC_CHAT
 #include <network/wmkc_net.h>
 #include <crypto/snc.h>
+
 #include <wmkc_binascii.h>
 #include <wmkc_object.h>
 #include <wmkc_stream.h>
@@ -20,7 +21,9 @@
 #define WMKC_CHAT_HASH_SIZE 32 // 哈希摘要的十六进制串长度
 #define WMKC_CHAT_SALT_SIZE 32 // 盐的长度
 
-#define WMKC_CHAT_CIPHER_MODE SNC_256
+#define WMKC_CHAT_ITERATIONS 5771 // PKCS5_PBKDF2_HMAC函数迭代次数
+
+#define WMKC_CHAT_CIPHER_MODE SNC_256 // SNC加密算法模式
 
 typedef struct {
     wmkcSize  uid;    // 用户ID
@@ -72,7 +75,7 @@ WMKC_OF((wmkcChat_obj **obj));
  * @return 返回一个wmkcErr对象，code为0代表无错误，如果为
  *         其他值，那么需检查message与code。
  */
-WMKC_PUBLIC(wmkcErr_obj) wmkcChat_createUser WMKC_OPEN_API
+WMKC_PUBLIC(wmkcErr_obj) wmkcChat_signup WMKC_OPEN_API
 WMKC_OF((wmkcChat_obj *obj));
 
 /**
@@ -86,5 +89,5 @@ WMKC_OF((wmkcChat_obj *obj));
 WMKC_PUBLIC(wmkcErr_obj) wmkcChat_getUserHash WMKC_OPEN_API
 WMKC_OF((wmkcChat_obj *obj));
 
-#endif
-#endif
+#endif /* WMKC_CHAT */
+#endif /* WMKC_SUPPORT */

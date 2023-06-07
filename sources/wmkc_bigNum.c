@@ -12,13 +12,13 @@
  * @return 返回一个wmkcErr对象，code为0代表无错误，如果为
  *         其他值，那么需检查message与code。
 */
-WMKC_PRIVATE(wmkcErr_obj) wmkcBigNum_ArrayReversal
+WMKC_PRIVATE(wmkcErr_obj) wmkcBigNum_Arrayreverse
 WMKC_OF((wmkcChar *number_string, wmkcSize size))
 {
     wmkcErr_obj error;
     if(!number_string || !size) {
         wmkcErr_return(error, wmkcErr_ErrNULL,
-            "wmkcBigNum_ArrayReversal: number_string or size is NULL.");
+            "wmkcBigNum_Arrayreverse: number_string or size is NULL.");
     }
     wmkcSize i;
     wmkcByte swap;
@@ -69,20 +69,20 @@ WMKC_OF((wmkcChar **dst, wmkcChar *src1, wmkcChar *src2))
      * 
      * blockSize = 8
      * 
-     * larger  -> Reversal -> 8532420519037582347804820357233482901654321
-     * smaller -> Reversal -> 7389472983753189472894789149023859
+     * larger  -> reverse -> 8532420519037582347804820357233482901654321
+     * smaller -> reverse -> 7389472983753189472894789149023859
      * 
      * larger  -> Padding  -> 853242051903758234780482035723348290165432100000
      * smaller -> Padding  -> 738947298375318947289478914902385900000000000000
      * 
-     * larger  -> Reversal -> 000001234561092843327530284087432857309150242358
-     * smaller -> Reversal -> 000000000000009583209419874982749813573892749837
+     * larger  -> reverse -> 000001234561092843327530284087432857309150242358
+     * smaller -> reverse -> 000000000000009583209419874982749813573892749837
      * 
      * larger  -> block    -> {     123, 45610928, 43327530, 28408743, 28573091, 50242358}
      * smaller -> block    -> {       0,       95, 83209419, 87498274, 98135738, 92749837}
      * 
-     * larger  -> Reversal -> {50242358, 28573091, 28408743, 43327530, 45610928,      123}
-     * smaller -> Reversal -> {92749837, 98135738, 87498274, 83209419,       95,        0}
+     * larger  -> reverse -> {50242358, 28573091, 28408743, 43327530, 45610928,      123}
+     * smaller -> reverse -> {92749837, 98135738, 87498274, 83209419,       95,        0}
      * res -> init     -> {       0,        0,        0,        0,        0,        0}
      * 
      * for(i = 0; i < len(larger); ++i) {
@@ -94,7 +94,7 @@ WMKC_OF((wmkcChar **dst, wmkcChar *src1, wmkcChar *src2))
      * }
      * 
      * res ->             {42992195, 26708830, 15907018, 26536950, 45611024,      123}
-     * res -> Reversal -> {     123, 45611024, 26536950, 15907018, 26708830, 42992195}
+     * res -> reverse -> {     123, 45611024, 26536950, 15907018, 26708830, 42992195}
      * res -> String   -> "1234561102426536950159070182670883042992195"
     */
     wmkcErr_obj error;

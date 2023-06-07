@@ -4,6 +4,7 @@
 #ifndef WMKC_STREAM
 #define WMKC_STREAM
 
+#include <wmkc_common.h>
 #include <wmkc_object.h>
 
 /**
@@ -38,36 +39,6 @@ WMKC_OF((wmkc_obj **dst, wmkc_obj *left, wmkc_obj *right));
 */
 WMKC_PUBLIC(wmkcErr_obj) wmkcStream_Slice WMKC_OPEN_API
 WMKC_OF((wmkc_obj **dst, wmkc_obj *src, wmkcSSize start, wmkcSSize end));
-
-/**
- * @brief 此函数用于替换scanf函数
- * @authors SN-Grotesque
- * 
- * 此函数内容与scanf函数类型，但更加安全。
- * 
- * @note 无
- * @param buf 这是一个指针，指向缓冲区的地址。
- * @param size 这是一个指针，代表需要输入至缓冲区的内容长度。
- * @return 返回一个wmkcErr对象，code为0代表无错误，如果为
- *         其他值，那么需检查message与code。
-*/
-WMKC_PUBLIC(wmkcErr_obj) wmkcStream_Scanf WMKC_OPEN_API
-WMKC_OF((wmkcByte *buf, wmkcSize size));
-
-/**
- * @brief 此函数用于反转缓冲区里的数据
- * @authors SN-Grotesque
- * 
- * 此函数用于反转缓冲区里的数据。
- * 
- * @note 无
- * @param buf 这是一个指针，指向缓冲区的地址。
- * @param size 这是一个指针，代表缓冲区的长度。
- * @return 返回一个wmkcErr对象，code为0代表无错误，如果为
- *         其他值，那么需检查message与code。
-*/
-WMKC_PUBLIC(wmkcErr_obj) wmkcStream_Reverse WMKC_OPEN_API
-WMKC_OF((wmkcByte *buf, wmkcSize size));
 
 /**
  * @brief 此函数用于求出指定数字的二进制值
