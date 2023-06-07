@@ -6,7 +6,7 @@
  - [R7](https://github.com/r7z7)
 
 ### 特别鸣谢
- - [OpenSSL](https://github.com/openssl/openssl) 本库使用了OpenSSL的哈希库。
+ - [OpenSSL](https://github.com/openssl/openssl) 本库使用了OpenSSL的哈希与密码库。
  - [libpng](http://libpng.org/pub/png/) 本库使用了libpng库来实现PNG图像的读写。
  - [Python](https://www.python.org/) 本库的绝大多数语法和代码风格均参考过Python的源代码。
  - [Zlib](https://github.com/madler/zlib) 本库使用了Zlib库摘要算法库以及参考过源代码的风格。
