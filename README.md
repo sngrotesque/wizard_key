@@ -70,7 +70,8 @@ typedef struct {
     wmkcBinascii  
     wmkcBase64  
     wmkcStream  
-    wmkcFile
+    wmkcFile  
+    但是由于wmkcErr对象的存在，这些重构变得困难，必须想个好办法
 
 #### v6.0.0-dev
 1.  将wmkc_base修改为wmkc_base64，因考虑到  
