@@ -65,6 +65,13 @@ typedef struct {
 > upload.py  
 > READMKE.md
 
+### v6.1.0-dev
+1.  此版本将重写一些库的实现，包括但不限于  
+    wmkcBinascii  
+    wmkcBase64  
+    wmkcStream  
+    wmkcFile
+
 #### v6.0.0-dev
 1.  将wmkc_base修改为wmkc_base64，因考虑到  
     不会添加base16（因为此编码可以使用wmkc_binascii库实现）  

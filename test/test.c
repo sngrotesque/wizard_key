@@ -45,10 +45,18 @@ static wmkcByte testIv[32] = {
 void test()
 {
     wmkcChat_obj *chat = wmkcNull;
+
     wmkcChat_new(&chat);
-    wmkcChat_signup(chat);
-    wmkcChat_getUserHash(chat);
-    wmkcChat_saveUserInfo(chat, wmkcFile_text("user.ini"));
+
+    wmkcChat_loadUserInfo(chat, wmkcFile_text("user_info/user.json"));
+
+    printf("uid:  %llu\n", chat->uid);
+    printf("name: %s\n",   chat->name);
+    printf("hash:\n");
+    wmkcMisc_PRINT(chat->hash, WMKC_CHAT_HASH_SIZE, WMKC_CHAT_HASH_SIZE, false, true);
+    printf("salt:\n");
+    wmkcMisc_PRINT(chat->salt, WMKC_CHAT_SALT_SIZE, WMKC_CHAT_SALT_SIZE, false, true);
+
     wmkcChat_free(&chat);
 
 }

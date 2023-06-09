@@ -245,10 +245,71 @@ WMKC_PUBLIC(wmkcErr_obj) wmkcChat_loadUserInfo WMKC_OPEN_API
 WMKC_OF((wmkcChat_obj *obj, wmkcFileString fn))
 {
     wmkcErr_obj error;
-    if(!obj) {
-        wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcChat_getUserHash: obj is NULL.");
+    if(!obj || !fn) {
+        wmkcErr_return(error, wmkcErr_ErrNULL,
+            "wmkcChat_loadUserInfo: obj or fn is NULL.");
     }
 
+    cJSON    *json = wmkcNull; // 声明cJSON对象
+    cJSON    *uid_item  = wmkcNull; // 声明cJSON对象的uid键
+    cJSON    *name_item = wmkcNull; // 声明cJSON对象的name键
+    cJSON    *hash_item = wmkcNull; // 声明cJSON对象的hash键
+    cJSON    *salt_item = wmkcNull; // 声明cJSON对象的salt键
+
+    wmkcFile *fp          = wmkcNull; // 声明文件指针
+    wmkcByte *tmp_hash    = wmkcNull; // 声明临时哈希值指针
+    wmkcByte *tmp_salt    = wmkcNull; // 声明临时盐指针
+    wmkcChar *tmp_name    = wmkcNull; // 声明临时name字符串指针
+    wmkcChar *tmp_hash_hex= wmkcNull; // 声明临时哈希十六进制字符串指针
+    wmkcChar *tmp_salt_hex= wmkcNull; // 声明临时盐十六进制字符串字符串指针
+    wmkcChar *json_string = wmkcNull; // 声明JSON字符串指针
+    wmkcSize fileSize = 0;            // 声明文件长度变量
+
+    wmkcFile_fileSize(&fileSize, fn); // 获取文件的长度
+    fp = wmkcFile_fopen(fn, wmkcFile_text("rb"));
+
+    // 为json_string指针申请内存空间
+    if(!wmkcMemoryNew(wmkcChar *, json_string, fileSize + 1)) {
+        wmkcErr_return(error, wmkcErr_ErrMemory,
+            "wmkcChat_loadUserInfo: json_string failed to apply for memory.");
+    }
+    json_string[fileSize] = 0x00;
+
+    // 将json文件的内容传入cJSON对象
+    fread(json_string, 1, fileSize, fp);
+    json = cJSON_Parse(json_string);
+
+    // 解析uid，name，hash，salt键
+    uid_item = cJSON_GetObjectItem(json, "uid");
+    name_item = cJSON_GetObjectItem(json, "name");
+    hash_item = cJSON_GetObjectItem(json, "hash");
+    salt_item = cJSON_GetObjectItem(json, "salt");
+
+    // 将cJOSN对象中的数据存入临时变量
+    obj->uid = (wmkcSize)cJSON_GetNumberValue(uid_item);
+    tmp_name = cJSON_GetStringValue(name_item);
+    tmp_hash_hex = cJSON_GetStringValue(hash_item);
+    tmp_salt_hex = cJSON_GetStringValue(salt_item);
+
+    // 将临时变量中的数据存入wmkcChat对象
+    wmkcBinascii_a2b_hex(&tmp_hash, (wmkcByte *)tmp_hash_hex, WMKC_CHAT_HASH_SIZE << 1);
+    wmkcBinascii_a2b_hex(&tmp_salt, (wmkcByte *)tmp_salt_hex, WMKC_CHAT_SALT_SIZE << 1);
+    memcpy(obj->name, tmp_name, strlen(tmp_name));
+    memcpy(obj->hash, tmp_hash, WMKC_CHAT_HASH_SIZE);
+    memcpy(obj->salt, tmp_salt, WMKC_CHAT_SALT_SIZE);
+
+    // 释放内存与保证内存安全
+    // 因为cJSON对象是个链表，所以只需要执行cJSON_Delete(json)即可。
+    cJSON_Delete(json);
+    wmkc_secureMemory(tmp_hash_hex, WMKC_CHAT_HASH_SIZE << 1);
+    wmkc_secureMemory(tmp_salt_hex, WMKC_CHAT_SALT_SIZE << 1);
+    wmkc_secureMemory(tmp_hash, WMKC_CHAT_HASH_SIZE);
+    wmkc_secureMemory(tmp_salt, WMKC_CHAT_SALT_SIZE);
+    wmkc_secureMemory(json_string, fileSize);
+    wmkcMemoryFree(tmp_hash);
+    wmkcMemoryFree(tmp_salt);
+    wmkcMemoryFree(json_string);
+    fclose(fp);
 
     wmkcErr_return(error, wmkcErr_OK, "OK.");
 }
@@ -259,7 +320,7 @@ WMKC_OF((wmkcChat_obj *obj, wmkcFileString fn))
     wmkcErr_obj error;
     if(!obj || !fn) {
         wmkcErr_return(error, wmkcErr_ErrNULL,
-            "wmkcChat_getUserHash: obj or fn is NULL.");
+            "wmkcChat_saveUserInfo: obj or fn is NULL.");
     }
 
     /*
@@ -272,36 +333,43 @@ WMKC_OF((wmkcChat_obj *obj, wmkcFileString fn))
     * 读取用户信息时，请使用用户提供的密码口令来生成密钥和初始向量，
     * 之后使用读取的盐和哈希来判断此用户是否为正确用户。
     */
-    cJSON    *json = cJSON_CreateObject();
-    wmkcByte *hash_hex = wmkcNull;
-    wmkcByte *salt_hex = wmkcNull;
-    wmkcChar *json_string = wmkcNull;
+    cJSON    *json = cJSON_CreateObject(); // 创建cJSON对象
+    wmkcByte *hash_hex = wmkcNull;         // 声明哈希十六进制字符串
+    wmkcByte *salt_hex = wmkcNull;         // 声明盐十六进制字符串
+    wmkcChar *json_string = wmkcNull;      // 声明JSON字符串
+    wmkcFile *fp = wmkcNull;               // 声明文件指针
 
+    // 如果cJSON对象创建失败
     if(!json) {
         wmkcErr_return(error, wmkcErr_ErrMemory,
             "wmkcChat_saveUserInfo: json failed to apply for memory.");
     }
 
+    // 将wmkcChat对象中的哈希与盐转换为十六进制字符串
     error = wmkcBinascii_b2a_hex(&hash_hex, obj->hash, WMKC_CHAT_HASH_SIZE);
     if(error.code) return error;
     error = wmkcBinascii_b2a_hex(&salt_hex, obj->salt, WMKC_CHAT_SALT_SIZE);
     if(error.code) return error;
 
+    // 将wmkcChat对象的数据传入到cJSON对象中
     cJSON_AddNumberToObject(json, "uid", obj->uid);
     cJSON_AddStringToObject(json, "name", obj->name);
     cJSON_AddStringToObject(json, "hash", hash_hex);
     cJSON_AddStringToObject(json, "salt", salt_hex);
 
+    // 将cJSOn对象转为字符串用于保存为文件
+    fp = wmkcFile_fopen(fn, wmkcFile_text("wb"));
     json_string = cJSON_Print(json);
-    printf("%s\n", json_string);
+    fwrite(json_string, 1, strlen(json_string), fp);
 
-    // 善后
+    // 释放内存与保证内存安全
     cJSON_Delete(json);
     cJSON_free(json_string);
     wmkc_secureMemory(hash_hex, WMKC_CHAT_HASH_SIZE << 1);
     wmkc_secureMemory(salt_hex, WMKC_CHAT_SALT_SIZE << 1);
     wmkcMemoryFree(hash_hex);
     wmkcMemoryFree(salt_hex);
+    fclose(fp);
 
     wmkcErr_return(error, wmkcErr_OK, "OK.");
 }
@@ -310,33 +378,20 @@ wmkcErr_obj wmkcChat_main()
 {
     wmkcErr_obj error;
     wmkcChat_obj *chat = wmkcNull;
-    wmkcSize key_size;
+    // wmkcSize key_size;
 
     wmkcChat_new(&chat);
 
-    key_size = chat->snc->KN * chat->snc->NR;
-    // key_size = chat->snc->KN;
 
-    wmkcChat_signup(chat);
-    wmkcChat_getUserHash(chat);
 
-    printf("用户名：%s\n", chat->name);
-    printf("用户ID：%llu\n", chat->uid);
-    printf("用户盐：\n");
-    wmkcMisc_PRINT(chat->salt, WMKC_CHAT_SALT_SIZE, 32, false, true);
-    printf("用户加密算法密钥：\n");
-    wmkcMisc_PRINT(chat->snc->roundKey, key_size, 32, false, true);
-    printf("用户加密算法初始向量：\n");
-    wmkcMisc_PRINT(chat->snc->iv, SNC_BLOCKLEN, 32, false, true);
-    printf("用户哈希：\n");
-    wmkcMisc_PRINT(chat->hash, WMKC_CHAT_HASH_SIZE, 32, false, true);
+
+
+
+
+
+
 
     wmkcChat_free(&chat);
     wmkcErr_return(error, wmkcErr_OK, "OK.");
 }
-
-
-
-
-
 
