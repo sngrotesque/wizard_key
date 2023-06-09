@@ -42,6 +42,12 @@ static wmkcByte testIv[32] = {
     0x3d, 0x41, 0x78, 0x35, 0x48, 0x50, 0x7d, 0x73, 0x60, 0x4e, 0x33, 0x6f, 0x23, 0x47, 0x4c, 0x36};
 #endif
 
+/*
+* 下次编写时，记得重构一些库，如果你忘记为什么了。
+* 那么就请查看一下wmkc_chat.c中的wmkcChat_loadUserInfo函数
+* 并且应该把所有使用wmkcBinascii库那样实现方式的函数都重构！
+*/
+
 void test()
 {
     wmkcChat_obj *chat = wmkcNull;
@@ -58,7 +64,6 @@ void test()
     wmkcMisc_PRINT(chat->salt, WMKC_CHAT_SALT_SIZE, WMKC_CHAT_SALT_SIZE, false, true);
 
     wmkcChat_free(&chat);
-
 }
 
 int main(int argc, char **argv)
