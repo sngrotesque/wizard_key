@@ -253,7 +253,6 @@ WMKC_OF((wmkcChat_obj *obj, wmkcFileString fn))
     wmkcErr_return(error, wmkcErr_OK, "OK.");
 }
 
-// 保存用户信息时，应该仅保存用户ID和哈希值还有盐值，否则会占用比较多的空间。
 WMKC_PUBLIC(wmkcErr_obj) wmkcChat_saveUserInfo WMKC_OPEN_API
 WMKC_OF((wmkcChat_obj *obj, wmkcFileString fn))
 {
@@ -263,6 +262,16 @@ WMKC_OF((wmkcChat_obj *obj, wmkcFileString fn))
             "wmkcChat_getUserHash: obj or fn is NULL.");
     }
 
+    /*
+    * 保存用户数据时，应当只保存以下内容：
+    *     用户ID   ===> obj->uid
+    *     用户名   ===> obj->name
+    *     用户哈希 ===> obj->hash
+    *     用户盐   ===> obj->salt
+    * 
+    * 读取用户信息时，请使用用户提供的密码口令来生成密钥和初始向量，
+    * 之后使用读取的盐和哈希来判断此用户是否为正确用户。
+    */
     cJSON    *json = cJSON_CreateObject();
     wmkcByte *hash_hex = wmkcNull;
     wmkcByte *salt_hex = wmkcNull;
