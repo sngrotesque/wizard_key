@@ -25,6 +25,7 @@
 #include <zlib/zlib.h>
 #include <libpng/png.h>
 #include <openssl/sha.h>
+#include <cjson/cJSON.h>
 
 #define CIPHER_TEST false
 
@@ -41,38 +42,15 @@ static wmkcByte testIv[32] = {
     0x3d, 0x41, 0x78, 0x35, 0x48, 0x50, 0x7d, 0x73, 0x60, 0x4e, 0x33, 0x6f, 0x23, 0x47, 0x4c, 0x36};
 #endif
 
-wmkcErr_obj wmkcChat_main()
-{
-    wmkcErr_obj error;
-    wmkcChat_obj *chat = wmkcNull;
-    wmkcSize key_size;
-
-    wmkcChat_new(&chat);
-
-    key_size = chat->snc->KN * chat->snc->NR;
-    // key_size = chat->snc->KN;
-
-    wmkcChat_signup(chat);
-    wmkcChat_getUserHash(chat);
-
-    printf("用户名：%s\n", chat->name);
-    printf("用户ID：%llu\n", chat->uid);
-    printf("用户盐：\n");
-    wmkcMisc_PRINT(chat->salt, WMKC_CHAT_SALT_SIZE, 32, false, true);
-    printf("用户加密算法密钥：\n");
-    wmkcMisc_PRINT(chat->snc->roundKey, key_size, 32, false, true);
-    printf("用户加密算法初始向量：\n");
-    wmkcMisc_PRINT(chat->snc->iv, SNC_BLOCKLEN, 32, false, true);
-    printf("用户哈希：\n");
-    wmkcMisc_PRINT(chat->hash, WMKC_CHAT_HASH_SIZE, 32, false, true);
-
-    wmkcChat_free(&chat);
-    wmkcErr_return(error, wmkcErr_OK, "OK.");
-}
-
 void test()
 {
-    
+    wmkcChat_obj *chat = wmkcNull;
+    wmkcChat_new(&chat);
+    wmkcChat_signup(chat);
+    wmkcChat_getUserHash(chat);
+    wmkcChat_saveUserInfo(chat, wmkcFile_text("user.ini"));
+    wmkcChat_free(&chat);
+
 }
 
 int main(int argc, char **argv)

@@ -23,10 +23,12 @@ def run_code(program :str, parameters :list):
     parameters.append('-lz')      # Zlib
     parameters.append('-lm')      # Math
     parameters.append('-lpng16')  # Libpng
+    parameters.append('-lcjson')  # cJSON
 
     parameters.append('-L includes/zlib')    # Referer: Zlib
     parameters.append('-L includes/openssl') # Referer: OpenSSL
     parameters.append('-L includes/libpng')  # Referer: Libpng
+    parameters.append('-L includes/cjson')   # Referer: cJSON
 
     if program == 'gcc':
         # C Programming Language

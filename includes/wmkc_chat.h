@@ -5,12 +5,14 @@
 #define WMKC_CHAT
 #include <network/wmkc_net.h>
 #include <crypto/snc.h>
+#include <cjson/cJSON.h>
 
 #include <wmkc_binascii.h>
 #include <wmkc_object.h>
 #include <wmkc_stream.h>
 #include <wmkc_random.h>
 #include <wmkc_struct.h>
+#include <wmkc_common.h>
 #include <wmkc_hash.h>
 #include <wmkc_file.h>
 #include <wmkc_misc.h>

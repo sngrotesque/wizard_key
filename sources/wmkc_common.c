@@ -1,5 +1,21 @@
 #include <wmkc_common.h>
 
+WMKC_PUBLIC(wmkcErr_obj) wmkc_secureMemory WMKC_OPEN_API
+WMKC_OF((wmkcVoid *buf, wmkcSize size))
+{
+    wmkcErr_obj error;
+    if(!buf || !size) {
+        wmkcErr_return(error, wmkcErr_ErrNULL, "wmkc_secureMemory: buf or size is NULL.");
+    }
+#   if defined(WMKC_PLATFORM_WINOS)
+    SecureZeroMemory(buf, size);
+#   elif defined(WMKC_PLATFORM_LINUX)
+    explicit_bzero(buf, size);
+#   endif
+
+    wmkcErr_return(error, wmkcErr_OK, "OK.");
+}
+
 WMKC_PUBLIC(wmkcErr_obj) wmkc_reverse WMKC_OPEN_API
 WMKC_OF((wmkcVoid *buf, wmkcSize size, wmkc_u32 elementSize))
 {

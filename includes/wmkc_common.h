@@ -4,6 +4,19 @@
 #ifndef WMKC_COMMON
 
 /**
+ * @brief 安全清除内存数据函数
+ * @authors SN-Grotesque
+ * @note 因某些情况下memset函数会被编译器优化掉，所以
+ *       需要调用更安全的函数来执行内存清零操作。
+ * @param buf 这是一个指针，指向数据的地址。
+ * @param size 这是一个长度，代表数据的字节长度。
+ * @return 返回一个wmkcErr对象，code为0代表无错误，如果为
+ *         其他值，那么需检查message与code。
+ */
+WMKC_PUBLIC(wmkcErr_obj) wmkc_secureMemory WMKC_OPEN_API
+WMKC_OF((wmkcVoid *buf, wmkcSize size));
+
+/**
  * @brief 用于将缓冲区内的数据反转
  * @authors SN-Grotesque
  * @note 这个函数暂时不能处理浮点数数组，后续进行优化
