@@ -17,21 +17,20 @@
 #include <wmkc_file.h>
 #include <wmkc_misc.h>
 
-#define WMKC_CHAT_USERNAME_SIZE 64 // 用户名的字节长度
 #define WMKC_CHAT_PASSWORD_SIZE 32 // 密码的字节长度
+#define WMKC_CHAT_ITERATIONS 5771  // PKCS5_PBKDF2_HMAC函数迭代次数
 
+#define WMKC_CHAT_NAME_SIZE 64 // 用户名的字节长度
 #define WMKC_CHAT_HASH_SIZE 32 // 哈希摘要的十六进制串长度
 #define WMKC_CHAT_SALT_SIZE 32 // 盐的长度
-
-#define WMKC_CHAT_ITERATIONS 5771 // PKCS5_PBKDF2_HMAC函数迭代次数
 
 #define WMKC_CHAT_CIPHER_MODE SNC_256 // SNC加密算法模式
 
 typedef struct {
-    wmkcSize  uid;    // 用户ID
-    wmkcChar *name;   // 用户名
-    wmkcByte *hash;   // 用户哈希值，用于查找用户
-    wmkcByte *salt;   // 用户的盐，用于生成固定的密钥
+    wmkcSize uid;                       // 用户ID
+    wmkcByte name[WMKC_CHAT_NAME_SIZE]; // 用户名
+    wmkcByte hash[WMKC_CHAT_HASH_SIZE]; // 用户哈希值，用于查找用户
+    wmkcByte salt[WMKC_CHAT_SALT_SIZE]; // 用户的盐，用于生成固定的密钥
     wmkcSNC_obj *snc; // 密码算法数据类型
 } wmkcChat_obj;
 

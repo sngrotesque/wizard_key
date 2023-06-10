@@ -66,13 +66,8 @@ typedef struct {
 > READMKE.md
 
 #### v6.1.0-dev
-1.  此版本将重写一些库的实现，包括但不限于  
-    wmkcBinascii  
-    wmkcBase64  
-    wmkcStream  
-    wmkcFile  
-    但是由于wmkcErr对象的存在，这些重构变得困难，必须想个好办法。  
-    要么重构wmkcErr的实现方式，要么改变使用这些库的实现方式。否则非常麻烦。
+1.  将wmkc_chat库中的对象指针成员修改为数组成员，  
+    否则会导致无意义的代码过长。
 
 #### v6.0.0-dev
 1.  将wmkc_base修改为wmkc_base64，因考虑到  

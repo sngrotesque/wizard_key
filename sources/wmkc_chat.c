@@ -9,16 +9,15 @@
  * @return 返回一个wmkcErr对象，code为0代表无错误，如果为
  *         其他值，那么需检查message与code。
  */
-WMKC_PRIVATE(wmkcErr_obj) wmkcChat_initCipher WMKC_OPEN_API
+WMKC_PRIVATE(wmkcErr_obj) wmkcChat_initCipher
 WMKC_OF((wmkcChat_obj *obj, wmkcString password))
 {
     wmkcErr_obj error;
     if(!obj || !password) {
-        wmkcErr_return(error, wmkcErr_ErrMemory,
+        wmkcErr_return(error, wmkcErr_ErrNULL,
             "wmkcChat_initCipher: obj or password is NULL.");
     }
 
-    wmkcByte salt[WMKC_CHAT_SALT_SIZE]; // 声明临时盐
     wmkcByte *_key = wmkcNull; // 声明临时密钥指针
     wmkcByte *_iv = wmkcNull;  // 声明临时初始向量指针
     wmkcByte *buf = wmkcNull;  // 声明缓冲区指针
@@ -30,20 +29,14 @@ WMKC_OF((wmkcChat_obj *obj, wmkcString password))
     }
     // 初始化缓冲区和临时盐
     wmkc_secureMemory(buf, obj->snc->KN + SNC_BLOCKLEN);
-    wmkc_secureMemory(salt, WMKC_CHAT_SALT_SIZE);
 
     // 将密钥和初始向量指针指向正确的缓冲区位置
     _key = buf;
     _iv = buf + obj->snc->KN;
 
     // 使用系统函数来生成密码学安全随机数
-    error = wmkcRandom_urandom(salt, WMKC_CHAT_SALT_SIZE);
-    if(error.code) {
-        return error;
-    }
-
-    // 将临时盐的内容复制到wmkcChat对象的salt成员
-    memcpy(obj->salt, salt, WMKC_CHAT_SALT_SIZE);
+    error = wmkcRandom_urandom(obj->salt, WMKC_CHAT_SALT_SIZE);
+    if(error.code) return error;
 
     // 通过用户密码口令和盐生成SNC加密算法的密钥和初始向量并储存至缓冲区。
     PKCS5_PBKDF2_HMAC(password, strlen(password), obj->salt, WMKC_CHAT_SALT_SIZE,
@@ -55,6 +48,24 @@ WMKC_OF((wmkcChat_obj *obj, wmkcString password))
     // 将缓冲区的内容清零并释放其内存空间
     wmkc_secureMemory(buf, obj->snc->KN + SNC_BLOCKLEN);
     wmkcMemoryFree(buf);
+
+    wmkcErr_return(error, wmkcErr_OK, "OK.");
+}
+
+WMKC_PRIVATE(wmkcErr_obj) wmkcChat_binascii_a2b
+WMKC_OF((wmkcByte *dst, wmkcByte *src, wmkcSize srcSize))
+{
+    wmkcErr_obj error;
+    if(!dst || !src || !srcSize) {
+        wmkcErr_return(error, wmkcErr_ErrNULL,
+            "wmkcChat_initCipher: dst or src or srcSize is NULL.");
+    }
+    wmkcByte *tmp_dst = wmkcNull;
+
+    error = wmkcBinascii_a2b_hex(&tmp_dst, src, srcSize);
+    if(error.code) return error;
+
+    memcpy(dst, tmp_dst, srcSize >> 1);
 
     wmkcErr_return(error, wmkcErr_OK, "OK.");
 }
@@ -80,34 +91,14 @@ WMKC_OF((wmkcChat_obj **obj))
             "wmkcChat_new: (*obj) failed to apply for memory.");
     }
 
-    // 为wmkcChat对象name成员申请内存空间
-    if(!wmkcMemoryNew(wmkcChar *, (*obj)->name, WMKC_CHAT_USERNAME_SIZE)) {
-        wmkcErr_return(error, wmkcErr_ErrMemory,
-            "wmkcChat_new: (*obj)->name failed to apply for memory.");
-    }
-
-    // 为wmkcChat对象hash成员申请内存空间
-    if(!wmkcMemoryNew(wmkcByte *, (*obj)->hash, WMKC_CHAT_HASH_SIZE)) {
-        wmkcErr_return(error, wmkcErr_ErrMemory,
-            "wmkcChat_new: (*obj)->hash failed to apply for memory.");
-    }
-
-    // 为wmkcChat对象salt成员申请内存空间
-    if(!wmkcMemoryNew(wmkcByte *, (*obj)->salt, WMKC_CHAT_SALT_SIZE)) {
-        wmkcErr_return(error, wmkcErr_ErrMemory,
-            "wmkcChat_new: (*obj)->salt failed to apply for memory.");
-    }
-
     // 将wmkcChat对象的所有成员初始化
-    wmkc_secureMemory((*obj)->name, WMKC_CHAT_USERNAME_SIZE);
+    wmkc_secureMemory((*obj)->name, WMKC_CHAT_NAME_SIZE);
     wmkc_secureMemory((*obj)->hash, WMKC_CHAT_HASH_SIZE);
     wmkc_secureMemory((*obj)->salt, WMKC_CHAT_SALT_SIZE);
     error = SNC_new(&((*obj)->snc), WMKC_CHAT_CIPHER_MODE);
 
     // 如果SNC_new函数出现错误就返回错误代码
-    if(error.code) {
-        return error;
-    }
+    if(error.code) return error;
 
     wmkcErr_return(error, wmkcErr_OK, "OK.");
 }
@@ -129,17 +120,11 @@ WMKC_OF((wmkcChat_obj **obj))
     }
 
     // 将wmkcChat对象的所有成员清零并释放内存空间以及wmkcChat对象的内存空间
-    wmkc_secureMemory((*obj)->name, WMKC_CHAT_USERNAME_SIZE);
+    wmkc_secureMemory((*obj)->name, WMKC_CHAT_NAME_SIZE);
     wmkc_secureMemory((*obj)->hash, WMKC_CHAT_HASH_SIZE);
     wmkc_secureMemory((*obj)->salt, WMKC_CHAT_SALT_SIZE);
-    wmkcMemoryFree((*obj)->name);
-    wmkcMemoryFree((*obj)->hash);
-    wmkcMemoryFree((*obj)->salt);
     error = SNC_free(&((*obj)->snc));
-    if(error.code) {
-        // 如果SNC_new函数出现错误就返回错误代码
-        return error;
-    }
+    if(error.code) return error;
     wmkcMemoryFree((*obj));
 
     wmkcErr_return(error, wmkcErr_OK, "OK.");
@@ -162,15 +147,15 @@ WMKC_OF((wmkcChat_obj *obj))
     }
 
     // 声明用户名变量与密码口令变量
-    wmkcChar name[WMKC_CHAT_USERNAME_SIZE + 1];
+    wmkcChar name[WMKC_CHAT_NAME_SIZE + 1];
     wmkcChar pass[WMKC_CHAT_PASSWORD_SIZE + 1];
 
     // 将name与pass指向的内存地址的内容清零
-    wmkc_secureMemory(name, WMKC_CHAT_USERNAME_SIZE + 1);
+    wmkc_secureMemory(name, WMKC_CHAT_NAME_SIZE + 1);
     wmkc_secureMemory(pass, WMKC_CHAT_PASSWORD_SIZE + 1);
 
-    printf("请输入用户名(Max: %u bytes.)：", WMKC_CHAT_USERNAME_SIZE);
-    wmkc_scanf((wmkcByte *)name, WMKC_CHAT_USERNAME_SIZE);
+    printf("请输入用户名(Max: %u bytes.)：", WMKC_CHAT_NAME_SIZE);
+    wmkc_scanf((wmkcByte *)name, WMKC_CHAT_NAME_SIZE);
     printf("请输入密码(Max: %u bytes.)：", WMKC_CHAT_PASSWORD_SIZE);
     wmkc_scanf((wmkcByte *)pass, WMKC_CHAT_PASSWORD_SIZE);
 
@@ -179,9 +164,7 @@ WMKC_OF((wmkcChat_obj *obj))
 
     // 初始化对应用户的盐和密钥与初始向量
     error = wmkcChat_initCipher(obj, pass);
-    if(error.code) {
-        return error;
-    }
+    if(error.code) return error;
 
     // 使用随机函数生成UID
     wmkcRandom_seed();
@@ -250,65 +233,56 @@ WMKC_OF((wmkcChat_obj *obj, wmkcFileString fn))
             "wmkcChat_loadUserInfo: obj or fn is NULL.");
     }
 
-    cJSON    *json = wmkcNull; // 声明cJSON对象
-    cJSON    *uid_item  = wmkcNull; // 声明cJSON对象的uid键
-    cJSON    *name_item = wmkcNull; // 声明cJSON对象的name键
-    cJSON    *hash_item = wmkcNull; // 声明cJSON对象的hash键
-    cJSON    *salt_item = wmkcNull; // 声明cJSON对象的salt键
-
-    wmkcFile *fp          = wmkcNull; // 声明文件指针
-    wmkcByte *tmp_hash    = wmkcNull; // 声明临时哈希值指针
-    wmkcByte *tmp_salt    = wmkcNull; // 声明临时盐指针
-    wmkcChar *tmp_name    = wmkcNull; // 声明临时name字符串指针
-    wmkcChar *tmp_hash_hex= wmkcNull; // 声明临时哈希十六进制字符串指针
-    wmkcChar *tmp_salt_hex= wmkcNull; // 声明临时盐十六进制字符串字符串指针
-    wmkcChar *json_string = wmkcNull; // 声明JSON字符串指针
-    wmkcSize fileSize = 0;            // 声明文件长度变量
+    cJSON    *json     = wmkcNull; // 声明cJSON对象
+    cJSON    *uidItem  = wmkcNull; // 声明cJSON对象的uid键
+    cJSON    *nameItem = wmkcNull; // 声明cJSON对象的name键
+    cJSON    *hashItem = wmkcNull; // 声明cJSON对象的hash键
+    cJSON    *saltItem = wmkcNull; // 声明cJSON对象的salt键
+    wmkcFile *fp       = wmkcNull; // 声明文件指针
+    wmkcChar *tmp_name = wmkcNull; // 声明临时name字符串指针
+    wmkcChar *hash_hex = wmkcNull; // 声明临时哈希十六进制字符串指针
+    wmkcChar *salt_hex = wmkcNull; // 声明临时盐十六进制字符串字符串指针
+    wmkcChar *jString  = wmkcNull; // 声明JSON字符串指针
+    wmkcSize  fileSize = 0;        // 声明文件长度变量
 
     wmkcFile_fileSize(&fileSize, fn); // 获取文件的长度
     fp = wmkcFile_fopen(fn, wmkcFile_text("rb"));
 
     // 为json_string指针申请内存空间
-    if(!wmkcMemoryNew(wmkcChar *, json_string, fileSize + 1)) {
+    if(!wmkcMemoryNew(wmkcChar *, jString, fileSize + 1)) {
         wmkcErr_return(error, wmkcErr_ErrMemory,
-            "wmkcChat_loadUserInfo: json_string failed to apply for memory.");
+            "wmkcChat_loadUserInfo: jString failed to apply for memory.");
     }
-    json_string[fileSize] = 0x00;
+    jString[fileSize] = 0x00;
 
     // 将json文件的内容传入cJSON对象
-    fread(json_string, 1, fileSize, fp);
-    json = cJSON_Parse(json_string);
+    fread(jString, 1, fileSize, fp);
+    json = cJSON_Parse(jString);
 
     // 解析uid，name，hash，salt键
-    uid_item = cJSON_GetObjectItem(json, "uid");
-    name_item = cJSON_GetObjectItem(json, "name");
-    hash_item = cJSON_GetObjectItem(json, "hash");
-    salt_item = cJSON_GetObjectItem(json, "salt");
+    uidItem  = cJSON_GetObjectItem(json, "uid");
+    nameItem = cJSON_GetObjectItem(json, "name");
+    hashItem = cJSON_GetObjectItem(json, "hash");
+    saltItem = cJSON_GetObjectItem(json, "salt");
 
     // 将cJOSN对象中的数据存入临时变量
-    obj->uid = (wmkcSize)cJSON_GetNumberValue(uid_item);
-    tmp_name = cJSON_GetStringValue(name_item);
-    tmp_hash_hex = cJSON_GetStringValue(hash_item);
-    tmp_salt_hex = cJSON_GetStringValue(salt_item);
+    obj->uid = (wmkcSize)cJSON_GetNumberValue(uidItem);
+    tmp_name = cJSON_GetStringValue(nameItem);
+    hash_hex = cJSON_GetStringValue(hashItem);
+    salt_hex = cJSON_GetStringValue(saltItem);
 
     // 将临时变量中的数据存入wmkcChat对象
-    wmkcBinascii_a2b_hex(&tmp_hash, (wmkcByte *)tmp_hash_hex, WMKC_CHAT_HASH_SIZE << 1);
-    wmkcBinascii_a2b_hex(&tmp_salt, (wmkcByte *)tmp_salt_hex, WMKC_CHAT_SALT_SIZE << 1);
     memcpy(obj->name, tmp_name, strlen(tmp_name));
-    memcpy(obj->hash, tmp_hash, WMKC_CHAT_HASH_SIZE);
-    memcpy(obj->salt, tmp_salt, WMKC_CHAT_SALT_SIZE);
+    wmkcChat_binascii_a2b(obj->hash, (wmkcByte *)hash_hex, WMKC_CHAT_HASH_SIZE << 1);
+    wmkcChat_binascii_a2b(obj->salt, (wmkcByte *)salt_hex, WMKC_CHAT_SALT_SIZE << 1);
 
     // 释放内存与保证内存安全
     // 因为cJSON对象是个链表，所以只需要执行cJSON_Delete(json)即可。
     cJSON_Delete(json);
-    wmkc_secureMemory(tmp_hash_hex, WMKC_CHAT_HASH_SIZE << 1);
-    wmkc_secureMemory(tmp_salt_hex, WMKC_CHAT_SALT_SIZE << 1);
-    wmkc_secureMemory(tmp_hash, WMKC_CHAT_HASH_SIZE);
-    wmkc_secureMemory(tmp_salt, WMKC_CHAT_SALT_SIZE);
-    wmkc_secureMemory(json_string, fileSize);
-    wmkcMemoryFree(tmp_hash);
-    wmkcMemoryFree(tmp_salt);
-    wmkcMemoryFree(json_string);
+    wmkc_secureMemory(hash_hex, WMKC_CHAT_HASH_SIZE << 1);
+    wmkc_secureMemory(salt_hex, WMKC_CHAT_SALT_SIZE << 1);
+    wmkc_secureMemory(jString, fileSize);
+    wmkcMemoryFree(jString);
     fclose(fp);
 
     wmkcErr_return(error, wmkcErr_OK, "OK.");
@@ -336,7 +310,7 @@ WMKC_OF((wmkcChat_obj *obj, wmkcFileString fn))
     cJSON    *json = cJSON_CreateObject(); // 创建cJSON对象
     wmkcByte *hash_hex = wmkcNull;         // 声明哈希十六进制字符串
     wmkcByte *salt_hex = wmkcNull;         // 声明盐十六进制字符串
-    wmkcChar *json_string = wmkcNull;      // 声明JSON字符串
+    wmkcChar *jString = wmkcNull;      // 声明JSON字符串
     wmkcFile *fp = wmkcNull;               // 声明文件指针
 
     // 如果cJSON对象创建失败
@@ -359,12 +333,12 @@ WMKC_OF((wmkcChat_obj *obj, wmkcFileString fn))
 
     // 将cJSOn对象转为字符串用于保存为文件
     fp = wmkcFile_fopen(fn, wmkcFile_text("wb"));
-    json_string = cJSON_Print(json);
-    fwrite(json_string, 1, strlen(json_string), fp);
+    jString = cJSON_Print(json);
+    fwrite(jString, 1, strlen(jString), fp);
 
     // 释放内存与保证内存安全
     cJSON_Delete(json);
-    cJSON_free(json_string);
+    cJSON_free(jString);
     wmkc_secureMemory(hash_hex, WMKC_CHAT_HASH_SIZE << 1);
     wmkc_secureMemory(salt_hex, WMKC_CHAT_SALT_SIZE << 1);
     wmkcMemoryFree(hash_hex);
@@ -378,18 +352,24 @@ wmkcErr_obj wmkcChat_main()
 {
     wmkcErr_obj error;
     wmkcChat_obj *chat = wmkcNull;
-    // wmkcSize key_size;
 
     wmkcChat_new(&chat);
 
+    wmkcChat_signup(chat);
+    wmkcChat_getUserHash(chat);
+    wmkcChat_saveUserInfo(chat, wmkcFile_text("user_info/user.json"));
 
-
-
-
-
-
-
-
+    printf("用户ID：%llu\n", chat->uid);
+    printf("用户名：%s\n", chat->name);
+    printf("用户哈希：\n");
+    wmkcMisc_PRINT(chat->hash, WMKC_CHAT_HASH_SIZE, WMKC_CHAT_HASH_SIZE, 0, 1);
+    printf("用户盐：\n");
+    wmkcMisc_PRINT(chat->salt, WMKC_CHAT_SALT_SIZE, WMKC_CHAT_SALT_SIZE, 0, 1);
+    printf("用户密码模式：\n\tSNC-%d\n", (chat->snc->mode + 1) * 256);
+    printf("用户IV：\n");
+    wmkcMisc_PRINT(chat->snc->iv, SNC_BLOCKLEN, SNC_BLOCKLEN, 0, 1);
+    printf("用户KEY：\n");
+    wmkcMisc_PRINT(chat->snc->roundKey, chat->snc->KN * chat->snc->NR, SNC_BLOCKLEN, 0, 1);
 
     wmkcChat_free(&chat);
     wmkcErr_return(error, wmkcErr_OK, "OK.");

@@ -42,33 +42,30 @@ static wmkcByte testIv[32] = {
     0x3d, 0x41, 0x78, 0x35, 0x48, 0x50, 0x7d, 0x73, 0x60, 0x4e, 0x33, 0x6f, 0x23, 0x47, 0x4c, 0x36};
 #endif
 
-/*
-* 下次编写时，记得重构一些库，如果你忘记为什么了。
-* 那么就请查看一下wmkc_chat.c中的wmkcChat_loadUserInfo函数
-* 并且应该把所有使用wmkcBinascii库那样实现方式的函数都重构！
-*/
+// \(\*obj\)->\w{4}|obj->\w{4}
 
 void test()
 {
     wmkcChat_obj *chat = wmkcNull;
+    wmkcErr_obj error;
 
-    wmkcChat_new(&chat);
+    error = wmkcChat_new(&chat);
+    error = wmkcChat_loadUserInfo(chat, wmkcFile_text("user_info/user.json"));
 
-    wmkcChat_loadUserInfo(chat, wmkcFile_text("user_info/user.json"));
-
-    printf("uid:  %llu\n", chat->uid);
-    printf("name: %s\n",   chat->name);
-    printf("hash:\n");
+    printf("用户ID：%llu\n", chat->uid);
+    printf("用户名：%s\n",   chat->name);
+    printf("用户哈希：\n");
     wmkcMisc_PRINT(chat->hash, WMKC_CHAT_HASH_SIZE, WMKC_CHAT_HASH_SIZE, false, true);
-    printf("salt:\n");
+    printf("用户盐：\n");
     wmkcMisc_PRINT(chat->salt, WMKC_CHAT_SALT_SIZE, WMKC_CHAT_SALT_SIZE, false, true);
 
-    wmkcChat_free(&chat);
+    error = wmkcChat_free(&chat);
 }
 
 int main(int argc, char **argv)
 {
-    // wmkcChat_main();
+    wmkcChat_main();
+    Sleep(300);
     test();
 
     return 0;
