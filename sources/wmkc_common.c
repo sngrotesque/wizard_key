@@ -1,5 +1,39 @@
 #include <wmkc_common.h>
 
+WMKC_PUBLIC(wmkcSize) wmkc_get_utf8_size WMKC_OPEN_API
+WMKC_OF((wmkcString string))
+{
+    wmkcSize len = 0;
+    while (*string) {
+        if ((*string & 0xC0) != 0x80) {
+            len++;
+        }
+        string++;
+    }
+    return len;
+}
+
+WMKC_PUBLIC(wmkcErr_obj) wmkc_string2unicode WMKC_OPEN_API
+WMKC_OF((wmkcUnicode **dst, wmkcChar *src))
+{
+    wmkcErr_obj error;
+    if(!dst || !src) {
+        wmkcErr_return(error, wmkcErr_ErrNULL,
+            "wmkc_string2unicode: dst or src or sizeOfDst is NULL.");
+    }
+    wmkcSize size = wmkc_get_utf8_size(src) * sizeof(wmkcUnicode);
+
+    if(!wmkcMemoryNew(wmkcUnicode *, (*dst), size)) {
+        wmkcErr_return(error, wmkcErr_ErrMemory,
+            "wmkc_string2unicode: Failed to allocate memory for (*dst).");
+    }
+
+    if(!MultiByteToWideChar(CP_UTF8, MB_PRECOMPOSED, src, -1, (*dst), size)) {
+        wmkcErr_return(error, wmkcErr_ErrSysFunc,
+            "wmkc_string2unicode: MultiByteToWideChar function returned an error code when called.");
+    }
+}
+
 WMKC_PUBLIC(wmkcErr_obj) wmkc_secureMemory WMKC_OPEN_API
 WMKC_OF((wmkcVoid *buf, wmkcSize size))
 {

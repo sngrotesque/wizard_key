@@ -42,30 +42,17 @@ static wmkcByte testIv[32] = {
     0x3d, 0x41, 0x78, 0x35, 0x48, 0x50, 0x7d, 0x73, 0x60, 0x4e, 0x33, 0x6f, 0x23, 0x47, 0x4c, 0x36};
 #endif
 
-// \(\*obj\)->\w{4}|obj->\w{4}
-
 void test()
 {
-    wmkcChat_obj *chat = wmkcNull;
-    wmkcErr_obj error;
+    wmkcChar path[256] = {"p:/Picture Archive/Search搜图/原图/lj1c8HrnImr4ejOR3F5HpFv8.jpeg"};
+    wmkcUnicode *dst = wmkcNull;
+    wmkcByte header[8];
 
-    error = wmkcChat_new(&chat);
-    error = wmkcChat_loadUserInfo(chat, wmkcFile_text("user_info/user.json"));
-
-    printf("用户ID：%llu\n", chat->uid);
-    printf("用户名：%s\n",   chat->name);
-    printf("用户哈希：\n");
-    wmkcMisc_PRINT(chat->hash, WMKC_CHAT_HASH_SIZE, WMKC_CHAT_HASH_SIZE, false, true);
-    printf("用户盐：\n");
-    wmkcMisc_PRINT(chat->salt, WMKC_CHAT_SALT_SIZE, WMKC_CHAT_SALT_SIZE, false, true);
-
-    error = wmkcChat_free(&chat);
+    printf("%llu\n", wmkc_get_utf8_size(path));
 }
 
 int main(int argc, char **argv)
 {
-    wmkcChat_main();
-    Sleep(300);
     test();
 
     return 0;

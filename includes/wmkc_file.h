@@ -26,40 +26,6 @@ typedef wmkcString _wmkcFileString;
 #endif
 
 typedef _wmkcFileString wmkcFileString;
-typedef struct {
-    wmkcByte *data;    // 文件数据
-    wmkcSize size;     // 文件长度
-    wmkcSize quotient; // 文件长度除块大小的商
-    wmkcSize leftover; // 文件剩余长度
-} wmkcFile_obj;
-
-/**
- * @brief 为wmkcFile对象申请内存空间
- * @authors SN-Grotesque
- * 
- * 此函数为wmkcFile对象申请内存空间。
- * 
- * @note 无
- * @param obj 这是一个指针，指向wmkcFile对象指针的地址。
- * @return 返回一个wmkcErr对象，code为0代表无错误，如果为
- *         其他值，那么需检查message与code。
-*/
-WMKC_PUBLIC(wmkcErr_obj) wmkcFile_new WMKC_OPEN_API
-WMKC_OF((wmkcFile_obj **obj));
-
-/**
- * @brief 为wmkcFile对象释放内存空间
- * @authors SN-Grotesque
- * 
- * 此函数为wmkcFile对象释放内存空间。
- * 
- * @note 无
- * @param obj 这是一个指针，指向wmkcFile对象指针的地址。
- * @return 返回一个wmkcErr对象，code为0代表无错误，如果为
- *         其他值，那么需检查message与code。
-*/
-WMKC_PUBLIC(wmkcErr_obj) wmkcFile_free WMKC_OPEN_API
-WMKC_OF((wmkcFile_obj **obj));
 
 /**
  * @brief 检查是否存在指定的路径
@@ -94,34 +60,31 @@ WMKC_OF((wmkcSize *size, wmkcFileString fn));
 /**
  * @brief 完整读取一个文件的内容
  * @authors SN-Grotesque
- * 
- * 此函数获取文件的大小后分组将文件的完整内容读取到内存中。
- * 
  * @note 此函数不应用于单次读取超大文件，以免内存空间告急。
- * @param obj 这是一个指针，指向wmkcFile对象的地址。
+ * @param buf 这是一个指针，指向缓冲区指针的地址
+ * @param size 这是一个指针，指向长度的地址
  * @param fn 这是一个指针，指向路径的字符串地址，如果传入字符串而不是指针，那么
  *           应使用wmkcFile_text宏对字符串进行转换。
  * @return 返回一个wmkcErr对象，code为0代表无错误，如果为
  *         其他值，那么需检查message与code。
 */
 WMKC_PUBLIC(wmkcErr_obj) wmkcFile_fread WMKC_OPEN_API
-WMKC_OF((wmkcFile_obj *obj, wmkcFileString fn));
+WMKC_OF((wmkcByte **buf, wmkcSize *size, wmkcFileString fn));
 
 /**
  * @brief 将缓冲区的数据完整写入一个文件
  * @authors SN-Grotesque
- * 
- * 此函数将缓冲区的数据分组，并且完整写入至一个文件中。
- * 
  * @note 无
- * @param obj 这是一个指针，指向wmkcFile对象的地址。
+ * @param buf 这是一个指针，指向缓冲区的地址
+ * @param size 这是一个长度，代表缓冲区的长度
  * @param fn 这是一个指针，指向路径的字符串地址，如果传入字符串而不是指针，那么
  *           应使用wmkcFile_text宏对字符串进行转换。
  * @return 返回一个wmkcErr对象，code为0代表无错误，如果为
  *         其他值，那么需检查message与code。
 */
 WMKC_PUBLIC(wmkcErr_obj) wmkcFile_fwrite WMKC_OPEN_API
-WMKC_OF((wmkcFile_obj *obj, wmkcFileString fn));
+WMKC_OF((wmkcByte *buf, wmkcSize size, wmkcFileString fn));
+
 
 #endif /* WMKC_FILE */
 #endif /* WMKC_SUPPORT */

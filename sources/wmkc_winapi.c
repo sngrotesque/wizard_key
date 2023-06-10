@@ -23,7 +23,7 @@ WMKC_OF((wmkc_u32 *width, wmkc_u32 *height))
 
     if(!(*width) || !(*height)) {
         wmkcErr_return(error, wmkcErr_ErrSysFunc,
-            "wmkcWinapi_getScreenWidthHeight: Error calling GetSystemMetrics function.");
+            "wmkcWinapi_getScreenWidthHeight: GetSystemMetrics function returned an error code when called.");
     }
 
     wmkcErr_return(error, wmkcErr_OK, "OK.");
@@ -49,7 +49,7 @@ WMKC_OF((LPSTR name, LPDWORD size))
 
     if(!GetUserNameA(name, size)) {
         wmkcErr_return(error, wmkcErr_ErrSysFunc,
-            "wmkcWinapi_getUserName: Error calling GetUserNameW function.");
+            "wmkcWinapi_getUserName: GetUserNameA function returned an error code when called.");
     }
 
     wmkcErr_return(error, wmkcErr_OK, "OK.");
@@ -70,7 +70,7 @@ WMKC_OF((wmkc_u32 x, wmkc_u32 y))
     wmkcErr_obj error;
     if(!SetCursorPos(x, y)) {
         wmkcErr_return(error, wmkcErr_ErrSysFunc,
-            "wmkcWinapi_setCursorPos: Error calling SetCursorPos function.");
+            "wmkcWinapi_setCursorPos: SetCursorPos function returned an error code when called.");
     }
 
     wmkcErr_return(error, wmkcErr_OK, "OK.");
@@ -94,7 +94,7 @@ WMKC_OF((LPWSTR path))
     }
     if(!SystemParametersInfoW(SPI_SETDESKWALLPAPER, 0, path, SPIF_UPDATEINIFILE | SPIF_SENDCHANGE)) {
         wmkcErr_return(error, wmkcErr_ErrSysFunc,
-            "wmkcWinapi_setDesktopWallpaper: Error calling SystemParametersInfoW function.");
+            "wmkcWinapi_setDesktopWallpaper: SystemParametersInfoW function returned an error code when called.");
     }
 
     wmkcErr_return(error, wmkcErr_OK, "OK.");

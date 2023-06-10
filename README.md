@@ -68,6 +68,7 @@ typedef struct {
 #### v6.1.0-dev
 1.  将wmkc_chat库中的对象指针成员修改为数组成员，  
     否则会导致无意义的代码过长。
+2.  重构了wmkc_file库，删除了wmkcFile对象。
 
 #### v6.0.0-dev
 1.  将wmkc_base修改为wmkc_base64，因考虑到  

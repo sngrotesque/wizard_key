@@ -106,7 +106,8 @@ WMKC_OF((wmkcChat_obj *obj, wmkcFileString fn));
 /**
  * @brief 保存用户信息
  * @authors SN-Grotesque
- * @note 当前使用JSON类型来读写用户数据，后续使用PostgreSQL读写用户数据
+ * @note 当前使用JSON类型来读写用户数据，后续使用PostgreSQL读写用户数据。
+ *       应只保存用户ID，用户名，用户哈希，用户盐
  * @param obj 这是一个指针，指向wmkcChat对象的地址
  * @param fn 这是一个指针，指向路径的字符串地址，如果传入字符串而不是指针，那么
  *           应使用wmkcFile_text宏对字符串进行转换。

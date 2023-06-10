@@ -2,13 +2,13 @@
 #define WMKC // Wizard Magic Key Cyber（网络巫师的魔法钥匙）
 
 #include <stdio.h>    // 标准输入输出库
+#include <locale.h>   // 
 #include <string.h>   // 标准字符串库
 #include <stdlib.h>   // 标准库
 #include <stdint.h>   // 标准数字类型库
 #include <signal.h>   // 信号库
 #include <stdbool.h>  // 标准布尔值库
 #include <inttypes.h> // 用于在跨平台打印同样的数据类型
-
 
 #if __cplusplus > 199711L
 #define register
@@ -45,7 +45,6 @@
 #define WMKC_OF(args)             args        // 函数取消调用消耗
 #define wmkcNull                  NULL        // 空指针
 #define wmkcFast                  register    // 寄存器类型
-typedef const char *              wmkcString; // 固定字符串类型
 typedef char                      wmkcChar;   // 字符类型
 typedef uint8_t                   wmkcByte;   // 字节类型
 typedef double                    wmkcFloat;  // 浮点数类型
@@ -58,6 +57,8 @@ typedef int16_t                   wmkc_s16;   // 宽字节类型
 typedef int32_t                   wmkc_s32;   // 整数类型
 typedef uint16_t                  wmkc_u16;   // 无符号宽字节类型
 typedef uint32_t                  wmkc_u32;   // 无符号整数类型
+typedef const char *              wmkcString; // 固定字符串类型
+typedef wchar_t                   wmkcUnicode; // Unicode编码类型
 #endif // #ifndef WMKC_TYPE_DEFINED
 
 // 定义宏函数
@@ -75,6 +76,8 @@ typedef uint32_t                  wmkc_u32;   // 无符号整数类型
 #define wmkcMemoryZero(x, s) memset((x), 0x00, (s))
 /***将x转为字符串********/
 #define wmkcToString(x) #x
+/***将时区设置与环境一致***/
+#define wmkcLocale(_locale) setlocale(LC_ALL, _locale)
 
 #ifdef WMKC_WTEXT
 #undef WMKC_WTEXT

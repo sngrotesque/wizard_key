@@ -113,24 +113,20 @@ WMKC_OF((wmkcByte *buf, wmkc_u32 size))
     HCRYPTPROV hProv;
     if(!CryptAcquireContext(&hProv, NULL, NULL, PROV_RSA_FULL, 0)) {
         wmkcErr_return(error, wmkcErr_ErrSysFunc,
-            "wmkcRandom_urandom: An error occurred while calling the system's "
-            "CryptAcquireContext function.");
+            "wmkcRandom_urandom: CryptAcquireContext function returned an error code when called.");
     }
     if(!CryptGenRandom(hProv, size, buf)) {
         wmkcErr_return(error, wmkcErr_ErrSysFunc,
-            "wmkcRandom_urandom: An error occurred while calling the system's "
-            "CryptGenRandom function.");
+            "wmkcRandom_urandom: CryptGenRandom function returned an error code when called.");
     }
     if(!CryptReleaseContext(hProv, 0)) {
         wmkcErr_return(error, wmkcErr_ErrSysFunc,
-            "wmkcRandom_urandom: An error occurred while calling the system's "
-            "CryptReleaseContext function.");
+            "wmkcRandom_urandom: CryptReleaseContext function returned an error code when called.");
     }
 #   elif defined(WMKC_PLATFORM_LINUX)
     if(getrandom(buf, size, GRND_RANDOM) == wmkcErr_Err32) {
         wmkcErr_return(error, wmkcErr_ErrSysFunc,
-            "wmkcRandom_urandom: An error occurred while calling the system's "
-            "getrandom function.");
+            "wmkcRandom_urandom: getrandom function returned an error code when called.");
     }
 #   endif
 
