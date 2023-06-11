@@ -30,6 +30,12 @@ def run_code(program :str, parameters :list):
     parameters.append('-L includes/libpng')  # Referer: Libpng
     parameters.append('-L includes/cjson')   # Referer: cJSON
 
+    # ICU4C
+    parameters.append('-I includes/unicode_winos/include')
+    parameters.append('-L includes/unicode_winos/lib64')
+    parameters.append('-licuio')
+    parameters.append('-licuuc')
+
     if program == 'gcc':
         # C Programming Language
         inPath = f'test{PATH_SYMBOL}test.c'

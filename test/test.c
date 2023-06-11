@@ -26,6 +26,9 @@
 #include <libpng/png.h>
 #include <openssl/sha.h>
 #include <cjson/cJSON.h>
+#include <unicode_winos/include/unicode/ucnv.h>
+#include <unicode_winos/include/unicode/putil.h>
+#include <unicode_winos/include/unicode/udata.h>
 
 #define CIPHER_TEST false
 
@@ -44,11 +47,16 @@ static wmkcByte testIv[32] = {
 
 void test()
 {
-    wmkcChar path[256] = {"p:/Picture Archive/Search搜图/原图/lj1c8HrnImr4ejOR3F5HpFv8.jpeg"};
-    wmkcUnicode *dst = wmkcNull;
-    wmkcByte header[8];
+    wmkcChar src[32] = {"你好。"};
+    wmkcChar dst[32];
+    UErrorCode error;
 
-    printf("%llu\n", wmkc_get_utf8_size(path));
+    wmkcMemoryZero(dst, 32);
+
+    ucnv_convert_71("UTF-8", NULL, dst, 32, src, strlen(src), &error);
+
+    wmkcMisc_PRINT((wmkcByte *)dst, 32, 32, 0, 0);
+
 }
 
 int main(int argc, char **argv)
