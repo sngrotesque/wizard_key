@@ -54,7 +54,7 @@ void test()
 
     wmkcMemoryZero(dst, 32);
 
-    ucnv_convert_71("GBK", "UTF-8", dst, 32, src, strlen(src), &error);
+    ucnv_convert("GBK", "UTF-8", dst, 32, src, strlen(src), &error);
     if (error != U_ZERO_ERROR) {
         printf("Conversion failed: %s", u_errorName(error));
         return;
@@ -68,6 +68,7 @@ void test()
 
 int main(int argc, char **argv)
 {
+    printf("test.\n");
     test();
 
     return 0;

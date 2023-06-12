@@ -33,8 +33,12 @@ def run_code(program :str, parameters :list):
     # ICU4C
     parameters.append('-I includes/unicode_winos/include')
     parameters.append('-L includes/unicode_winos/lib64')
-    parameters.append('-licuio')
-    parameters.append('-licuuc')
+    parameters.append('-l:icudt.lib')
+    parameters.append('-l:icuin.lib')
+    parameters.append('-l:icuio.lib')
+    parameters.append('-l:icutest.lib')
+    parameters.append('-l:icutu.lib')
+    parameters.append('-l:icuuc.lib')
 
     if program == 'gcc':
         # C Programming Language
