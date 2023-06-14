@@ -25,6 +25,7 @@
 #include <zlib/zlib.h>
 #include <libpng/png.h>
 #include <cjson/cJSON.h>
+#include <iconv/iconv.h>
 
 #define CIPHER_TEST false
 
@@ -43,7 +44,22 @@ static wmkcByte testIv[32] = {
 
 void test()
 {
-    
+    wmkcChar *src = "我";
+    wmkcChar *dst = (wmkcChar *)malloc(sizeof(wmkcChar) * 2);
+
+    wmkcChar *in_ptr = src;
+    wmkcChar *out_ptr = dst;
+
+    wmkcSize in_size = 3;
+    wmkcSize out_size = 2;
+
+    iconv_t cd = iconv_open("GBK", "UTF-8");
+    iconv(cd, &in_ptr, &in_size, &out_ptr, &out_size);
+
+    wmkcMisc_PRINT(dst, 2, 2, 0, 0);
+
+    free(dst);
+    iconv_close(cd);
 }
 
 int main(int argc, char **argv)
