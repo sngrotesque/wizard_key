@@ -18,27 +18,19 @@ def run_code(program :str, parameters :list):
     parameters.append('-I includes')
     parameters.append('-I sources')
 
+    parameters.append('-L includes/zlib')    # Referer: Zlib
+    parameters.append('-L includes/openssl') # Referer: OpenSSL
+    parameters.append('-L includes/libpng')  # Referer: Libpng
+    parameters.append('-L includes/cjson')   # Referer: cJSON
+    parameters.append('-L includes/iconv')   # Referer: Iconv
+
     parameters.append('-lssl')    # OpenSSL
     parameters.append('-lcrypto') # OpenSSL
     parameters.append('-lz')      # Zlib
     parameters.append('-lm')      # Math
     parameters.append('-lpng16')  # Libpng
     parameters.append('-lcjson')  # cJSON
-
-    parameters.append('-L includes/zlib')    # Referer: Zlib
-    parameters.append('-L includes/openssl') # Referer: OpenSSL
-    parameters.append('-L includes/libpng')  # Referer: Libpng
-    parameters.append('-L includes/cjson')   # Referer: cJSON
-
-    # ICU4C
-    parameters.append('-I includes/unicode_winos/include')
-    parameters.append('-L includes/unicode_winos/lib64')
-    parameters.append('-l:icudt.lib')
-    parameters.append('-l:icuin.lib')
-    parameters.append('-l:icuio.lib')
-    parameters.append('-l:icutest.lib')
-    parameters.append('-l:icutu.lib')
-    parameters.append('-l:icuuc.lib')
+    parameters.append('-liconv')  # Iconv
 
     if program == 'gcc':
         # C Programming Language

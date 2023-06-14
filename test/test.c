@@ -24,12 +24,7 @@
 
 #include <zlib/zlib.h>
 #include <libpng/png.h>
-#include <openssl/sha.h>
 #include <cjson/cJSON.h>
-#include <unicode_winos/include/unicode/ucnv.h>
-#include <unicode_winos/include/unicode/putil.h>
-#include <unicode_winos/include/unicode/udata.h>
-#include <unicode_winos/include/unicode/ucsdet.h>
 
 #define CIPHER_TEST false
 
@@ -48,27 +43,11 @@ static wmkcByte testIv[32] = {
 
 void test()
 {
-    wmkcChar src[32] = {"我"};
-    wmkcChar dst[32];
-    UErrorCode error = U_ZERO_ERROR;
-
-    wmkcMemoryZero(dst, 32);
-
-    ucnv_convert("GBK", "UTF-8", dst, 32, src, strlen(src), &error);
-    if (error != U_ZERO_ERROR) {
-        printf("Conversion failed: %s", u_errorName(error));
-        return;
-    }
-
-    printf("src:\n");
-    wmkcMisc_PRINT((wmkcByte *)src, 32, 32, 1, 1);
-    printf("dst:\n");
-    wmkcMisc_PRINT((wmkcByte *)dst, 32, 32, 0, 1);
+    
 }
 
 int main(int argc, char **argv)
 {
-    printf("test.\n");
     test();
 
     return 0;
