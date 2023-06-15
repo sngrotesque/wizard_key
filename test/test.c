@@ -45,9 +45,9 @@ static wmkcByte testIv[32] = {
 
 void test()
 {
-    wmkcChar src[256] = {"啊我操你妈！傻逼Microsoft！去死啊"};
+    wmkcChar *src = (wmkcChar *)"p:/传送手机/11.png";
     wmkcChar *dst = wmkcNull;
-    wmkcCoder_encoding(&dst, src, "GBK<UTF-8");
+    wmkcCoder_convert(0, &dst, src, "GBK<UTF-8");
     wmkcMisc_PRINT(dst, strlen(src) * 4 / 3, 32, 1, 0);
     wmkcMemoryFree(dst);
 }
