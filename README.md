@@ -6,7 +6,7 @@
  - [R7](https://github.com/r7z7)
 
 ### 特别鸣谢
-| Open source project name                        | Description                          |
+| Project name                                    | Description                          |
 | :---                                            | :---                                 |
 | [OpenSSL](https://github.com/openssl/openssl)   | 本库使用了OpenSSL的哈希与密码库。  |
 | [libpng](http://libpng.org/pub/png/)            | 本库使用了libpng库来实现PNG图像的读写。 |
