@@ -1,39 +1,5 @@
 #include <wmkc_common.h>
 
-WMKC_PUBLIC(wmkcSize) wmkc_get_utf8_size WMKC_OPEN_API
-WMKC_OF((wmkcString string))
-{
-    wmkcSize len = 0;
-    while (*string) {
-        if ((*string & 0xC0) != 0x80) {
-            len++;
-        }
-        string++;
-    }
-    return len;
-}
-
-WMKC_PUBLIC(wmkcErr_obj) wmkc_string2unicode WMKC_OPEN_API
-WMKC_OF((wmkcUnicode **dst, wmkcChar *src))
-{
-    wmkcErr_obj error;
-    if(!dst || !src) {
-        wmkcErr_return(error, wmkcErr_ErrNULL,
-            "wmkc_string2unicode: dst or src or sizeOfDst is NULL.");
-    }
-    wmkcSize size = wmkc_get_utf8_size(src) * sizeof(wmkcUnicode);
-
-    if(!wmkcMemoryNew(wmkcUnicode *, (*dst), size)) {
-        wmkcErr_return(error, wmkcErr_ErrMemory,
-            "wmkc_string2unicode: Failed to allocate memory for (*dst).");
-    }
-
-    if(!MultiByteToWideChar(CP_UTF8, MB_PRECOMPOSED, src, -1, (*dst), size)) {
-        wmkcErr_return(error, wmkcErr_ErrSysFunc,
-            "wmkc_string2unicode: MultiByteToWideChar function returned an error code when called.");
-    }
-}
-
 WMKC_PUBLIC(wmkcErr_obj) wmkc_secureMemory WMKC_OPEN_API
 WMKC_OF((wmkcVoid *buf, wmkcSize size))
 {
@@ -75,6 +41,48 @@ WMKC_OF((wmkcVoid *buf, wmkcSize size, wmkc_u32 elementSize))
     }
 
     wmkcMemoryFree(swap);
+    wmkcErr_return(error, wmkcErr_OK, "OK.");
+}
+
+WMKC_PUBLIC(wmkcErr_obj) wmkc_split WMKC_OPEN_API
+WMKC_OF((wmkcChar **key, wmkcChar **value, wmkcChar *string, wmkcChar symbol))
+{
+    wmkcErr_obj error;
+    wmkcSize size = strlen(string);
+    wmkcSize index;
+    wmkcBool signal = false;
+    wmkcSize keySize;
+    wmkcSize valueSize;
+
+    for(index = 0; index < size; ++index) {
+        if(string[index] == symbol) {
+            signal = true;
+            break;
+        }
+    }
+
+    if(!signal) {
+        wmkcErr_return(error, wmkcErr_Err32,
+            "wmkc_split: The corresponding symbol was not found.");
+    }
+
+    keySize = index;
+    valueSize = strlen(string + index + 1);
+
+    if(!wmkcMemoryNew(wmkcChar *, (*key), keySize + 1)) {
+        wmkcErr_return(error, wmkcErr_ErrMemory,
+            "wmkc_split: Failed to allocate memory for (*key).");
+    }
+    if(!wmkcMemoryNew(wmkcChar *, (*value), valueSize + 1)) {
+        wmkcErr_return(error, wmkcErr_ErrMemory,
+            "wmkc_split: Failed to allocate memory for (*value).");
+    }
+    (*key)[keySize] = 0x00;
+    (*value)[valueSize] = 0x00;
+
+    memcpy((*key), string, keySize);
+    memcpy((*value), string + keySize + 1, valueSize);
+
     wmkcErr_return(error, wmkcErr_OK, "OK.");
 }
 

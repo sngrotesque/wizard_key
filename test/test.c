@@ -11,6 +11,7 @@
 #include <wmkc_thread.c>
 #include <wmkc_base64.c>
 #include <wmkc_stream.c>
+#include <wmkc_coder.c>
 #include <wmkc_chat.c>
 #include <wmkc_dict.c>
 #include <wmkc_file.c>
@@ -44,22 +45,11 @@ static wmkcByte testIv[32] = {
 
 void test()
 {
-    wmkcChar *src = "我";
-    wmkcChar *dst = (wmkcChar *)malloc(128);
-
-    wmkcChar *in_ptr = src;
-    wmkcChar *out_ptr = dst;
-
-    wmkcSize in_size = 3;
-    wmkcSize out_size = 128;
-
-    iconv_t cd = iconv_open("", "UTF-8");
-    iconv(cd, &in_ptr, &in_size, &out_ptr, &out_size);
-
-    wmkcMisc_PRINT(dst, 128, 32, 0, 0);
-
-    free(dst);
-    iconv_close(cd);
+    wmkcChar src[256] = {"啊我操你妈！傻逼Microsoft！去死啊"};
+    wmkcChar *dst = wmkcNull;
+    wmkcCoder_encoding(&dst, src, "GBK<UTF-8");
+    wmkcMisc_PRINT(dst, strlen(src) * 4 / 3, 32, 1, 0);
+    wmkcMemoryFree(dst);
 }
 
 int main(int argc, char **argv)

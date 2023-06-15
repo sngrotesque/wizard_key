@@ -30,6 +30,20 @@ WMKC_PUBLIC(wmkcErr_obj) wmkc_reverse WMKC_OPEN_API
 WMKC_OF((wmkcVoid *buf, wmkcSize size, wmkc_u32 elementSize));
 
 /**
+ * @brief 将内容按照字符分离
+ * @authors SN-Grotesque
+ * @note 无
+ * @param key 这是一个指针，指向key指针的地址
+ * @param value 这是一个指针，指向value指针的地址
+ * @param string 这是一个指针，指向内容的地址
+ * @param symbol 这是一个字符，代表分割符号
+ * @return 返回一个wmkcErr对象，code为0代表无错误，如果为
+ *         其他值，那么需检查message与code。
+ */
+WMKC_PUBLIC(wmkcErr_obj) wmkc_split WMKC_OPEN_API
+WMKC_OF((wmkcChar **key, wmkcChar **value, wmkcChar *string, wmkcChar symbol));
+
+/**
  * @brief 此函数用于替换scanf函数
  * @authors SN-Grotesque
  * 
