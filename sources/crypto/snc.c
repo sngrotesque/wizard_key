@@ -450,7 +450,7 @@ WMKC_PRIVATE(wmkcVoid) SNC_keyExtension WMKC_OF((wmkc_u16 keySize, wmkcByte *iv,
 }
 
 // 为SNC对象申请内存空间
-WMKC_PUBLIC(wmkcErr_obj) SNC_new WMKC_OPEN_API
+WMKC_PUBLIC(wmkcErr_obj) wmkcSNC_new WMKC_OPEN_API
 WMKC_OF((wmkcSNC_obj **ctx, SNC_mode mode))
 {
     wmkcErr_obj error;
@@ -473,7 +473,7 @@ WMKC_OF((wmkcSNC_obj **ctx, SNC_mode mode))
 }
 
 // 释放SNC对象
-WMKC_PUBLIC(wmkcErr_obj) SNC_free WMKC_OPEN_API
+WMKC_PUBLIC(wmkcErr_obj) wmkcSNC_free WMKC_OPEN_API
 WMKC_OF((wmkcSNC_obj **ctx))
 {
     wmkcErr_obj error;
@@ -493,7 +493,7 @@ WMKC_OF((wmkcSNC_obj **ctx))
 * Function to initialize the SNC data structure, used to generate sub keys for each
 * round based on the basic key input by the user.
 */
-WMKC_PUBLIC(wmkcErr_obj) SNC_init WMKC_OPEN_API
+WMKC_PUBLIC(wmkcErr_obj) wmkcSNC_init WMKC_OPEN_API
 WMKC_OF((wmkcSNC_obj *ctx, wmkcByte *keyBuf, wmkcByte *ivBuf))
 {
     wmkcErr_obj error;
@@ -551,13 +551,12 @@ WMKC_OF((wmkcSNC_obj *ctx, wmkcByte *keyBuf, wmkcByte *ivBuf))
     //* 用于确保内存安全（Used to ensure memory security.）
     wmkcMemoryZero(key, ctx->KN);
     wmkcMemoryZero(iv, SNC_BLOCKLEN);
-    free(key);
-    key = wmkcNull;
+    wmkcMemoryFree(key);
     wmkcErr_return(error, wmkcErr_OK, "OK.");
 }
 
 //* ECB模式加密
-WMKC_PUBLIC(wmkcVoid) SNC_ECB_Encrypt WMKC_OPEN_API
+WMKC_PUBLIC(wmkcVoid) wmkcSNC_ecb_encrypt WMKC_OPEN_API
 WMKC_OF((wmkcSNC_obj *ctx, wmkcByte *buf, wmkcSize size))
 {
     wmkcFast wmkcSize r;
@@ -577,7 +576,7 @@ WMKC_OF((wmkcSNC_obj *ctx, wmkcByte *buf, wmkcSize size))
 }
 
 //* ECB模式解密
-WMKC_PUBLIC(wmkcVoid) SNC_ECB_Decrypt WMKC_OPEN_API
+WMKC_PUBLIC(wmkcVoid) wmkcSNC_ecb_decrypt WMKC_OPEN_API
 WMKC_OF((wmkcSNC_obj *ctx, wmkcByte *buf, wmkcSize size))
 {
     wmkcFast wmkcSize r;
@@ -597,7 +596,7 @@ WMKC_OF((wmkcSNC_obj *ctx, wmkcByte *buf, wmkcSize size))
 }
 
 //* CBC模式加密
-WMKC_PUBLIC(wmkcVoid) SNC_CBC_Encrypt WMKC_OPEN_API
+WMKC_PUBLIC(wmkcVoid) wmkcSNC_cbc_encrypt WMKC_OPEN_API
 WMKC_OF((wmkcSNC_obj *ctx, wmkcByte *buf, wmkcSize size))
 {
     wmkcFast wmkcSize r, i;
@@ -618,7 +617,7 @@ WMKC_OF((wmkcSNC_obj *ctx, wmkcByte *buf, wmkcSize size))
 }
 
 //* CBC模式解密
-WMKC_PUBLIC(wmkcVoid) SNC_CBC_Decrypt WMKC_OPEN_API
+WMKC_PUBLIC(wmkcVoid) wmkcSNC_cbc_decrypt WMKC_OPEN_API
 WMKC_OF((wmkcSNC_obj *ctx, wmkcByte *buf, wmkcSize size))
 {
     wmkcFast wmkcSize r;

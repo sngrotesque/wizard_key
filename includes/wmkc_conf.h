@@ -43,6 +43,7 @@
 #define WMKC_PRIVATE(type)        static type // 静态函数（私有函数）
 #define WMKC_PUBLIC(type)         type        // 动态函数（公共函数）
 #define WMKC_OF(args)             args        // 函数取消调用消耗
+
 #define wmkcNull                  NULL        // 空指针
 #define wmkcFast                  register    // 寄存器类型
 typedef char                      wmkcChar;   // 字符类型

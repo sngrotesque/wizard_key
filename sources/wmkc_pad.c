@@ -1,6 +1,20 @@
 #include <wmkc_pad.h>
 
 /**
+ * @brief 计算距离块大小的偏离量
+ * @authors SN-Grotesque
+ * @note 无
+ * @param BlockSize 数字，块大小
+ * @param size 数字，源大小
+ * @return 返回一个偏移量
+ */
+WMKC_PUBLIC(wmkcSize) wmkcPad_offset WMKC_OPEN_API
+WMKC_OF((wmkc_u32 BlockSize, wmkcSize size))
+{
+    return BlockSize - size % BlockSize;
+}
+
+/**
  * @brief 填充函数
  * @authors SN-Grotesque
  * 

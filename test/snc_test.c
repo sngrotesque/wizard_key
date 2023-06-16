@@ -44,11 +44,11 @@ void snc_speed_test()
     wmkcMemoryNew(wmkcTime_obj *, timer, sizeof(wmkcTime_obj));
     wmkcMemoryNew(wmkcByte *, buf, size);
 
-    SNC_new(&snc, SNC_768);
-    SNC_init(snc, testKey, testIv);
+    wmkcSNC_new(&snc, SNC_768);
+    wmkcSNC_init(snc, testKey, testIv);
 
     wmkcTime_TimerBegin(timer);
-    SNC_CBC_Encrypt(snc, buf, size);
+    wmkcSNC_cbc_encrypt(snc, buf, size);
     wmkcTime_TimerEnd(timer);
 
     perSec = (wmkcFloat)size / timer->totalTime;
@@ -59,7 +59,7 @@ void snc_speed_test()
 
     wmkcMemoryFree(timer);
     wmkcMemoryFree(buf);
-    SNC_free(&snc);
+    wmkcSNC_free(&snc);
 }
 
 void snc_test()
@@ -81,8 +81,8 @@ void snc_test()
         {{L"P:/SNC/snc_test_006.jpg"},  {L"P:/SNC/snc_test_006.mp4.lock"}},
         {{L"P:/SNC/snc_test_007.html"}, {L"P:/SNC/snc_test_007.html.lock"}}};
 
-    SNC_new(&snc, SNC_768);
-    SNC_init(snc, testKey, testIv);
+    wmkcSNC_new(&snc, SNC_768);
+    wmkcSNC_init(snc, testKey, testIv);
 
     for(wmkc_u32 i = 0; i < 7; ++i) {
         pathSrc = filePathList[i][0];
@@ -103,7 +103,7 @@ void snc_test()
         fclose(fp);
 
         wmkcPad_add(buf, &fileSize, SNC_BLOCKLEN, false);
-        SNC_CBC_Encrypt(snc, buf, fileSize);
+        wmkcSNC_cbc_encrypt(snc, buf, fileSize);
 
         fp = wmkcFile_fopen(pathDst, L"wb");
         if(fwrite(buf, 1, fileSize, fp) != fileSize) {
@@ -114,7 +114,7 @@ void snc_test()
         free(buf);
     }
 
-    SNC_free(&snc);
+    wmkcSNC_free(&snc);
 }
 
 void test()
@@ -129,8 +129,8 @@ void test()
     wmkc_u32 encrypt_method = 2;
     wmkcSize group = 32;
 
-    SNC_new(&snc, SNC_768);
-    SNC_init(snc, testKey, testIv);
+    wmkcSNC_new(&snc, SNC_768);
+    wmkcSNC_init(snc, testKey, testIv);
 
     if(size % SNC_BLOCKLEN)
         wmkcPad_add(buf, &size, SNC_BLOCKLEN, false);
@@ -147,15 +147,15 @@ void test()
     printf("Encrypt method:\n");
     if(encrypt_method == 1) {
         printf("\tECB (Electronic Codebook).\n");
-        SNC_ECB_Encrypt(snc, buf, size);
+        wmkcSNC_ecb_encrypt(snc, buf, size);
     } else if(encrypt_method == 2) {
         printf("\tCBC (Cipher Block Chaining).\n");
-        SNC_CBC_Encrypt(snc, buf, size);
+        wmkcSNC_cbc_encrypt(snc, buf, size);
     }
 
     printf("Ciphertext:\n"); wmkcMisc_PRINT(buf, size, group, 0, true);
 
-    SNC_free(&snc);
+    wmkcSNC_free(&snc);
 }
 
 int main(int argc, char **argv)

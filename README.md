@@ -1,5 +1,5 @@
 # Wizard Magic Key Cyber
-> Wizard Magic Key Cyber by SN-Grotesque
+> `Wizard Magic Key Cyber` by SN-Grotesque
 
 ### Author(s):
  - [SN-Grotesque](https://github.com/sngrotesque)
@@ -72,7 +72,8 @@ typedef struct {
 1.  将wmkc_chat库中的对象指针成员修改为数组成员，  
     否则会导致无意义的代码过长。
 2.  重构了wmkc_file库，删除了wmkcFile对象。
-3.  放弃使用icu库对编码进行转换，改用iconv库。
+3.  放弃使用icu4c库对编码进行转换，改用iconv库。
+4.  小幅度修改了wmkc_pad，wmkc_base64库。
 
 #### v6.0.0-dev
 1.  将wmkc_base修改为wmkc_base64，因考虑到  

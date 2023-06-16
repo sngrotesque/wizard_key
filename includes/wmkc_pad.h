@@ -3,23 +3,25 @@
 #if WMKC_SUPPORT
 #ifndef WMKC_PADDING
 #define WMKC_PADDING
-
 #include <wmkc_random.h>
 #include <wmkc_time.h>
 
 #define WMKC_PAD_VALUE 0xac // 填充值
 
-// 求出长度与块长度的偏移量（offset这个词可能不合适，后续看看是否修改）
-#define wmkcPad_offset(BlockSize, size) (BlockSize - size % BlockSize)
-// 求出偏移量并计算总长度
-#define wmkcPad_totalSize(BlockSize, size) (wmkcPad_offset(BlockSize, size) + size)
+/**
+ * @brief 计算距离块大小的偏离量
+ * @authors SN-Grotesque
+ * @note 无
+ * @param BlockSize 数字，块大小
+ * @param size 数字，源大小
+ * @return 返回一个偏移量
+ */
+WMKC_PUBLIC(wmkcSize) wmkcPad_offset WMKC_OPEN_API
+WMKC_OF((wmkc_u32 BlockSize, wmkcSize size));
 
 /**
  * @brief 填充函数
  * @authors SN-Grotesque
- * 
- * 将内容填充，直到块长度的倍数
- * 
  * @note 如果randomPadding为True则忽略WMKC_PAD_VALUE。否则使用WMKC_PAD_VALUE。
  *       后续考虑一下参数是否应改为传入wmkc对象或src与dst这种形式。
  *       因为当前这个函数成功执行的前提是必须保证传入的指针指向的内容长度

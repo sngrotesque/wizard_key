@@ -43,7 +43,7 @@ WMKC_OF((wmkcChat_obj *obj, wmkcString password))
         WMKC_CHAT_ITERATIONS, EVP_sha384(), obj->snc->KN + SNC_BLOCKLEN, buf);
 
     // 使用缓冲区内的密钥与初始向量来初始化SNC加密算法
-    SNC_init(obj->snc, _key, _iv);
+    wmkcSNC_init(obj->snc, _key, _iv);
 
     // 将缓冲区的内容清零并释放其内存空间
     wmkc_secureMemory(buf, obj->snc->KN + SNC_BLOCKLEN);
@@ -95,7 +95,7 @@ WMKC_OF((wmkcChat_obj **obj))
     wmkc_secureMemory((*obj)->name, WMKC_CHAT_NAME_SIZE);
     wmkc_secureMemory((*obj)->hash, WMKC_CHAT_HASH_SIZE);
     wmkc_secureMemory((*obj)->salt, WMKC_CHAT_SALT_SIZE);
-    error = SNC_new(&((*obj)->snc), WMKC_CHAT_CIPHER_MODE);
+    error = wmkcSNC_new(&((*obj)->snc), WMKC_CHAT_CIPHER_MODE);
 
     // 如果SNC_new函数出现错误就返回错误代码
     if(error.code) return error;
@@ -123,7 +123,7 @@ WMKC_OF((wmkcChat_obj **obj))
     wmkc_secureMemory((*obj)->name, WMKC_CHAT_NAME_SIZE);
     wmkc_secureMemory((*obj)->hash, WMKC_CHAT_HASH_SIZE);
     wmkc_secureMemory((*obj)->salt, WMKC_CHAT_SALT_SIZE);
-    error = SNC_free(&((*obj)->snc));
+    error = wmkcSNC_free(&((*obj)->snc));
     if(error.code) return error;
     wmkcMemoryFree((*obj));
 

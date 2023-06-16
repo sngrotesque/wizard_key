@@ -89,8 +89,6 @@ WMKC_OF((wmkcByte **dst, wmkcByte *src, wmkcSize srcSize))
     switch(srcSize % 3) {
         case 1:
             (*dst)[dst_i - 2] = BASE64_PAD;
-            (*dst)[dst_i - 1] = BASE64_PAD;
-            break;
         case 2:
             (*dst)[dst_i - 1] = BASE64_PAD;
             break;

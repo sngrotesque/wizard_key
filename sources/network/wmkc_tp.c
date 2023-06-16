@@ -37,7 +37,7 @@ WMKC_OF((wmkcTp_obj **obj, wmkcString addr, wmkc_u16 port, wmkc_u32 maxRetry))
         (*obj)->maxRetry = WMKC_TP_DEFAULT_MAX_RETRY;
     }
     (*obj)->snc = wmkcNull;
-    // SNC_new(&(*obj)->snc, SNC_256);
+    // wmkcSNC_new(&(*obj)->snc, SNC_256);
 
     wmkcErr_return(error, wmkcErr_OK, "OK.");
 }

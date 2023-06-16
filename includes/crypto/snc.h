@@ -87,31 +87,31 @@ typedef struct {
  * @return 返回一个wmkcErr对象，code为0代表无错误，如果为
  *         其他值，那么需检查message与code。
  */
-WMKC_PUBLIC(wmkcErr_obj) SNC_new WMKC_OPEN_API
+WMKC_PUBLIC(wmkcErr_obj) wmkcSNC_new WMKC_OPEN_API
 WMKC_OF((wmkcSNC_obj **ctx, SNC_mode mode));
 
 // 释放SNC对象
-WMKC_PUBLIC(wmkcErr_obj) SNC_free WMKC_OPEN_API
+WMKC_PUBLIC(wmkcErr_obj) wmkcSNC_free WMKC_OPEN_API
 WMKC_OF((wmkcSNC_obj **ctx));
 
 // 初始化SNC对象
-WMKC_PUBLIC(wmkcErr_obj) SNC_init WMKC_OPEN_API
+WMKC_PUBLIC(wmkcErr_obj) wmkcSNC_init WMKC_OPEN_API
 WMKC_OF((wmkcSNC_obj *ctx, wmkcByte *keyBuf, wmkcByte *ivBuf));
 
 // ECB加密
-WMKC_PUBLIC(wmkcVoid) SNC_ECB_Encrypt WMKC_OPEN_API
+WMKC_PUBLIC(wmkcVoid) wmkcSNC_ecb_encrypt WMKC_OPEN_API
 WMKC_OF((wmkcSNC_obj *ctx, wmkcByte *buf, wmkcSize size));
 
 // ECB解密
-WMKC_PUBLIC(wmkcVoid) SNC_ECB_Decrypt WMKC_OPEN_API
+WMKC_PUBLIC(wmkcVoid) wmkcSNC_ecb_decrypt WMKC_OPEN_API
 WMKC_OF((wmkcSNC_obj *ctx, wmkcByte *buf, wmkcSize size));
 
 // CBC加密
-WMKC_PUBLIC(wmkcVoid) SNC_CBC_Encrypt WMKC_OPEN_API
+WMKC_PUBLIC(wmkcVoid) wmkcSNC_cbc_encrypt WMKC_OPEN_API
 WMKC_OF((wmkcSNC_obj *ctx, wmkcByte *buf, wmkcSize size));
 
 // CBC解密
-WMKC_PUBLIC(wmkcVoid) SNC_CBC_Decrypt WMKC_OPEN_API
+WMKC_PUBLIC(wmkcVoid) wmkcSNC_cbc_decrypt WMKC_OPEN_API
 WMKC_OF((wmkcSNC_obj *ctx, wmkcByte *buf, wmkcSize size));
 
 #ifdef __cplusplus

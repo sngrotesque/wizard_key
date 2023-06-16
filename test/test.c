@@ -28,7 +28,7 @@
 #include <cjson/cJSON.h>
 #include <iconv/iconv.h>
 
-#define CIPHER_TEST false
+#define CIPHER_TEST true
 
 #if defined(WMKC_SNC) && (CIPHER_TEST)
 static wmkcByte testKey[96] = {
@@ -45,11 +45,24 @@ static wmkcByte testIv[32] = {
 
 void test()
 {
-    wmkcChar *src = (wmkcChar *)"p:/传送手机/11.png";
-    wmkcChar *dst = wmkcNull;
-    wmkcCoder_convert(0, &dst, src, "GBK<UTF-8");
-    wmkcMisc_PRINT(dst, strlen(src) * 4 / 3, 32, 1, 0);
-    wmkcMemoryFree(dst);
+    wmkcSNC_obj *snc = wmkcNull;
+    wmkcByte *buf = wmkcNull;
+    wmkcSize size = 0;
+
+    wmkcSNC_new(&snc, SNC_512);
+    wmkcSNC_init(snc, testKey, testIv);
+
+    wmkcFile_fread(&buf, &size, L"README.md");
+
+    buf = realloc(buf, size + wmkcPad_offset(SNC_BLOCKLEN, size));
+    wmkcPad_add(buf, &size, SNC_BLOCKLEN, false);
+
+    wmkcSNC_cbc_encrypt(snc, buf, size);
+
+    wmkcMisc_PRINT(buf, size, 32, 1, 0);
+
+    wmkcMemoryFree(buf);
+    wmkcSNC_free(&snc);
 }
 
 int main(int argc, char **argv)
