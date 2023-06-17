@@ -44,7 +44,7 @@ typedef struct {
  *         其他值，那么需检查message与code。
  */
 WMKC_PRIVATE(wmkcErr_obj) wmkcChat_initCipher WMKC_OPEN_API
-WMKC_OF((wmkcChat_obj *obj, wmkcString password));
+WMKC_OF((wmkcChat_obj *obj, wmkcSTR password));
 
 /**
  * @brief 给wmkcChat对象申请内存空间

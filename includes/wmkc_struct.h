@@ -132,7 +132,7 @@ WMKC_OF((wmkcVoid));
  *         其他值，那么需检查message与code。
 */
 WMKC_PUBLIC(wmkcErr_obj) wmkcStruct_pack WMKC_OPEN_API
-WMKC_OF((wmkcString format, wmkcByte *dst, wmkcSize src));
+WMKC_OF((wmkcSTR format, wmkcByte *dst, wmkcSize src));
 
 /**
  * @brief 此函数用于将数据“解包”
@@ -155,7 +155,7 @@ WMKC_OF((wmkcString format, wmkcByte *dst, wmkcSize src));
  *         其他值，那么需检查message与code。
 */
 WMKC_PUBLIC(wmkcErr_obj) wmkcStruct_unpack WMKC_OPEN_API
-WMKC_OF((wmkcString format, wmkcVoid *dst, wmkcByte *src));
+WMKC_OF((wmkcSTR format, wmkcVoid *dst, wmkcByte *src));
 
 #endif /* WMKC_STRUCT */
 #endif /* WMKC_SUPPORT */

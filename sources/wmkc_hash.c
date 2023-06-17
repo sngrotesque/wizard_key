@@ -141,7 +141,7 @@ WMKC_OF((wmkcHash_obj *hash, wmkcFileString fn))
     }
     EVP_MD_CTX *md_ctx = wmkcNull;
     wmkcByte *buf = wmkcNull;
-    wmkcFile *fp = wmkcNull;
+    FILE *fp = wmkcNull;
     wmkcSize fileSize;
     wmkcSize quotient; // 文件长度除块大小的商
     wmkcSize leftover; // 文件剩余长度

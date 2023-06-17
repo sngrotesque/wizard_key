@@ -86,7 +86,7 @@ WMKC_OF((wmkcKey_obj *obj));
  *         其他值，那么需检查message与code。
 */
 WMKC_PUBLIC(wmkcErr_obj) wmkcKey_loadKey WMKC_OPEN_API
-WMKC_OF((wmkcKey_obj *obj, wmkcString fn));
+WMKC_OF((wmkcKey_obj *obj, wmkcSTR fn));
 
 /**
  * @brief 写入密钥
@@ -102,7 +102,7 @@ WMKC_OF((wmkcKey_obj *obj, wmkcString fn));
  *         其他值，那么需检查message与code。
 */
 WMKC_PUBLIC(wmkcErr_obj) wmkcKey_saveKey WMKC_OPEN_API
-WMKC_OF((wmkcKey_obj *obj, wmkcString fn));
+WMKC_OF((wmkcKey_obj *obj, wmkcSTR fn));
 
 #endif /* WMKC_KEY */
 #endif /* WMKC_SUPPORT */

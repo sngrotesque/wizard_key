@@ -74,7 +74,7 @@ typedef wmkcChar  wmkcNetTimer;  // wmkcNet的计时类型
 typedef wmkcChar  wmkcNetBuf;    // wmkcNet的缓冲区类型
 #endif /* #if defined(WMKC_PLATFORM_LINUX) */
 
-typedef wmkcFloat wmkcNetTime; // wmkcNet的时间类型
+typedef double wmkcNetTime; // wmkcNet的时间类型
 typedef socklen_t wmkcNetSize; // wmkcNet的长度类型
 
 // wmkcNet对象类型
@@ -123,7 +123,7 @@ WMKC_OF((wmkcNet_obj **obj));
  *         其他值，那么需检查message与code。
  */
 WMKC_PUBLIC(wmkcErr_obj) wmkcNet_init WMKC_OPEN_API
-WMKC_OF((wmkcNet_obj *obj, wmkcString hostname, wmkc_u16 port, wmkcBool UDP));
+WMKC_OF((wmkcNet_obj *obj, wmkcSTR hostname, wmkc_u16 port, wmkcBool UDP));
 
 /**
  * @brief 解析域名并将IP地址储存到wmkcNet对象
@@ -136,7 +136,7 @@ WMKC_OF((wmkcNet_obj *obj, wmkcString hostname, wmkc_u16 port, wmkcBool UDP));
  *         其他值，那么需检查message与code。
  */
 WMKC_PUBLIC(wmkcErr_obj) wmkcNet_resolveAddress WMKC_OPEN_API
-WMKC_OF((wmkcNet_obj *obj, wmkcString hostname));
+WMKC_OF((wmkcNet_obj *obj, wmkcSTR hostname));
 
 /**
  * @brief 设置发送与接收超时时间

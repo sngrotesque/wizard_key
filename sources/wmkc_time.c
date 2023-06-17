@@ -70,13 +70,13 @@ WMKC_OF((wmkcTime_obj *timer))
 {
 #if defined(WMKC_PLATFORM_LINUX)
     gettimeofday(&timer->stop, wmkcNull);
-    timer->totalTime = (wmkcFloat)(CLOCKS_PER_SEC *
+    timer->totalTime = (double)(CLOCKS_PER_SEC *
         (timer->stop.tv_sec - timer->start.tv_sec) +
         timer->stop.tv_usec - timer->start.tv_usec) /
         CLOCKS_PER_SEC;
 #elif defined(WMKC_PLATFORM_WINOS)
-    timer->totalTime = (wmkcFloat)(((wmkcFloat)GetTickCount64() -
-        (wmkcFloat)timer->start) / CLOCKS_PER_SEC);
+    timer->totalTime = (double)(((double)GetTickCount64() -
+        (double)timer->start) / CLOCKS_PER_SEC);
 #endif
 }
 
@@ -93,7 +93,7 @@ WMKC_OF((wmkcTime_obj *timer))
  * @return 无
  */
 WMKC_PUBLIC(wmkcVoid) wmkcTime_TimerPrint WMKC_OPEN_API
-WMKC_OF((wmkcString text, wmkcTime_obj *timer))
+WMKC_OF((wmkcSTR text, wmkcTime_obj *timer))
 {
     printf("%s%.2lfs.\n", text, timer->totalTime);
 }

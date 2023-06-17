@@ -39,7 +39,7 @@ void snc_speed_test()
     wmkcByte *buf = wmkcNull;
     wmkcTime_obj *timer = wmkcNull;
     wmkcSize size = 268435456; // 256 MB
-    wmkcFloat perSec = 0;
+    double perSec = 0;
 
     wmkcMemoryNew(wmkcTime_obj *, timer, sizeof(wmkcTime_obj));
     wmkcMemoryNew(wmkcByte *, buf, size);
@@ -51,11 +51,11 @@ void snc_speed_test()
     wmkcSNC_cbc_encrypt(snc, buf, size);
     wmkcTime_TimerEnd(timer);
 
-    perSec = (wmkcFloat)size / timer->totalTime;
+    perSec = (double)size / timer->totalTime;
     printf("SNC-%u-CBC, total size: %llu, timer: %.2lf.\n",
         (snc->mode + 1) * 256, size, timer->totalTime);
     printf("\t1s, size: %.2lf Bytes, %.2lf MB.\n",
-        perSec, perSec / (wmkcFloat)1048576);
+        perSec, perSec / (double)1048576);
 
     wmkcMemoryFree(timer);
     wmkcMemoryFree(buf);
@@ -66,7 +66,7 @@ void snc_test()
 {
     wmkcSNC_obj  *snc = wmkcNull;
     wmkcByte *buf = wmkcNull;
-    wmkcFile *fp = wmkcNull;
+    FILE *fp = wmkcNull;
     LPCWSTR pathSrc = wmkcNull;
     LPCWSTR pathDst = wmkcNull;
 

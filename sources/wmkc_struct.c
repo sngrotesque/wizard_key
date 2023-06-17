@@ -45,7 +45,7 @@ WMKC_OF((wmkcByte *array_1, wmkcByte *array_2))
  * @return 返回一个布尔值，为True时代表格式符完全正确。
  */
 WMKC_PRIVATE(wmkcBool) wmkcStruct_check_format
-WMKC_OF((wmkcString src))
+WMKC_OF((wmkcSTR src))
 {
     if(!src || (strlen(src) != 2)) {
         return false;
@@ -104,7 +104,7 @@ WMKC_OF((void))
  *         其他值，那么需检查message与code。
 */
 WMKC_PUBLIC(wmkcErr_obj) wmkcStruct_pack WMKC_OPEN_API
-WMKC_OF((wmkcString format, wmkcByte *dst, wmkcSize src))
+WMKC_OF((wmkcSTR format, wmkcByte *dst, wmkcSize src))
 {
     wmkcErr_obj error;
     if(!format || !dst || !src) {
@@ -192,7 +192,7 @@ WMKC_OF((wmkcString format, wmkcByte *dst, wmkcSize src))
  *         其他值，那么需检查message与code。
 */
 WMKC_PUBLIC(wmkcErr_obj) wmkcStruct_unpack WMKC_OPEN_API
-WMKC_OF((wmkcString format, wmkcVoid *dst, wmkcByte *src))
+WMKC_OF((wmkcSTR format, wmkcVoid *dst, wmkcByte *src))
 {
     /**
      * 先直接判断本机是大端排序还是小端排序，然后根据用户指定的

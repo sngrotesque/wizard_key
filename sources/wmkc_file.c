@@ -123,7 +123,7 @@ WMKC_OF((wmkcByte **buf, wmkcSize *size, wmkcFileString fn))
             "wmkcFile_fread: buf or size or fn is NULL.");
     }
     wmkcByte *fileData_ptr = wmkcNull;
-    wmkcFile *fp = wmkcNull;
+    FILE *fp = wmkcNull;
     wmkcSize quotient, leftover;
     wmkcSize x;
 
@@ -179,7 +179,7 @@ WMKC_OF((wmkcByte *buf, wmkcSize size, wmkcFileString fn))
             "wmkcFile_fwrite: buf or size or fn is NULL.");
     }
     wmkcByte *fileData_ptr = wmkcNull;
-    wmkcFile *fp = wmkcNull;
+    FILE *fp = wmkcNull;
     wmkcSize quotient, leftover;
     wmkcSize x;
 

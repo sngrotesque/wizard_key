@@ -49,7 +49,7 @@ WMKC_OF((wmkcFileString fn))
     if(!fn) {
         wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcHexdump: fn is NULL.");
     }
-    wmkcFile *fp = wmkcNull;
+    FILE *fp = wmkcNull;
     wmkcByte buf[WMKC_HEXDUMP_BLOCKLEN];
     wmkcSize offset = 0;
     wmkcSize nRead = 0;

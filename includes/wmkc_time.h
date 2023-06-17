@@ -21,7 +21,7 @@ typedef struct {
     ULONGLONG start;
     ULONGLONG stop;
 #endif
-    wmkcFloat totalTime;
+    double totalTime;
 } wmkcTime_obj;
 
 /**
@@ -77,7 +77,7 @@ WMKC_OF((wmkcTime_obj *timer));
  * @return 无
  */
 WMKC_PUBLIC(wmkcVoid) wmkcTime_TimerPrint WMKC_OPEN_API
-WMKC_OF((wmkcString text, wmkcTime_obj *timer));
+WMKC_OF((wmkcSTR text, wmkcTime_obj *timer));
 
 #endif /* WMKC_TIME */
 #endif /* WMKC_SUPPORT */

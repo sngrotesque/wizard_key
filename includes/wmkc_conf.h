@@ -48,18 +48,15 @@
 #define wmkcFast                  register    // 寄存器类型
 typedef char                      wmkcChar;   // 字符类型
 typedef uint8_t                   wmkcByte;   // 字节类型
-typedef double                    wmkcFloat;  // 浮点数类型
 typedef int64_t                   wmkcSSize;  // 长整数类型
 typedef size_t                    wmkcSize;   // 长度类型
 typedef void                      wmkcVoid;   // 空类型
 typedef bool                      wmkcBool;   // 布尔类型
-typedef FILE                      wmkcFile;   // 文件类型
 typedef int16_t                   wmkc_s16;   // 宽字节类型
 typedef int32_t                   wmkc_s32;   // 整数类型
 typedef uint16_t                  wmkc_u16;   // 无符号宽字节类型
 typedef uint32_t                  wmkc_u32;   // 无符号整数类型
-typedef const char *              wmkcString; // 固定字符串类型
-typedef wchar_t                   wmkcUnicode; // Unicode编码类型
+typedef const char *              wmkcSTR; // 固定字符串类型
 #endif // #ifndef WMKC_TYPE_DEFINED
 
 // 定义宏函数
@@ -95,7 +92,7 @@ typedef wchar_t                   wmkcUnicode; // Unicode编码类型
 #define WMKC_ERROR_CODE
 // 用于返回错误信息的数据类型
 typedef struct {
-    wmkcString message;
+    wmkcSTR message;
     wmkcSSize code;
 } wmkcErr_obj;
 

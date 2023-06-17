@@ -13,7 +13,7 @@
  *         其他值，那么需检查message与code。
  */
 WMKC_PUBLIC(wmkcErr_obj) wmkcTp_new WMKC_OPEN_API
-WMKC_OF((wmkcTp_obj **obj, wmkcString addr, wmkc_u16 port, wmkc_u32 maxRetry))
+WMKC_OF((wmkcTp_obj **obj, wmkcSTR addr, wmkc_u16 port, wmkc_u32 maxRetry))
 {
     wmkcErr_obj error;
 

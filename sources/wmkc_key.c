@@ -231,7 +231,7 @@ WMKC_OF((wmkcKey_obj *obj))
  *         其他值，那么需检查message与code。
 */
 WMKC_PUBLIC(wmkcErr_obj) wmkcKey_loadKey WMKC_OPEN_API
-WMKC_OF((wmkcKey_obj *obj, wmkcString fn))
+WMKC_OF((wmkcKey_obj *obj, wmkcSTR fn))
 {
     wmkcErr_obj error;
     wmkcErr_return(error, wmkcErr_OK, "OK.");
@@ -251,7 +251,7 @@ WMKC_OF((wmkcKey_obj *obj, wmkcString fn))
  *         其他值，那么需检查message与code。
 */
 WMKC_PUBLIC(wmkcErr_obj) wmkcKey_saveKey WMKC_OPEN_API
-WMKC_OF((wmkcKey_obj *obj, wmkcString fn))
+WMKC_OF((wmkcKey_obj *obj, wmkcSTR fn))
 {
     wmkcErr_obj error;
     wmkcErr_return(error, wmkcErr_OK, "OK.");

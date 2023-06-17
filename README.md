@@ -74,6 +74,7 @@ typedef struct {
 2.  重构了wmkc_file库，删除了wmkcFile对象。
 3.  放弃使用icu4c库对编码进行转换，改用iconv库。
 4.  小幅度修改了wmkc_pad，wmkc_base64库。
+5.  删除了wmkcFloat，wmkcFile类型，多余而且扰乱思绪。
 
 #### v6.0.0-dev
 1.  将wmkc_base修改为wmkc_base64，因考虑到  

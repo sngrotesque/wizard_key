@@ -22,7 +22,7 @@ typedef LPCWSTR _wmkcFileString;
 #include <unistd.h>
 #define wmkcFile_text(x) WMKC_WTEXT(x)
 #define wmkcFile_fopen(fn, mode) fopen(fn, mode)
-typedef wmkcString _wmkcFileString;
+typedef wmkcSTR _wmkcFileString;
 #endif
 
 typedef _wmkcFileString wmkcFileString;
