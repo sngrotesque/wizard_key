@@ -45,24 +45,7 @@ static wmkcByte testIv[32] = {
 
 void test()
 {
-    wmkcSNC_obj *snc = wmkcNull;
-    wmkcByte *buf = wmkcNull;
-    wmkcSize size = 0;
-
-    wmkcSNC_new(&snc, SNC_512);
-    wmkcSNC_init(snc, testKey, testIv);
-
-    wmkcFile_fread(&buf, &size, L"README.md");
-
-    buf = realloc(buf, size + wmkcPad_offset(SNC_BLOCKLEN, size));
-    wmkcPad_add(buf, &size, SNC_BLOCKLEN, false);
-
-    wmkcSNC_cbc_encrypt(snc, buf, size);
-
-    wmkcMisc_PRINT(buf, size, 32, 1, 0);
-
-    wmkcMemoryFree(buf);
-    wmkcSNC_free(&snc);
+    
 }
 
 int main(int argc, char **argv)
