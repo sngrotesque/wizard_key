@@ -83,7 +83,7 @@ WMKC_OF((wmkcNet_obj **obj))
  *         其他值，那么需检查message与code。
  */
 WMKC_PUBLIC(wmkcErr_obj) wmkcNet_init WMKC_OPEN_API
-WMKC_OF((wmkcNet_obj *obj, wmkcSTR hostname, wmkc_u16 port, wmkcBool UDP))
+WMKC_OF((wmkcNet_obj *obj, wmkcCSTR hostname, wmkc_u16 port, wmkcBool UDP))
 {
     wmkcErr_obj error;
 
@@ -153,7 +153,7 @@ WMKC_OF((wmkcNet_obj *obj, wmkcSTR hostname, wmkc_u16 port, wmkcBool UDP))
  *         其他值，那么需检查message与code。
  */
 WMKC_PUBLIC(wmkcErr_obj) wmkcNet_resolveAddress WMKC_OPEN_API
-WMKC_OF((wmkcNet_obj *obj, wmkcSTR hostname))
+WMKC_OF((wmkcNet_obj *obj, wmkcCSTR hostname))
 {
     wmkcErr_obj error;
 

@@ -10,7 +10,7 @@
  *         其他值，那么需检查message与code。
  */
 WMKC_PRIVATE(wmkcErr_obj) wmkcChat_initCipher
-WMKC_OF((wmkcChat_obj *obj, wmkcSTR password))
+WMKC_OF((wmkcChat_obj *obj, wmkcCSTR password))
 {
     wmkcErr_obj error;
     if(!obj || !password) {
@@ -225,7 +225,7 @@ WMKC_OF((wmkcChat_obj *obj))
 }
 
 WMKC_PUBLIC(wmkcErr_obj) wmkcChat_loadUserInfo WMKC_OPEN_API
-WMKC_OF((wmkcChat_obj *obj, wmkcFileString fn))
+WMKC_OF((wmkcChat_obj *obj, wmkcCSTR fn))
 {
     wmkcErr_obj error;
     if(!obj || !fn) {
@@ -262,7 +262,7 @@ WMKC_OF((wmkcChat_obj *obj, wmkcFileString fn))
 }
 
 WMKC_PUBLIC(wmkcErr_obj) wmkcChat_saveUserInfo WMKC_OPEN_API
-WMKC_OF((wmkcChat_obj *obj, wmkcFileString fn))
+WMKC_OF((wmkcChat_obj *obj, wmkcCSTR fn))
 {
     wmkcErr_obj error;
     if(!obj || !fn) {
@@ -321,7 +321,7 @@ wmkcErr_obj wmkcChat_main()
     wmkcChat_new(&chat);
 
     if(read) {
-        wmkcChat_loadUserInfo(chat, wmkcFile_text("user_info/user.json"));
+        wmkcChat_loadUserInfo(chat, "user_info/user.json");
         printf("用户ID：%llu\n", chat->uid);
         printf("用户名：%s\n",   chat->name);
         printf("用户哈希：\n");
@@ -331,7 +331,7 @@ wmkcErr_obj wmkcChat_main()
     } else {
         wmkcChat_signup(chat);
         wmkcChat_getUserHash(chat);
-        wmkcChat_saveUserInfo(chat, wmkcFile_text("user_info/user.json"));
+        wmkcChat_saveUserInfo(chat, "user_info/user.json");
         printf("用户ID：%llu\n", chat->uid);
         printf("用户名：%s\n", chat->name);
         printf("用户哈希：\n");

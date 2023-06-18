@@ -43,7 +43,7 @@ WMKC_OF((wmkcSize offset, wmkcByte *buf, wmkc_u32 size))
  *         其他值，那么需检查message与code。
 */
 WMKC_PUBLIC(wmkcErr_obj) wmkcHexdump WMKC_OPEN_API
-WMKC_OF((wmkcFileString fn))
+WMKC_OF((wmkcCSTR fn))
 {
     wmkcErr_obj error;
     if(!fn) {
@@ -54,7 +54,7 @@ WMKC_OF((wmkcFileString fn))
     wmkcSize offset = 0;
     wmkcSize nRead = 0;
 
-    if(!(fp = wmkcFile_fopen(fn, wmkcFile_text("rb")))) {
+    if(!(fp = wmkcFile_fopen(fn, "rb"))) {
         wmkcErr_return(error, wmkcErr_FileOpen, "wmkcHexdump: File opening failed.");
     }
 

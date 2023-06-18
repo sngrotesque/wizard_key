@@ -111,7 +111,7 @@ WMKC_OF((wmkcHash_obj *hash, wmkcByte *buf, wmkcSize size));
  *         其他值，那么需检查message与code。
 **/
 WMKC_PUBLIC(wmkcErr_obj) wmkcHash_file WMKC_OPEN_API
-WMKC_OF((wmkcHash_obj *hash, wmkcFileString fn));
+WMKC_OF((wmkcHash_obj *hash, wmkcCSTR fn));
 
 /**
  * @brief 为wmkcHash对象释放内存

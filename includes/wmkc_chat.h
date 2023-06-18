@@ -44,7 +44,7 @@ typedef struct {
  *         其他值，那么需检查message与code。
  */
 WMKC_PRIVATE(wmkcErr_obj) wmkcChat_initCipher WMKC_OPEN_API
-WMKC_OF((wmkcChat_obj *obj, wmkcSTR password));
+WMKC_OF((wmkcChat_obj *obj, wmkcCSTR password));
 
 /**
  * @brief 给wmkcChat对象申请内存空间
@@ -101,7 +101,7 @@ WMKC_OF((wmkcChat_obj *obj));
  *         其他值，那么需检查message与code。
  */
 WMKC_PUBLIC(wmkcErr_obj) wmkcChat_loadUserInfo WMKC_OPEN_API
-WMKC_OF((wmkcChat_obj *obj, wmkcFileString fn));
+WMKC_OF((wmkcChat_obj *obj, wmkcCSTR fn));
 
 /**
  * @brief 保存用户信息
@@ -115,7 +115,7 @@ WMKC_OF((wmkcChat_obj *obj, wmkcFileString fn));
  *         其他值，那么需检查message与code。
  */
 WMKC_PUBLIC(wmkcErr_obj) wmkcChat_saveUserInfo WMKC_OPEN_API
-WMKC_OF((wmkcChat_obj *obj, wmkcFileString fn));
+WMKC_OF((wmkcChat_obj *obj, wmkcCSTR fn));
 
 #endif /* WMKC_CHAT */
 #endif /* WMKC_SUPPORT */

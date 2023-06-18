@@ -123,7 +123,7 @@ WMKC_OF((wmkcNet_obj **obj));
  *         其他值，那么需检查message与code。
  */
 WMKC_PUBLIC(wmkcErr_obj) wmkcNet_init WMKC_OPEN_API
-WMKC_OF((wmkcNet_obj *obj, wmkcSTR hostname, wmkc_u16 port, wmkcBool UDP));
+WMKC_OF((wmkcNet_obj *obj, wmkcCSTR hostname, wmkc_u16 port, wmkcBool UDP));
 
 /**
  * @brief 解析域名并将IP地址储存到wmkcNet对象
@@ -136,7 +136,7 @@ WMKC_OF((wmkcNet_obj *obj, wmkcSTR hostname, wmkc_u16 port, wmkcBool UDP));
  *         其他值，那么需检查message与code。
  */
 WMKC_PUBLIC(wmkcErr_obj) wmkcNet_resolveAddress WMKC_OPEN_API
-WMKC_OF((wmkcNet_obj *obj, wmkcSTR hostname));
+WMKC_OF((wmkcNet_obj *obj, wmkcCSTR hostname));
 
 /**
  * @brief 设置发送与接收超时时间

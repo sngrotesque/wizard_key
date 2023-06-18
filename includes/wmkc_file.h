@@ -7,6 +7,7 @@
 #if WMKC_SUPPORT
 #ifndef WMKC_FILE
 #define WMKC_FILE
+#include <wmkc_coder.h>
 
 // 文件的分组大小
 #define WMKC_FILE_BLOCKLEN 4096
@@ -14,18 +15,21 @@
 #if defined(WMKC_PLATFORM_WINOS)
 #include <Windows.h>
 #include <shlwapi.h> // -lshlwapi
-#define wmkcFile_text(x) WMKC_WTEXT(x)
-#define wmkcFile_fopen(fn, mode) _wfopen(fn, mode)
-typedef LPCWSTR _wmkcFileString;
 #elif defined(WMKC_PLATFORM_LINUX)
 #include <sys/stat.h>
 #include <unistd.h>
-#define wmkcFile_text(x) WMKC_WTEXT(x)
-#define wmkcFile_fopen(fn, mode) fopen(fn, mode)
-typedef wmkcSTR _wmkcFileString;
-#endif
+#endif /* WMKC_PLATFORM_WINOS */
 
-typedef _wmkcFileString wmkcFileString;
+/**
+ * @brief 创建一个文件指针
+ * @authors SN-Grotesque
+ * @note 此函数在Windows系统中使用_wfopen函数创建文件指针
+ * @param fn 这是一个字符串，必须是UTF-8编码，为文件路径
+ * @param mode 这是一个字符串，必须是UTF-8编码，为文件打开模式
+ * @return 返回一个文件指针
+ */
+WMKC_PUBLIC(FILE *) wmkcFile_fopen WMKC_OPEN_API
+WMKC_OF((wmkcCSTR fn, wmkcCSTR mode));
 
 /**
  * @brief 检查是否存在指定的路径
@@ -39,7 +43,7 @@ typedef _wmkcFileString wmkcFileString;
  * @return 返回一个wmkcBool值，true表示路径存在，false表示不存在。
 */
 WMKC_PUBLIC(wmkcBool) wmkcFile_exists WMKC_OPEN_API
-WMKC_OF((wmkcFileString fn));
+WMKC_OF((wmkcCSTR fn));
 
 /**
  * @brief 获取文件的大小
@@ -55,7 +59,13 @@ WMKC_OF((wmkcFileString fn));
  *         其他值，那么需检查message与code。
 */
 WMKC_PUBLIC(wmkcErr_obj) wmkcFile_fileSize WMKC_OPEN_API
-WMKC_OF((wmkcSize *size, wmkcFileString fn));
+WMKC_OF((wmkcSize *size, wmkcCSTR fn));
+
+WMKC_PUBLIC(wmkcErr_obj) wmkcFile_readline WMKC_OPEN_API
+WMKC_OF((wmkcChar **dst, wmkcCSTR fn))
+{
+
+}
 
 /**
  * @brief 完整读取一个文件的内容
@@ -69,7 +79,7 @@ WMKC_OF((wmkcSize *size, wmkcFileString fn));
  *         其他值，那么需检查message与code。
 */
 WMKC_PUBLIC(wmkcErr_obj) wmkcFile_fread WMKC_OPEN_API
-WMKC_OF((wmkcByte **buf, wmkcSize *size, wmkcFileString fn));
+WMKC_OF((wmkcByte **buf, wmkcSize *size, wmkcCSTR fn));
 
 /**
  * @brief 将缓冲区的数据完整写入一个文件
@@ -83,7 +93,7 @@ WMKC_OF((wmkcByte **buf, wmkcSize *size, wmkcFileString fn));
  *         其他值，那么需检查message与code。
 */
 WMKC_PUBLIC(wmkcErr_obj) wmkcFile_fwrite WMKC_OPEN_API
-WMKC_OF((wmkcByte *buf, wmkcSize size, wmkcFileString fn));
+WMKC_OF((wmkcByte *buf, wmkcSize size, wmkcCSTR fn));
 
 
 #endif /* WMKC_FILE */

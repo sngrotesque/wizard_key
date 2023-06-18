@@ -31,7 +31,7 @@ WMKC_PRIVATE_CONST(wmkc_u32) WMKC_TP_SIGNAL_DONE = 0x656e6f64U;
 
 // wmkcTp对象
 typedef struct {
-    wmkcSTR addr;    // 网络地址
+    wmkcCSTR addr;    // 网络地址
     wmkc_u16  port;     // 网络端口
     wmkc_u32  maxRetry; // 失败重试次数
     wmkcSNC_obj *snc;       // SNC加密算法对象
@@ -50,7 +50,7 @@ typedef struct {
  *         其他值，那么需检查message与code。
  */
 WMKC_PUBLIC(wmkcErr_obj) wmkcTp_new WMKC_OPEN_API
-WMKC_OF((wmkcTp_obj **obj, wmkcSTR addr, wmkc_u16 port, wmkc_u32 maxRetry));
+WMKC_OF((wmkcTp_obj **obj, wmkcCSTR addr, wmkc_u16 port, wmkc_u32 maxRetry));
 
 /**
  * @brief 为wmkcTp对象释放内存空间
@@ -74,7 +74,7 @@ WMKC_OF((wmkcTp_obj **obj));
  *         其他值，那么需检查message与code。
  */
 WMKC_PUBLIC(wmkcErr_obj) wmkcTp_Listen WMKC_OPEN_API
-WMKC_OF((wmkcTp_obj *obj, wmkcFileString fn));
+WMKC_OF((wmkcTp_obj *obj, wmkcCSTR fn));
 
 /**
  * @brief 发送数据端函数
@@ -87,7 +87,7 @@ WMKC_OF((wmkcTp_obj *obj, wmkcFileString fn));
  *         其他值，那么需检查message与code。
  */
 WMKC_PUBLIC(wmkcErr_obj) wmkcTp_Client WMKC_OPEN_API
-WMKC_OF((wmkcTp_obj *obj, wmkcFileString fn));
+WMKC_OF((wmkcTp_obj *obj, wmkcCSTR fn));
 
 #endif
 #endif

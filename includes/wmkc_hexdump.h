@@ -22,7 +22,7 @@
  *         其他值，那么需检查message与code。
 */
 WMKC_PUBLIC(wmkcErr_obj) wmkcHexdump WMKC_OPEN_API
-WMKC_OF((wmkcFileString fn));
+WMKC_OF((wmkcCSTR fn));
 
 #endif /* WMKC_HEXDUMP */
 #endif /* WMKC_SUPPORT */

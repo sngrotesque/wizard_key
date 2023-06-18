@@ -132,7 +132,7 @@ WMKC_OF((wmkcHash_obj *hash, wmkcByte *buf, wmkcSize size))
  *         其他值，那么需检查message与code。
 **/
 WMKC_PUBLIC(wmkcErr_obj) wmkcHash_file WMKC_OPEN_API
-WMKC_OF((wmkcHash_obj *hash, wmkcFileString fn))
+WMKC_OF((wmkcHash_obj *hash, wmkcCSTR fn))
 {
     wmkcErr_obj error;
     if(!hash || !fn) {
@@ -160,7 +160,7 @@ WMKC_OF((wmkcHash_obj *hash, wmkcFileString fn))
     quotient = fileSize / SN_HASH_BLOCKLEN;
     leftover = fileSize % SN_HASH_BLOCKLEN;
 
-    if(!(fp = wmkcFile_fopen(fn, wmkcFile_text("rb")))) {
+    if(!(fp = wmkcFile_fopen(fn, "rb"))) {
         wmkcErr_return(error, wmkcErr_FileOpen, "wmkcHash_file: File opening failed.");
     }
 

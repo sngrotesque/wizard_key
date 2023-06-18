@@ -13,7 +13,7 @@
  *         其他值，那么需检查message与code。
  */
 WMKC_PUBLIC(wmkcErr_obj) wmkcTp_new WMKC_OPEN_API
-WMKC_OF((wmkcTp_obj **obj, wmkcSTR addr, wmkc_u16 port, wmkc_u32 maxRetry))
+WMKC_OF((wmkcTp_obj **obj, wmkcCSTR addr, wmkc_u16 port, wmkc_u32 maxRetry))
 {
     wmkcErr_obj error;
 
@@ -77,7 +77,7 @@ WMKC_OF((wmkcTp_obj **obj))
  *         其他值，那么需检查message与code。
  */
 WMKC_PUBLIC(wmkcErr_obj) wmkcTp_Listen WMKC_OPEN_API
-WMKC_OF((wmkcTp_obj *obj, wmkcFileString fn))
+WMKC_OF((wmkcTp_obj *obj, wmkcCSTR fn))
 {
     wmkcErr_obj error;
     if(!obj || !obj->addr || !obj->port || !fn) {
@@ -102,7 +102,7 @@ WMKC_OF((wmkcTp_obj *obj, wmkcFileString fn))
  *         其他值，那么需检查message与code。
  */
 WMKC_PUBLIC(wmkcErr_obj) wmkcTp_Client WMKC_OPEN_API
-WMKC_OF((wmkcTp_obj *obj, wmkcFileString fn))
+WMKC_OF((wmkcTp_obj *obj, wmkcCSTR fn))
 {
     wmkcErr_obj error;
     if(!obj || !obj->addr || !obj->port || !fn) {

@@ -12,14 +12,14 @@
  * @return 返回一个wmkcBool值，true表示路径存在，false表示不存在。
 */
 WMKC_PRIVATE(wmkcBool) _wmkcFile_exists
-WMKC_OF((wmkcFileString fn))
+WMKC_OF((wmkcCSTR fn))
 {
 #   ifdef WMKC_PLATFORM_LINUX
     if(access(fn, F_OK) == 0) return true;
 #   elif defined(WMKC_PLATFORM_WINOS)
     // 后续修改一下吧，看看到底留不留这个函数。
     // 因为每次就因为这一个函数就得额外链接一个库好烦啊。
-    if(PathFileExistsW(fn)) return true;
+    if(PathFileExistsW((LPWSTR)fn)) return true;
 #   endif
     return false;
 }
@@ -36,7 +36,7 @@ WMKC_OF((wmkcFileString fn))
  * @return 返回一个wmkcSize变量，值为文件大小。
 */
 WMKC_PRIVATE(wmkcSize) _wmkcFile_fileSize
-WMKC_OF((wmkcFileString fn))
+WMKC_OF((wmkcCSTR fn))
 {
 #   if defined(WMKC_PLATFORM_LINUX)
     struct stat info;
@@ -45,11 +45,33 @@ WMKC_OF((wmkcFileString fn))
 #   elif defined(WMKC_PLATFORM_WINOS)
     LARGE_INTEGER W_size; // Windows大整数类型
     HANDLE        hFile;  // Windows文件句柄
-    hFile = CreateFileW(fn, GENERIC_READ, FILE_SHARE_READ, wmkcNull,
+    hFile = CreateFileW((LPWSTR)fn, GENERIC_READ, FILE_SHARE_READ, wmkcNull,
         OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, wmkcNull); // 开启文件句柄
     GetFileSizeEx(hFile, &W_size); // 将文件大小写入大整数类型结构体
     CloseHandle(hFile); // 关闭文件句柄
     return (wmkcSize)W_size.QuadPart;
+#   endif
+}
+
+/**
+ * @brief 创建一个文件指针
+ * @authors SN-Grotesque
+ * @note 此函数在Windows系统中使用_wfopen函数创建文件指针
+ * @param fn 这是一个字符串，必须是UTF-8编码，为文件路径
+ * @param mode 这是一个字符串，必须是UTF-8编码，为文件打开模式
+ * @return 返回一个文件指针
+ */
+WMKC_PUBLIC(FILE *) wmkcFile_fopen WMKC_OPEN_API
+WMKC_OF((wmkcCSTR fn, wmkcCSTR mode))
+{
+#   if defined(WMKC_PLATFORM_LINUX)
+    return fopen(fn, mode);
+#   elif defined(WMKC_PLATFORM_WINOS)
+    wmkcChar *win_fn = wmkcNull;
+    wmkcChar *win_mode = wmkcNull;
+    wmkcCoder_convert(&win_fn, (wmkcChar *)fn, "UNICODELITTLE<UTF-8");
+    wmkcCoder_convert(&win_mode, (wmkcChar *)mode, "UNICODELITTLE<UTF-8");
+    return _wfopen((LPCWSTR)win_fn, (LPCWSTR)win_mode);
 #   endif
 }
 
@@ -65,7 +87,7 @@ WMKC_OF((wmkcFileString fn))
  * @return 返回一个wmkcBool值，true表示路径存在，false表示不存在。
 */
 WMKC_PUBLIC(wmkcBool) wmkcFile_exists WMKC_OPEN_API
-WMKC_OF((wmkcFileString fn))
+WMKC_OF((wmkcCSTR fn))
 {
     if(!fn) {
         return false;
@@ -87,7 +109,7 @@ WMKC_OF((wmkcFileString fn))
  *         其他值，那么需检查message与code。
 */
 WMKC_PUBLIC(wmkcErr_obj) wmkcFile_fileSize WMKC_OPEN_API
-WMKC_OF((wmkcSize *size, wmkcFileString fn))
+WMKC_OF((wmkcSize *size, wmkcCSTR fn))
 {
     wmkcErr_obj error;
     if(!wmkcFile_exists(fn)) {
@@ -115,7 +137,7 @@ WMKC_OF((wmkcSize *size, wmkcFileString fn))
  *         其他值，那么需检查message与code。
 */
 WMKC_PUBLIC(wmkcErr_obj) wmkcFile_fread WMKC_OPEN_API
-WMKC_OF((wmkcByte **buf, wmkcSize *size, wmkcFileString fn))
+WMKC_OF((wmkcByte **buf, wmkcSize *size, wmkcCSTR fn))
 {
     wmkcErr_obj error;
     if(!buf || !size || !fn) {
@@ -127,7 +149,7 @@ WMKC_OF((wmkcByte **buf, wmkcSize *size, wmkcFileString fn))
     wmkcSize quotient, leftover;
     wmkcSize x;
 
-    if(!(fp = wmkcFile_fopen(fn, wmkcFile_text("rb")))) {
+    if(!(fp = wmkcFile_fopen(fn, "rb"))) {
         wmkcErr_return(error, wmkcErr_FileOpen, "wmkcFile_fread: File opening failed.");
     }
 
@@ -171,7 +193,7 @@ WMKC_OF((wmkcByte **buf, wmkcSize *size, wmkcFileString fn))
  *         其他值，那么需检查message与code。
 */
 WMKC_PUBLIC(wmkcErr_obj) wmkcFile_fwrite WMKC_OPEN_API
-WMKC_OF((wmkcByte *buf, wmkcSize size, wmkcFileString fn))
+WMKC_OF((wmkcByte *buf, wmkcSize size, wmkcCSTR fn))
 {
     wmkcErr_obj error;
     if(!buf || !size || !fn) {
@@ -183,7 +205,7 @@ WMKC_OF((wmkcByte *buf, wmkcSize size, wmkcFileString fn))
     wmkcSize quotient, leftover;
     wmkcSize x;
 
-    if(!(fp = wmkcFile_fopen(fn, wmkcFile_text("wb")))) {
+    if(!(fp = wmkcFile_fopen(fn, "wb"))) {
         wmkcErr_return(error, wmkcErr_FileOpen, "wmkcFile_fwrite: File opening failed.");
     }
 

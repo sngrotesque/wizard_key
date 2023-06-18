@@ -43,23 +43,11 @@ static wmkcByte testIv[32] = {
     0x3d, 0x41, 0x78, 0x35, 0x48, 0x50, 0x7d, 0x73, 0x60, 0x4e, 0x33, 0x6f, 0x23, 0x47, 0x4c, 0x36};
 #endif
 
+#include <stdint.h>
+
 void test()
 {
-    EVP_CIPHER_CTX *ctx = EVP_CIPHER_CTX_new();
-    wmkcByte inbuf[16] = {
-        0x0, 0x1, 0x2, 0x3,
-        0x4, 0x5, 0x6, 0x7,
-        0x8, 0x9, 0xa, 0xb,
-        0xc, 0xd, 0xe, 0xf};
-    wmkcByte outbuf[16] = {};
-    wmkc_u32 inbuf_size = 16;
-    wmkc_u32 outbuf_size = sizeof outbuf;
-
-    EVP_EncryptInit_ex(ctx, EVP_aes_256_ctr(), NULL, testKey, testIv);
-    EVP_EncryptUpdate(ctx, outbuf, &outbuf_size, inbuf, inbuf_size);
-    EVP_CIPHER_CTX_free(ctx);
-
-    wmkcMisc_PRINT(outbuf, outbuf_size, 16, 0, 0);
+    
 }
 
 int main(int argc, char **argv)
@@ -68,3 +56,7 @@ int main(int argc, char **argv)
 
     return 0;
 }
+
+
+
+

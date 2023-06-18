@@ -93,7 +93,7 @@ WMKC_OF((wmkcTime_obj *timer))
  * @return 无
  */
 WMKC_PUBLIC(wmkcVoid) wmkcTime_TimerPrint WMKC_OPEN_API
-WMKC_OF((wmkcSTR text, wmkcTime_obj *timer))
+WMKC_OF((wmkcCSTR text, wmkcTime_obj *timer))
 {
     printf("%s%.2lfs.\n", text, timer->totalTime);
 }

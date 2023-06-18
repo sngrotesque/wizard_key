@@ -56,7 +56,7 @@ typedef int16_t                   wmkc_s16;   // 宽字节类型
 typedef int32_t                   wmkc_s32;   // 整数类型
 typedef uint16_t                  wmkc_u16;   // 无符号宽字节类型
 typedef uint32_t                  wmkc_u32;   // 无符号整数类型
-typedef const char *              wmkcSTR; // 固定字符串类型
+typedef const char *              wmkcCSTR; // 固定字符串类型
 #endif // #ifndef WMKC_TYPE_DEFINED
 
 // 定义宏函数
@@ -92,7 +92,7 @@ typedef const char *              wmkcSTR; // 固定字符串类型
 #define WMKC_ERROR_CODE
 // 用于返回错误信息的数据类型
 typedef struct {
-    wmkcSTR message;
+    wmkcCSTR message;
     wmkcSSize code;
 } wmkcErr_obj;
 

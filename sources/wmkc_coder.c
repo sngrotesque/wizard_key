@@ -1,7 +1,7 @@
 #include <wmkc_coder.h>
 
 WMKC_PUBLIC(wmkcErr_obj) wmkcCoder_convert WMKC_OPEN_API
-WMKC_OF((wmkcSize _dstSize, wmkcChar **dst, wmkcChar *src, wmkcChar *code_string))
+WMKC_OF((wmkcChar **dst, wmkcChar *src, wmkcChar *code_string))
 {
     wmkcErr_obj error;
     wmkcChar *src_ptr = src;
@@ -9,13 +9,7 @@ WMKC_OF((wmkcSize _dstSize, wmkcChar **dst, wmkcChar *src, wmkcChar *code_string
     wmkcChar *tocode = wmkcNull;
     wmkcChar *fromcode = wmkcNull;
     wmkcSize src_size = strlen(src);
-    wmkcSize dst_size;
-
-    if(_dstSize) {
-        dst_size = _dstSize;
-    } else {
-        dst_size = src_size * 4 / 3;
-    }
+    wmkcSize dst_size = src_size << 1;
 
     error = wmkc_split(&tocode, &fromcode, code_string, '<');
     if(error.code) return error;
