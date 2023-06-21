@@ -8,7 +8,7 @@
 ### 特别鸣谢
 | Project name                                    | Description                          |
 | :---                                            | :---                                 |
-| [OpenSSL](https://github.com/openssl/openssl)   | 本库使用了OpenSSL的哈希与密码库。  |
+| [OpenSSL](https://github.com/openssl/openssl)   | 本库使用了OpenSSL库的密码库，哈希库，网络库。 |
 | [libpng](http://libpng.org/pub/png/)            | 本库使用了libpng库来实现PNG图像的读写。 |
 | [Python](https://www.python.org/)               | 本库的绝大多数语法和代码风格均参考过Python的源代码。 |
 | [cJSON](https://github.com/DaveGamble/cJSON/)   | 本库采用cJSON库来处理JSON数据。 |
