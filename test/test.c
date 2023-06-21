@@ -45,56 +45,9 @@ static wmkcByte testIv[32] = {
     0x3d, 0x41, 0x78, 0x35, 0x48, 0x50, 0x7d, 0x73, 0x60, 0x4e, 0x33, 0x6f, 0x23, 0x47, 0x4c, 0x36};
 #endif
 
-#include <openssl/ssl.h>
-#include <openssl/err.h>
-#include <openssl/bio.h>
-
-#define HOSTNAME "passport.bilibili.com"
-#define HOSTPORT "443"
-
 void test()
 {
-    // Initialize OpenSSL
-    OPENSSL_init_ssl(0, NULL);
-
-    // Set up the SSL context
-    // Create a new SSL connection
-    SSL_CTX *ctx = SSL_CTX_new(TLS_client_method());
-    BIO *bio = BIO_new_ssl_connect(ctx);
-
-    // Set the hostname and port
-    BIO_set_conn_hostname(bio, HOSTNAME":"HOSTPORT);
-
-    // Set up the SSL object
-    SSL *ssl;
-    BIO_get_ssl(bio, &ssl);
-    SSL_set_mode(ssl, SSL_MODE_AUTO_RETRY);
-
-    // Connect to the server
-    if (BIO_do_connect(bio) <= 0) {
-        printf("BIO_do_connect error.\n");
-        return;
-    }
-
-    // Send an HTTP request
-    char *request = (
-        "GET /qrcode/getLoginUrl HTTP/1.1\r\n"
-        "Host: "HOSTNAME"\r\n"
-        "Accept: */*\r\n"
-        "User-Agent: Android\r\n\r\n"
-    );
-    BIO_puts(bio, request);
-
-    // Read the response
-    char buf[1024];
-    int len;
-    while ((len = BIO_read(bio, buf, sizeof(buf))) > 0) {
-        fwrite(buf, 1, len, stdout);
-    }
-
-    // Clean up
-    BIO_free_all(bio);
-    SSL_CTX_free(ctx);
+    
 }
 
 int main(int argc, char **argv)
