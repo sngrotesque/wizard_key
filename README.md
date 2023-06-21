@@ -68,6 +68,11 @@ typedef struct {
 > upload.py  
 > READMKE.md
 
+#### v6.2.0-dev（预览）
+1.  将修改wmkcNet库，以支持一定情况下的OpenSSL组件，以便于进行HTTPS通信。
+2.  将完善wmkcFile库，更好的支持对于不同操作系统的文件操作函数。
+3.  将针对所有WMKC库进行优化。
+
 #### v6.1.0-dev
 1.  将wmkc_chat库中的对象指针成员修改为数组成员，  
     否则会导致无意义的代码过长。
@@ -75,6 +80,7 @@ typedef struct {
 3.  放弃使用icu4c库对编码进行转换，改用iconv库。
 4.  小幅度修改了wmkc_pad，wmkc_base64库。
 5.  删除了wmkcFloat，wmkcFile类型，多余而且扰乱思绪。
+6.  将wmkcMisc_PRINT_RAW函数修改为了类似Python中的print bytes类型的实现。
 
 #### v6.0.0-dev
 1.  将wmkc_base修改为wmkc_base64，因考虑到  
