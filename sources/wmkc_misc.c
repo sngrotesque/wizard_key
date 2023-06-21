@@ -60,13 +60,24 @@ WMKC_OF((wmkcByte *box, wmkcSize size, wmkcSize num, wmkcBool newline))
 WMKC_PUBLIC(wmkcVoid) wmkcMisc_PRINT_RAW WMKC_OPEN_API
 WMKC_OF((wmkcByte *buf, wmkcSize size, wmkcBool newline))
 {
-    wmkcSize x;
-    for(x = 0; x < size; ++x) {
-        if(buf[x] && buf[x] < 0x20)
-            printf("\n");
-        if(buf[x] > 0x7e)
-            continue;
-        printf("%c", buf[x]);
+    for(wmkcSize x = 0; x < size; ++x) {
+        if(buf[x] >= 0x20 && buf[x] < 0x7f) {
+            printf("%c", buf[x]);
+        } else if(buf[x] < 0x20) {
+            if(buf[x] == 0x0a) {
+                printf("\\n");
+            } else if(buf[x] == 0x09) {
+                printf("\\t");
+            } else if(buf[x] == 0x0d) {
+                printf("\\r");
+            } else {
+                printf("\\x%02x", buf[x]);
+            }
+        } else if(buf[x] > 0x7e) {
+            printf("\\x%02x", buf[x]);
+        } else {
+            printf("=");
+        }
     }
     if(newline)
         printf("\n");

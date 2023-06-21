@@ -2,6 +2,9 @@
 
 #if WMKC_SUPPORT
 #ifndef WMKC_COMMON
+#ifdef WMKC_PLATFORM_WINOS
+#include <windows.h>
+#endif
 
 /**
  * @brief 安全清除内存数据函数

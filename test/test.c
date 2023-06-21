@@ -1,36 +1,38 @@
-#include <network/wmkc_net.c>
-#include <image/wmkc_png.c>
+// #include <network/wmkc_net.c>
+// #include <image/wmkc_png.c>
+// #include <wmkc_binascii.c>
+// #include <wmkc_hexdump.c>
+// #include <wmkc_winapi.c>
+// #include <wmkc_struct.c>
+// #include <wmkc_base64.c>
+// #include <wmkc_coder.c>
+// #include <wmkc_chat.c>
+// #include <wmkc_dict.c>
+// #include <wmkc_file.c>
+// #include <wmkc_misc.c>
+// #include <wmkc_time.c>
+// #include <wmkc_hash.c>
+// #include <wmkc_sort.c>
+// #include <wmkc_pad.c>
+// #include <wmkc_key.c>
+
 #include <crypto/snc.c>
-#include <wmkc_binascii.c>
-#include <wmkc_hexdump.c>
 #include <wmkc_common.c>
-#include <wmkc_winapi.c>
 #include <wmkc_object.c>
 #include <wmkc_random.c>
-#include <wmkc_struct.c>
-#include <wmkc_thread.c>
-#include <wmkc_base64.c>
 #include <wmkc_stream.c>
-#include <wmkc_coder.c>
-#include <wmkc_chat.c>
-#include <wmkc_dict.c>
-#include <wmkc_file.c>
-#include <wmkc_misc.c>
+#include <wmkc_thread.c>
 #include <wmkc_math.c>
-#include <wmkc_time.c>
-#include <wmkc_hash.c>
-#include <wmkc_sort.c>
+#include <wmkc_misc.c>
 #include <wmkc_pad.c>
-#include <wmkc_key.c>
 
 #include <zlib/zlib.h>
 #include <libpng/png.h>
 #include <cjson/cJSON.h>
 #include <iconv/iconv.h>
+#include <openssl/evp.h>
 
-#define CIPHER_TEST true
-
-#if defined(WMKC_SNC) && (CIPHER_TEST)
+#if 1
 static wmkcByte testKey[96] = {
     0x67, 0x65, 0x5b, 0x7b, 0x33, 0x78, 0x74, 0x6e, 0x49, 0x62, 0x6d, 0x3b, 0x7a, 0x77, 0x5d, 0x53,
     0x71, 0x52, 0x4a, 0x30, 0x3e, 0x2e, 0x63, 0x24, 0x67, 0x3b, 0x6e, 0x61, 0x6b, 0x3a, 0x21, 0x73,
@@ -42,8 +44,6 @@ static wmkcByte testIv[32] = {
     0x7b, 0x75, 0x76, 0x37, 0x24, 0x59, 0x72, 0x29, 0x6e, 0x40, 0x5f, 0x65, 0x2d, 0x55, 0x75, 0x68,
     0x3d, 0x41, 0x78, 0x35, 0x48, 0x50, 0x7d, 0x73, 0x60, 0x4e, 0x33, 0x6f, 0x23, 0x47, 0x4c, 0x36};
 #endif
-
-#include <stdint.h>
 
 void test()
 {

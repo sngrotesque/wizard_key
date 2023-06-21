@@ -1,4 +1,4 @@
-#ifndef WMKC
+﻿#ifndef WMKC
 #define WMKC // Wizard Magic Key Cyber（网络巫师的魔法钥匙）
 
 #include <stdio.h>    // 标准输入输出库
@@ -15,7 +15,7 @@
 #endif
 
 // 判断是否是64位系统，不是的话，不进行支持。
-#if (__SIZEOF_SIZE_T__ == 8) || defined(__x86_64__) || defined(__LP64__)
+#if defined(_WIN64) || (__SIZEOF_SIZE_T__ == 8) || defined(__x86_64__) || defined(__LP64__)
 //  如果是Linux或Windows操作系统，那么支持。否则不支持。
 #if defined(__linux) || defined(__linux__)
 #   define WMKC_PLATFORM_LINUX
@@ -97,23 +97,23 @@ typedef struct {
 } wmkcErr_obj;
 
 // 表示一切正常，不需要注意任何错误。
-#define wmkcErr_OK                0ULL
+#define wmkcErr_OK                0
 // 一般的错误，用于表示64位的错误代码。
-#define wmkcErr_Err64            -1ULL
+#define wmkcErr_Err64            -1LL
 // 一般的错误，用于表示32位的错误代码。
-#define wmkcErr_Err32            -1U
+#define wmkcErr_Err32            -1
 // 错误的空数据，表示不应该传入一个空的数据（包含指针）。
-#define wmkcErr_ErrNULL          -2ULL
+#define wmkcErr_ErrNULL          -2LL
 // 错误的类型，表示传入的参数和函数要求的参数类型不一致。
-#define wmkcErr_ErrType          -3ULL
+#define wmkcErr_ErrType          -3LL
 // 错误的范围，表示传入的范围参数超过函数规定的最大范围。
-#define wmkcErr_ErrOutRange      -4ULL
+#define wmkcErr_ErrOutRange      -4LL
 // 错误的范围，表示传入的范围参数中起始下标超过了末尾下标。
-#define wmkcErr_ErrInvalidRange  -5ULL
+#define wmkcErr_ErrInvalidRange  -5LL
 // 错误的调用，表示调用的这个系统函数出现了错误。
-#define wmkcErr_ErrSysFunc       -6ULL
+#define wmkcErr_ErrSysFunc       -6LL
 // 错误的内存，只能用作申请内存失败时。
-#define wmkcErr_ErrMemory        -7ULL
+#define wmkcErr_ErrMemory        -7LL
 // 解析域名时出现了错误，只能用作需要解析域名的函数中。
 #define wmkcErr_NetDomainResolv   1ULL
 // 为套接字赋值时出现错误，只能用作未能成功且正确的使用socket函数时。
