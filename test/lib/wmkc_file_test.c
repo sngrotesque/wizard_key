@@ -1,5 +1,4 @@
 #include <wmkc_file.h>
-#include <wmkc_memory.c>
 
 void read()
 {

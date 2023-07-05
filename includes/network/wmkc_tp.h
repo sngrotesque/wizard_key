@@ -33,63 +33,15 @@ WMKC_PRIVATE_CONST(wmkc_u32) WMKC_TP_SIGNAL_DONE = 0x656e6f64U;
 
 // wmkcTp对象
 typedef struct {
-    wmkcCSTR addr;    // 网络地址
-    wmkc_u16  port;     // 网络端口
-    wmkc_u32  maxRetry; // 失败重试次数
-    wmkcSNC_obj *snc;       // SNC加密算法对象
+    wmkcCSTR addr; // 目标（本地）地址
+    wmkc_u16 port; // 目标（本地）端口
+    wmkc_u32 maxRetry; // 失败重试次数
+    wmkcSNC_obj *snc;  // SNC加密算法对象
+    wmkcNet_obj *net;  // wmkcNet对象
 } wmkcTp_obj;
 
-/**
- * @brief 为wmkcTp对象申请内存空间
- * @authors SN-Grotesque
- * @note 未完成
- * @param obj 指针，指向wmkcTp对象指针的地址。
- * @param addr 指针，指向目标主机的域名（IP地址）字符串。
- * @param port 这是一个端口，为目标主机的网络端口。
- * @param maxRetry 这是一个数字，代表最大重试次数，为0时使用
- *                 WMKC_TP_DEFAULT_MAX_RETRY的值。
- * @return 返回一个wmkcErr对象，code为0代表无错误，如果为
- *         其他值，那么需检查message与code。
- */
-WMKC_PUBLIC(wmkcErr_obj) wmkcTp_new WMKC_OPEN_API
-WMKC_OF((wmkcTp_obj **obj, wmkcCSTR addr, wmkc_u16 port, wmkc_u32 maxRetry));
-
-/**
- * @brief 为wmkcTp对象释放内存空间
- * @authors SN-Grotesque
- * @note 无
- * @param obj 指针，指向wmkcTp对象指针的地址。
- * @return 返回一个wmkcErr对象，code为0代表无错误，如果为
- *         其他值，那么需检查message与code。
- */
-WMKC_PUBLIC(wmkcErr_obj) wmkcTp_free WMKC_OPEN_API
-WMKC_OF((wmkcTp_obj **obj));
-
-/**
- * @brief 接收数据端函数
- * @authors SN-Grotesque
- * @note 未完成
- * @param obj 指针，指向wmkcTp对象的地址。
- * @param fn 指针，指向路径的字符串地址，如果传入字符串而不是指针，那么
- *           应使用wmkcFile_text宏对字符串进行转换。
- * @return 返回一个wmkcErr对象，code为0代表无错误，如果为
- *         其他值，那么需检查message与code。
- */
-WMKC_PUBLIC(wmkcErr_obj) wmkcTp_Listen WMKC_OPEN_API
-WMKC_OF((wmkcTp_obj *obj, wmkcCSTR fn));
-
-/**
- * @brief 发送数据端函数
- * @authors SN-Grotesque
- * @note 未完成
- * @param obj 指针，指向wmkcTp对象的地址。
- * @param fn 指针，指向路径的字符串地址，如果传入字符串而不是指针，那么
- *           应使用wmkcFile_text宏对字符串进行转换。
- * @return 返回一个wmkcErr对象，code为0代表无错误，如果为
- *         其他值，那么需检查message与code。
- */
-WMKC_PUBLIC(wmkcErr_obj) wmkcTp_Client WMKC_OPEN_API
-WMKC_OF((wmkcTp_obj *obj, wmkcCSTR fn));
+WMKC_PUBLIC(wmkcErr_obj) wmkcTp_init WMKC_OPEN_API
+WMKC_OF((wmkcCSTR addr, wmkc_u16 port, wmkc_u32 msxRetry, SNC_mode mode));
 
 #endif
 #endif

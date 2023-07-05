@@ -1,5 +1,4 @@
 #include <wmkc_base64.h>
-#include <wmkc_memory.c>
 
 void encode()
 {

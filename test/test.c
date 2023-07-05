@@ -1,32 +1,34 @@
 // #include <image/wmkc_png.c>
 // #include <wmkc_hexdump.c>
 // #include <wmkc_winapi.c>
-// #include <wmkc_struct.c>
 // #include <wmkc_dict.c>
 // #include <wmkc_sort.c>
 // #include <wmkc_key.c>
 // #include <crypto/snc_412.c>
 
 // #include <network/wmkc_http.c>
+// #include <network/wmkc_ddos.c>
 // #include <network/wmkc_net.c>
 // #include <crypto/wmkc_crypto.c>
 // #include <crypto/snc.c>
 // #include <wmkc_binascii.c>
-// #include <wmkc_memory.c>
-// #include <wmkc_common.c>
+#include <wmkc_memory.c>
+#include <wmkc_common.c>
 // #include <wmkc_base64.c>
 // #include <wmkc_object.c>
-// #include <wmkc_random.c>
+#include <wmkc_random.c>
 // #include <wmkc_stream.c>
+#include <wmkc_struct.c>
 // #include <wmkc_thread.c>
-// #include <wmkc_basic.c>
+#include <wmkc_basic.c>
 // #include <wmkc_coder.c>
+#include <wmkc_image.c>
 // #include <wmkc_chat.c>
 // #include <wmkc_file.c>
 // #include <wmkc_hash.c>
 // #include <wmkc_time.c>
 // #include <wmkc_math.c>
-// #include <wmkc_misc.c>
+#include <wmkc_misc.c>
 // #include <wmkc_pad.c>
 
 // #include <zlib/zlib.h>
@@ -35,10 +37,7 @@
 // #include <iconv/iconv.h>
 // #include <openssl/evp.h>
 
-#include <crypto/snc.c>
-#include <wmkc_memory.c>
-
-#if 1
+#if 0
 static wmkcByte testKey[96] = {
     0x67, 0x65, 0x5b, 0x7b, 0x33, 0x78, 0x74, 0x6e, 0x49, 0x62, 0x6d, 0x3b, 0x7a, 0x77, 0x5d, 0x53,
     0x71, 0x52, 0x4a, 0x30, 0x3e, 0x2e, 0x63, 0x24, 0x67, 0x3b, 0x6e, 0x61, 0x6b, 0x3a, 0x21, 0x73,
@@ -51,20 +50,16 @@ static wmkcByte testIv[32] = {
     0x3d, 0x41, 0x78, 0x35, 0x48, 0x50, 0x7d, 0x73, 0x60, 0x4e, 0x33, 0x6f, 0x23, 0x47, 0x4c, 0x36};
 #endif
 
-void test()
+wmkcVoid test()
 {
-    wmkcByte buf[SNC_BLOCKLEN];
-    wmkcMem_secure(buf, SNC_BLOCKLEN);
-
-    wmkcSNC_obj *snc = wmkcNull;
-    wmkcSNC_new(&snc, SNC_768);
-    wmkcSNC_init(snc, testKey, testIv);
-    wmkcSNC_cbc_encrypt(snc, buf, SNC_BLOCKLEN);
-    wmkcSNC_free(&snc);
+    wmkcImage_rgb888 rgb = {.r = 0x00, .g = 0x00, .b = 0x91};
+    wmkcImage_rgb565 rgb565 = rgb888_to_rgb565(rgb);
+    printf("r: %u, g: %u, b: %u\n", rgb565.r, rgb565.g, rgb565.b);
 }
 
-int main(int argc, char **argv)
+wmkc_u32 main(wmkc_u32 argc, char **argv)
 {
-    test();
+    void (*func_call)() = test;
+    func_call();
     return 0;
 }

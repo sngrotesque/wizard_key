@@ -129,14 +129,14 @@ WMKC_OF((wmkcFile_obj **obj, wmkcCSTR fn, wmkcCSTR mode))
             "wmkcFile_open: Failed to allocate memory for (*obj).");
     }
 
-    wmkcChar *use_fn = wmkcNull;   // 实际使用的文件路径
+    wmkcChar *use_fn   = wmkcNull; // 实际使用的文件路径
     wmkcChar *use_mode = wmkcNull; // 实际使用的打开模式
 #   if defined(WMKC_PLATFORM_LINUX)
-    use_fn = fn;
-    use_mode = mode;
+    use_fn   = (wmkcChar *)fn;
+    use_mode = (wmkcChar *)mode;
 #   elif defined(WMKC_PLATFORM_WINOS)
     // 如果是Windows系统就将路径字符串的编码转为Unicode-Little
-    error = _wmkcFile_convert(&use_fn, (wmkcChar *)fn);
+    error = _wmkcFile_convert(&use_fn,   (wmkcChar *)fn);
     if(error.code) return error;
     error = _wmkcFile_convert(&use_mode, (wmkcChar *)mode);
     if(error.code) return error;

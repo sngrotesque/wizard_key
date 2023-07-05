@@ -39,6 +39,7 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <netinet/ip.h>
+#include <netinet/tcp.h>
 typedef struct sockaddr     SOCKADDR;      // 套接字地址结构
 typedef struct addrinfo     ADDRINFO;      // 域名解析结构
 typedef struct sockaddr_in  SOCKADDR_IN;   // IPv4网络结构
