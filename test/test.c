@@ -22,7 +22,7 @@
 // #include <wmkc_thread.c>
 #include <wmkc_basic.c>
 // #include <wmkc_coder.c>
-#include <wmkc_image.c>
+#include <wmkc_img.c>
 // #include <wmkc_chat.c>
 // #include <wmkc_file.c>
 // #include <wmkc_hash.c>
@@ -52,9 +52,30 @@ static wmkcByte testIv[32] = {
 
 wmkcVoid test()
 {
-    wmkcImage_rgb888 rgb = {.r = 0x00, .g = 0x00, .b = 0x91};
-    wmkcImage_rgb565 rgb565 = rgb888_to_rgb565(rgb);
-    printf("r: %u, g: %u, b: %u\n", rgb565.r, rgb565.g, rgb565.b);
+    wmkcImg_png_obj *ihdr = wmkcNull;
+    wmkcImg_png_chunk_obj *chunk = wmkcNull;
+    wmkcErr_obj error;
+
+    error = wmkcImg_png_setIHDR(&ihdr, 0x05B6, 0x0624,
+                        wmkcImg_png_bitDeep_8,
+                        wmkcImg_png_colorType_rgba,
+                        0, 0, 0);
+    if(error.code) printf("%s\n", error.message);
+
+    printf("IHDR Size: "); wmkcMisc_PRINT(ihdr->size, 4, 4, 0, 0);
+    printf("IHDR Name: "); wmkcMisc_PRINT(ihdr->name, 4, 4, 0, 0);
+    printf("IHDR Data: "); wmkcMisc_PRINT(ihdr->data, ihdr->size_n, 32, 1, 0);
+    printf("IHDR CRC:  "); wmkcMisc_PRINT(ihdr->crc, 4, 4, 1, 0);
+
+    error = wmkcImg_png_buildChunk(&chunk, ihdr);
+    if(error.code) printf("%s\n", error.message);
+
+    printf("Chunk data:\n");
+    wmkcMisc_PRINT(chunk->data, chunk->size, 32, chunk->size % 32, 0);
+
+    wmkcMem_free(chunk->data);
+    wmkcMem_free(chunk);
+    wmkcMem_free(ihdr);
 }
 
 wmkc_u32 main(wmkc_u32 argc, char **argv)
