@@ -1,20 +1,10 @@
-/**
- *  后续看看是否要添加重传功能，如果要的话，请把数据加密功能也加上。
- *  同时，请思考到底使用OpenSSL库中的公钥密码算法还是使用自己另外编写的
- *  公钥密码算法来传递对称加密算法的密钥。
- *  
- *  重传次数默认为3次。
- *  如果要加密的话，请将所有内容加密，同时应考虑加密算法的效率问题。
-*/
-
-//* 预计6月恢复此库的编写
-
 #include <wmkc_conf.h>
 
 #if WMKC_SUPPORT
-#ifndef WMKC_TRANSFER
-#define WMKC_TRANSFER
+#ifndef WMKC_TP
+#define WMKC_TP
 #include <wmkc_error.h>
+#include <wmkc_basic.h>
 #include <wmkc_memory.h>
 #include <wmkc_file.h>
 #include <wmkc_hash.h>
@@ -26,10 +16,14 @@
 #define WMKC_TP_DEFAULT_MAX_RETRY 5 // 默认最大重试次数为5
 #define WMKC_TP_DEFAULT_PORT 49281  // 默认端口
 
-// 信号：等待
-WMKC_PRIVATE_CONST(wmkc_u32) WMKC_TP_SIGNAL_WAIT = 0x74696177U;
-// 信号：完成
-WMKC_PRIVATE_CONST(wmkc_u32) WMKC_TP_SIGNAL_DONE = 0x656e6f64U;
+// [chunk:[size][data][md]]
+typedef struct {
+    wmkcNetSize size;    // 数据长度
+    wmkcNetSize chunk_n; // 整个块长度
+    wmkcNetBuf *data;    // 数据内容
+    wmkcNetBuf *chunk;   // 整个块内容
+    wmkcNetBuf md[32];   // SHA-256
+} wmkcTp_chunk_obj;
 
 // wmkcTp对象
 typedef struct {
@@ -38,10 +32,36 @@ typedef struct {
     wmkc_u32 maxRetry; // 失败重试次数
     wmkcSNC_obj *snc;  // SNC加密算法对象
     wmkcNet_obj *net;  // wmkcNet对象
+    wmkcTp_chunk_obj *chunk; // 内容块
 } wmkcTp_obj;
 
-WMKC_PUBLIC(wmkcErr_obj) wmkcTp_init WMKC_OPEN_API
-WMKC_OF((wmkcCSTR addr, wmkc_u16 port, wmkc_u32 msxRetry, SNC_mode mode));
+/**
+ * @brief 为wmkcTp对象申请内存空间
+ * @authors SN-Grotesque
+ * @note 无
+ * @param obj  指针，指向wmkcTp对象指针的地址
+ * @param addr 网络地址，IP或域名
+ * @param port 网络端口
+ * @param maxRetry 连接失败后的重试次数
+ * @param family 网络族[AF_INET，AF_INET6]
+ * @param mode   SNC加密算法的模式[SNC_256, SNC_512, SNC_768]
+ * @param key    SNC加密算法的密钥
+ * @param iv     SNC加密算法的初始向量
+ * @return wmkcErr对象code为非0代表出错，需检查。
+ */
+WMKC_PUBLIC(wmkcErr_obj) wmkcTp_new WMKC_OPEN_API
+WMKC_OF((wmkcTp_obj **obj, wmkcCSTR addr, wmkc_u16 port, wmkc_u32 maxRetry,
+    wmkcNetType family, SNC_mode mode, wmkcByte *key, wmkcByte *iv));
+
+/**
+ * @brief 为wmkcTp对象释放内存空间
+ * @authors SN-Grotesque
+ * @note 无
+ * @param obj  指针，指向wmkcTp对象指针的地址
+ * @return wmkcErr对象code为非0代表出错，需检查。
+ */
+WMKC_PUBLIC(wmkcErr_obj) wmkcTp_free WMKC_OPEN_API
+WMKC_OF((wmkcTp_obj **obj));
 
 #endif
 #endif

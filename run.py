@@ -1,12 +1,13 @@
-from os.path import exists
-from os import mkdir
-from subprocess import call
+from os import mkdir, system, environ
 from sys import platform, argv
+from subprocess import call
+from os.path import exists
 
 OUT_PATH = "snCompiled"
 if platform == 'win32':
     PATH_SYMBOL = '\\'
     PROGRAM_NAME = 'main.exe'
+    environ['PATH'] = environ['PATH'] + ';E:\\Projects\\_Library_WMKC\\includes\\libpng'
 else:
     PATH_SYMBOL = '/'
     PROGRAM_NAME = 'main'
@@ -17,18 +18,21 @@ def run(cmd :str):
 def run_code(program :str, parameters :list):
     parameters.append('-I includes')
     parameters.append('-I sources')
+    parameters.append('-I includes/openssl/include/')
 
     parameters.append('-L includes/zlib')    # Referer: Zlib
-    parameters.append('-L includes/openssl') # Referer: OpenSSL
+    parameters.append('-L includes/openssl/') # Referer: OpenSSL
     parameters.append('-L includes/libpng')  # Referer: Libpng
     parameters.append('-L includes/cjson')   # Referer: cJSON
     parameters.append('-L includes/iconv')   # Referer: Iconv
+    parameters.append('-L includes/libjpeg') # Referer: Libjpeg
 
     parameters.append('-lssl')    # OpenSSL
     parameters.append('-lcrypto') # OpenSSL
     parameters.append('-lz')      # Zlib
     parameters.append('-lm')      # Math
     parameters.append('-lpng16')  # Libpng
+    parameters.append('-ljpeg')   # Libjpeg
     parameters.append('-lcjson')  # cJSON
     parameters.append('-liconv')  # Iconv
 
