@@ -68,6 +68,9 @@ typedef struct {
 > upload.py  
 > READMKE.md
 
+#### v6.3.0-canary
+1.  预计将所有实现改为内部实现，然后将函数作为类成员的方式使用。
+
 #### v6.2.0-canary
 1.  将修改wmkcNet库，以支持一定情况下的OpenSSL组件，以便于进行HTTPS通信。
 2.  将完善wmkcFile库，更好的支持对于不同操作系统的文件操作函数。

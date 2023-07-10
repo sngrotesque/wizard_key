@@ -220,22 +220,29 @@ WMKC_OF((wmkcCSTR format, wmkcVoid *dst, wmkcByte *src))
         case 'Q': size = 8; break;
     }
 
+    wmkcByte *buf = wmkcNull;
+    if(!wmkcMem_new(wmkcByte *, buf, size)) {
+        wmkcErr_return(error, wmkcErr_ErrMemory, "wmkcStruct_unpack: "
+            "Failed to allocate memory for buf.");
+    }
+    memcpy(buf, src, size);
+
     if(order != '@') {
         if(!little_end) {
             if(order == '<') {
                 switch(size) {
                     case 2:
-                        wmkcStruct_swap_bytes(&src[0], &src[1]);
+                        wmkcStruct_swap_bytes(&buf[0], &buf[1]);
                         break;
                     case 4:
-                        wmkcStruct_swap_bytes(&src[0], &src[3]);
-                        wmkcStruct_swap_bytes(&src[1], &src[2]);
+                        wmkcStruct_swap_bytes(&buf[0], &buf[3]);
+                        wmkcStruct_swap_bytes(&buf[1], &buf[2]);
                         break;
                     case 8:
-                        wmkcStruct_swap_bytes(&src[0], &src[7]);
-                        wmkcStruct_swap_bytes(&src[1], &src[6]);
-                        wmkcStruct_swap_bytes(&src[2], &src[5]);
-                        wmkcStruct_swap_bytes(&src[3], &src[4]);
+                        wmkcStruct_swap_bytes(&buf[0], &buf[7]);
+                        wmkcStruct_swap_bytes(&buf[1], &buf[6]);
+                        wmkcStruct_swap_bytes(&buf[2], &buf[5]);
+                        wmkcStruct_swap_bytes(&buf[3], &buf[4]);
                         break;
                 }
             }
@@ -243,24 +250,25 @@ WMKC_OF((wmkcCSTR format, wmkcVoid *dst, wmkcByte *src))
             if(order == '>') {
                 switch(size) {
                     case 2:
-                        wmkcStruct_swap_bytes(&src[0], &src[1]);
+                        wmkcStruct_swap_bytes(&buf[0], &buf[1]);
                         break;
                     case 4:
-                        wmkcStruct_swap_bytes(&src[0], &src[3]);
-                        wmkcStruct_swap_bytes(&src[1], &src[2]);
+                        wmkcStruct_swap_bytes(&buf[0], &buf[3]);
+                        wmkcStruct_swap_bytes(&buf[1], &buf[2]);
                         break;
                     case 8:
-                        wmkcStruct_swap_bytes(&src[0], &src[7]);
-                        wmkcStruct_swap_bytes(&src[1], &src[6]);
-                        wmkcStruct_swap_bytes(&src[2], &src[5]);
-                        wmkcStruct_swap_bytes(&src[3], &src[4]);
+                        wmkcStruct_swap_bytes(&buf[0], &buf[7]);
+                        wmkcStruct_swap_bytes(&buf[1], &buf[6]);
+                        wmkcStruct_swap_bytes(&buf[2], &buf[5]);
+                        wmkcStruct_swap_bytes(&buf[3], &buf[4]);
                         break;
                 }
             }
         }
     }
 
-    memcpy(dst, src, size);
+    memcpy(dst, buf, size);
+    wmkcMem_free(buf);
 
     wmkcErr_return(error, wmkcErr_OK, "OK.");
 }

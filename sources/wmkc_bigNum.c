@@ -83,7 +83,7 @@ WMKC_OF((wmkcChar **dst, wmkcChar *src1, wmkcChar *src2))
      * 
      * larger  -> reverse -> {50242358, 28573091, 28408743, 43327530, 45610928,      123}
      * smaller -> reverse -> {92749837, 98135738, 87498274, 83209419,       95,        0}
-     * res -> init     -> {       0,        0,        0,        0,        0,        0}
+     * res     -> init    -> {       0,        0,        0,        0,        0,        0}
      * 
      * for(i = 0; i < len(larger); ++i) {
      *     res[i] += (larger[i] + smaller[i]);

@@ -6,6 +6,7 @@
 
 // #include <network/wmkc_http.c>
 // #include <network/wmkc_ddos.c>
+#include <network/wmkc_chunk.c>
 #include <network/wmkc_net.c>
 #include <network/wmkc_tp.c>
 // #include <crypto/wmkc_crypto.c>
@@ -29,7 +30,7 @@
 // #include <wmkc_math.c>
 #include <wmkc_misc.c>
 #include <wmkc_img.c>
-// #include <wmkc_pad.c>
+#include <wmkc_pad.c>
 
 #if 1
 static wmkcByte testKey[96] = {
@@ -44,33 +45,13 @@ static wmkcByte testIv[32] = {
     0x3d, 0x41, 0x78, 0x35, 0x48, 0x50, 0x7d, 0x73, 0x60, 0x4e, 0x33, 0x6f, 0x23, 0x47, 0x4c, 0x36};
 #endif
 
+#include <test_wmkc_class.c>
+
 wmkcVoid test()
 {
-    wmkcRsa_obj *rsa = wmkcNull;
-    wmkcRsa_new(&rsa);
-
-    rsa->key_bit = 2048;
-
-    printf("rsa:           %p\n", rsa);
-    printf("rsa->key_bit:  %016x\n", rsa->key_bit);
-    printf("rsa->pub_enc:  %p\n", rsa->pub_enc);
-    printf("rsa->pub_dec:  %p\n", rsa->pub_dec);
-    printf("rsa->pri_enc:  %p\n", rsa->pri_enc);
-    printf("rsa->pri_dec:  %p\n", rsa->pri_dec);
-    printf("rsa->pub:      %p\n", rsa->pub);
-    printf("rsa->pub->key: %p\n", rsa->pub->key);
-    printf("rsa->pub->n:   %p\n", rsa->pub->n);
-    printf("rsa->pub->e:   %p\n", rsa->pub->e);
-    printf("rsa->pri:      %p\n", rsa->pri);
-    printf("rsa->pri->key: %p\n", rsa->pri->key);
-    printf("rsa->pri->n:   %p\n", rsa->pri->n);
-    printf("rsa->pri->e:   %p\n", rsa->pri->e);
-    printf("rsa->pri->d:   %p\n", rsa->pri->d);
-    printf("rsa->pri->q:   %p\n", rsa->pri->q);
-    printf("rsa->pri->p:   %p\n", rsa->pri->p);
-
-    wmkcRsa_newkeys(rsa, 2048);
-
+    wmkcClass_obj *class = wmkcNull;
+    class = wmkcClass_new();
+    printf("%u\n", class->add(4, 1));
 }
 
 wmkc_u32 main(wmkc_u32 argc, wmkcChar **argv)
