@@ -1,5 +1,6 @@
 #include <wmkc_conf.h>
 
+#if 0
 #if WMKC_SUPPORT
 #ifndef WMKC_RSA
 #define WMKC_RSA
@@ -7,7 +8,10 @@
 #include <wmkc_memory.h>
 #include <wmkc_file.h>
 
+#if defined(WMKC_PLATFORM_WINOS)
 #include <openssl/applink.c>
+#endif
+
 #include <openssl/pem.h>
 #include <openssl/evp.h>
 
@@ -196,3 +200,5 @@ WMKC_OF((wmkcCSTR fn, EVP_PKEY **keyPair))
     wmkcErr_return(error, wmkcErr_OK, "OK.");
 }
 */
+#endif /* #if 0 */
+

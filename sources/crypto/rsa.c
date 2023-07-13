@@ -1,5 +1,6 @@
 #include <crypto/rsa.h>
 
+#if defined(WMKC_RSA)
 WMKC_PUBLIC(wmkcErr_obj) wmkcRsa_new WMKC_OPEN_API
 WMKC_OF((wmkcRsa_obj **obj))
 {
@@ -77,3 +78,5 @@ WMKC_OF((wmkcRsa_obj *obj, wmkc_u32 key_bit))
 
     wmkcErr_return(error, wmkcErr_OK, "OK.");
 }
+#endif /* WMKC_RSA */
+

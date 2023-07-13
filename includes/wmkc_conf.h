@@ -28,10 +28,10 @@
 #endif // #if defined(__linux) || defined(__linux__)
 
 // 定义版本号
-#define WMKC_VERSION     "v6.2.0-canary"
-#define WMKC_VER_HEX      0x620
+#define WMKC_VERSION     "v6.3.0-canary"
+#define WMKC_VER_HEX      0x630
 #define WMKC_VER_MAJOR    6
-#define WMKC_VER_MINOR    2
+#define WMKC_VER_MINOR    3
 #define WMKC_VER_REVISION 0
 
 // 定义一些一般类型

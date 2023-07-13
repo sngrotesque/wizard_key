@@ -15,7 +15,7 @@
 #include <wmkc_binascii.c>
 #include <wmkc_memory.c>
 #include <wmkc_common.c>
-// #include <wmkc_base64.c>
+#include <wmkc_base64.c>
 // #include <wmkc_object.c>
 #include <wmkc_random.c>
 // #include <wmkc_stream.c>
@@ -26,7 +26,7 @@
 // #include <wmkc_chat.c>
 #include <wmkc_file.c>
 #include <wmkc_hash.c>
-// #include <wmkc_time.c>
+#include <wmkc_time.c>
 // #include <wmkc_math.c>
 #include <wmkc_misc.c>
 #include <wmkc_img.c>
@@ -45,13 +45,9 @@ static wmkcByte testIv[32] = {
     0x3d, 0x41, 0x78, 0x35, 0x48, 0x50, 0x7d, 0x73, 0x60, 0x4e, 0x33, 0x6f, 0x23, 0x47, 0x4c, 0x36};
 #endif
 
-#include <test_wmkc_class.c>
-
 wmkcVoid test()
 {
-    wmkcClass_obj *class = wmkcNull;
-    class = wmkcClass_new();
-    printf("%u\n", class->add(4, 1));
+    printf("hello, world.\n");
 }
 
 wmkc_u32 main(wmkc_u32 argc, wmkcChar **argv)

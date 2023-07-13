@@ -1,21 +1,24 @@
 from os import mkdir, system, environ
 from sys import platform, argv
 from subprocess import call
-from os.path import exists
+from os.path import exists, join
+import re
 
-OUT_PATH = "snCompiled"
+# class run_program:
+#     def __init__(self, inPath: str, param :list = None):
+#         self.inPath = inPath
+#         self.outPath = None
+
+#         self.param = param
+
 if platform == 'win32':
-    PATH_SYMBOL = '\\'
-    PROGRAM_NAME = 'main.exe'
-    environ['PATH'] = environ['PATH'] + ';E:\\Projects\\_Library_WMKC\\includes\\libpng'
-else:
-    PATH_SYMBOL = '/'
-    PROGRAM_NAME = 'main'
+    environ['PATH'] = environ['PATH'] + ';' + join(
+        'E:', 'Projects', '_Library_WMKC', 'includes', 'libpng')
 
 def run(cmd :str):
     call(cmd, shell=True)
 
-def run_code(program :str, parameters :list):
+def run_code(inPath :str, program :str, parameters :list, outPath :str):
     parameters.append('-I includes')
     parameters.append('-I sources')
     parameters.append('-I includes/openssl/include/')
@@ -36,40 +39,32 @@ def run_code(program :str, parameters :list):
     parameters.append('-lcjson')  # cJSON
     parameters.append('-liconv')  # Iconv
 
-    if program == 'gcc':
-        # C Programming Language
-        inPath = f'test{PATH_SYMBOL}test.c'
-        # inPath = f'test{PATH_SYMBOL}WizChat.c'
-    elif program == 'g++':
-        # C++ Programming Language
-        inPath = f'test{PATH_SYMBOL}test.cpp'
-
-    outPath = f'{OUT_PATH}{PATH_SYMBOL}{PROGRAM_NAME}' # Output path
-
     # View overall command parameters
     if '--print-args' in parameters:
         parameters.remove("--print-args")
         print(f'{program} {inPath} {" ".join(parameters)} -o {outPath}')
 
-    text = f'{program} {inPath} {" ".join(parameters)} -o {outPath}'
+    parameters = ' '.join(parameters)
+
+    text = f'{program} {inPath} {parameters} -o {outPath}'
     run(text)     # Compile Code
     run(outPath)  # Run Program
 
 if __name__ == '__main__':
-    if len(argv) < 2:
-        exit(f'python {argv[0]} [parameters]')
+    if len(argv) < 3:
+        exit(f'python {argv[0]} [path] [c/cpp] [parameters]')
 
-    mode = argv[1]
-    para = argv[2:]
+    path = argv[1]
+    mode = argv[2]
+    para = argv[3:]
 
-    if mode == 'c':
-        program = 'gcc'
-    elif mode == 'cpp':
-        program = 'g++'
-    else:
-        exit(f'python {argv[0]} [c/cpp]')
+    if    mode == 'c':   program = 'gcc'
+    elif  mode == 'cpp': program = 'g++'
+    else: exit(f'python {argv[0]} [path] [c/cpp]')
     
-    if not exists(OUT_PATH):
-        mkdir(OUT_PATH)
+    outPath = list(re.findall(r'(\w+)[/\\]+(\w+\.\w+)', path, re.S | re.I)[0])
+    outPath[0] = join('misc', 'compiled')
+    outPath[1] = re.sub(r'.c', r'.exe', outPath[1]) if platform=='win32' else re.sub(r'.c', r'', outPath[1])
+    outPath = join(outPath[0], outPath[1])
     
-    run_code(program, para)
+    run_code(path, program, para, outPath)

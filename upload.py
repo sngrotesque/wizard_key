@@ -22,7 +22,7 @@ class git_process:
         self.repo              = Repo.init(folder_path)
         self.DefinedRemoteUrl  = 'git@github.com:sngrotesque/WMKC.git'
         self.DefinedCommit     = 'Wizard Magic Key Cyber'
-        self.DefinedVersion    = 'v6.2.0-canary'
+        self.DefinedVersion    = 'v6.3.0-canary'
         self.DefinedFolderPath = folder_path
 
         self.path = os.listdir(folder_path)
