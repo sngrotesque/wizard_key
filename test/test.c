@@ -32,6 +32,8 @@
 #include <wmkc_img.c>
 #include <wmkc_pad.c>
 
+typedef void (*func)();
+
 #if 1
 static wmkcByte testKey[96] = {
     0x67, 0x65, 0x5b, 0x7b, 0x33, 0x78, 0x74, 0x6e, 0x49, 0x62, 0x6d, 0x3b, 0x7a, 0x77, 0x5d, 0x53,
@@ -52,7 +54,7 @@ wmkcVoid test()
 
 wmkc_u32 main(wmkc_u32 argc, wmkcChar **argv)
 {
-    void (*func_call)() = test;
+    func func_call = test;
     func_call();
     return 0;
 }

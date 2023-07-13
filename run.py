@@ -1,70 +1,76 @@
-from os import mkdir, system, environ
-from sys import platform, argv
-from subprocess import call
-from os.path import exists, join
-import re
+import sys, os, re
+import subprocess
 
-# class run_program:
-#     def __init__(self, inPath: str, param :list = None):
-#         self.inPath = inPath
-#         self.outPath = None
+class action:
+    def __init__(self, inPath :str, param :list, program :str, printArgs :bool):
+        self.in_path   = inPath
+        self.out_path  = None
+        self.param     = param
+        self.program   = program
+        self.printArgs = printArgs
 
-#         self.param = param
+    def call(self, command :str):
+        status = subprocess.call(command, shell = True)
+        if status:
+            exit(f'错误的执行状态码：{status}')
 
-if platform == 'win32':
-    environ['PATH'] = environ['PATH'] + ';' + join(
-        'E:', 'Projects', '_Library_WMKC', 'includes', 'libpng')
+    def init(self):
+        if sys.platform == 'win32':
+            os.environ['PATH'] = os.environ['PATH'] + ';' + os.path.join(
+                'E:', 'Projects', '_Library_WMKC', 'includes', 'libpng')
 
-def run(cmd :str):
-    call(cmd, shell=True)
+        self.out_path = list(re.findall(r'(\w+)[/\\]+(\w+\.\w+)', self.in_path, re.S | re.I)[0])
+        self.out_path[0] = os.path.join('misc', 'compiled')
+        self.out_path[1] = re.sub(r'.c', r'.exe', self.out_path[1]) \
+            if sys.platform=='win32' else re.sub(r'.c', r'', outPath[1])
+        self.out_path = os.path.join(self.out_path[0], self.out_path[1])
 
-def run_code(inPath :str, program :str, parameters :list, outPath :str):
-    parameters.append('-I includes')
-    parameters.append('-I sources')
-    parameters.append('-I includes/openssl/include/')
+    def run_code(self):
+        self.param.append('-I includes')
+        self.param.append('-I sources')
+        self.param.append('-I includes/openssl/include/')
 
-    parameters.append('-L includes/zlib')    # Referer: Zlib
-    parameters.append('-L includes/openssl/') # Referer: OpenSSL
-    parameters.append('-L includes/libpng')  # Referer: Libpng
-    parameters.append('-L includes/cjson')   # Referer: cJSON
-    parameters.append('-L includes/iconv')   # Referer: Iconv
-    parameters.append('-L includes/libjpeg') # Referer: Libjpeg
+        self.param.append('-L includes/zlib')    # Referer: Zlib
+        self.param.append('-L includes/openssl/') # Referer: OpenSSL
+        self.param.append('-L includes/libpng')  # Referer: Libpng
+        self.param.append('-L includes/cjson')   # Referer: cJSON
+        self.param.append('-L includes/iconv')   # Referer: Iconv
+        self.param.append('-L includes/libjpeg') # Referer: Libjpeg
 
-    parameters.append('-lssl')    # OpenSSL
-    parameters.append('-lcrypto') # OpenSSL
-    parameters.append('-lz')      # Zlib
-    parameters.append('-lm')      # Math
-    parameters.append('-lpng16')  # Libpng
-    parameters.append('-ljpeg')   # Libjpeg
-    parameters.append('-lcjson')  # cJSON
-    parameters.append('-liconv')  # Iconv
+        self.param.append('-lssl')    # OpenSSL
+        self.param.append('-lcrypto') # OpenSSL
+        self.param.append('-lz')      # Zlib
+        self.param.append('-lm')      # Math
+        self.param.append('-lpng16')  # Libpng
+        self.param.append('-ljpeg')   # Libjpeg
+        self.param.append('-lcjson')  # cJSON
+        self.param.append('-liconv')  # Iconv
 
-    # View overall command parameters
-    if '--print-args' in parameters:
-        parameters.remove("--print-args")
-        print(f'{program} {inPath} {" ".join(parameters)} -o {outPath}')
+        if self.printArgs:
+            print(f'{self.program} {self.in_path} {" ".join(self.param)} -o {self.out_path}')
 
-    parameters = ' '.join(parameters)
+        self.param = ' '.join(self.param)
 
-    text = f'{program} {inPath} {parameters} -o {outPath}'
-    run(text)     # Compile Code
-    run(outPath)  # Run Program
+        self.call(f'{self.program} {self.in_path} {self.param} -o {self.out_path}') # Compile Code
+        self.call(self.out_path) # Run Program
 
 if __name__ == '__main__':
-    if len(argv) < 3:
-        exit(f'python {argv[0]} [path] [c/cpp] [parameters]')
+    if len(sys.argv) < 3:
+        exit(f'python {sys.argv[0]} [path] [c/cpp] [parameters]')
 
-    path = argv[1]
-    mode = argv[2]
-    para = argv[3:]
+    path = sys.argv[1]
+    para = sys.argv[3:]
+    if sys.argv[2] == 'c':
+        program = 'gcc'
+    elif sys.argv[2] == 'cpp':
+        program = 'g++'
+    else:
+        exit(f'python {sys.argv[0]} [path] [c/cpp]')
 
-    if    mode == 'c':   program = 'gcc'
-    elif  mode == 'cpp': program = 'g++'
-    else: exit(f'python {argv[0]} [path] [c/cpp]')
-    
-    outPath = list(re.findall(r'(\w+)[/\\]+(\w+\.\w+)', path, re.S | re.I)[0])
-    outPath[0] = join('misc', 'compiled')
-    outPath[1] = re.sub(r'.c', r'.exe', outPath[1]) if platform=='win32' else re.sub(r'.c', r'', outPath[1])
-    outPath = join(outPath[0], outPath[1])
-    
-    run_code(path, program, para, outPath)
+    printArgs = True if '--print-args' in para else False
+    if '--print-args' in para:
+        para.remove('--print-args')
+
+    ctx = action(inPath = path, param = para, program = program, printArgs = printArgs)
+    ctx.init()
+    ctx.run_code()
