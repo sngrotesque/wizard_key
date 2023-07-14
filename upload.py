@@ -26,27 +26,21 @@ class git_process:
         self.DefinedFolderPath = folder_path
 
         self.path = os.listdir(folder_path)
-        try:
-            '''\
-            此处的排序逻辑是隐藏目录优先级最高，其次是名称长的，最后是文件。
-            如下：
-                .1234/
-                .git/
-                12345/
-                123/
-                hello.c
-                test.c
-            '''
-            self.path.remove('.git')
-            self.path.remove('keys')
-            self.path.remove('Reference')
-            # self.path.remove('Documents')
-            self.path.remove('Temp')
-            self.path.remove('misc')
-            self.path.remove('libsnc.py')
-            self.path.remove('test.py')
-        except ValueError as e:
-            print(e)
+        '''\
+        此处的排序逻辑是隐藏目录优先级最高，其次是名称长的，最后是文件。
+        如下：
+            .1234/
+            .git/
+            12345/
+            123/
+            hello.c
+            test.c
+        '''
+        self.path.remove('.git')
+        self.path.remove('keys')
+        self.path.remove('Reference')
+        # self.path.remove('Documents')
+        self.path.remove('misc')
         deleteListData(self.path, '___')
 
     def view(self):
