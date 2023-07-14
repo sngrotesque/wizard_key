@@ -46,8 +46,8 @@ class git_process:
             self.path.remove('keys')
             self.path.remove('libsnc.py')
             self.path.remove('test.py')
-        except ValueError:
-            pass
+        except ValueError as e:
+            print(e)
         deleteListData(self.path, '___')
 
     def view(self):

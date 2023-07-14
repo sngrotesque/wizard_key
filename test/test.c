@@ -12,6 +12,7 @@
 // #include <crypto/wmkc_crypto.c>
 #include <crypto/snc.c>
 #include <crypto/rsa.c>
+#include <crypto/pkc.c>
 #include <wmkc_binascii.c>
 #include <wmkc_memory.c>
 #include <wmkc_common.c>
@@ -32,8 +33,6 @@
 #include <wmkc_img.c>
 #include <wmkc_pad.c>
 
-typedef void (*func)();
-
 #if 1
 static wmkcByte testKey[96] = {
     0x67, 0x65, 0x5b, 0x7b, 0x33, 0x78, 0x74, 0x6e, 0x49, 0x62, 0x6d, 0x3b, 0x7a, 0x77, 0x5d, 0x53,
@@ -49,8 +48,13 @@ static wmkcByte testIv[32] = {
 
 wmkcVoid test()
 {
-    printf("hello, world.\n");
+    wmkcByte pk[8] = {0x3f, 0x45, 0x5f, 0x39, 0x2d, 0xb4, 0xdd, 0xde};
+    wmkcChar text[8] = {"12345678"};
+
+    wmkcMisc_PRINT((wmkcByte *)text, 8, 8, 0, 0);
 }
+
+typedef void (*func)();
 
 wmkc_u32 main(wmkc_u32 argc, wmkcChar **argv)
 {

@@ -3,7 +3,18 @@ from .wmkc_crypto import (
     wmkcCrypto_newKey,
     wmkcCrypto_newSalt,
     wmkcCrypto_rsaNewkeys,
-    wmkcCrypto_sha256
+    wmkcCrypto_sha256,
+    wmkcCrypto_padding,
+    wmkcCrypto_pubKeyToBytes,
+    wmkcCrypto_bytesToPubKey,
+    wmkcCrypto_base64_encode,
+    wmkcCrypto_base64_decode,
+    AES
+)
+from .wmkc_net import (
+    readChunk,
+    writeChunk,
+    keyExchange
 )
 from .wmkc_file import (
     wmkcFile_fread,
