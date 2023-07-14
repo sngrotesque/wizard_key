@@ -1,9 +1,0 @@
-windows with mingw :
-gcc *.c -O3 -o cryptFile.exe -static -Wall
-
-linux :
-gcc *.c -O3 -o cryptFile -static -Wall
-
-android with NDK :
-gcc *.c -O3 -o cryptFile -static -Wall
-OR call it with jni
