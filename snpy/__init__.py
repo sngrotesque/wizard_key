@@ -12,9 +12,9 @@ from .wmkc_crypto import (
     AES
 )
 from .wmkc_net import (
-    readChunk,
-    writeChunk,
-    keyExchange
+    AF_INET, AF_INET6, SOCK_STREAM, SOCK_DGRAM,
+    SOL_SOCKET, SO_REUSEADDR,
+    wmkcNet
 )
 from .wmkc_file import (
     wmkcFile_fread,
