@@ -38,12 +38,11 @@ class git_process:
                 test.c
             '''
             self.path.remove('.git')
-            self.path.remove('snCompiled')
+            self.path.remove('keys')
             self.path.remove('Reference')
             # self.path.remove('Documents')
             self.path.remove('Temp')
             self.path.remove('misc')
-            self.path.remove('keys')
             self.path.remove('libsnc.py')
             self.path.remove('test.py')
         except ValueError as e:
