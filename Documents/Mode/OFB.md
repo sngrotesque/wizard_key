@@ -6,8 +6,8 @@ OFB模式不是通过密码算法对明文直接加密的，而是通过将“�
 
 OFB模式的加解密
 
-![](wiki_ofb_encryption_origin.png)
-![](wiki_ofb_decryption_origin.png)
+![](jpg/wiki_ofb_encryption_white_bg.jpg)
+![](jpg/wiki_ofb_decryption_white_bg.jpg)
 
 二 初始化向量
 

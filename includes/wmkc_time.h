@@ -80,5 +80,8 @@ WMKC_OF((wmkcTime_obj *timer));
 WMKC_PUBLIC(wmkcVoid) wmkcTime_TimerPrint WMKC_OPEN_API
 WMKC_OF((wmkcCSTR text, wmkcTime_obj *timer));
 
+WMKC_PUBLIC(wmkcVoid) wmkcTime_sleep WMKC_OPEN_API
+WMKC_OF((double _time));
+
 #endif /* WMKC_TIME */
 #endif /* WMKC_SUPPORT */

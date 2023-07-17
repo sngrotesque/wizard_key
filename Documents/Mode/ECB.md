@@ -2,8 +2,8 @@
 
 ECB模式全称是Electronic CodeBook模式，在ECB模式中，将明文分组加密之后的结果将直接成为密文分组。
 
-![](wiki_ecb_encryption_origin.png)
-![](wiki_ecb_decryption_origin.png)
+![](jpg/wiki_ecb_encryption_white_bg.jpg)
+![](jpg/wiki_ecb_decryption_white_bg.jpg)
 
 使用ECB模式加密时，相同的明文分组会被转换为相同的密文分组，我们可以将其理解为是一个巨大的“明文分组->密文分组”的对应表，因此ECB模式也称为电子密码本模式。
 

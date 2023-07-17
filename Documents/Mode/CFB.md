@@ -2,8 +2,8 @@
 
 CFB模式全称Cipher FeedBack模式（密文反馈模式）。在CFB模式中，前一个密文分组会被送回到密码算法的输入端。所谓反馈，这里指的就是返回输入端的意思。
 
-![](wiki_cfb_encryption_origin.png)
-![](wiki_cfb_decryption_origin.png)
+![](jpg/wiki_cfb_encryption_white_bg.jpg)
+![](jpg/wiki_cfb_decryption_white_bg.jpg)
 
 在ECB模式和CBC模式中，明文分组都是通过密码算法进行加密的，然而，在CFB模式中，明文分组并没有通过密码算法来直接进行加密。
 

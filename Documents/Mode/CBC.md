@@ -6,8 +6,8 @@ CBC模式的全称是Cipher Block Chaining模式（密文分组链接模式）�
 
 CBC模式加解密过程如下：
 
-![](wiki_cbc_encryption_origin.png)
-![](wiki_cbc_decryption_origin.png)
+![](jpg/wiki_cbc_encryption_white_bg.jpg)
+![](jpg/wiki_cbc_decryption_white_bg.jpg)
 
 我们来比较一下ECB模式与CBC模式的区别
 

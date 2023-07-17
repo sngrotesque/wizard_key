@@ -2,8 +2,8 @@
 
 CTR模式全称CounTeR模式（计数器模式）。CTR模式是一种通过将逐次累加的计数器进行加密来生成密钥流的流密码。
 
-![](wiki_ctr_encryption_origin.png)
-![](wiki_ctr_decryption_origin.png)
+![](jpg/wiki_ctr_encryption_white_bg.jpg)
+![](jpg/wiki_ctr_decryption_white_bg.jpg)
 
 CTR模式中，每个分组对应一个逐次累加的计数器，并通过对计数器进行加密来生成密钥流。也就是说，最终的密文分组是通过将计数器加密而得到的比特序列，与明文分组进行XOR而得到的。
 

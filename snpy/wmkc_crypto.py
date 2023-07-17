@@ -92,12 +92,11 @@ class wmkcCrypto:
         return aes.encrypt(content)
 
     def aes_decrypt(self, content :bytes) -> bytes:
-        ECB, CCM, EAX = (1 << AES.MODE_ECB), (1 << AES.MODE_CCM), (1 << AES.MODE_EAX)
-        GCM, OCB      = (1 << AES.MODE_GCM), (1 << AES.MODE_OCB)
-
-        if self.mode == AES.MODE_CTR:
+        if (1 << self.mode) & CTR:
             aes = AES.new(key = self.key, mode = self.mode, nonce = self.nonce)
-        elif self.mode == AES.MODE_CBC:
+        elif (1 << self.mode) & CFB:
+            aes = AES.new(key = self.key, IV = self.iv, mode = self.mode, segment_size = self.segment_size)
+        elif (1 << self.mode) & (CBC | OFB):
             aes = AES.new(key = self.key, IV = self.iv, mode = self.mode)
         elif (1 << self.mode) & (ECB | CCM | EAX | GCM | OCB):
             aes = AES.new(key = self.key, mode = self.mode)

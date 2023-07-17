@@ -97,3 +97,13 @@ WMKC_OF((wmkcCSTR text, wmkcTime_obj *timer))
 {
     printf("%s%.2lfs.\n", text, timer->totalTime);
 }
+
+WMKC_PUBLIC(wmkcVoid) wmkcTime_sleep WMKC_OPEN_API
+WMKC_OF((double _time))
+{
+#if defined(WMKC_PLATFORM_WINOS)
+    Sleep(_time * 1000L);
+#elif defined(WMKC_PLATFORM_LINUX)
+    sleep(_time);
+#endif
+}

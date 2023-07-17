@@ -200,7 +200,7 @@ WMKC_PRIVATE(wmkcVoid) SNC_InvRowsMix WMKC_OF((sncState *state))
 */
 WMKC_PRIVATE(wmkcVoid) SNC_ColumnShift WMKC_OF((sncState *state))
 {
-    static wmkcByte buf;
+    wmkcFast wmkcByte buf;
 
     //* 第一列（First column）
     buf = (*state)[0][0];
@@ -240,7 +240,7 @@ WMKC_PRIVATE(wmkcVoid) SNC_ColumnShift WMKC_OF((sncState *state))
 */
 WMKC_PRIVATE(wmkcVoid) SNC_InvColumnShift WMKC_OF((sncState *state))
 {
-    static wmkcByte buf;
+    wmkcFast wmkcByte buf;
 
     //* 第四列（Fourth column）
     buf = (*state)[7][3]; (*state)[7][3] = (*state)[3][3]; (*state)[3][3] = buf;
@@ -418,8 +418,8 @@ WMKC_OF((SNC_mode mode, sncState *state, wmkcByte *RoundKey))
 */
 WMKC_PRIVATE(wmkcVoid) SNC_keyExtension WMKC_OF((wmkc_u16 keySize, wmkcByte *iv, wmkcByte *key))
 {
-    static wmkcSize i;
-    static wmkcByte buf;
+    wmkcFast wmkcSize i;
+    wmkcFast wmkcByte buf;
 
     for(i = 0; i < keySize; ++i) {
         buf = 
@@ -550,9 +550,6 @@ WMKC_OF((wmkcSNC_obj *ctx, wmkcByte *keyBuf, wmkcByte *ivBuf))
     * 后续每一轮的子密钥都是基于上一轮的密钥进行密钥扩展得到的。
     * The sub keys for each subsequent round are obtained through key expansion based
     * on the previous round of keys.
-    * 
-    * 此子密钥初始化函数具有完美的抗分析能力。
-    * This sub key initialization function has perfect anti analysis ability.
     */
     for(r = 0; r < ctx->NR; ++r) {
         memcpy(ctx->roundKey + (ctx->KN * r), key, ctx->KN);
@@ -582,13 +579,10 @@ WMKC_OF((wmkcSNC_obj *ctx, wmkcByte *buf, wmkcSize size))
     wmkcFast wmkcSize r;
     wmkcFast wmkcSize i;
 
-    //* 将SNC的块结构指向输入的数据，用于提高性能和简化代码
     sncState *bufState = (sncState *)buf;
-    //* 因为是直接使用块分组进行操作，所以需要将长度除以块的长度
     size /= SNC_BLOCKLEN;
 
     for(r = 0; r < ctx->NR; ++r) {
-        //* 每轮使用对应的子密钥进行一次数据的整体加密
         for(i = 0; i < size; ++i) {
             SNC_Cipher(ctx->mode, (bufState + i), ctx->roundKey + (ctx->KN * r));
         }
@@ -602,13 +596,10 @@ WMKC_OF((wmkcSNC_obj *ctx, wmkcByte *buf, wmkcSize size))
     wmkcFast wmkcSize r;
     wmkcFast wmkcSize i;
 
-    //* 将SNC的块结构指向输入的数据，用于提高性能和简化代码
     sncState *bufState = (sncState *)buf;
-    //* 因为是直接使用块分组进行操作，所以需要将长度除以块的长度
     size /= SNC_BLOCKLEN;
 
     for(r = 0; r < ctx->NR; ++r) {
-        //* 每轮使用对应的子密钥进行一次数据的整体解密
         for(i = 0; i < size; ++i) {
             SNC_InvCipher(ctx->mode, (bufState + i), ctx->roundKey + (ctx->KN * (ctx->NR - r - 1)));
         }
@@ -620,8 +611,7 @@ WMKC_PUBLIC(wmkcVoid) wmkcSNC_cbc_encrypt WMKC_OPEN_API
 WMKC_OF((wmkcSNC_obj *ctx, wmkcByte *buf, wmkcSize size))
 {
     wmkcFast wmkcSize r, i;
-    static wmkcByte round_iv[SNC_BLOCKLEN];
-
+    wmkcByte round_iv[SNC_BLOCKLEN];
     sncState *bufState = (sncState *)buf;
     sncState *ivState = (sncState *)round_iv;
     size /= SNC_BLOCKLEN;
@@ -642,9 +632,8 @@ WMKC_OF((wmkcSNC_obj *ctx, wmkcByte *buf, wmkcSize size))
 {
     wmkcFast wmkcSize r;
     wmkcFast wmkcSize i;
-    static wmkcByte round_iv[SNC_BLOCKLEN];
-    static wmkcByte round_buf[SNC_BLOCKLEN];
-
+    wmkcByte round_iv[SNC_BLOCKLEN];
+    wmkcByte round_buf[SNC_BLOCKLEN];
     sncState *bufState = (sncState *)buf;
     sncState *ivState = (sncState *)round_iv;
     size /= SNC_BLOCKLEN;
@@ -656,6 +645,37 @@ WMKC_OF((wmkcSNC_obj *ctx, wmkcByte *buf, wmkcSize size))
             SNC_InvCipher(ctx->mode, bufState + i, ctx->roundKey + (ctx->KN * (ctx->NR - r - 1)));
             SNC_XorWithIV(bufState + i, ivState);
             memcpy(ivState, round_buf, SNC_BLOCKLEN);
+        }
+    }
+}
+
+WMKC_PUBLIC(wmkcVoid) wmkcSNC_ctr_xcrypt WMKC_OPEN_API
+WMKC_OF((wmkcSNC_obj *ctx, wmkcByte *buf, wmkcSize size))
+{
+    wmkcFast wmkcSize r, i, keyStream_i, counter_i;
+    wmkcByte counter[SNC_BLOCKLEN];
+    wmkcByte keyStream[SNC_BLOCKLEN] = {0};
+
+    wmkcMem_zero(counter, SNC_BLOCKLEN);
+    memcpy(counter, ctx->iv, SNC_BLOCKLEN >> 1);
+
+    for(r = 0; r < ctx->NR; ++r) {
+        for(i = 0, keyStream_i = SNC_BLOCKLEN; i < size; ++i, ++keyStream_i) {
+            if(keyStream_i == SNC_BLOCKLEN) {
+                memcpy(keyStream, counter, SNC_BLOCKLEN);
+                SNC_Cipher(ctx->mode, (sncState *)keyStream, ctx->roundKey + (ctx->KN * r));
+
+                for(counter_i = SNC_BLOCKLEN - 1; counter_i >= 0; --counter_i) {
+                    if(counter[counter_i] == 0xff) {
+                        counter[counter_i] = 0x00;
+                    } else {
+                        counter[counter_i]++;
+                        break;
+                    }
+                }
+                keyStream_i = 0;
+            }
+            buf[i] ^= keyStream[keyStream_i];
         }
     }
 }
