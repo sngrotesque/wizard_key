@@ -1,134 +1,50 @@
 #include <network/wmkc_chunk.h>
 
-WMKC_PUBLIC(wmkcErr_obj) wmkcChunk_new WMKC_OPEN_API
-WMKC_OF((wmkcChunk_obj **obj))
+WMKC_PUBLIC(wmkcVoid) wmkcChunk_recv WMKC_OPEN_API
+WMKC_OF((wmkcNet_obj *obj, wmkcNetBuf **buf, wmkcNetSize *size))
 {
-    wmkcErr_obj error;
-    if(!obj) {
-        wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcChunk_new: obj is NULL.");
-    }
+    wmkcNetBuf *p = wmkcNull;
+    wmkcNetSize totalLengthReceived;
+    wmkcNetSize _tSize = 0;
+    wmkcByte size_array[4];
+    wmkcByte crc32_array[4];
+    wmkc_u32 crc32_n;
 
-    if(!wmkcMem_new(wmkcChunk_obj *, (*obj), sizeof(wmkcChunk_obj))) {
-        wmkcErr_return(error, wmkcErr_ErrMemory, "wmkcChunk_new: "
-            "Failed to allocate memory for (*obj).");
-    }
-    wmkcMem_zero((*obj)->packetNumber, sizeof((*obj)->packetNumber));
-    wmkcMem_zero((*obj)->packetSize, sizeof((*obj)->packetSize));
-    wmkcMem_zero((*obj)->packetCRC, sizeof((*obj)->packetCRC));
-    (*obj)->packetContent = wmkcNull;
-    (*obj)->packetSize_n = 0U;
+    wmkcNet_recv(obj, wmkcNull, size_array, 4);
+    wmkcStruct_unpack(">I", size, size_array);
+    totalLengthReceived = *size;
 
-    wmkcErr_return(error, wmkcErr_OK, "OK.");
+    if(!wmkcMem_new(wmkcNetBuf *, (*buf), totalLengthReceived + 1)) {
+        printf("为buf申请内存失败。\n");
+        return;
+    }
+    (*buf)[totalLengthReceived] = 0x00;
+
+    p = (*buf);
+    while(totalLengthReceived) {
+        wmkcNet_recv(obj, &_tSize, p, wmkc_min(totalLengthReceived, 4096));
+        p += _tSize;
+        totalLengthReceived -= _tSize;
+    }
+    wmkcNet_recv(obj, wmkcNull, crc32_array, 4);
+    wmkcStruct_unpack(">I", &crc32_n, crc32_array);
+
+    if(crc32(0, (*buf), *size) != crc32_n) {
+        wmkcMem_free((*buf));
+        return;
+    }
 }
 
-WMKC_PUBLIC(wmkcErr_obj) wmkcChunk_free WMKC_OPEN_API
-WMKC_OF((wmkcChunk_obj **obj))
+WMKC_PUBLIC(wmkcVoid) wmkcChunk_send WMKC_OPEN_API
+WMKC_OF((wmkcNet_obj *obj, wmkcNetBuf *buf, wmkcNetSize size))
 {
-    wmkcErr_obj error;
-    if(!obj || !(*obj)) {
-        wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcChunk_new: obj is NULL.");
-    }
-    if((*obj)->packetContent) {
-        wmkcMem_free((*obj)->packetContent);
-    }
-    wmkcMem_free(*obj);
+    wmkcByte size_array[4];
+    wmkcByte crc32_array[4];
 
-    wmkcErr_return(error, wmkcErr_OK, "OK.");
-}
+    wmkcStruct_pack(">I", size_array, size);
+    wmkcStruct_pack(">I", crc32_array, crc32(0, buf, size));
 
-WMKC_PUBLIC(wmkcErr_obj) wmkcChunk_encrypt WMKC_OPEN_API
-WMKC_OF((wmkcChunk_obj *obj, wmkcByte *key, wmkcByte *iv))
-{
-    wmkcErr_obj error;
-    if(!obj || !obj->packetContent || !obj->packetSize_n) {
-        wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcChunk_new: "
-            "obj or obj->packetContent or obj->packetSize_n is NULL.");
-    }
-    wmkcSNC_obj *snc = wmkcNull;
-
-    error = wmkcSNC_new(&snc, SNC_512);
-    if(error.code) return error;
-    error = wmkcSNC_init(snc, key, iv);
-    if(error.code) return error;
-
-    wmkcSNC_cbc_encrypt(snc, obj->packetContent, obj->packetSize_n);
-
-    error = wmkcSNC_free(&snc);
-    if(error.code) return error;
-
-    wmkcErr_return(error, wmkcErr_OK, "OK.");
-}
-
-WMKC_PUBLIC(wmkcErr_obj) wmkcChunk_decrypt WMKC_OPEN_API
-WMKC_OF((wmkcChunk_obj *obj, wmkcByte *key, wmkcByte *iv))
-{
-    wmkcErr_obj error;
-    if(!obj || !obj->packetContent || !obj->packetSize_n) {
-        wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcChunk_new: "
-            "obj or obj->packetContent or obj->packetSize_n is NULL.");
-    }
-    wmkcSNC_obj *snc = wmkcNull;
-
-    error = wmkcSNC_new(&snc, SNC_512);
-    if(error.code) return error;
-    error = wmkcSNC_init(snc, key, iv);
-    if(error.code) return error;
-
-    wmkcSNC_cbc_decrypt(snc, obj->packetContent, obj->packetSize_n);
-
-    error = wmkcSNC_free(&snc);
-    if(error.code) return error;
-
-    wmkcErr_return(error, wmkcErr_OK, "OK.");
-}
-
-WMKC_PUBLIC(wmkcErr_obj) wmkcChunk_buildChunk WMKC_OPEN_API
-WMKC_OF((wmkcChunk_obj *obj, wmkc_u32 number, wmkcByte *content, wmkc_u32 size))
-{
-    wmkcErr_obj error;
-    if(!obj || !content || !size) {
-        wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcChunk_buildChunk: "
-            "obj or content or size is NULL.");
-    }
-
-    obj->packetSize_n = size + wmkcPad_offset(SNC_BLOCKLEN, size);
-
-    if(!wmkcMem_new(wmkcByte *, obj->packetContent, obj->packetSize_n)) {
-        wmkcErr_return(error, wmkcErr_ErrMemory, "wmkcChunk_buildChunk: "
-            "Failed to allocate memory for obj->packetContent.");
-    }
-    memcpy(obj->packetContent, content, size);
-
-    wmkcSize tmp_pad_size = size;
-    wmkcPad_add(obj->packetContent, &tmp_pad_size, SNC_BLOCKLEN, false);
-
-    wmkcStruct_pack(">I", obj->packetNumber, number);
-    wmkcStruct_pack(">I", obj->packetSize, obj->packetSize_n);
-    wmkcStruct_pack(">I", obj->packetCRC, crc32(0, obj->packetContent, obj->packetSize_n));
-
-    wmkcErr_return(error, wmkcErr_OK, "OK.");
-}
-
-WMKC_PUBLIC(wmkcErr_obj) wmkcChunk_parseChunk WMKC_OPEN_API
-WMKC_OF((wmkcChunk_obj *obj, wmkcByte *chunk, wmkc_u32 chunk_size))
-{
-    wmkcErr_obj error;
-    if(!obj || !chunk || !chunk_size) {
-        wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcChunk_parseChunk: "
-            "obj or chunk or chunk_size is NULL.");
-    }
-    memcpy(obj->packetNumber, chunk, sizeof(obj->packetNumber));
-    memcpy(obj->packetSize, chunk + sizeof(obj->packetNumber), sizeof(obj->packetSize));
-    wmkcStruct_unpack(">I", &obj->packetSize_n, obj->packetSize);
-
-    if(!wmkcMem_new(wmkcByte *, obj->packetContent, obj->packetSize_n)) {
-        wmkcErr_return(error, wmkcErr_ErrMemory, "wmkcChunk_parseChunk: "
-            "Failed to allocate memory for obj->packetContent.");
-    }
-    memcpy(obj->packetContent, chunk + sizeof(obj->packetNumber) + sizeof(obj->packetSize),
-        obj->packetSize_n);
-    memcpy(obj->packetCRC, chunk + sizeof(obj->packetNumber) + sizeof(obj->packetSize) + \
-        obj->packetSize_n, sizeof(obj->packetCRC));
-
-    wmkcErr_return(error, wmkcErr_OK, "OK.");
+    wmkcNet_send(obj, wmkcNull, size_array, 4);
+    wmkcNet_sendall(obj, buf, size);
+    wmkcNet_send(obj, wmkcNull, crc32_array, 4);
 }
