@@ -1,38 +1,51 @@
 #include <wmkc_img.h>
 
-WMKC_PUBLIC(wmkcErr_obj) wmkcImg_rgb888_new WMKC_OPEN_API
-WMKC_OF((wmkcImg_rgb888_obj **rgb, wmkc_u32 width, wmkc_u32 height))
+WMKC_PUBLIC(wmkcErr_obj) wmkcImg_rgba_new WMKC_OPEN_API
+WMKC_OF((wmkcImg_rgba_obj **rgb, wmkc_u32 width, wmkc_u32 height))
 {
     wmkcErr_obj error;
     if(!rgb || !width || !height) {
-        wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcImg_rgb888_new: "
+        wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcImg_rgba_new: "
             "rgb or width or height is NULL.");
     }
 
-    if(!wmkcMem_new(wmkcImg_rgb888_obj *, (*rgb), sizeof(wmkcImg_rgb888_obj))) {
-        wmkcErr_return(error, wmkcErr_ErrMemory, "wmkcImg_rgb888_new: "
+    if(!wmkcMem_new(wmkcImg_rgba_obj *, (*rgb), sizeof(wmkcImg_rgba_obj))) {
+        wmkcErr_return(error, wmkcErr_ErrMemory, "wmkcImg_rgba_new: "
             "Failed to allocate memory for (*rgb).");
     }
+    (*rgb)->width = width;
+    (*rgb)->height = height;
     (*rgb)->size = (width * height);
-    wmkcSize memory_size = sizeof(wmkcImg_rgb888) * (*rgb)->size;
+    wmkcSize memory_size = sizeof(wmkcImg_rgba) * (*rgb)->size;
 
-    if(!wmkcMem_new(wmkcImg_rgb888 *, (*rgb)->rgb, memory_size)) {
+    if(!wmkcMem_new(wmkcImg_rgba *, (*rgb)->rgb, memory_size)) {
         wmkcMem_free((*rgb));
-        wmkcErr_return(error, wmkcErr_ErrMemory, "wmkcImg_rgb888_new: "
+        wmkcErr_return(error, wmkcErr_ErrMemory, "wmkcImg_rgba_new: "
             "Failed to allocate memory for (*rgb)->rgb.");
     }
+    wmkcMem_zero((*rgb)->rgb, memory_size);
 
     wmkcErr_return(error, wmkcErr_OK, "OK.");
 }
 
-WMKC_PUBLIC(wmkcImg_rgb565) wmkcImg_to_rgb565 WMKC_OPEN_API
-WMKC_OF((wmkcImg_rgb888 rgb))
+WMKC_PUBLIC(wmkcErr_obj) wmkcImg_rgba_set_pixel WMKC_OPEN_API
+WMKC_OF((wmkcImg_rgba_obj *rgb, wmkc_u32 pos_x, wmkc_u32 pos_y,
+    wmkcByte r, wmkcByte g, wmkcByte b, wmkcByte a))
+{
+    (rgb->rgb + (pos_y * rgb->width + pos_x))->r = r;
+    (rgb->rgb + (pos_y * rgb->width + pos_x))->g = g;
+    (rgb->rgb + (pos_y * rgb->width + pos_x))->b = b;
+    (rgb->rgb + (pos_y * rgb->width + pos_x))->a = a;
+}
+
+WMKC_PUBLIC(wmkcImg_rgb565) wmkcImg_rgba_to_rgb565 WMKC_OPEN_API
+WMKC_OF((wmkcImg_rgba rgb))
 {
     wmkcImg_rgb565 rgb565 = {rgb.r >> 3, rgb.g >> 2, rgb.b >> 3};
     return rgb565;
 }
 
-#ifdef WMKC_IMG_CUSTOMIZED_PNG
+#if defined(WMKC_IMG_CUSTOMIZED_PNG) && (WMKC_IMG_CUSTOMIZED_PNG == true)
 WMKC_PUBLIC(wmkcErr_obj) wmkcImg_png_chunk_free WMKC_OPEN_API
 WMKC_OF((wmkcImg_png_chunk_obj **chunk))
 {
@@ -164,6 +177,4 @@ WMKC_OF((wmkcImg_png_chunk_obj **chunk, wmkcImg_png_obj *png))
 
     wmkcErr_return(error, wmkcErr_OK, "OK.");
 }
-#else /* WMKC_IMG_CUSTOMIZED_PNG */
-
 #endif /* WMKC_IMG_CUSTOMIZED_PNG */

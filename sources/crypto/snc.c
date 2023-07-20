@@ -297,118 +297,94 @@ WMKC_PRIVATE(wmkcVoid) SNC_XorWithIV WMKC_OF((sncState *buf, sncState *iv))
 * 加密块函数，将输入的块进行加密（Encrypt block function to encrypt input blocks）
 */
 WMKC_PRIVATE(wmkcVoid) SNC_Cipher
-WMKC_OF((SNC_mode mode, sncState *state, wmkcByte *RoundKey))
+WMKC_OF((wmkcSNC_obj *ctx, sncState *state, wmkcByte *RoundKey))
 {
-    wmkcFast wmkc_u32 i;
+    wmkcFast wmkc_u32 i, r;
 
-    //* 执行块置换函数（Execute block substitute function）
-    SNC_SubBytes(state);
+    for(r = 0; r < ctx->NR; ++r) {
+        SNC_SubBytes(state);
+        for(i = 0; i < SNC_NK; ++i) {
+            (*state)[0][i] ^= *(RoundKey + (r * ctx->KN) + (SNC_NK * 0 + i));
+            (*state)[1][i] ^= *(RoundKey + (r * ctx->KN) + (SNC_NK * 1 + i));
+            (*state)[2][i] ^= *(RoundKey + (r * ctx->KN) + (SNC_NK * 2 + i));
+            (*state)[3][i] ^= *(RoundKey + (r * ctx->KN) + (SNC_NK * 3 + i));
+            (*state)[4][i] ^= *(RoundKey + (r * ctx->KN) + (SNC_NK * 4 + i));
+            (*state)[5][i] ^= *(RoundKey + (r * ctx->KN) + (SNC_NK * 5 + i));
+            (*state)[6][i] ^= *(RoundKey + (r * ctx->KN) + (SNC_NK * 6 + i));
+            (*state)[7][i] ^= *(RoundKey + (r * ctx->KN) + (SNC_NK * 7 + i));
 
-    for(i = 0; i < SNC_NK; ++i) {
-        //* 此块为基础加密，也就是使用[0 - 31]字节的密钥进行加密。
-        //* This block is general encryption, which means using a key of [0-31] bytes
-        //* for encryption.
-        (*state)[0][i] ^= *(RoundKey + (SNC_NK * 0 + i));
-        (*state)[1][i] ^= *(RoundKey + (SNC_NK * 1 + i));
-        (*state)[2][i] ^= *(RoundKey + (SNC_NK * 2 + i));
-        (*state)[3][i] ^= *(RoundKey + (SNC_NK * 3 + i));
-        (*state)[4][i] ^= *(RoundKey + (SNC_NK * 4 + i));
-        (*state)[5][i] ^= *(RoundKey + (SNC_NK * 5 + i));
-        (*state)[6][i] ^= *(RoundKey + (SNC_NK * 6 + i));
-        (*state)[7][i] ^= *(RoundKey + (SNC_NK * 7 + i));
+            if(ctx->mode == SNC_512 || ctx->mode == SNC_768) {
+                (*state)[0][i] ^= *(RoundKey + (r * ctx->KN) + (SNC_NK * 0 + (i + 32)));
+                (*state)[1][i] ^= *(RoundKey + (r * ctx->KN) + (SNC_NK * 1 + (i + 32)));
+                (*state)[2][i] ^= *(RoundKey + (r * ctx->KN) + (SNC_NK * 2 + (i + 32)));
+                (*state)[3][i] ^= *(RoundKey + (r * ctx->KN) + (SNC_NK * 3 + (i + 32)));
+                (*state)[4][i] ^= *(RoundKey + (r * ctx->KN) + (SNC_NK * 4 + (i + 32)));
+                (*state)[5][i] ^= *(RoundKey + (r * ctx->KN) + (SNC_NK * 5 + (i + 32)));
+                (*state)[6][i] ^= *(RoundKey + (r * ctx->KN) + (SNC_NK * 6 + (i + 32)));
+                (*state)[7][i] ^= *(RoundKey + (r * ctx->KN) + (SNC_NK * 7 + (i + 32)));
+            }
 
-        if(mode == SNC_512 || mode == SNC_768) {
-            //* 此块为复合加密，也就是使用[32 - 63]字节的密钥再次加密。
-            //* This block is compound encryption, which means using a key of [32-63] bytes
-            //* to encrypt the plaintext again.
-            (*state)[0][i] ^= *(RoundKey + (SNC_NK * 0 + (i + 32)));
-            (*state)[1][i] ^= *(RoundKey + (SNC_NK * 1 + (i + 32)));
-            (*state)[2][i] ^= *(RoundKey + (SNC_NK * 2 + (i + 32)));
-            (*state)[3][i] ^= *(RoundKey + (SNC_NK * 3 + (i + 32)));
-            (*state)[4][i] ^= *(RoundKey + (SNC_NK * 4 + (i + 32)));
-            (*state)[5][i] ^= *(RoundKey + (SNC_NK * 5 + (i + 32)));
-            (*state)[6][i] ^= *(RoundKey + (SNC_NK * 6 + (i + 32)));
-            (*state)[7][i] ^= *(RoundKey + (SNC_NK * 7 + (i + 32)));
+            if(ctx->mode == SNC_768) {
+                (*state)[0][i] ^= *(RoundKey + (r * ctx->KN) + (SNC_NK * 0 + (i + 64)));
+                (*state)[1][i] ^= *(RoundKey + (r * ctx->KN) + (SNC_NK * 1 + (i + 64)));
+                (*state)[2][i] ^= *(RoundKey + (r * ctx->KN) + (SNC_NK * 2 + (i + 64)));
+                (*state)[3][i] ^= *(RoundKey + (r * ctx->KN) + (SNC_NK * 3 + (i + 64)));
+                (*state)[4][i] ^= *(RoundKey + (r * ctx->KN) + (SNC_NK * 4 + (i + 64)));
+                (*state)[5][i] ^= *(RoundKey + (r * ctx->KN) + (SNC_NK * 5 + (i + 64)));
+                (*state)[6][i] ^= *(RoundKey + (r * ctx->KN) + (SNC_NK * 6 + (i + 64)));
+                (*state)[7][i] ^= *(RoundKey + (r * ctx->KN) + (SNC_NK * 7 + (i + 64)));
+            }
         }
-
-        if(mode == SNC_768) {
-            //* 此块为复合加密，也就是使用[64 - 95]字节的密钥再次加密。
-            //* This block is compound encryption, which means using a key of [64-95] bytes
-            //* to encrypt the plaintext again.
-            (*state)[0][i] ^= *(RoundKey + (SNC_NK * 0 + (i + 64)));
-            (*state)[1][i] ^= *(RoundKey + (SNC_NK * 1 + (i + 64)));
-            (*state)[2][i] ^= *(RoundKey + (SNC_NK * 2 + (i + 64)));
-            (*state)[3][i] ^= *(RoundKey + (SNC_NK * 3 + (i + 64)));
-            (*state)[4][i] ^= *(RoundKey + (SNC_NK * 4 + (i + 64)));
-            (*state)[5][i] ^= *(RoundKey + (SNC_NK * 5 + (i + 64)));
-            (*state)[6][i] ^= *(RoundKey + (SNC_NK * 6 + (i + 64)));
-            (*state)[7][i] ^= *(RoundKey + (SNC_NK * 7 + (i + 64)));
-        }
+        SNC_ColumnShift(state);
+        SNC_RowsMix(state);
     }
-
-    //* 执行列移位函数。（Execute column shift function）
-    SNC_ColumnShift(state);
-    //* 执行行混合函数（Execute row mixing function.）
-    SNC_RowsMix(state);
 }
 
 /*
 * 解密块函数，将输入的块进行解密（Decrypt block function to decrypt input blocks）
 */
 WMKC_PRIVATE(wmkcVoid) SNC_InvCipher
-WMKC_OF((SNC_mode mode, sncState *state, wmkcByte *RoundKey))
+WMKC_OF((wmkcSNC_obj *ctx, sncState *state, wmkcByte *RoundKey))
 {
-    wmkcFast wmkc_u32 i;
+    wmkcFast wmkc_u32 i, r;
 
-    //* 执行逆行混合函数。（Execute inverse mixed function.）
-    SNC_InvRowsMix(state);
-    //* 执行逆列移位函数（Execute inverse column shift function）
-    SNC_InvColumnShift(state);
+    for(r = 0; r < ctx->NR; ++r) {
+        SNC_InvRowsMix(state);
+        SNC_InvColumnShift(state);
+        for(i = 0; i < SNC_NK; ++i) {
+            if(ctx->mode == SNC_768) {
+                (*state)[0][i] ^= *(RoundKey + ((ctx->NR - r - 1) * ctx->KN) + (SNC_NK * 0 + (i + 64)));
+                (*state)[1][i] ^= *(RoundKey + ((ctx->NR - r - 1) * ctx->KN) + (SNC_NK * 1 + (i + 64)));
+                (*state)[2][i] ^= *(RoundKey + ((ctx->NR - r - 1) * ctx->KN) + (SNC_NK * 2 + (i + 64)));
+                (*state)[3][i] ^= *(RoundKey + ((ctx->NR - r - 1) * ctx->KN) + (SNC_NK * 3 + (i + 64)));
+                (*state)[4][i] ^= *(RoundKey + ((ctx->NR - r - 1) * ctx->KN) + (SNC_NK * 4 + (i + 64)));
+                (*state)[5][i] ^= *(RoundKey + ((ctx->NR - r - 1) * ctx->KN) + (SNC_NK * 5 + (i + 64)));
+                (*state)[6][i] ^= *(RoundKey + ((ctx->NR - r - 1) * ctx->KN) + (SNC_NK * 6 + (i + 64)));
+                (*state)[7][i] ^= *(RoundKey + ((ctx->NR - r - 1) * ctx->KN) + (SNC_NK * 7 + (i + 64)));
+            }
 
-    for(i = 0; i < SNC_NK; ++i) {
-        if(mode == SNC_768) {
-            //* 此块为复合解密，也就是使用[64 - 95]字节的密钥解密。
-            //* This block is compound decryption, which means using a key of [64-95] bytes
-            //* to decrypt the ciphertext.
-            (*state)[0][i] ^= *(RoundKey + (SNC_NK * 0 + (i + 64)));
-            (*state)[1][i] ^= *(RoundKey + (SNC_NK * 1 + (i + 64)));
-            (*state)[2][i] ^= *(RoundKey + (SNC_NK * 2 + (i + 64)));
-            (*state)[3][i] ^= *(RoundKey + (SNC_NK * 3 + (i + 64)));
-            (*state)[4][i] ^= *(RoundKey + (SNC_NK * 4 + (i + 64)));
-            (*state)[5][i] ^= *(RoundKey + (SNC_NK * 5 + (i + 64)));
-            (*state)[6][i] ^= *(RoundKey + (SNC_NK * 6 + (i + 64)));
-            (*state)[7][i] ^= *(RoundKey + (SNC_NK * 7 + (i + 64)));
+            if(ctx->mode == SNC_512 || ctx->mode == SNC_768) {
+                (*state)[0][i] ^= *(RoundKey + ((ctx->NR - r - 1) * ctx->KN) + (SNC_NK * 0 + (i + 32)));
+                (*state)[1][i] ^= *(RoundKey + ((ctx->NR - r - 1) * ctx->KN) + (SNC_NK * 1 + (i + 32)));
+                (*state)[2][i] ^= *(RoundKey + ((ctx->NR - r - 1) * ctx->KN) + (SNC_NK * 2 + (i + 32)));
+                (*state)[3][i] ^= *(RoundKey + ((ctx->NR - r - 1) * ctx->KN) + (SNC_NK * 3 + (i + 32)));
+                (*state)[4][i] ^= *(RoundKey + ((ctx->NR - r - 1) * ctx->KN) + (SNC_NK * 4 + (i + 32)));
+                (*state)[5][i] ^= *(RoundKey + ((ctx->NR - r - 1) * ctx->KN) + (SNC_NK * 5 + (i + 32)));
+                (*state)[6][i] ^= *(RoundKey + ((ctx->NR - r - 1) * ctx->KN) + (SNC_NK * 6 + (i + 32)));
+                (*state)[7][i] ^= *(RoundKey + ((ctx->NR - r - 1) * ctx->KN) + (SNC_NK * 7 + (i + 32)));
+            }
+
+            (*state)[0][i] ^= *(RoundKey + ((ctx->NR - r - 1) * ctx->KN) + (SNC_NK * 0 + i));
+            (*state)[1][i] ^= *(RoundKey + ((ctx->NR - r - 1) * ctx->KN) + (SNC_NK * 1 + i));
+            (*state)[2][i] ^= *(RoundKey + ((ctx->NR - r - 1) * ctx->KN) + (SNC_NK * 2 + i));
+            (*state)[3][i] ^= *(RoundKey + ((ctx->NR - r - 1) * ctx->KN) + (SNC_NK * 3 + i));
+            (*state)[4][i] ^= *(RoundKey + ((ctx->NR - r - 1) * ctx->KN) + (SNC_NK * 4 + i));
+            (*state)[5][i] ^= *(RoundKey + ((ctx->NR - r - 1) * ctx->KN) + (SNC_NK * 5 + i));
+            (*state)[6][i] ^= *(RoundKey + ((ctx->NR - r - 1) * ctx->KN) + (SNC_NK * 6 + i));
+            (*state)[7][i] ^= *(RoundKey + ((ctx->NR - r - 1) * ctx->KN) + (SNC_NK * 7 + i));
         }
-
-        if(mode == SNC_512 || mode == SNC_768) {
-            //* 此块为复合解密，也就是[32 - 63]字节的密钥再次解密。
-            //* This block is compound decryption, which means using a key of [32-63] bytes
-            //* to decrypt the ciphertext again.
-            (*state)[0][i] ^= *(RoundKey + (SNC_NK * 0 + (i + 32)));
-            (*state)[1][i] ^= *(RoundKey + (SNC_NK * 1 + (i + 32)));
-            (*state)[2][i] ^= *(RoundKey + (SNC_NK * 2 + (i + 32)));
-            (*state)[3][i] ^= *(RoundKey + (SNC_NK * 3 + (i + 32)));
-            (*state)[4][i] ^= *(RoundKey + (SNC_NK * 4 + (i + 32)));
-            (*state)[5][i] ^= *(RoundKey + (SNC_NK * 5 + (i + 32)));
-            (*state)[6][i] ^= *(RoundKey + (SNC_NK * 6 + (i + 32)));
-            (*state)[7][i] ^= *(RoundKey + (SNC_NK * 7 + (i + 32)));
-        }
-
-        //* 此块为基础解密，也就是使用[0 - 31]字节的密钥进行解密。
-        //* This block is for general decryption, which means using a key of [0-31] bytes
-        //* for decryption.
-        (*state)[0][i] ^= *(RoundKey + (SNC_NK * 0 + i));
-        (*state)[1][i] ^= *(RoundKey + (SNC_NK * 1 + i));
-        (*state)[2][i] ^= *(RoundKey + (SNC_NK * 2 + i));
-        (*state)[3][i] ^= *(RoundKey + (SNC_NK * 3 + i));
-        (*state)[4][i] ^= *(RoundKey + (SNC_NK * 4 + i));
-        (*state)[5][i] ^= *(RoundKey + (SNC_NK * 5 + i));
-        (*state)[6][i] ^= *(RoundKey + (SNC_NK * 6 + i));
-        (*state)[7][i] ^= *(RoundKey + (SNC_NK * 7 + i));
+        SNC_InvSubBytes(state);
     }
-
-    //* 执行块逆置换函数（Execute block inverse substitute function）
-    SNC_InvSubBytes(state);
 }
 
 /*
@@ -523,7 +499,7 @@ WMKC_OF((wmkcSNC_obj *ctx, wmkcByte *keyBuf, wmkcByte *ivBuf))
 
     wmkcByte *key = wmkcNull;
     wmkcByte iv[SNC_BLOCKLEN];
-    wmkc_u32 r;
+    wmkc_u32 r, i;
     /*
     * wmkcByte *key = wmkcNull;
     *     密钥副本，用于存放每轮的子密钥。
@@ -562,7 +538,9 @@ WMKC_OF((wmkcSNC_obj *ctx, wmkcByte *keyBuf, wmkcByte *ivBuf))
         if(ctx->mode == SNC_768) {
             SNC_XorWithIV((sncState *)(key + 64), (sncState *)iv);
         }
-        SNC_Cipher(ctx->mode, (sncState *)iv, key);
+        for(i = SNC_BLOCKLEN - 1; i >= 0; --i) {
+            if(iv[i]==0xff) {iv[i]=0x00;} else {iv[i]++; break;}
+        }
     }
 
     //* 用于确保内存安全（Used to ensure memory security.）
@@ -576,16 +554,13 @@ WMKC_OF((wmkcSNC_obj *ctx, wmkcByte *keyBuf, wmkcByte *ivBuf))
 WMKC_PUBLIC(wmkcVoid) wmkcSNC_ecb_encrypt WMKC_OPEN_API
 WMKC_OF((wmkcSNC_obj *ctx, wmkcByte *buf, wmkcSize size))
 {
-    wmkcFast wmkcSize r;
     wmkcFast wmkcSize i;
 
     sncState *bufState = (sncState *)buf;
     size /= SNC_BLOCKLEN;
 
-    for(r = 0; r < ctx->NR; ++r) {
-        for(i = 0; i < size; ++i) {
-            SNC_Cipher(ctx->mode, (bufState + i), ctx->roundKey + (ctx->KN * r));
-        }
+    for(i = 0; i < size; ++i) {
+        SNC_Cipher(ctx, (bufState + i), ctx->roundKey);
     }
 }
 
@@ -593,16 +568,13 @@ WMKC_OF((wmkcSNC_obj *ctx, wmkcByte *buf, wmkcSize size))
 WMKC_PUBLIC(wmkcVoid) wmkcSNC_ecb_decrypt WMKC_OPEN_API
 WMKC_OF((wmkcSNC_obj *ctx, wmkcByte *buf, wmkcSize size))
 {
-    wmkcFast wmkcSize r;
     wmkcFast wmkcSize i;
 
     sncState *bufState = (sncState *)buf;
     size /= SNC_BLOCKLEN;
 
-    for(r = 0; r < ctx->NR; ++r) {
-        for(i = 0; i < size; ++i) {
-            SNC_InvCipher(ctx->mode, (bufState + i), ctx->roundKey + (ctx->KN * (ctx->NR - r - 1)));
-        }
+    for(i = 0; i < size; ++i) {
+        SNC_InvCipher(ctx, (bufState + i), ctx->roundKey);
     }
 }
 
@@ -610,19 +582,17 @@ WMKC_OF((wmkcSNC_obj *ctx, wmkcByte *buf, wmkcSize size))
 WMKC_PUBLIC(wmkcVoid) wmkcSNC_cbc_encrypt WMKC_OPEN_API
 WMKC_OF((wmkcSNC_obj *ctx, wmkcByte *buf, wmkcSize size))
 {
-    wmkcFast wmkcSize r, i;
+    wmkcFast wmkcSize i;
     wmkcByte round_iv[SNC_BLOCKLEN];
     sncState *bufState = (sncState *)buf;
     sncState *ivState = (sncState *)round_iv;
     size /= SNC_BLOCKLEN;
 
-    for(r = 0; r < ctx->NR; ++r) {
-        memcpy(round_iv, ctx->iv, SNC_BLOCKLEN);
-        for(i = 0; i < size; ++i) {
-            SNC_XorWithIV(bufState + i, ivState);
-            SNC_Cipher(ctx->mode, bufState + i, ctx->roundKey + (ctx->KN * r));
-            memcpy(ivState, bufState + i, SNC_BLOCKLEN);
-        }
+    memcpy(round_iv, ctx->iv, SNC_BLOCKLEN);
+    for(i = 0; i < size; ++i) {
+        SNC_XorWithIV(bufState + i, ivState);
+        SNC_Cipher(ctx, (bufState + i), ctx->roundKey);
+        memcpy(ivState, bufState + i, SNC_BLOCKLEN);
     }
 }
 
@@ -630,7 +600,6 @@ WMKC_OF((wmkcSNC_obj *ctx, wmkcByte *buf, wmkcSize size))
 WMKC_PUBLIC(wmkcVoid) wmkcSNC_cbc_decrypt WMKC_OPEN_API
 WMKC_OF((wmkcSNC_obj *ctx, wmkcByte *buf, wmkcSize size))
 {
-    wmkcFast wmkcSize r;
     wmkcFast wmkcSize i;
     wmkcByte round_iv[SNC_BLOCKLEN];
     wmkcByte round_buf[SNC_BLOCKLEN];
@@ -638,17 +607,16 @@ WMKC_OF((wmkcSNC_obj *ctx, wmkcByte *buf, wmkcSize size))
     sncState *ivState = (sncState *)round_iv;
     size /= SNC_BLOCKLEN;
 
-    for(r = 0; r < ctx->NR; ++r) {
-        memcpy(round_iv, ctx->iv, SNC_BLOCKLEN);
-        for(i = 0; i < size; ++i) {
-            memcpy(round_buf, bufState + i, SNC_BLOCKLEN);
-            SNC_InvCipher(ctx->mode, bufState + i, ctx->roundKey + (ctx->KN * (ctx->NR - r - 1)));
-            SNC_XorWithIV(bufState + i, ivState);
-            memcpy(ivState, round_buf, SNC_BLOCKLEN);
-        }
+    memcpy(round_iv, ctx->iv, SNC_BLOCKLEN);
+    for(i = 0; i < size; ++i) {
+        memcpy(round_buf, bufState + i, SNC_BLOCKLEN);
+        SNC_InvCipher(ctx, (bufState + i), ctx->roundKey);
+        SNC_XorWithIV(bufState + i, ivState);
+        memcpy(ivState, round_buf, SNC_BLOCKLEN);
     }
 }
 
+//* CTR模式加解密
 WMKC_PUBLIC(wmkcVoid) wmkcSNC_ctr_xcrypt WMKC_OPEN_API
 WMKC_OF((wmkcSNC_obj *ctx, wmkcByte *buf, wmkcSize size))
 {
@@ -659,24 +627,61 @@ WMKC_OF((wmkcSNC_obj *ctx, wmkcByte *buf, wmkcSize size))
     wmkcMem_zero(counter, SNC_BLOCKLEN);
     memcpy(counter, ctx->iv, SNC_BLOCKLEN >> 1);
 
-    for(r = 0; r < ctx->NR; ++r) {
-        for(i = 0, keyStream_i = SNC_BLOCKLEN; i < size; ++i, ++keyStream_i) {
-            if(keyStream_i == SNC_BLOCKLEN) {
-                memcpy(keyStream, counter, SNC_BLOCKLEN);
-                SNC_Cipher(ctx->mode, (sncState *)keyStream, ctx->roundKey + (ctx->KN * r));
+    for(i = 0, keyStream_i = SNC_BLOCKLEN; i < size; ++i, ++keyStream_i) {
+        if(keyStream_i == SNC_BLOCKLEN) {
+            memcpy(keyStream, counter, SNC_BLOCKLEN);
+            SNC_Cipher(ctx, (sncState *)keyStream, ctx->roundKey);
 
-                for(counter_i = SNC_BLOCKLEN - 1; counter_i >= 0; --counter_i) {
-                    if(counter[counter_i] == 0xff) {
-                        counter[counter_i] = 0x00;
-                    } else {
-                        counter[counter_i]++;
-                        break;
-                    }
+            for(counter_i = SNC_BLOCKLEN - 1; counter_i >= 0; --counter_i) {
+                if(counter[counter_i] == 0xff) {
+                    counter[counter_i] = 0x00;
+                } else {
+                    counter[counter_i]++;
+                    break;
                 }
-                keyStream_i = 0;
             }
-            buf[i] ^= keyStream[keyStream_i];
+            keyStream_i = 0;
         }
+        buf[i] ^= keyStream[keyStream_i];
     }
 }
+
+WMKC_PUBLIC(wmkcVoid) wmkcSNC_cfb_encrypt WMKC_OPEN_API
+WMKC_OF((wmkcSNC_obj *ctx, wmkcByte *buf, wmkcSize size, wmkcSize segment_size))
+{
+    wmkcFast wmkcSize i, j;
+    wmkcByte round_iv[SNC_BLOCKLEN];
+    segment_size >>= 3; // 将单位从位转到字节
+    size = (size + segment_size - 1) / segment_size; // 得到总共有多少个数据段
+
+    memcpy(round_iv, ctx->iv, SNC_BLOCKLEN);
+    for(i = 0; i < size; ++i) {
+        SNC_Cipher(ctx, (sncState *)round_iv, ctx->roundKey);
+        for(j = 0; j < segment_size; ++j) {
+            *(buf + (i * segment_size + j)) ^= round_iv[j];
+        }
+        memcpy(round_iv, buf + i * segment_size, segment_size);
+    }
+}
+
+WMKC_PUBLIC(wmkcVoid) wmkcSNC_cfb_decrypt WMKC_OPEN_API
+WMKC_OF((wmkcSNC_obj *ctx, wmkcByte *buf, wmkcSize size, wmkcSize segment_size))
+{
+    wmkcFast wmkcSize i, j;
+    wmkcByte round_iv[SNC_BLOCKLEN];
+    wmkcByte tmp_buf[SNC_BLOCKLEN];
+    segment_size >>= 3; // 将单位从位转到字节
+    size = (size + segment_size - 1) / segment_size; // 得到总共有多少个数据段
+
+    memcpy(round_iv, ctx->iv, SNC_BLOCKLEN);
+    for(i = 0; i < size; ++i) {
+        memcpy(tmp_buf, buf + i * segment_size, segment_size);
+        SNC_Cipher(ctx, (sncState *)round_iv, ctx->roundKey);
+        for(j = 0; j < segment_size; ++j) {
+            *(buf + (i * segment_size + j)) ^= round_iv[j];
+        }
+        memcpy(round_iv, tmp_buf, segment_size);
+    }
+}
+
 

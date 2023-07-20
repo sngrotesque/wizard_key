@@ -62,6 +62,7 @@ typedef const char *              wmkcCSTR;   // 固定字符串类型
 // 定义宏函数
 /***将x转为字符串 ********/
 #define wmkc_toString(x) #x
+#define wmkc_min(x, y) (((x) < (y)) ? (x) : (y))
 
 #else
 #   define WMKC_SUPPORT false

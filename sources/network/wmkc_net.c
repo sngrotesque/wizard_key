@@ -134,10 +134,7 @@ WMKC_PUBLIC(wmkcErr_obj) wmkcNet_init WMKC_OPEN_API
 WMKC_OF((wmkcNet_obj *obj, wmkcCSTR hostname, wmkc_u16 port))
 {
     wmkcErr_obj error;
-#if defined(WMKC_PLATFORM_WINOS)
-    WSADATA ws;
-    WSAStartup(MAKEWORD(2,2), &ws);
-#endif
+
     if(!obj) {
         wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcNet_init: obj is NULL.");
     }
@@ -406,7 +403,7 @@ WMKC_OF((wmkcNet_obj *obj))
         wmkcErr_return(error, wmkcErr_NetClose, "wmkcNet_close: Socket close failed.");
     }
 #elif defined(WMKC_PLATFORM_WINOS)
-    if((closesocket(obj->sockfd) | WSACleanup()) == wmkcErr_Err32) {
+    if(closesocket(obj->sockfd) == wmkcErr_Err32) {
         wmkcErr_return(error, wmkcErr_NetClose, "wmkcNet_close: Socket close failed.");
     }
 #endif

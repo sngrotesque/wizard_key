@@ -11,20 +11,12 @@
 #include <libpng/png.h>
 #include <zlib/zlib.h>
 
-#define WMKC_IMG_CUSTOMIZED_PNG true
-
 typedef struct {
     wmkcByte r;
     wmkcByte g;
     wmkcByte b;
     wmkcByte a;
-} wmkcImg_rgb8888;
-
-typedef struct {
-    wmkcByte r;
-    wmkcByte g;
-    wmkcByte b;
-} wmkcImg_rgb888;
+} wmkcImg_rgba;
 
 typedef struct {
     wmkcByte r :5;
@@ -33,14 +25,35 @@ typedef struct {
 } wmkcImg_rgb565;
 
 typedef struct {
-    wmkcImg_rgb8888 *rgba;
+    wmkcImg_rgba *rgb;
     wmkcSize size;
-} wmkcImg_rgb8888_obj;
+    wmkc_u32 width;
+    wmkc_u32 height;
+} wmkcImg_rgba_obj;
 
-typedef struct {
-    wmkcImg_rgb888 *rgb;
-    wmkcSize size;
-} wmkcImg_rgb888_obj;
+/**
+ * @brief 构建一个新的二维RGB888颜色像素
+ * @authors SN-Grotesque
+ * @note 无
+ * @param rgb 指针，指向wmkcImg_rgba对象指针的地址
+ * @param width 像素宽度
+ * @param height 像素高度
+ * @return wmkcErr对象code为非0代表出错，需检查。
+ */
+WMKC_PUBLIC(wmkcErr_obj) wmkcImg_rgba_new WMKC_OPEN_API
+WMKC_OF((wmkcImg_rgba_obj **rgb, wmkc_u32 width, wmkc_u32 height));
+
+/**
+ * @brief rgb888转换rgb565函数
+ * @authors SN-Grotesque
+ * @note 无
+ * @param rgb RGB888结构体
+ * @return wmkcImg_rgb565类型
+ */
+WMKC_PUBLIC(wmkcImg_rgb565) wmkcImg_rgba_to_rgb565 WMKC_OPEN_API
+WMKC_OF((wmkcImg_rgba rgb));
+
+#define WMKC_IMG_CUSTOMIZED_PNG false
 
 #if defined(WMKC_IMG_CUSTOMIZED_PNG) && (WMKC_IMG_CUSTOMIZED_PNG == true)
 #define WMKC_IMG_PNG_HEAD "\x89\x50\x4E\x47\x0D\x0A\x1A\x0A" // PNG图像结构文件头
@@ -120,16 +133,6 @@ WMKC_OF((wmkcImg_png_chunk_obj **chunk));
  */
 WMKC_PUBLIC(wmkcErr_obj) wmkcImg_png_free WMKC_OPEN_API
 WMKC_OF((wmkcImg_png_obj **chunk));
-
-/**
- * @brief rgb888转换rgb565函数
- * @authors SN-Grotesque
- * @note 无
- * @param rgb RGB888结构体
- * @return wmkcImg_rgb565类型
- */
-WMKC_PUBLIC(wmkcImg_rgb565) wmkcImg_to_rgb565 WMKC_OPEN_API
-WMKC_OF((wmkcImg_rgb888 rgb));
 
 /**
  * @brief 计算PNG块数据的CRC32校验值

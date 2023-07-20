@@ -1,20 +1,22 @@
 from snpy import *
+import matplotlib.pyplot as plt
+import binascii
+import random
 import struct
+import socket
 import time
+import zlib
 import rsa
+import os
 
-key = b'0123456789abcdef0123456789abcdef'
-iv = b'0123456789abcdef'
-nonce = b'[a8371_]'
+content = wmkcFile_fread('p:/Bilibili/18f7a74b6d5d87269b7bb01cc16771a15035378.jpg')
+print(wmkcCrypto_sha256(content))
 
-content = bytes([
-    8,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-    1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
-    2,2,2,2
-])
+ctx = wmkcNet(AF_INET, SOCK_STREAM, host = '127.0.0.1', port = 49281)
+ctx.timeout(30)
+ctx.connect()
+ctx.writeChunk(content)
+ctx.close()
 
-ctx = wmkcCrypto(key = key, iv = iv, nonce = nonce, mode = AES.MODE_CTR, segment_size=128)
-res = ctx.aes_encrypt(content)
 
-# print(res)
-print(wmkcMisc_PRINT_BOX(res))
+

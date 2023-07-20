@@ -152,7 +152,7 @@ WMKC_PUBLIC(wmkcVoid) wmkcSNC_cbc_decrypt WMKC_OPEN_API
 WMKC_OF((wmkcSNC_obj *ctx, wmkcByte *buf, wmkcSize size));
 
 /**
- * @brief SNC-CTR，加/解密
+ * @brief SNC-CTR，加解密
  * @authors SN-Grotesque
  * @note 无
  * @param ctx 指针，指向wmkcSNC对象的地址
@@ -162,6 +162,32 @@ WMKC_OF((wmkcSNC_obj *ctx, wmkcByte *buf, wmkcSize size));
  */
 WMKC_PUBLIC(wmkcVoid) wmkcSNC_ctr_xcrypt WMKC_OPEN_API
 WMKC_OF((wmkcSNC_obj *ctx, wmkcByte *buf, wmkcSize size));
+
+/**
+ * @brief SNC-CFB，加密
+ * @authors SN-Grotesque
+ * @note 无
+ * @param ctx 指针，指向wmkcSNC对象的地址
+ * @param buf 指针，指向缓冲区的地址
+ * @param size 代表缓冲区的长度
+ * @param segment_size 数据段大小，单位：位
+ * @return 无
+ */
+WMKC_PUBLIC(wmkcVoid) wmkcSNC_cfb_encrypt WMKC_OPEN_API
+WMKC_OF((wmkcSNC_obj *ctx, wmkcByte *buf, wmkcSize size, wmkcSize segment_size));
+
+/**
+ * @brief SNC-CFB，解密
+ * @authors SN-Grotesque
+ * @note 无
+ * @param ctx 指针，指向wmkcSNC对象的地址
+ * @param buf 指针，指向缓冲区的地址
+ * @param size 代表缓冲区的长度
+ * @param segment_size 数据段大小，单位：位
+ * @return 无
+ */
+WMKC_PUBLIC(wmkcVoid) wmkcSNC_cfb_decrypt WMKC_OPEN_API
+WMKC_OF((wmkcSNC_obj *ctx, wmkcByte *buf, wmkcSize size, wmkcSize segment_size));
 
 #ifdef __cplusplus
 }

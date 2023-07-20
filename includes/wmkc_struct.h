@@ -98,6 +98,7 @@
 #ifndef WMKC_STRUCT
 #define WMKC_STRUCT
 #include <wmkc_error.h>
+#include <wmkc_memory.h>
 
 /**
  * @brief 此函数用于判断本机端序
