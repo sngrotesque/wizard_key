@@ -5,6 +5,10 @@
 #define WMKC_MEMORY
 #include <wmkc_error.h>
 
+#ifdef WMKC_PLATFORM_WINOS
+#   include <Windows.h>
+#endif
+
 // 内存空间申请
 #define wmkcMem_new(type, x, size) (x = (type)malloc(size))
 // 内存空间释放并指向空指针

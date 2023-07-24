@@ -40,6 +40,10 @@ def wmkcCrypto_newKey(password :bytes, salt :bytes, keyLen :int = 32):
 def wmkcCrypto_padding(content :bytes, blockSize :int = 16, style = 'pkcs7'):
     return pad(content, blockSize, style = style)
 
+def wmkcCrypto_randomPadding(content :bytes, blockSize :int = AES.block_size):
+    offset = blockSize - len(content) % blockSize
+    return content + get_random_bytes(offset - 1) + offset.to_bytes(1, 'big')
+
 def wmkcCrypto_pubKeyToBytes(pk :rsa.PublicKey, bits :int):
     pubKey_N_len = struct.pack('>I', bits >> 3) # bits / 2^3 = bits / 8
     pubKey_N_bytes = binascii.a2b_hex(f'{pk.n:0{int(pubKey_N_len.hex(), 16)<<1}x}')

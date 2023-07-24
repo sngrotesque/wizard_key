@@ -15,9 +15,9 @@
 WMKC_PUBLIC(wmkcSize) wmkcMath_pow WMKC_OPEN_API
 WMKC_OF((wmkcSize n, wmkcSize m))
 {
-    wmkcSize buf = n, i;
-    for(i = 1; i < m; ++i)
-        buf *= n;
+    wmkcSize buf, i;
+    if(!m) return 1;
+    for(i = 1, buf = n; i < m; ++i, buf *= n);
     return buf;
 }
 

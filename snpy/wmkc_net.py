@@ -1,6 +1,7 @@
 from socket import *
 import struct
 import zlib
+import ssl
 
 class wmkcNet:
     def __init__(self, sockfd_family :int, sockfd_type: int, host: str, port :int):
@@ -9,6 +10,9 @@ class wmkcNet:
         self.port = port
 
         self.client_info = None
+
+    def ssl_context(self):
+        self.sockfd = ssl.SSLContext().wrap_socket(self.sockfd, server_hostname = self.host)
 
     def timeout(self, _time_out :float):
         self.sockfd.settimeout(_time_out)

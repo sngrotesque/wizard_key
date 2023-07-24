@@ -640,6 +640,7 @@ WMKC_OF((wmkcSNC_obj *ctx, wmkcByte *buf, wmkcSize size))
                     break;
                 }
             }
+
             keyStream_i = 0;
         }
         buf[i] ^= keyStream[keyStream_i];
