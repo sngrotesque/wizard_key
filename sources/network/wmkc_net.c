@@ -167,19 +167,17 @@ WMKC_OF((wmkcNet_obj *obj, wmkcNetTime _user_TimeOut))
     }
 
     if(_user_TimeOut) {
-#           if defined(WMKC_PLATFORM_WINOS)
+#       if defined(WMKC_PLATFORM_WINOS)
         DWORD _timeout = (DWORD)(_user_TimeOut * 1000);
-#           elif defined(WMKC_PLATFORM_LINUX)
-        struct timeval _timeout = {
-            .tv_sec = floor(_user_TimeOut),
-            .tv_usec = (long)(modf(_user_TimeOut, &_user_TimeOut) * 1000)
-        };
-#           endif
-        wmkcNetSize optlen = sizeof(_timeout);
+#       elif defined(WMKC_PLATFORM_LINUX)
+        double intpart = 0;
+        double fracpart = modf(_user_TimeOut, &intpart);
+        struct timeval _timeout = {.tv_sec=(long)intpart, .tv_usec=(long)fracpart};
+#       endif
 
         wmkcNetTimer *optval = (wmkcNetTimer *)&_timeout;
-        if(setsockopt(obj->sockfd, SOL_SOCKET, SO_SNDTIMEO, optval, optlen) ||
-            setsockopt(obj->sockfd, SOL_SOCKET, SO_RCVTIMEO, optval, optlen)) {
+        if(setsockopt(obj->sockfd, SOL_SOCKET, SO_SNDTIMEO, optval, sizeof(_timeout)) ||
+            setsockopt(obj->sockfd, SOL_SOCKET, SO_RCVTIMEO, optval, sizeof(_timeout))) {
             wmkcErr_return(error, wmkcErr_NetSetSockOpt,
                 "wmkcNet_timeout: Error in setsockopt function.");
         }
