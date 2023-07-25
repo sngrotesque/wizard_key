@@ -9,6 +9,7 @@ extern "C" {
 #endif /* __cplusplus */
 
 #include <math.h>
+#include <ctype.h>
 
 /**
  * @brief 求出n的m次方
