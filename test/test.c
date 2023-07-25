@@ -99,7 +99,7 @@ void test()
     wmkcErr_obj error;
     wmkc_u32 count = 0;
 
-    timer.tv_sec = 3;
+    timer.tv_sec = 1;
     timer.tv_usec = 0;
 
     wmkcNet_new(&net, TLS_method(), SOCKFD_FAMILY, false);
