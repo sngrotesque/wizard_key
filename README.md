@@ -70,6 +70,8 @@ typedef struct {
 
 #### v6.3.0-canary
 1.  预计将所有实现改为内部实现，然后将函数作为类成员的方式使用。
+2.  修复了network/wmkc_net库中对于wmkcNet_timeout函数的实现，  
+    傻逼微软你妈死了，弄你妈的毫秒单位啊。
 
 #### v6.2.0-canary
 1.  将修改wmkcNet库，以支持一定情况下的OpenSSL组件，以便于进行HTTPS通信。
