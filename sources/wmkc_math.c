@@ -138,3 +138,55 @@ WMKC_OF((wmkcSize n))
     *(p + count) = 0;
     return p;
 }
+
+/**
+ * @brief 进制转换（将2~36进制转为十进制）
+ * @authors SN-Grotesque
+ * @note 此函数最大可以转换36进制的："3W5E11264SGSF"
+ * @param content 对应进制的内容
+ * @param base 进制单位（2，3，4...36）
+ * @return 无符号大整数
+ */
+WMKC_PUBLIC(wmkcSize) wmkcMath_conversion WMKC_OPEN_API
+WMKC_OF((wmkcCSTR content, wmkcByte base))
+{
+    wmkcChar *sequence = wmkcNull;
+    wmkcSize size = strlen(content);
+    wmkcSize res = 0;
+    wmkcSize i;
+
+    if(!wmkcMem_new(wmkcChar *, sequence, size)) {
+        printf("wmkcMath_conversion: Failed to allocate memory for sequence.\n");
+        return 0;
+    }
+    memcpy(sequence, content, size);
+
+    if(base < 2 || base > 36) {
+        printf("wmkcMath_conversion: base must be >= 2 and <= 36.\n");
+        return 0;
+    }
+
+    for(i = 0; i < size; ++i) {
+        if(!isalpha(sequence[i]) && !isalnum(sequence[i])) {
+            printf("wmkcMath_conversion: Not a letter or number.\n");
+            return 0;
+        }
+        if(sequence[i] >= 0x41 && sequence[i] <= 0x5a) {
+            sequence[i] += 0x20;
+        }
+    }
+
+    for(i = 0; i < size; ++i) {
+        if(sequence[i] >= '0' && sequence[i] <= '9') {
+            res += (sequence[i] - '0') * wmkcMath_pow(base, size-i-1);
+        } else if(sequence[i] >= 'a' && sequence[i] <= 'z') {
+            res += (sequence[i] - 'a' + 10) * wmkcMath_pow(base, size-i-1);
+        } else {
+            printf("Invalid contentber %c", sequence[i]);
+            return 0;
+        }
+    }
+
+    wmkcMem_free(sequence);
+    return res;
+}

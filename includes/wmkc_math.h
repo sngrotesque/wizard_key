@@ -69,6 +69,17 @@ WMKC_OF((wmkcSize n1, wmkcSize n2));
 WMKC_PUBLIC(wmkcSize *) wmkcMath_factor WMKC_OPEN_API
 WMKC_OF((wmkcSize n));
 
+/**
+ * @brief 进制转换（将2~36进制转为十进制）
+ * @authors SN-Grotesque
+ * @note 无
+ * @param content 对应进制的内容
+ * @param base 进制单位（2，3，4...36）
+ * @return wmkcErr对象code为非0代表出错，需检查。
+ */
+WMKC_PUBLIC(wmkcSize) wmkcMath_conversion WMKC_OPEN_API
+WMKC_OF((wmkcCSTR content, wmkcByte base));
+
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */

@@ -75,42 +75,63 @@ wmkcVoid snc_test()
     wmkcMisc_PRINT_RAW(buf, size, 1);
 }
 
-wmkcSize conversion(wmkcCSTR content, wmkcByte base)
+#define HOSTNAME "www.bilibili.com"
+#define HOSTPORT 443
+#define USERAGENT "Mozilla/5.0 (X11; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/114.0"
+#define SOCKFD_FAMILY AF_INET
+
+void test()
 {
-    wmkcChar *copy = wmkcNull;
-    wmkcSize size = strlen(content);
-    wmkcSize res = 0;
-    wmkcSize i;
+#if defined(WMKC_PLATFORM_WINOS)
+    WSADATA ws;
+    WSAStartup(MAKEWORD(2, 2), &ws);
+#endif
 
-    if(!wmkcMem_new(wmkcChar *, copy, size)) {
-        return 0;
-    }
-    memcpy(copy, content, size);
+    wmkcNetBuf send_data[4096] = {
+        "GET / HTTP/1.1\r\n"
+        "Host: "HOSTNAME"\r\n"
+        "Accept: */*\r\n"
+        "Connection: keep-alive\r\n"
+        "User-Agent: "USERAGENT"\r\n\r\n"};
+    wmkcNetBuf recv_data[4096] = {0};
+    wmkcNet_obj *net = wmkcNull;
+    struct timeval timer;
+    wmkcErr_obj error;
+    wmkc_u32 count = 0;
 
-    for(i = 0; i < size; ++i) {
-        if(copy[i] >= 0x41 && copy[i] <= 0x5a) {
-            copy[i] += 0x20;
+    timer.tv_sec = 3;
+    timer.tv_usec = 0;
+
+    wmkcNet_new(&net, TLS_method(), SOCKFD_FAMILY, false);
+    wmkcNet_init(net, HOSTNAME, HOSTPORT);
+    wmkcNet_connect(net);
+
+    // setsockopt(net->sockfd, SOL_SOCKET, SO_SNDTIMEO, (char *)&timer, sizeof(timer));
+    setsockopt(net->sockfd, SOL_SOCKET, SO_RCVTIMEO, (char *)&timer, sizeof(timer));
+
+    wmkcNet_send(net, wmkcNull, send_data, strlen(send_data));
+
+    for(;;) {
+        wmkcMem_zero(recv_data, sizeof(recv_data));
+        error = wmkcNet_recv(net, wmkcNull, recv_data, sizeof(recv_data));
+        if(error.code) {
+            if(count++ == 5) {
+                printf("接收已完成。\n");
+                break;
+            }
+        }
+
+        if(*recv_data) {
+            printf("%s\n", recv_data);
         }
     }
 
-    for(i = 0; i < size; ++i) {
-        if(content[i] >= '0' && content[i] <= '9') {
-            res += (content[i] - '0') * wmkcMath_pow(base, size-i-1);
-        } else if(content[i] >= 'a' && content[i] <= 'z') {
-            res += (content[i] - 'a' + 10) * wmkcMath_pow(base, size-i-1);
-        } else {
-            printf("Invalid contentber %c", content[i]);
-            return 0;
-        }
-    }
+    wmkcNet_close(net);
+    wmkcNet_free(&net);
 
-    wmkcMem_free(copy);
-    return res;
-}
-
-wmkcVoid test()
-{
-    snc_test();
+#if defined(WMKC_PLATFORM_WINOS)
+    WSACleanup();
+#endif
 }
 
 wmkc_s32 main(wmkc_u32 argc, wmkcChar **argv)

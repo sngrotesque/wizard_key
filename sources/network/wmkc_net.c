@@ -318,7 +318,7 @@ WMKC_OF((wmkcNet_obj *obj, wmkcNetSize *_tSize, wmkcNetBuf *buf, wmkcNetSize siz
                 "wmkcNet_send: Wrong socket type, expected TCP or UDP.");
     }
 
-    if(*_tSize == wmkcErr_Err32) {
+    if(*_tSize == wmkcErr_Err32 || *_tSize == 0) {
         wmkcErr_return(error, wmkcErr_NetSend,
             "wmkcNet_send: The socket failed to send data.");
     }
@@ -380,7 +380,7 @@ WMKC_OF((wmkcNet_obj *obj, wmkcNetSize *_tSize, wmkcNetBuf *buf, wmkcNetSize siz
                 "wmkcNet_send: Wrong socket type, expected TCP or UDP.");
     }
 
-    if(*_tSize == wmkcErr_Err32) {
+    if(*_tSize == wmkcErr_Err32 || *_tSize == 0) {
         wmkcErr_return(error, wmkcErr_NetSend,
             "wmkcNet_send: The socket failed to send data.");
     }
