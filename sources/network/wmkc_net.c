@@ -168,10 +168,14 @@ WMKC_OF((wmkcNet_obj *obj, wmkcNetTime _user_TimeOut))
 
     if(_user_TimeOut) {
         wmkcNetSize optlen = sizeof(struct timeval);
+#           if defined(WMKC_PLATFORM_WINOS)
+        DWORD _timeout = (DWORD)(_user_TimeOut * 1000);
+#           elif defined(WMKC_PLATFORM_LINUX)
         struct timeval _timeout = {
             .tv_sec = floor(_user_TimeOut),
             .tv_usec = (long)(modf(_user_TimeOut, &_user_TimeOut) * 1000)
         };
+#           endif
 
         wmkcNetTimer *optval = (wmkcNetTimer *)&_timeout;
         if(setsockopt(obj->sockfd, SOL_SOCKET, SO_SNDTIMEO, optval, optlen) ||

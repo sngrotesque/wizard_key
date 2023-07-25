@@ -84,7 +84,7 @@ void test()
 {
 #if defined(WMKC_PLATFORM_WINOS)
     WSADATA ws;
-    WSAStartup(MAKEWORD(2, 2), &ws);
+    printf("WSAStartup return val: %d\n", WSAStartup(MAKEWORD(2, 2), &ws));
 #endif
 
     wmkcNetBuf send_data[4096] = {
@@ -95,35 +95,19 @@ void test()
         "User-Agent: "USERAGENT"\r\n\r\n"};
     wmkcNetBuf recv_data[4096] = {0};
     wmkcNet_obj *net = wmkcNull;
-    struct timeval timer;
     wmkcErr_obj error;
-    wmkc_u32 count = 0;
-
-    timer.tv_sec = 1;
-    timer.tv_usec = 0;
 
     wmkcNet_new(&net, TLS_method(), SOCKFD_FAMILY, false);
     wmkcNet_init(net, HOSTNAME, HOSTPORT);
+    wmkcNet_timeout(net, 1.0);
     wmkcNet_connect(net);
 
-    // setsockopt(net->sockfd, SOL_SOCKET, SO_SNDTIMEO, (char *)&timer, sizeof(timer));
-    setsockopt(net->sockfd, SOL_SOCKET, SO_RCVTIMEO, (char *)&timer, sizeof(timer));
-
     wmkcNet_send(net, wmkcNull, send_data, strlen(send_data));
-
     for(;;) {
         wmkcMem_zero(recv_data, sizeof(recv_data));
         error = wmkcNet_recv(net, wmkcNull, recv_data, sizeof(recv_data));
-        if(error.code) {
-            if(count++ == 5) {
-                printf("接收已完成。\n");
-                break;
-            }
-        }
-
-        if(*recv_data) {
-            printf("%s\n", recv_data);
-        }
+        if(error.code) break;
+        printf("%s\n", recv_data);
     }
 
     wmkcNet_close(net);
