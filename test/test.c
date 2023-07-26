@@ -100,7 +100,7 @@ void net_test()
 
     wmkcNet_new(&net, TLS_method(), SOCKFD_FAMILY, 0);
     wmkcNet_init(net, HOSTNAME, HOSTPORT);
-    wmkcNet_timeout(net, 3.0);
+    wmkcNet_timeout(net, 5.0);
     wmkcNet_connect(net);
 
     wmkcFile_open(&file, HOSTNAME".html", "wb");
@@ -125,7 +125,7 @@ void test()
     net_test();
 }
 
-wmkc_s32 main(wmkc_u32 argc, wmkcChar **argv)
+int main(wmkc_u32 argc, wmkcChar **argv)
 {
     void (*func)() = test;
     func();
