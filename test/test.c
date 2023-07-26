@@ -100,7 +100,7 @@ void net_test()
 
     wmkcNet_new(&net, TLS_method(), SOCKFD_FAMILY, 0);
     wmkcNet_init(net, HOSTNAME, HOSTPORT);
-    wmkcNet_timeout(net, 1.0);
+    wmkcNet_timeout(net, 3.0);
     wmkcNet_connect(net);
 
     wmkcFile_open(&file, HOSTNAME".html", "wb");
