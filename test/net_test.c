@@ -30,7 +30,7 @@ typedef        int          wmkcNetSocket;
 typedef SOCKET    wmkcNetSocket;
 #endif
 
-#define HOSTNAME "www.bilibili.com"
+#define HOSTNAME "www.pixiv.net"
 static const char* sendbuf = (
     "GET / HTTP/1.1\r\n"
     "Host: "HOSTNAME"\r\n"
@@ -47,6 +47,7 @@ void openssl_bio_test()
     char recvbuf[4096];
 
     ssl_ctx = SSL_CTX_new(TLS_client_method());
+    SSL_CTX_set_options(ssl_ctx, SSL_OP_NO_SSLv2 | SSL_OP_NO_SSLv3);
     bio = BIO_new_ssl_connect(ssl_ctx);
 
     BIO_get_ssl(bio, &ssl);
@@ -55,6 +56,7 @@ void openssl_bio_test()
 
     if (BIO_do_connect(bio) != 1) {
         printf("BIO_do_connect error.\n");
+        ERR_print_errors_fp(stderr);
         return;
     }
 
@@ -67,36 +69,6 @@ void openssl_bio_test()
     BIO_free_all(bio);
     SSL_CTX_free(ssl_ctx);
 }
-
-/*
-void openssl_socket_test()
-{
-    wmkcNet_obj *net = NULL;
-    SSL_CTX *ssl_ctx = NULL;
-    SSL *ssl = NULL;
-    char recvbuf[4096];
-
-    wmkcNet_new(&net, AF_INET);
-    wmkcNet_init(net, HOSTNAME, HOSTPORT, false);
-    wmkcNet_connect(net);
-    ssl_ctx = SSL_CTX_new(TLS_client_method());
-    ssl = SSL_new(ssl_ctx);
-
-    SSL_set_fd(ssl, net->sockfd);
-    SSL_connect(ssl);
-
-    wmkc_secureMemory(recvbuf, sizeof(recvbuf));
-    SSL_write(ssl, sendbuf, strlen(sendbuf));
-    SSL_read(ssl, recvbuf, sizeof(recvbuf));
-
-    fwrite(recvbuf, 1, strlen(recvbuf), stdout);
-
-    SSL_CTX_free(ssl_ctx);
-    SSL_free(ssl);
-    wmkcNet_close(net);
-    wmkcNet_free(&net);
-}
-*/
 
 int main(int argc, char **argv)
 {
