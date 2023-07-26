@@ -75,11 +75,11 @@ wmkcVoid snc_test()
     wmkcMisc_PRINT_RAW(buf, size, 1);
 }
 
-#define HOSTNAME "www.pixiv.net"
+#define HOSTNAME "www.bilibili.com"
 #define HOSTPORT 443
 #define USERAGENT "Mozilla/5.0 (X11; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/114.0"
 #define SOCKFD_FAMILY AF_INET
-
+// 104.18.26.235
 void net_test()
 {
 #if defined(WMKC_PLATFORM_WINOS)
