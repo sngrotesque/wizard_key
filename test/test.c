@@ -98,25 +98,18 @@ void net_test()
     wmkcNet_obj *net = wmkcNull;
     wmkcErr_obj error;
 
-    error = wmkcNet_new(&net, TLS_method(), SOCKFD_FAMILY, 0);
-    if(error.code) printf("%s\n", error.message);
-    error = wmkcNet_init(net, HOSTNAME, HOSTPORT);
-    if(error.code) printf("%s\n", error.message);
-    error = wmkcNet_timeout(net, 5.0);
-    if(error.code) printf("%s\n", error.message);
-    error = wmkcNet_connect(net);
-    if(error.code) printf("%s\n", error.message);
+    wmkcNet_new(&net, TLS_method(), SOCKFD_FAMILY, 0);
+    wmkcNet_init(net, HOSTNAME, HOSTPORT);
+    wmkcNet_timeout(net, 5.0);
+    wmkcNet_connect(net);
 
-    wmkcFile_open(&file, HOSTNAME".html", "wb");
-    error = wmkcNet_send(net, wmkcNull, send_data, strlen(send_data));
-    if(error.code) printf("%s\n", error.message);
+    wmkcNet_send(net, wmkcNull, send_data, strlen(send_data));
     for(;;) {
         wmkcMem_zero(recv_data, sizeof(recv_data));
         error = wmkcNet_recv(net, wmkcNull, recv_data, sizeof(recv_data));
         if(error.code) break;
-        fwrite(recv_data, 1, strlen(recv_data), file->fp);
+        fwrite(recv_data, 1, strlen((wmkcChar *)recv_data), stdout);
     }
-    wmkcFile_close(&file);
 
     wmkcNet_close(net);
     wmkcNet_free(&net);
