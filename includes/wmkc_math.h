@@ -3,6 +3,7 @@
 #if WMKC_SUPPORT
 #ifndef WMKC_MATH
 #define WMKC_MATH
+#include <wmkc_memory.h>
 
 #ifdef __cplusplus
 extern "C" {

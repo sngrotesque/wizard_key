@@ -20,6 +20,13 @@ from .wmkc_net import (
     SOL_SOCKET, SO_REUSEADDR,
     wmkcNet
 )
+from .wmkc_bili import (
+    wmkcBili
+)
+from .wmkc_qrcode import (
+    wmkcQrcode,
+    QRCODE_ERROR_L, QRCODE_ERROR_M, QRCODE_ERROR_Q, QRCODE_ERROR_H
+)
 from .wmkc_file import (
     wmkcFile_fread,
     wmkcFile_fwrite,

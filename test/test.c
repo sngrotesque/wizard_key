@@ -75,7 +75,7 @@ wmkcVoid snc_test()
     wmkcMisc_PRINT_RAW(buf, size, 1);
 }
 
-#define HOSTNAME "www.bilibili.com"
+#define HOSTNAME "www.pixiv.net"
 #define HOSTPORT 443
 #define USERAGENT "Mozilla/5.0 (X11; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/114.0"
 #define SOCKFD_FAMILY AF_INET
@@ -86,33 +86,35 @@ void net_test()
     WSADATA ws;
     printf("WSAStartup return val: %d\n", WSAStartup(MAKEWORD(2, 2), &ws));
 #endif
-
     wmkcNetBuf send_data[4096] = {
         "GET / HTTP/1.1\r\n"
         "Host: "HOSTNAME"\r\n"
-        "Accept: */*\r\n"
+        "Accept: */*; text/html;\r\n"
+        // "Accept-encoding: gzip; br;\r\n"
         "Connection: keep-alive\r\n"
         "User-Agent: "USERAGENT"\r\n\r\n"};
     wmkcNetBuf recv_data[4096] = {0};
+    wmkcFile_obj *file = wmkcNull;
     wmkcNet_obj *net = wmkcNull;
     wmkcErr_obj error;
 
-    wmkcNet_new(&net, TLS_method(), SOCKFD_FAMILY, false);
+    wmkcNet_new(&net, TLS_method(), SOCKFD_FAMILY, 0);
     wmkcNet_init(net, HOSTNAME, HOSTPORT);
     wmkcNet_timeout(net, 1.0);
     wmkcNet_connect(net);
 
+    wmkcFile_open(&file, HOSTNAME".html", "wb");
     wmkcNet_send(net, wmkcNull, send_data, strlen(send_data));
     for(;;) {
         wmkcMem_zero(recv_data, sizeof(recv_data));
         error = wmkcNet_recv(net, wmkcNull, recv_data, sizeof(recv_data));
         if(error.code) break;
-        printf("%s\n", recv_data);
+        fwrite(recv_data, 1, strlen(recv_data), file->fp);
     }
+    wmkcFile_close(&file);
 
     wmkcNet_close(net);
     wmkcNet_free(&net);
-
 #if defined(WMKC_PLATFORM_WINOS)
     WSACleanup();
 #endif
