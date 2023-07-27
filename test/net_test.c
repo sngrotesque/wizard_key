@@ -19,15 +19,9 @@
 #include <netinet/in.h>
 #include <netinet/ip.h>
 #include <netinet/tcp.h>
-typedef struct sockaddr     SOCKADDR;
-typedef struct addrinfo     ADDRINFO;
-typedef struct sockaddr_in  SOCKADDR_IN;
-typedef struct sockaddr_in6 SOCKADDR_IN6;
-typedef        int          wmkcNetSocket;
 #elif defined(_WIN32)
 #include <WS2tcpip.h>
 #pragma comment(lib, "WS2_32.lib")
-typedef SOCKET    wmkcNetSocket;
 #endif
 
 #define HOSTNAME "www.pixiv.net"

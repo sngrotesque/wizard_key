@@ -19,7 +19,8 @@ import ssl
 import os
 import re
 
-bili = wmkcBili()
-bili.login()
+vpn = wmkcVpn_client()
+
+
 
 

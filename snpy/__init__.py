@@ -12,6 +12,9 @@ from .wmkc_crypto import (
     wmkcCrypto_base64_decode,
     AES
 )
+from .wmkc_vpn import (
+    wmkcVpn_client, wmkcVpn_server
+)
 from .wmkc_password import (
     wmkcCrypto_password
 )
