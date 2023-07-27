@@ -19,8 +19,6 @@ import ssl
 import os
 import re
 
-vpn = wmkcVpn_client()
-
 
 
 
