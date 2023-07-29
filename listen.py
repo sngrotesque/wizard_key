@@ -9,37 +9,29 @@ DEFAULT_LISTEN_PORT = 4772
 DEFAULT_LISTEN_NUM = 30
 
 def client_handler(sockfd :socket):
-    connect_info = sockfd.recv(4096)
-    print(connect_info)
     try:
+        connect_info = sockfd.recv(4096)
         target_host, target_port, protocol = \
-            re.findall(b'CONNECT ([\w\d.\-]+):(\d+) (HTTP/[\d.]+)', connect_info, re.S | re.I)[0]
+            re.findall(b'CONNECT ([\w\d\.\-]+):(\d+) (HTTP/[\d.]+)', connect_info, re.S | re.I)[0]
         sockfd.send(f'{protocol} 200 Connection Established\r\n\r\n'.encode())
-    except TypeError:
-        ERROR_HEADERS = (
-            'HTTP/1.1 400 Invalid header received from client\r\n'
-            'Content-Type: text/plain\r\n'
-            'Connection: close\r\n\r\n').encode()
-        sockfd.send(ERROR_HEADERS)
-        print(f'错误HTTP报文。\n')
-        os._exit(-1)
-
-    print(target_host, target_port)
-    target_sockfd = socket(AF_INET, SOCK_STREAM, 0)
-    target_sockfd.connect((target_host, int(target_port)))
-
-    while True:
-        rlist, wlist, xlist = select.select([sockfd, target_sockfd], [], [])
-        if sockfd in rlist:
-            data = sockfd.recv(4096)
-            if not data:
-                break
-            target_sockfd.sendall(data)
-        if target_sockfd in rlist:
-            data = target_sockfd.recv(4096)
-            if not data:
-                break
-            sockfd.sendall(data)
+        target_sockfd = socket(AF_INET, SOCK_STREAM, 0)
+        target_sockfd.connect((target_host, int(target_port)))
+        while True:
+            rlist, wlist, xlist = select.select([sockfd, target_sockfd], [], [])
+            if sockfd in rlist:
+                data = sockfd.recv(4096)
+                if not data:
+                    break
+                target_sockfd.sendall(data)
+            if target_sockfd in rlist:
+                data = target_sockfd.recv(4096)
+                if not data:
+                    break
+                sockfd.sendall(data)
+    except (IndexError, ConnectionResetError) as e:
+        print(f'抛出错误[Error]: {e}')
+    finally:
+        sockfd.close()
 
 sockfd = socket(AF_INET, SOCK_STREAM, 0)
 sockfd.bind((DEFAULT_LISTEN_ADDR, DEFAULT_LISTEN_PORT))
