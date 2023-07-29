@@ -153,6 +153,8 @@ WMKC_OF((wmkcNet_obj *obj, wmkcCSTR hostname, wmkc_u16 port))
             SOCKADDR_IN6 *ipv6 = (SOCKADDR_IN6 *)obj->addr_info;
             ipv6->sin6_port = htons(port);
         }
+
+        SSL_set_tlsext_host_name(obj->ssl_obj->ssl, hostname);
     }
 
     wmkcErr_return(error, wmkcErr_OK, "OK.");
