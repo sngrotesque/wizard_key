@@ -29,7 +29,7 @@ def client_handler(sockfd :socket):
                     break
                 sockfd.sendall(data)
     except (IndexError, ConnectionResetError) as e:
-        print(f'抛出错误[Error]: {e}')
+        print(f'抛出错误[Error]: {e}, {connect_info}')
     finally:
         sockfd.close()
 
