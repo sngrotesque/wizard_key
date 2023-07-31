@@ -109,27 +109,6 @@ WMKC_OF((wmkcNet_obj **obj))
     wmkcErr_return(error, wmkcErr_OK, "OK.");
 }
 
-WMKC_PUBLIC(wmkcErr_obj) wmkcNet_getaddrinfo WMKC_OPEN_API
-WMKC_OF((SOCKADDR *dst, wmkcCSTR hostname, wmkcNetType family))
-{
-    wmkcErr_obj error;
-    if(!dst || !hostname) {
-        wmkcErr_return(error, wmkcErr_ErrNULL,
-            "wmkcNet_getaddrinfo: dst or hostname is NULL.");
-    }
-    ADDRINFO *result = wmkcNull;
-    ADDRINFO hints = {.ai_family = family};
-
-    if(getaddrinfo(hostname, "echo", &hints, &result)) {
-        wmkcErr_return(error, wmkcErr_NetDomainResolv,
-            "wmkcNet_getaddrinfo: Domain Name System failed.");
-    }
-    memcpy(dst, result->ai_addr, result->ai_addrlen);
-
-    freeaddrinfo(result); // 释放掉已结束使用的解析数据
-    wmkcErr_return(error, wmkcErr_OK, "OK.");
-}
-
 WMKC_PUBLIC(wmkcErr_obj) wmkcNet_init WMKC_OPEN_API
 WMKC_OF((wmkcNet_obj *obj, wmkcCSTR hostname, wmkc_u16 port))
 {
@@ -157,6 +136,27 @@ WMKC_OF((wmkcNet_obj *obj, wmkcCSTR hostname, wmkc_u16 port))
         SSL_set_tlsext_host_name(obj->ssl_obj->ssl, hostname);
     }
 
+    wmkcErr_return(error, wmkcErr_OK, "OK.");
+}
+
+WMKC_PUBLIC(wmkcErr_obj) wmkcNet_getaddrinfo WMKC_OPEN_API
+WMKC_OF((SOCKADDR *dst, wmkcCSTR hostname, wmkcNetType family))
+{
+    wmkcErr_obj error;
+    if(!dst || !hostname) {
+        wmkcErr_return(error, wmkcErr_ErrNULL,
+            "wmkcNet_getaddrinfo: dst or hostname is NULL.");
+    }
+    ADDRINFO *result = wmkcNull;
+    ADDRINFO hints = {.ai_family = family};
+
+    if(getaddrinfo(hostname, "echo", &hints, &result)) {
+        wmkcErr_return(error, wmkcErr_NetDomainResolv,
+            "wmkcNet_getaddrinfo: Domain Name System failed.");
+    }
+    memcpy(dst, result->ai_addr, result->ai_addrlen);
+
+    freeaddrinfo(result); // 释放掉已结束使用的解析数据
     wmkcErr_return(error, wmkcErr_OK, "OK.");
 }
 

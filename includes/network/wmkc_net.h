@@ -75,7 +75,7 @@ typedef struct {
     wmkcNetType   sockfdType;     // 套接字网络类型（TCP or UDP）
     wmkcNetSize   addr_info_size; // 网络地址信息结构体的长度
     SOCKADDR     *addr_info;      // 用于保留地址信息的结构体【size: 8】
-    wmkcNet_ssl  *ssl_obj;         // SSL/TLS协议结构体
+    wmkcNet_ssl  *ssl_obj;        // SSL/TLS协议结构体
 } wmkcNet_obj;
 
 /**
@@ -158,19 +158,6 @@ WMKC_PUBLIC(wmkcErr_obj) wmkcNet_free WMKC_OPEN_API
 WMKC_OF((wmkcNet_obj **obj));
 
 /**
- * @brief 解析域名到SOCKADDR指针中
- * @authors SN-Grotesque
- * @note 无
- * @param dst 指针，指向SOCKADDR类型对象的地址。
- * @param hostname 域名字符串。
- * @param family 代表你要使用的网络家族，比如AF_INET或AF_INET6。
- * @return 返回一个wmkcErr对象，code为0代表无错误，如果为
- *         其他值，那么需检查message与code。
- */
-WMKC_PUBLIC(wmkcErr_obj) wmkcNet_getaddrinfo WMKC_OPEN_API
-WMKC_OF((SOCKADDR *dst, wmkcCSTR hostname, wmkcNetType family));
-
-/**
  * @brief 初始化wmkcNet库，并解析域名。
  * @authors SN-Grotesque
  * @note 无
@@ -183,6 +170,19 @@ WMKC_OF((SOCKADDR *dst, wmkcCSTR hostname, wmkcNetType family));
  */
 WMKC_PUBLIC(wmkcErr_obj) wmkcNet_init WMKC_OPEN_API
 WMKC_OF((wmkcNet_obj *obj, wmkcCSTR hostname, wmkc_u16 port));
+
+/**
+ * @brief 解析域名到SOCKADDR指针中
+ * @authors SN-Grotesque
+ * @note 无
+ * @param dst 指针，指向SOCKADDR类型对象的地址。
+ * @param hostname 域名字符串。
+ * @param family 代表你要使用的网络家族，比如AF_INET或AF_INET6。
+ * @return 返回一个wmkcErr对象，code为0代表无错误，如果为
+ *         其他值，那么需检查message与code。
+ */
+WMKC_PUBLIC(wmkcErr_obj) wmkcNet_getaddrinfo WMKC_OPEN_API
+WMKC_OF((SOCKADDR *dst, wmkcCSTR hostname, wmkcNetType family));
 
 /**
  * @brief 设置发送与接收超时时间
