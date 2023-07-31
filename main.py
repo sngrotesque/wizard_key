@@ -19,14 +19,13 @@ import ssl
 import os
 import re
 
-aes = wmkcCrypto(key = b'1234567890abcdef', iv = b'0123456789abcdef',
-    nonce = b'804139ha', segment_size = 32, mode = AES.MODE_CTR)
+sockfd = socket.socket(AF_INET6, SOCK_STREAM, 0)
+sockfd.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+# sockfd.bind(('2409:8a62:d13:37c0:e873:f653:8514:3164', 12344))
+sockfd.connect(('240e:974:1e01:1100::110', 443))
 
-content = 'u8 *((**(*海嗣)(u8 *, u32))[4])(u32 *, u8 **)'.encode()
-content = wmkcCrypto_padding(content)
-res = aes.aes_encrypt(content)
+print(sockfd.getsockname())
 
-print(res)
-print(res.hex())
-print(base64.b64encode(res).decode())
+sockfd.close()
+
 
