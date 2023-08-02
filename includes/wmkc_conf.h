@@ -2,6 +2,7 @@
 #define WMKC // Wizard Magic Key Cyber（网络巫师的魔法钥匙）
 
 #include <stdio.h>    // 标准输入输出库
+#include <errno.h>    // 错误处理库
 #include <locale.h>   // 时区库
 #include <string.h>   // 标准字符串库
 #include <stdlib.h>   // 标准库
