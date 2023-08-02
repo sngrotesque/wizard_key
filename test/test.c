@@ -78,7 +78,7 @@ void test()
     recv(sockfd->sockfd, recvbuf, sizeof(recvbuf), 0);
     printf("%s\n", recvbuf);
 
-    error = wmkcNet_shutdown(sockfd, SD_BOTH);
+    error = wmkcNet_shutdown(sockfd, 2);
     if(error.code) printf("%s\n", error.message);
     error = wmkcNet_close(sockfd);
     if(error.code) printf("%s\n", error.message);
