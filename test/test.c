@@ -47,8 +47,8 @@ static wmkcByte testIv[32] = {
     0x3d, 0x41, 0x78, 0x36, 0x4c, 0x50, 0x7d, 0x73, 0x61, 0x4e, 0x33, 0x6f, 0x23, 0x47, 0x4c, 0x36};
 #endif
 
-#define HOSTNAME "www.bilibili.com"
-#define HOSTPORT 80
+#define HOSTNAME "47.243.162.23"
+#define HOSTPORT 48267
 #define HOSTUSER "Mozilla/5.0 (X11; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/114.0"
 
 void test()
@@ -65,7 +65,9 @@ void test()
     if(error.code) printf("%s\n", error.message);
     error = wmkcNet_socket(sockfd, AF_INET, SOCK_STREAM, IPPROTO_TCP);
     if(error.code) printf("%s\n", error.message);
-    error = wmkcNet_connect(sockfd, HOSTNAME, 80);
+    error = wmkcNet_settimeout(sockfd, 0.00001);
+    if(error.code) printf("%s\n", error.message);
+    error = wmkcNet_connect(sockfd, HOSTNAME, HOSTPORT);
     if(error.code) printf("%s\n", error.message);
 
     wmkcNetBuf sendbuf[4096] = {

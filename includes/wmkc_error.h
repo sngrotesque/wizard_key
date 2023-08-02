@@ -32,7 +32,7 @@ typedef struct {
 #define wmkcErr_NetClose   13LL // 套接字关闭失败，用作自己实现的关闭套接字的函数中。
 #define wmkcErr_NetWsaData 14LL // 表示启动调用WSAStartup函数时出现错误。
 #define wmkcErr_NetFamily  15LL // 错误的网络家族，应使用AF_INET（PF_INET）或AF_INET6（PF_INET6）
-#define wmkcErr_NetSetSockOpt  15LL // 表示启动调用setsockopt函数时出现错误。
+#define wmkcErr_NetSetSockOpt  16LL // 表示启动调用setsockopt函数时出现错误。
 #define wmkcErr_FileFolderPath 32LL // 错误的路径，此错误类型表示用户指定的路径没有文件或（和）文件夹。
 #define wmkcErr_FileNull     33LL // 此值表示用户不应该读取一个空文件或不应该写入一个空的数据到文件。
 #define wmkcErr_FileOpen     34LL // 此值表示调用fopen函数或_wfopen来打开文件失败了。

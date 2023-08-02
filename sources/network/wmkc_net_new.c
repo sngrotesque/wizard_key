@@ -148,10 +148,36 @@ WMKC_OF((wmkcNet_addr *addr, wmkcCSTR hostname, wmkc_u16 port,
     wmkcErr_return(error, wmkcErr_OK, "OK.");
 }
 
-WMKC_PUBLIC(wmkcErr_obj) wmkcNet_timeout WMKC_OPEN_API
-WMKC_OF((wmkcNet_obj *obj))
+WMKC_PUBLIC(wmkcErr_obj) wmkcNet_settimeout WMKC_OPEN_API
+WMKC_OF((wmkcNet_obj *obj, double _value))
 {
+    wmkcErr_obj error;
+    if(!obj) {
+        wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcNet_settimeout: obj is NULL.");
+    }
 
+    if(_value) {
+#       if defined(WMKC_PLATFORM_WINOS)
+        DWORD _timeout = (DWORD)(_value * 1000);
+#       elif defined(WMKC_PLATFORM_LINUX)
+        double intpart = 0;
+        double fracpart = modf(_value, &intpart);
+        struct timeval _timeout = {.tv_sec=(long)intpart, .tv_usec=(long)(fracpart * 1000000)};
+#       endif
+
+        wmkcNetTimer *optval = (wmkcNetTimer *)&_timeout;
+        wmkcNetSize optlen = sizeof(_timeout);
+        if(setsockopt(obj->sockfd, SOL_SOCKET, SO_SNDTIMEO, optval, optlen)) {
+            wmkcErr_return(error, wmkcErr_Err32, "wmkcNet_settimeout: "
+                "Error setting send timeout using the setsockopt function.");
+        }
+        if(setsockopt(obj->sockfd, SOL_SOCKET, SO_RCVTIMEO, optval, optlen)) {
+            wmkcErr_return(error, wmkcErr_Err32, "wmkcNet_settimeout: "
+                "Error setting receive timeout using the setsockopt function.");
+        }
+    }
+
+    wmkcErr_return(error, wmkcErr_OK, "OK.");
 }
 
 WMKC_PUBLIC(wmkcErr_obj) wmkcNet_bind WMKC_OPEN_API

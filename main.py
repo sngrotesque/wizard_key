@@ -19,13 +19,6 @@ import ssl
 import os
 import re
 
-sockfd = ssl.SSLContext().wrap_socket(socket.socket(), server_hostname='0.0.0.0')
-sockfd.bind(('0.0.0.0', 12345))
-sockfd.listen(1)
-c_sockfd, addr = sockfd.accept()
-
-sockfd.send(b'...')
-
-c_sockfd.close()
-sockfd.close()
+context = ssl.create_default_context()
+sockfd = context.wrap_socket(socket.socket())
 
