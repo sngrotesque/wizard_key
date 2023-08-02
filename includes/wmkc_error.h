@@ -28,9 +28,10 @@ typedef struct {
 #define wmkcErr_NetSockfdType 9LL // 错误的套接字类型，只能用作：函数要求是TCP但传入的是UDP套接字或相反。
 #define wmkcErr_NetSend    10LL // 套接字发送数据失败，只能用作未能成功且正确的使用send函数时。
 #define wmkcErr_NetRecv    11LL // 套接字接收数据失败，只能用作未能成功且正确的使用recv函数时。
-#define wmkcErr_NetClose   12LL // 套接字接收数据失败，用作自己实现的关闭套接字的函数中。
-#define wmkcErr_NetWsaData 13LL // 表示启动调用WSAStartup函数时出现错误。
-#define wmkcErr_NetFamily  14LL // 错误的网络家族，应使用AF_INET（PF_INET）或AF_INET6（PF_INET6）
+#define wmkcErr_NetShutdown 12LL // 套接字关闭失败，用作自己实现的关闭套接字的函数中。
+#define wmkcErr_NetClose   13LL // 套接字关闭失败，用作自己实现的关闭套接字的函数中。
+#define wmkcErr_NetWsaData 14LL // 表示启动调用WSAStartup函数时出现错误。
+#define wmkcErr_NetFamily  15LL // 错误的网络家族，应使用AF_INET（PF_INET）或AF_INET6（PF_INET6）
 #define wmkcErr_NetSetSockOpt  15LL // 表示启动调用setsockopt函数时出现错误。
 #define wmkcErr_FileFolderPath 32LL // 错误的路径，此错误类型表示用户指定的路径没有文件或（和）文件夹。
 #define wmkcErr_FileNull     33LL // 此值表示用户不应该读取一个空文件或不应该写入一个空的数据到文件。

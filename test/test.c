@@ -47,9 +47,43 @@ static wmkcByte testIv[32] = {
     0x3d, 0x41, 0x78, 0x36, 0x4c, 0x50, 0x7d, 0x73, 0x61, 0x4e, 0x33, 0x6f, 0x23, 0x47, 0x4c, 0x36};
 #endif
 
+#define HOSTNAME "www.bilibili.com"
+#define HOSTPORT 80
+#define HOSTUSER "Mozilla/5.0 (X11; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/114.0"
+
 void test()
 {
-    printf("%d\n", sizeof(SOCKET));
+    WSADATA ws;
+    WSAStartup(MAKEWORD(2,2), &ws);
+
+    wmkcNet_obj *sockfd = wmkcNull;
+    wmkcErr_obj error;
+
+    error = wmkcNet_new(&sockfd);
+    if(error.code) printf("%s\n", error.message);
+    error = wmkcNet_socket(sockfd, AF_INET, SOCK_STREAM, IPPROTO_TCP);
+    if(error.code) printf("%s\n", error.message);
+    error = wmkcNet_connect(sockfd, HOSTNAME, 80);
+    if(error.code) printf("%s\n", error.message);
+
+    wmkcNetBuf sendbuf[4096] = {
+        "GET / HTTP/1.1\r\n"
+        "Host: "HOSTNAME"\r\n"
+        "Connection: close\r\n"
+        "User-Agent: "HOSTUSER"\r\n\r\n"};
+    wmkcNetBuf recvbuf[4096] = {0};
+    send(sockfd->sockfd, sendbuf, strlen((wmkcChar *)sendbuf), 0);
+    recv(sockfd->sockfd, recvbuf, sizeof(recvbuf), 0);
+    printf("%s\n", recvbuf);
+
+    error = wmkcNet_shutdown(sockfd, SD_BOTH);
+    if(error.code) printf("%s\n", error.message);
+    error = wmkcNet_close(sockfd);
+    if(error.code) printf("%s\n", error.message);
+    error = wmkcNet_free(&sockfd);
+    if(error.code) printf("%s\n", error.message);
+
+    WSACleanup();
 }
 
 int main(wmkc_u32 argc, wmkcChar **argv)

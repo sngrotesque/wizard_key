@@ -13,6 +13,17 @@
 
 #define WMKC_NET_OPENSSL_API true  // 是否启用OpenSSL的功能
 
+// shutdown函数的错误代码
+#   if defined(WMKC_PLATFORM_WINOS)
+#define WMKC_NET_SHUTDOWN_ERR_EINVAL   WSAEINVAL
+#define WMKC_NET_SHUTDOWN_ERR_ENOTCONN WSAENOTCONN
+#define WMKC_NET_SHUTDOWN_ERR_ENOTSOCK WSAENOTSOCK
+#   elif defined(WMKC_PLATFORM_LINUX)
+#define WMKC_NET_SHUTDOWN_ERR_EINVAL   EINVAL
+#define WMKC_NET_SHUTDOWN_ERR_ENOTCONN ENOTCONN
+#define WMKC_NET_SHUTDOWN_ERR_ENOTSOCK ENOTSOCK
+#   endif
+
 #if WMKC_NET_OPENSSL_API
 #include <openssl/ssl.h>
 #include <openssl/err.h>
@@ -54,8 +65,8 @@ typedef wmkc_u32  wmkcNetType; // wmkcNet的类型类型
 
 typedef struct {
     SOCKADDR *sockAddress;
-    wmkcCSTR addr;
-    wmkc_u16 port;
+    wmkcChar *addr;
+    wmkc_u16  port;
     wmkcNetSize sockAddressSize;
 } wmkcNet_addr;
 

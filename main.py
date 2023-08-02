@@ -19,13 +19,13 @@ import ssl
 import os
 import re
 
-sockfd = socket.socket(AF_INET6, SOCK_STREAM, 0)
-sockfd.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-# sockfd.bind(('2409:8a62:d13:37c0:e873:f653:8514:3164', 12344))
-sockfd.connect(('240e:974:1e01:1100::110', 443))
+sockfd = ssl.SSLContext().wrap_socket(socket.socket(), server_hostname='0.0.0.0')
+sockfd.bind(('0.0.0.0', 12345))
+sockfd.listen(1)
+c_sockfd, addr = sockfd.accept()
 
-print(sockfd.getsockname())
+sockfd.send(b'...')
 
+c_sockfd.close()
 sockfd.close()
-
 
