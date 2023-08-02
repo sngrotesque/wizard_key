@@ -166,12 +166,11 @@ WMKC_OF((wmkcNet_obj *obj, double _value))
 #       endif
 
         wmkcNetTimer *optval = (wmkcNetTimer *)&_timeout;
-        wmkcNetSize optlen = sizeof(_timeout);
-        if(setsockopt(obj->sockfd, SOL_SOCKET, SO_SNDTIMEO, optval, optlen)) {
+        if(setsockopt(obj->sockfd, SOL_SOCKET, SO_SNDTIMEO, optval, sizeof(_timeout))) {
             wmkcErr_return(error, wmkcErr_Err32, "wmkcNet_settimeout: "
                 "Error setting send timeout using the setsockopt function.");
         }
-        if(setsockopt(obj->sockfd, SOL_SOCKET, SO_RCVTIMEO, optval, optlen)) {
+        if(setsockopt(obj->sockfd, SOL_SOCKET, SO_RCVTIMEO, optval, sizeof(_timeout))) {
             wmkcErr_return(error, wmkcErr_Err32, "wmkcNet_settimeout: "
                 "Error setting receive timeout using the setsockopt function.");
         }
@@ -208,6 +207,11 @@ WMKC_OF((wmkcNet_obj *obj, wmkcCSTR addr, wmkc_u16 port))
             "obj or obj->raddr or addr or port is NULL.");
     }
 
+    if(obj->type == SOCK_DGRAM || obj->type == SOCK_RAW) {
+        wmkcErr_return(error, wmkcErr_NetConnect, "wmkcNet_connect: "
+            "Please do not use sockets that are oriented towards no connections.");
+    }
+
     error = wmkcNet_getaddrinfo(obj->raddr, addr, port, obj->family, obj->type, obj->proto);
     if(error.code) return error;
 
@@ -216,6 +220,9 @@ WMKC_OF((wmkcNet_obj *obj, wmkcCSTR addr, wmkc_u16 port))
             "The socket connection to the target host failed.");
     }
 
+    if(obj->laddr->sockAddress) {
+        wmkcMem_free(obj->laddr->sockAddress);
+    }
     obj->laddr->sockAddressSize = WMKC_NET_IPV6_ADDR_SIZE;
     if(!wmkcMem_new(SOCKADDR *, obj->laddr->sockAddress, obj->laddr->sockAddressSize)) {
         wmkcErr_return(error, wmkcErr_ErrMemory, "wmkcNet_connect: "
@@ -225,6 +232,23 @@ WMKC_OF((wmkcNet_obj *obj, wmkcCSTR addr, wmkc_u16 port))
     if(getsockname(obj->sockfd, obj->laddr->sockAddress, &obj->laddr->sockAddressSize)) {
         wmkcErr_return(error, wmkcErr_NetConnect, "wmkcNet_connect: "
             "The getsockname function returned an error code.");
+    }
+
+    if(obj->laddr->addr) {
+        wmkcMem_free(obj->laddr->addr);
+    }
+    if(!wmkcMem_new(wmkcChar *, obj->laddr->addr, INET6_ADDRSTRLEN)) {
+        wmkcErr_return(error, wmkcErr_ErrMemory, "wmkcNet_connect: "
+            "Failed to allocate memory for obj->laddr->addr.");
+    }
+    if(obj->family == AF_INET) {
+        SOCKADDR_IN *info = (SOCKADDR_IN *)obj->laddr->sockAddress;
+        wmkcNet_GetAddr(AF_INET, &info->sin_addr, obj->laddr->addr);
+        obj->laddr->port = ntohs(info->sin_port);
+    } else if(obj->family == AF_INET6) {
+        SOCKADDR_IN6 *info = (SOCKADDR_IN6 *)obj->laddr->sockAddress;
+        wmkcNet_GetAddr(AF_INET6, &info->sin6_addr, obj->laddr->addr);
+        obj->laddr->port = ntohs(info->sin6_port);
     }
 
     wmkcErr_return(error, wmkcErr_OK, "OK.");

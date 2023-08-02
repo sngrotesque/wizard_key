@@ -18,7 +18,3 @@ import rsa
 import ssl
 import os
 import re
-
-context = ssl.create_default_context()
-sockfd = context.wrap_socket(socket.socket())
-
