@@ -53,8 +53,10 @@ static wmkcByte testIv[32] = {
 
 void test()
 {
+#   if defined(WMKC_PLATFORM_WINOS)
     WSADATA ws;
     WSAStartup(MAKEWORD(2,2), &ws);
+#   endif
 
     wmkcNet_obj *sockfd = wmkcNull;
     wmkcErr_obj error;
@@ -83,7 +85,9 @@ void test()
     error = wmkcNet_free(&sockfd);
     if(error.code) printf("%s\n", error.message);
 
+#   if defined(WMKC_PLATFORM_WINOS)
     WSACleanup();
+#   endif
 }
 
 int main(wmkc_u32 argc, wmkcChar **argv)
