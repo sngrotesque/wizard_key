@@ -35,7 +35,7 @@ typedef struct {
     error.code = _code; \
     return error
 
-#define wmkcErr_func_return(error, _func_name, _code, _message) \
+#define wmkcErr_func_return(error, _code, _func_name, _message) \
     error.message = _message; \
     error.func = _func_name; \
     error.code = _code; \

@@ -23,7 +23,7 @@ typedef struct tcphdr TCPHDR;
  *         其他值，那么需检查message与code。
  */
 WMKC_PUBLIC(wmkcErr_obj) wmkcDDos_attack WMKC_OPEN_API
-WMKC_OF((wmkcCSTR srcIP, wmkc_u16 srcPort, wmkcCSTR dstIP, wmkc_u16 dstPort, wmkcSize count));
+WMKC_OF((wmkcCSTR dstIP, wmkc_u16 dstPort, wmkcCSTR srcIP, wmkc_u16 srcPort, wmkcSize count));
 
 #endif /* WMKC_DDOS */
 #endif /* WMKC_SUPPORT */

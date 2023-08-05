@@ -12,153 +12,153 @@ WMKC_OF((wmkcCSTR funcName))
 
     switch(errCodeBySystem) {
         case WMKC_NET_ERR_EINTR:
-            wmkcErr_func_return(error, funcName, errCodeBySystem,
+            wmkcErr_func_return(error, errCodeBySystem, funcName,
                 "The call executed was truncated by the operating system.");
         case WMKC_NET_ERR_EACCES:
-            wmkcErr_func_return(error, funcName, errCodeBySystem,
+            wmkcErr_func_return(error, errCodeBySystem, funcName,
                 "Accessing sockets in an impermissible manner.");
         case WMKC_NET_ERR_EFAULT:
-            wmkcErr_func_return(error, funcName, errCodeBySystem,
+            wmkcErr_func_return(error, errCodeBySystem, funcName,
                 "The address points to the user's inaccessible address space.");
         case WMKC_NET_ERR_EINVAL:
-            wmkcErr_func_return(error, funcName, errCodeBySystem,
+            wmkcErr_func_return(error, errCodeBySystem, funcName,
                 "An invalid socket parameter was provided.");
         case WMKC_NET_ERR_EMFILE:
-            wmkcErr_func_return(error, funcName, errCodeBySystem,
+            wmkcErr_func_return(error, errCodeBySystem, funcName,
                 "Unable to provide sockets, the process's limit on the number of sockets has been reached.");
         case WMKC_NET_ERR_EISCONN:
-            wmkcErr_func_return(error, funcName, errCodeBySystem,
+            wmkcErr_func_return(error, errCodeBySystem, funcName,
                 "The socket has already been specified for connection.");
         case WMKC_NET_ERR_ENOBUFS:
-            wmkcErr_func_return(error, funcName, errCodeBySystem,
+            wmkcErr_func_return(error, errCodeBySystem, funcName,
                 "No buffer space provided.");
         case WMKC_NET_ERR_EALREADY:
-            wmkcErr_func_return(error, funcName, errCodeBySystem,
+            wmkcErr_func_return(error, errCodeBySystem, funcName,
                 "Another (TCP Fast Open) is executing or the socket is in non blocking mode.");
         case WMKC_NET_ERR_ENOTCONN:
-            wmkcErr_func_return(error, funcName, errCodeBySystem,
+            wmkcErr_func_return(error, errCodeBySystem, funcName,
                 "The socket is already (not) connected.");
         case WMKC_NET_ERR_EMSGSIZE:
-            wmkcErr_func_return(error, funcName, errCodeBySystem,
+            wmkcErr_func_return(error, errCodeBySystem, funcName,
                 "The message is greater than the limit supported by the transmission.");
         case WMKC_NET_ERR_ENOTSOCK:
-            wmkcErr_func_return(error, funcName, errCodeBySystem,
+            wmkcErr_func_return(error, errCodeBySystem, funcName,
                 "The descriptor is not a socket. :)");
         case WMKC_NET_ERR_ETIMEDOUT:
-            wmkcErr_func_return(error, funcName, errCodeBySystem,
+            wmkcErr_func_return(error, errCodeBySystem, funcName,
                 "The connection has been disconnected due to timeout.");
         case WMKC_NET_ERR_EPROTOTYPE:
-            wmkcErr_func_return(error, funcName, errCodeBySystem,
+            wmkcErr_func_return(error, errCodeBySystem, funcName,
                 "The socket type does not support this operation.");
         case WMKC_NET_ERR_EOPNOTSUPP:
-            wmkcErr_func_return(error, funcName, errCodeBySystem,
+            wmkcErr_func_return(error, errCodeBySystem, funcName,
                 "This socket is not connection oriented, or it is unidirectional.");
         case WMKC_NET_ERR_EADDRINUSE:
-            wmkcErr_func_return(error, funcName, errCodeBySystem,
+            wmkcErr_func_return(error, errCodeBySystem, funcName,
                 "The address or port is already (not) in use.");
         case WMKC_NET_ERR_ECONNRESET:
-            wmkcErr_func_return(error, funcName, errCodeBySystem,
+            wmkcErr_func_return(error, errCodeBySystem, funcName,
                 "Connection is reset");
         case WMKC_NET_ERR_ENETUNREACH:
-            wmkcErr_func_return(error, funcName, errCodeBySystem,
+            wmkcErr_func_return(error, errCodeBySystem, funcName,
                 "The network is not available.");
         case WMKC_NET_ERR_EWOULDBLOCK:
-            wmkcErr_func_return(error, funcName, errCodeBySystem,
+            wmkcErr_func_return(error, errCodeBySystem, funcName,
                 "The socket is not in blocking mode.");
         case WMKC_NET_ERR_EINPROGRESS:
-            wmkcErr_func_return(error, funcName, errCodeBySystem,
+            wmkcErr_func_return(error, errCodeBySystem, funcName,
                 "The socket is non blocking and cannot be executed immediately.");
         case WMKC_NET_ERR_ECONNREFUSED:
-            wmkcErr_func_return(error, funcName, errCodeBySystem,
+            wmkcErr_func_return(error, errCodeBySystem, funcName,
                 "The connection was forcibly rejected by the remote host.");
         case WMKC_NET_ERR_ECONNABORTED:
-            wmkcErr_func_return(error, funcName, errCodeBySystem,
+            wmkcErr_func_return(error, errCodeBySystem, funcName,
                 "The socket is unavailable due to timeout or other faults.");
         case WMKC_NET_ERR_EAFNOSUPPORT:
-            wmkcErr_func_return(error, funcName, errCodeBySystem,
+            wmkcErr_func_return(error, errCodeBySystem, funcName,
                 "The address in the specified network family cannot be used with this socket.");
         case WMKC_NET_ERR_EADDRNOTAVAIL:
-            wmkcErr_func_return(error, funcName, errCodeBySystem,
+            wmkcErr_func_return(error, errCodeBySystem, funcName,
                 "The requested address is invalid.");
         case WMKC_NET_ERR_EPROTONOSUPPORT:
-            wmkcErr_func_return(error, funcName, errCodeBySystem,
+            wmkcErr_func_return(error, errCodeBySystem, funcName,
                 "The specified protocol is not supported.");
 #       if defined(WMKC_PLATFORM_LINUX)
         case WMKC_NET_ERR_EIO:
-            wmkcErr_func_return(error, funcName, errCodeBySystem,
+            wmkcErr_func_return(error, errCodeBySystem, funcName,
                 "An I/O error occurred.");
         case WMKC_NET_ERR_EPIPE:
-            wmkcErr_func_return(error, funcName, errCodeBySystem,
+            wmkcErr_func_return(error, errCodeBySystem, funcName,
                 "The local end has been closed on a connection oriented socket.");
         case WMKC_NET_ERR_EPERM:
-            wmkcErr_func_return(error, funcName, errCodeBySystem,
+            wmkcErr_func_return(error, errCodeBySystem, funcName,
                 "Firewall rules prohibit connections.");
         case WMKC_NET_ERR_EROFS:
-            wmkcErr_func_return(error, funcName, errCodeBySystem,
+            wmkcErr_func_return(error, errCodeBySystem, funcName,
                 "The socket index node will reside on a read-only file system.");
         case WMKC_NET_ERR_EBADF:
-            wmkcErr_func_return(error, funcName, errCodeBySystem,
+            wmkcErr_func_return(error, errCodeBySystem, funcName,
                 "The descriptor is not a socket.");
         case WMKC_NET_ERR_ELOOP:
-            wmkcErr_func_return(error, funcName, errCodeBySystem,
+            wmkcErr_func_return(error, errCodeBySystem, funcName,
                 "Too many Symbolic link were encountered while resolving addresses.");
         case WMKC_NET_ERR_EDQUOT:
         case WMKC_NET_ERR_ENOSPC:
-            wmkcErr_func_return(error, funcName, errCodeBySystem,
+            wmkcErr_func_return(error, errCodeBySystem, funcName,
                 "The disk quota limit has been reached (insufficient storage space).");
         case WMKC_NET_ERR_ENOENT:
-            wmkcErr_func_return(error, funcName, errCodeBySystem,
+            wmkcErr_func_return(error, errCodeBySystem, funcName,
                 "The component in the directory prefix of the socket path name does not exist.");
         case WMKC_NET_ERR_ENOMEM:
-            wmkcErr_func_return(error, funcName, errCodeBySystem,
+            wmkcErr_func_return(error, errCodeBySystem, funcName,
                 "Insufficient available kernel memory.");
         case WMKC_NET_ERR_ENFILE:
-            wmkcErr_func_return(error, funcName, errCodeBySystem,
+            wmkcErr_func_return(error, errCodeBySystem, funcName,
                 "Unable to provide sockets, the process's limit on the number of sockets has been reached.");
         case WMKC_NET_ERR_EPROTO:
-            wmkcErr_func_return(error, funcName, errCodeBySystem,
+            wmkcErr_func_return(error, errCodeBySystem, funcName,
                 "Wrong protocol.");
         case WMKC_NET_ERR_EAGAIN:
-            wmkcErr_func_return(error, funcName, errCodeBySystem,
+            wmkcErr_func_return(error, errCodeBySystem, funcName,
                 "The socket is non blocking and there is no connection.");
         case WMKC_NET_ERR_ENOTDIR:
-            wmkcErr_func_return(error, funcName, errCodeBySystem,
+            wmkcErr_func_return(error, errCodeBySystem, funcName,
                 "The component with path prefix is not a directory.");
         case WMKC_NET_ERR_ENAMETOOLONG:
-            wmkcErr_func_return(error, funcName, errCodeBySystem,
+            wmkcErr_func_return(error, errCodeBySystem, funcName,
                 "addr is too long.");
         case WMKC_NET_ERR_EDESTADDRREQ:
-            wmkcErr_func_return(error, funcName, errCodeBySystem,
+            wmkcErr_func_return(error, errCodeBySystem, funcName,
                 "The socket is not in connection mode and has no peer address set.");
 #       elif defined(WMKC_PLATFORM_WINOS)
         case WMKC_NET_ERR_ENETDOWN:
-            wmkcErr_func_return(error, funcName, errCodeBySystem,
+            wmkcErr_func_return(error, errCodeBySystem, funcName,
                 "The network subsystem has malfunctioned.");
         case WMKC_NET_ERR_ESHUTDOWN:
-            wmkcErr_func_return(error, funcName, errCodeBySystem,
+            wmkcErr_func_return(error, errCodeBySystem, funcName,
                 "The socket has been closed by the shutdown function.");
         case WMKC_NET_ERR_EHOSTUNREACH:
-            wmkcErr_func_return(error, funcName, errCodeBySystem,
+            wmkcErr_func_return(error, errCodeBySystem, funcName,
                 "Unable to access the remote host at this time.");
         case WMKC_NET_ERR_NOTINITIALISED:
-            wmkcErr_func_return(error, funcName, errCodeBySystem,
+            wmkcErr_func_return(error, errCodeBySystem, funcName,
                 "The call to the WSAStartup function was not completed.");
         case WMKC_NET_ERR_ESOCKTNOSUPPORT:
-            wmkcErr_func_return(error, funcName, errCodeBySystem,
+            wmkcErr_func_return(error, errCodeBySystem, funcName,
                 "This address family does not support the specified socket type.");
         case WMKC_NET_ERR_EINVALIDPROVIDER:
-            wmkcErr_func_return(error, funcName, errCodeBySystem,
+            wmkcErr_func_return(error, errCodeBySystem, funcName,
                 "The service provider returned a version other than 2.2.");
         case WMKC_NET_ERR_EINVALIDPROCTABLE:
-            wmkcErr_func_return(error, funcName, errCodeBySystem,
+            wmkcErr_func_return(error, errCodeBySystem, funcName,
                 "The service provider returned an invalid or incomplete procedure table to the WSPStartup.");
         case WMKC_NET_ERR_EPROVIDERFAILEDINIT:
-            wmkcErr_func_return(error, funcName, errCodeBySystem,
+            wmkcErr_func_return(error, errCodeBySystem, funcName,
                 "The service provider failed to initialize.");
 #       endif
 
         default:
-            wmkcErr_func_return(error, funcName, errCodeBySystem,
+            wmkcErr_func_return(error, errCodeBySystem, funcName,
                 "Unexpected error.");
     }
 }
@@ -275,30 +275,30 @@ WMKC_OF((wmkcNet_addr *addr, wmkcCSTR hostname, wmkc_u16 port,
 
     switch(getaddrinfo(hostname, servname, &hints, &result)) {
         case EAI_AGAIN:
-            wmkcErr_func_return(error, "wmkcNet_getaddrinfo", EAI_AGAIN,
+            wmkcErr_func_return(error, EAI_AGAIN, "wmkcNet_getaddrinfo",
                 "A temporary failure in name resolution occurred.");
         case EAI_BADFLAGS:
-            wmkcErr_func_return(error, "wmkcNet_getaddrinfo", EAI_AGAIN,
+            wmkcErr_func_return(error, EAI_AGAIN, "wmkcNet_getaddrinfo",
                 "An invalid value was provided for the ai_flags member of the pHints parameter.");
         case EAI_FAIL:
-            wmkcErr_func_return(error, "wmkcNet_getaddrinfo", EAI_AGAIN,
+            wmkcErr_func_return(error, EAI_AGAIN, "wmkcNet_getaddrinfo",
                 "A nonrecoverable failure in name resolution occurred.");
         case EAI_FAMILY:
-            wmkcErr_func_return(error, "wmkcNet_getaddrinfo", EAI_AGAIN,
+            wmkcErr_func_return(error, EAI_AGAIN, "wmkcNet_getaddrinfo",
                 "The ai_family member of the pHints parameter is not supported.");
         case EAI_MEMORY:
-            wmkcErr_func_return(error, "wmkcNet_getaddrinfo", EAI_AGAIN,
+            wmkcErr_func_return(error, EAI_AGAIN, "wmkcNet_getaddrinfo",
                 "A memory allocation failure occurred.");
         case EAI_NONAME:
-            wmkcErr_func_return(error, "wmkcNet_getaddrinfo", EAI_AGAIN,
+            wmkcErr_func_return(error, EAI_AGAIN, "wmkcNet_getaddrinfo",
                 "The name does not resolve for the supplied parameters or the pNodeName and "
                 "pServiceName parameters were not provided.");
         case EAI_SERVICE:
-            wmkcErr_func_return(error, "wmkcNet_getaddrinfo", EAI_AGAIN,
+            wmkcErr_func_return(error, EAI_AGAIN, "wmkcNet_getaddrinfo",
                 "The pServiceName parameter is not supported for the specified ai_socktype member of "
                 "the pHints parameter.");
         case EAI_SOCKTYPE:
-            wmkcErr_func_return(error, "wmkcNet_getaddrinfo", EAI_AGAIN,
+            wmkcErr_func_return(error, EAI_AGAIN, "wmkcNet_getaddrinfo",
                 "The ai_socktype member of the pHints parameter is not supported.");
     }
 
@@ -446,9 +446,16 @@ WMKC_OF((wmkcNet_obj *obj, wmkc_u32 backlog))
 }
 
 WMKC_PUBLIC(wmkcErr_obj) wmkcNet_accept WMKC_OPEN_API
-WMKC_OF((wmkcNet_obj *obj))
+WMKC_OF((wmkcNet_obj *dst, wmkcNet_obj *src))
 {
+    wmkcErr_obj error;
+    if(!dst || !src) {
+        wmkcErr_func_return(error, wmkcErr_ErrNULL, "wmkcNet_accept",
+            "dst or src is NULL.");
+    }
 
+
+    wmkcErr_return(error, wmkcErr_OK, "OK.");
 }
 
 WMKC_PUBLIC(wmkcErr_obj) wmkcNet_send WMKC_OPEN_API

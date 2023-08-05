@@ -283,12 +283,12 @@ typedef struct {
 // wmkcNet对象类型
 typedef struct {
     wmkcNetSock sockfd; // 套接字
-    wmkcNetType family; // 套接字家族类型
-    wmkcNetType type;   // 套接字网络类型（TCP or UDP）
+    wmkcNetType family; // 套接字家族类型（AF_INET, AF_INET6...）
+    wmkcNetType type;   // 套接字网络类型（SOCK_STREAM, SOCK_DGRAM...）
     wmkcNetType proto;  // 套接字的协议类型（IPPROTO_IP, IPPROTO_TCP...）
     wmkcNet_addr *laddr; // 本地网络地址信息
     wmkcNet_addr *raddr; // 目标网络地址信息
-    double timeout; // 套接字的超时时间，用于设置bing, connect, send, recv...
+    double timeout; // 套接字的超时时间，用于设置bind, connect, acceot, send, recv...
 } wmkcNet_obj;
 
 #endif /* WMKC_NETWORK */
