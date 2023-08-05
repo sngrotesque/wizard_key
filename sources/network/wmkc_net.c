@@ -1,27 +1,172 @@
 #include <network/wmkc_net.h>
 
-WMKC_PUBLIC(wmkcNetSocket) wmkcNet_TCP_Socket WMKC_OPEN_API
-WMKC_OF((wmkcNetSize family, wmkcNetSize protocol))
+WMKC_PUBLIC(wmkcErr_obj) wmkcNet_errorHandler WMKC_OPEN_API
+WMKC_OF((wmkcCSTR funcName))
 {
-    return socket(family, SOCK_STREAM, protocol);
+#   if defined(WMKC_PLATFORM_WINOS)
+    wmkc_s32 errCodeBySystem = WSAGetLastError();
+#   elif defined(WMKC_PLATFORM_LINUX)
+    wmkc_s32 errCodeBySystem = errno;
+#   endif
+    wmkcErr_obj error;
+
+    switch(errCodeBySystem) {
+        case WMKC_NET_ERR_EINTR:
+            wmkcErr_func_return(error, funcName, errCodeBySystem,
+                "The call executed was truncated by the operating system.");
+        case WMKC_NET_ERR_EACCES:
+            wmkcErr_func_return(error, funcName, errCodeBySystem,
+                "Accessing sockets in an impermissible manner.");
+        case WMKC_NET_ERR_EFAULT:
+            wmkcErr_func_return(error, funcName, errCodeBySystem,
+                "The address points to the user's inaccessible address space.");
+        case WMKC_NET_ERR_EINVAL:
+            wmkcErr_func_return(error, funcName, errCodeBySystem,
+                "An invalid socket parameter was provided.");
+        case WMKC_NET_ERR_EMFILE:
+            wmkcErr_func_return(error, funcName, errCodeBySystem,
+                "Unable to provide sockets, the process's limit on the number of sockets has been reached.");
+        case WMKC_NET_ERR_EISCONN:
+            wmkcErr_func_return(error, funcName, errCodeBySystem,
+                "The socket has already been specified for connection.");
+        case WMKC_NET_ERR_ENOBUFS:
+            wmkcErr_func_return(error, funcName, errCodeBySystem,
+                "No buffer space provided.");
+        case WMKC_NET_ERR_EALREADY:
+            wmkcErr_func_return(error, funcName, errCodeBySystem,
+                "Another (TCP Fast Open) is executing or the socket is in non blocking mode.");
+        case WMKC_NET_ERR_ENOTCONN:
+            wmkcErr_func_return(error, funcName, errCodeBySystem,
+                "The socket is already (not) connected.");
+        case WMKC_NET_ERR_EMSGSIZE:
+            wmkcErr_func_return(error, funcName, errCodeBySystem,
+                "The message is greater than the limit supported by the transmission.");
+        case WMKC_NET_ERR_ENOTSOCK:
+            wmkcErr_func_return(error, funcName, errCodeBySystem,
+                "The descriptor is not a socket. :)");
+        case WMKC_NET_ERR_ETIMEDOUT:
+            wmkcErr_func_return(error, funcName, errCodeBySystem,
+                "The connection has been disconnected due to timeout.");
+        case WMKC_NET_ERR_EPROTOTYPE:
+            wmkcErr_func_return(error, funcName, errCodeBySystem,
+                "The socket type does not support this operation.");
+        case WMKC_NET_ERR_EOPNOTSUPP:
+            wmkcErr_func_return(error, funcName, errCodeBySystem,
+                "This socket is not connection oriented, or it is unidirectional.");
+        case WMKC_NET_ERR_EADDRINUSE:
+            wmkcErr_func_return(error, funcName, errCodeBySystem,
+                "The address or port is already (not) in use.");
+        case WMKC_NET_ERR_ECONNRESET:
+            wmkcErr_func_return(error, funcName, errCodeBySystem,
+                "Connection is reset");
+        case WMKC_NET_ERR_ENETUNREACH:
+            wmkcErr_func_return(error, funcName, errCodeBySystem,
+                "The network is not available.");
+        case WMKC_NET_ERR_EWOULDBLOCK:
+            wmkcErr_func_return(error, funcName, errCodeBySystem,
+                "The socket is not in blocking mode.");
+        case WMKC_NET_ERR_EINPROGRESS:
+            wmkcErr_func_return(error, funcName, errCodeBySystem,
+                "The socket is non blocking and cannot be executed immediately.");
+        case WMKC_NET_ERR_ECONNREFUSED:
+            wmkcErr_func_return(error, funcName, errCodeBySystem,
+                "The connection was forcibly rejected by the remote host.");
+        case WMKC_NET_ERR_ECONNABORTED:
+            wmkcErr_func_return(error, funcName, errCodeBySystem,
+                "The socket is unavailable due to timeout or other faults.");
+        case WMKC_NET_ERR_EAFNOSUPPORT:
+            wmkcErr_func_return(error, funcName, errCodeBySystem,
+                "The address in the specified network family cannot be used with this socket.");
+        case WMKC_NET_ERR_EADDRNOTAVAIL:
+            wmkcErr_func_return(error, funcName, errCodeBySystem,
+                "The requested address is invalid.");
+        case WMKC_NET_ERR_EPROTONOSUPPORT:
+            wmkcErr_func_return(error, funcName, errCodeBySystem,
+                "The specified protocol is not supported.");
+#       if defined(WMKC_PLATFORM_LINUX)
+        case WMKC_NET_ERR_EIO:
+            wmkcErr_func_return(error, funcName, errCodeBySystem,
+                "An I/O error occurred.");
+        case WMKC_NET_ERR_EPIPE:
+            wmkcErr_func_return(error, funcName, errCodeBySystem,
+                "The local end has been closed on a connection oriented socket.");
+        case WMKC_NET_ERR_EPERM:
+            wmkcErr_func_return(error, funcName, errCodeBySystem,
+                "Firewall rules prohibit connections.");
+        case WMKC_NET_ERR_EROFS:
+            wmkcErr_func_return(error, funcName, errCodeBySystem,
+                "The socket index node will reside on a read-only file system.");
+        case WMKC_NET_ERR_EBADF:
+            wmkcErr_func_return(error, funcName, errCodeBySystem,
+                "The descriptor is not a socket.");
+        case WMKC_NET_ERR_ELOOP:
+            wmkcErr_func_return(error, funcName, errCodeBySystem,
+                "Too many Symbolic link were encountered while resolving addresses.");
+        case WMKC_NET_ERR_EDQUOT:
+        case WMKC_NET_ERR_ENOSPC:
+            wmkcErr_func_return(error, funcName, errCodeBySystem,
+                "The disk quota limit has been reached (insufficient storage space).");
+        case WMKC_NET_ERR_ENOENT:
+            wmkcErr_func_return(error, funcName, errCodeBySystem,
+                "The component in the directory prefix of the socket path name does not exist.");
+        case WMKC_NET_ERR_ENOMEM:
+            wmkcErr_func_return(error, funcName, errCodeBySystem,
+                "Insufficient available kernel memory.");
+        case WMKC_NET_ERR_ENFILE:
+            wmkcErr_func_return(error, funcName, errCodeBySystem,
+                "Unable to provide sockets, the process's limit on the number of sockets has been reached.");
+        case WMKC_NET_ERR_EPROTO:
+            wmkcErr_func_return(error, funcName, errCodeBySystem,
+                "Wrong protocol.");
+        case WMKC_NET_ERR_EAGAIN:
+            wmkcErr_func_return(error, funcName, errCodeBySystem,
+                "The socket is non blocking and there is no connection.");
+        case WMKC_NET_ERR_ENOTDIR:
+            wmkcErr_func_return(error, funcName, errCodeBySystem,
+                "The component with path prefix is not a directory.");
+        case WMKC_NET_ERR_ENAMETOOLONG:
+            wmkcErr_func_return(error, funcName, errCodeBySystem,
+                "addr is too long.");
+        case WMKC_NET_ERR_EDESTADDRREQ:
+            wmkcErr_func_return(error, funcName, errCodeBySystem,
+                "The socket is not in connection mode and has no peer address set.");
+#       elif defined(WMKC_PLATFORM_WINOS)
+        case WMKC_NET_ERR_ENETDOWN:
+            wmkcErr_func_return(error, funcName, errCodeBySystem,
+                "The network subsystem has malfunctioned.");
+        case WMKC_NET_ERR_ESHUTDOWN:
+            wmkcErr_func_return(error, funcName, errCodeBySystem,
+                "The socket has been closed by the shutdown function.");
+        case WMKC_NET_ERR_EHOSTUNREACH:
+            wmkcErr_func_return(error, funcName, errCodeBySystem,
+                "Unable to access the remote host at this time.");
+        case WMKC_NET_ERR_NOTINITIALISED:
+            wmkcErr_func_return(error, funcName, errCodeBySystem,
+                "The call to the WSAStartup function was not completed.");
+        case WMKC_NET_ERR_ESOCKTNOSUPPORT:
+            wmkcErr_func_return(error, funcName, errCodeBySystem,
+                "This address family does not support the specified socket type.");
+        case WMKC_NET_ERR_EINVALIDPROVIDER:
+            wmkcErr_func_return(error, funcName, errCodeBySystem,
+                "The service provider returned a version other than 2.2.");
+        case WMKC_NET_ERR_EINVALIDPROCTABLE:
+            wmkcErr_func_return(error, funcName, errCodeBySystem,
+                "The service provider returned an invalid or incomplete procedure table to the WSPStartup.");
+        case WMKC_NET_ERR_EPROVIDERFAILEDINIT:
+            wmkcErr_func_return(error, funcName, errCodeBySystem,
+                "The service provider failed to initialize.");
+#       endif
+
+        default:
+            wmkcErr_func_return(error, funcName, errCodeBySystem,
+                "Unexpected error.");
+    }
 }
 
-WMKC_PUBLIC(wmkcNetSocket) wmkcNet_UDP_Socket WMKC_OPEN_API
-WMKC_OF((wmkcNetSize family, wmkcNetSize protocol))
+WMKC_PUBLIC(wmkcCSTR) wmkcNet_GetAddr WMKC_OPEN_API
+WMKC_OF((wmkcNetType family, wmkcVoid *pAddr, wmkcChar *pStringBuf))
 {
-    return socket(family, SOCK_DGRAM, protocol);
-}
-
-WMKC_PUBLIC(wmkcChar *) wmkcNet_GetAddr WMKC_OPEN_API
-WMKC_OF((struct in_addr addr))
-{
-    return inet_ntoa(addr);
-}
-
-WMKC_PUBLIC(wmkcCSTR) wmkcNet_GetAddr6 WMKC_OPEN_API
-WMKC_OF((wmkcVoid *pAddr, wmkcChar *pStringBuf))
-{
-    return inet_ntop(AF_INET6, pAddr, pStringBuf, INET6_ADDRSTRLEN);
+    return inet_ntop(family, pAddr, pStringBuf, INET6_ADDRSTRLEN);
 }
 
 WMKC_PUBLIC(wmkc_u16) wmkcNet_GetPort WMKC_OPEN_API
@@ -31,7 +176,7 @@ WMKC_OF((wmkc_u16 port))
 }
 
 WMKC_PUBLIC(wmkcErr_obj) wmkcNet_new WMKC_OPEN_API
-WMKC_OF((wmkcNet_obj **obj, const SSL_METHOD *_ssl_method, wmkcNetType family, wmkcBool UDP))
+WMKC_OF((wmkcNet_obj **obj))
 {
     wmkcErr_obj error;
     if(!obj) {
@@ -43,47 +188,21 @@ WMKC_OF((wmkcNet_obj **obj, const SSL_METHOD *_ssl_method, wmkcNetType family, w
             "wmkcNet_new: Failed to allocate memory for (*obj).");
     }
 
-    if(_ssl_method) {
-        if(!wmkcMem_new(wmkcNet_ssl *, (*obj)->ssl_obj, sizeof(wmkcNet_ssl))) {
-            wmkcErr_return(error, wmkcErr_ErrMemory,
-                "wmkcNet_new: Failed to allocate memory for (*obj)->ssl_obj.");
-        }
-        if(!((*obj)->ssl_obj->ssl_ctx = SSL_CTX_new(_ssl_method))) {
-            wmkcErr_return(error, wmkcErr_Err32, "wmkcNet_new: "
-            "The return value after calling the SSL_CTX_new function is NULL.");
-        }
-        if(!((*obj)->ssl_obj->ssl = SSL_new((*obj)->ssl_obj->ssl_ctx))) {
-            wmkcErr_return(error, wmkcErr_Err32, "wmkcNet_new: "
-            "The return value after calling the SSL_new function is NULL.");
-        }
-    } else {
-        (*obj)->ssl_obj = wmkcNull;
-    }
-
-    if(family != AF_INET && family != AF_INET6) {
-        wmkcErr_return(error, wmkcErr_NetFamily,
-            "wmkcNet_new: The type of socket must be AF_INET or AF_INET6.");
-    }
-    (*obj)->sockfdFamily = family;
-    if(family == AF_INET) {
-        (*obj)->addr_info_size = WMKC_NET_IPV4_ADDR_SIZE;
-    } else {
-        (*obj)->addr_info_size = WMKC_NET_IPV6_ADDR_SIZE;
-    }
-    if(!UDP) {
-        (*obj)->sockfd = wmkcNet_TCP_Socket(family, IPPROTO_IP);
-    } else {
-        (*obj)->sockfd = wmkcNet_UDP_Socket(family, IPPROTO_IP);
-    }
-    if((*obj)->sockfd == wmkcErr_Err32) {
-        wmkcErr_return(error, wmkcErr_NetSocket, "wmkcNet_new: Unable to create socket.");
-    }
-    (*obj)->sockfdType = WMKC_NET_TCP_TYPE + UDP;
-
-    if(!wmkcMem_new(SOCKADDR *, (*obj)->addr_info, (*obj)->addr_info_size)) {
+    if(!wmkcMem_new(wmkcNet_addr *, (*obj)->laddr, sizeof(wmkcNet_addr))) {
         wmkcErr_return(error, wmkcErr_ErrMemory,
-            "wmkcNet_new: Failed to allocate memory for (*obj)->addr_info.");
+            "wmkcNet_new: Failed to allocate memory for (*obj)->laddr.");
     }
+
+    if(!wmkcMem_new(wmkcNet_addr *, (*obj)->raddr, sizeof(wmkcNet_addr))) {
+        wmkcErr_return(error, wmkcErr_ErrMemory,
+            "wmkcNet_new: Failed to allocate memory for (*obj)->raddr.");
+    }
+
+    (*obj)->laddr->addr = wmkcNull;
+    (*obj)->laddr->sockAddress = wmkcNull;
+
+    (*obj)->raddr->addr = wmkcNull;
+    (*obj)->raddr->sockAddress = wmkcNull;
 
     wmkcErr_return(error, wmkcErr_OK, "OK.");
 }
@@ -93,300 +212,273 @@ WMKC_OF((wmkcNet_obj **obj))
 {
     wmkcErr_obj error;
     if(!obj) {
-        wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcNet_new: obj is NULL.");
+        wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcNet_free: obj is NULL.");
     }
 
-    if((*obj)->addr_info) {
-        wmkcMem_free((*obj)->addr_info);
+    if((*obj)->laddr) {
+        if((*obj)->laddr->addr)
+            wmkcMem_free((*obj)->laddr->addr);
+        if((*obj)->laddr->sockAddress)
+            wmkcMem_free((*obj)->laddr->sockAddress);
+
+        wmkcMem_free((*obj)->laddr);
     }
-    if((*obj)->ssl_obj) {
-        SSL_CTX_free((*obj)->ssl_obj->ssl_ctx);
-        SSL_free((*obj)->ssl_obj->ssl);
-        wmkcMem_free((*obj)->ssl_obj);
+
+    if((*obj)->raddr) {
+        if((*obj)->raddr->addr)
+            wmkcMem_free((*obj)->raddr->addr);
+        if((*obj)->raddr->sockAddress)
+            wmkcMem_free((*obj)->raddr->sockAddress);
+
+        wmkcMem_free((*obj)->raddr);
     }
+
     wmkcMem_free((*obj));
 
     wmkcErr_return(error, wmkcErr_OK, "OK.");
 }
 
-WMKC_PUBLIC(wmkcErr_obj) wmkcNet_init WMKC_OPEN_API
-WMKC_OF((wmkcNet_obj *obj, wmkcCSTR hostname, wmkc_u16 port))
+WMKC_PUBLIC(wmkcErr_obj) wmkcNet_socket WMKC_OPEN_API
+WMKC_OF((wmkcNet_obj *obj, wmkcNetType family, wmkcNetType type, wmkcNetSize proto))
 {
     wmkcErr_obj error;
-
     if(!obj) {
-        wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcNet_init: obj is NULL.");
-    }
-    if(obj->ssl_obj) {
-        SSL_set_fd(obj->ssl_obj->ssl, obj->sockfd);
+        wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcNet_socket: obj is NULL.");
     }
 
-    if(hostname && *hostname) {
-        error = wmkcNet_getaddrinfo(obj->addr_info, hostname, obj->sockfdFamily);
-        if(error.code) return error;
-
-        if(obj->sockfdFamily == AF_INET) {
-            SOCKADDR_IN *ipv4 = (SOCKADDR_IN *)obj->addr_info;
-            ipv4->sin_port = htons(port);
-        } else {
-            SOCKADDR_IN6 *ipv6 = (SOCKADDR_IN6 *)obj->addr_info;
-            ipv6->sin6_port = htons(port);
-        }
-
-        SSL_set_tlsext_host_name(obj->ssl_obj->ssl, hostname);
+    if((obj->sockfd = socket(family, type, proto)) == wmkcErr_Err32) {
+        return wmkcNet_errorHandler("wmkcNet_socket");
     }
+
+    obj->type = type;
+    obj->family = family;
+    obj->proto = proto;
 
     wmkcErr_return(error, wmkcErr_OK, "OK.");
 }
 
 WMKC_PUBLIC(wmkcErr_obj) wmkcNet_getaddrinfo WMKC_OPEN_API
-WMKC_OF((SOCKADDR *dst, wmkcCSTR hostname, wmkcNetType family))
+WMKC_OF((wmkcNet_addr *addr, wmkcCSTR hostname, wmkc_u16 port,
+    wmkcNetType family, wmkcNetType type, wmkcNetType proto))
 {
     wmkcErr_obj error;
-    if(!dst || !hostname) {
-        wmkcErr_return(error, wmkcErr_ErrNULL,
-            "wmkcNet_getaddrinfo: dst or hostname is NULL.");
+    if(!addr || !hostname || !port) {
+        wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcNet_getaddrinfo: "
+            "obj or hostname or port is NULL.");
     }
+
     ADDRINFO *result = wmkcNull;
-    ADDRINFO hints = {.ai_family = family};
+    ADDRINFO hints = {.ai_family = family, .ai_socktype = type, .ai_protocol = proto};
 
-    if(getaddrinfo(hostname, "echo", &hints, &result)) {
-        wmkcErr_return(error, wmkcErr_NetDomainResolv,
-            "wmkcNet_getaddrinfo: Domain Name System failed.");
+    wmkcChar servname[6] = {0};
+    snprintf(servname, sizeof(servname), "%u", port);
+
+    switch(getaddrinfo(hostname, servname, &hints, &result)) {
+        case EAI_AGAIN:
+            wmkcErr_func_return(error, "wmkcNet_getaddrinfo", EAI_AGAIN,
+                "A temporary failure in name resolution occurred.");
+        case EAI_BADFLAGS:
+            wmkcErr_func_return(error, "wmkcNet_getaddrinfo", EAI_AGAIN,
+                "An invalid value was provided for the ai_flags member of the pHints parameter.");
+        case EAI_FAIL:
+            wmkcErr_func_return(error, "wmkcNet_getaddrinfo", EAI_AGAIN,
+                "A nonrecoverable failure in name resolution occurred.");
+        case EAI_FAMILY:
+            wmkcErr_func_return(error, "wmkcNet_getaddrinfo", EAI_AGAIN,
+                "The ai_family member of the pHints parameter is not supported.");
+        case EAI_MEMORY:
+            wmkcErr_func_return(error, "wmkcNet_getaddrinfo", EAI_AGAIN,
+                "A memory allocation failure occurred.");
+        case EAI_NONAME:
+            wmkcErr_func_return(error, "wmkcNet_getaddrinfo", EAI_AGAIN,
+                "The name does not resolve for the supplied parameters or the pNodeName and "
+                "pServiceName parameters were not provided.");
+        case EAI_SERVICE:
+            wmkcErr_func_return(error, "wmkcNet_getaddrinfo", EAI_AGAIN,
+                "The pServiceName parameter is not supported for the specified ai_socktype member of "
+                "the pHints parameter.");
+        case EAI_SOCKTYPE:
+            wmkcErr_func_return(error, "wmkcNet_getaddrinfo", EAI_AGAIN,
+                "The ai_socktype member of the pHints parameter is not supported.");
     }
-    memcpy(dst, result->ai_addr, result->ai_addrlen);
 
-    freeaddrinfo(result); // 释放掉已结束使用的解析数据
+    if(addr->addr) {
+        wmkcMem_free(addr->addr);
+    }
+    if(!wmkcMem_new(wmkcChar *, addr->addr, INET6_ADDRSTRLEN)) {
+        wmkcErr_return(error, wmkcErr_ErrMemory,
+            "wmkcNet_getaddrinfo: Failed to allocate memory for addr->addr.");
+    }
+    wmkcMem_zero(addr->addr, INET6_ADDRSTRLEN);
+
+    if(family == AF_INET) {
+        SOCKADDR_IN *ip = (SOCKADDR_IN *)result->ai_addr;
+        wmkcNet_GetAddr(family, &ip->sin_addr, addr->addr);
+    } else if(family == AF_INET6) {
+        SOCKADDR_IN6 *ip = (SOCKADDR_IN6 *)result->ai_addr;
+        wmkcNet_GetAddr(family, &ip->sin6_addr, addr->addr);
+    }
+    addr->port = port;
+
+    if(addr->sockAddress) {
+        wmkcMem_free(addr->sockAddress);
+    }
+    if(!wmkcMem_new(SOCKADDR *, addr->sockAddress, WMKC_NET_IPV6_ADDR_SIZE)) {
+        wmkcErr_return(error, wmkcErr_ErrMemory, "wmkcNet_getaddrinfo: "
+            "Failed to allocate memory for addr->sockAddress.");
+    }
+    wmkcMem_zero(addr->sockAddress, WMKC_NET_IPV6_ADDR_SIZE);
+
+    memcpy(addr->sockAddress, result->ai_addr, (addr->sockAddressSize = result->ai_addrlen));
+
     wmkcErr_return(error, wmkcErr_OK, "OK.");
 }
 
-WMKC_PUBLIC(wmkcErr_obj) wmkcNet_timeout WMKC_OPEN_API
-WMKC_OF((wmkcNet_obj *obj, wmkcNetTime _user_TimeOut))
+WMKC_PUBLIC(wmkcErr_obj) wmkcNet_settimeout WMKC_OPEN_API
+WMKC_OF((wmkcNet_obj *obj, double _value))
 {
     wmkcErr_obj error;
     if(!obj) {
-        wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcNet_timeout: obj is NULL.");
+        wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcNet_settimeout: obj is NULL.");
     }
 
-    if(_user_TimeOut) {
-#       if defined(WMKC_PLATFORM_WINOS)
-        DWORD _timeout = (DWORD)(_user_TimeOut * 1000);
-#       elif defined(WMKC_PLATFORM_LINUX)
-        double intpart = 0;
-        double fracpart = modf(_user_TimeOut, &intpart);
-        struct timeval _timeout = {.tv_sec=(long)intpart, .tv_usec=(long)fracpart};
-#       endif
+#   if defined(WMKC_PLATFORM_WINOS)
+    DWORD _timeout = (DWORD)(_value * 1000);
+#   elif defined(WMKC_PLATFORM_LINUX)
+    double intpart = 0;
+    double fracpart = modf(_value, &intpart);
+    struct timeval _timeout = {.tv_sec=(long)intpart, .tv_usec=(long)(fracpart * 1000000)};
+#   endif
 
-        wmkcNetTimer *optval = (wmkcNetTimer *)&_timeout;
-        if(setsockopt(obj->sockfd, SOL_SOCKET, SO_SNDTIMEO, optval, sizeof(_timeout)) ||
-            setsockopt(obj->sockfd, SOL_SOCKET, SO_RCVTIMEO, optval, sizeof(_timeout))) {
-            wmkcErr_return(error, wmkcErr_NetSetSockOpt,
-                "wmkcNet_timeout: Error in setsockopt function.");
-        }
+    wmkcNetTimer *optval = (wmkcNetTimer *)&_timeout;
+    if(setsockopt(obj->sockfd, SOL_SOCKET, SO_SNDTIMEO, optval, sizeof(_timeout))) {
+        wmkcErr_return(error, wmkcErr_Err32, "wmkcNet_settimeout: "
+            "Error setting send timeout using the setsockopt function.");
     }
-
-    wmkcErr_return(error, wmkcErr_OK, "OK.");
-}
-
-WMKC_PUBLIC(wmkcErr_obj) wmkcNet_connect WMKC_OPEN_API
-WMKC_OF((wmkcNet_obj *obj))
-{
-    wmkcErr_obj error;
-    if(!obj) {
-        wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcNet_connect: obj is NULL.");
-    }
-    if(obj->sockfdType == WMKC_NET_UDP_TYPE) {
-        wmkcErr_return(error, wmkcErr_NetSockfdType,
-            "wmkcNet_connect: Wrong socket type, currently not expected to be UDP.");
-    }
-
-    // 连接至接收端，失败就返回错误代码
-    if(connect(obj->sockfd, obj->addr_info, obj->addr_info_size) == wmkcErr_Err32) {
-        wmkcErr_return(error, wmkcErr_NetConnect,
-            "wmkcNet_connect: Socket connection failed.");
-    }
-    if(obj->ssl_obj) {
-        SSL_connect(obj->ssl_obj->ssl);
+    if(setsockopt(obj->sockfd, SOL_SOCKET, SO_RCVTIMEO, optval, sizeof(_timeout))) {
+        wmkcErr_return(error, wmkcErr_Err32, "wmkcNet_settimeout: "
+            "Error setting receive timeout using the setsockopt function.");
     }
 
     wmkcErr_return(error, wmkcErr_OK, "OK.");
 }
 
 WMKC_PUBLIC(wmkcErr_obj) wmkcNet_bind WMKC_OPEN_API
-WMKC_OF((wmkcNet_obj *obj, wmkcNetTime _user_TimeOut))
+WMKC_OF((wmkcNet_obj *obj, wmkcCSTR addr, wmkc_u16 port))
 {
     wmkcErr_obj error;
     if(!obj) {
         wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcNet_bind: obj is NULL.");
     }
 
-    wmkcNetTimer *optval = wmkcNull;
-    struct timeval _timeout;
+    error = wmkcNet_getaddrinfo(obj->laddr, addr, port, obj->family, obj->type, obj->proto);
+    if(error.code) return error;
 
-    if(_user_TimeOut) {
-        _timeout.tv_sec = floor(_user_TimeOut);
-        _timeout.tv_usec = (long)(modf(_user_TimeOut, &_user_TimeOut) * 1000);
-        optval = (wmkcNetTimer *)&_timeout;
-
-        if(setsockopt(obj->sockfd, SOL_SOCKET, SO_REUSEADDR, optval, sizeof(_timeout))) {
-            wmkcErr_return(error, wmkcErr_NetSetSockOpt,
-                "wmkcNet_bind: Error in setsockopt function in wmkcNet_timeout function.");
-        }
+    if(bind(obj->sockfd, obj->laddr->sockAddress, obj->laddr->sockAddressSize)) {
+        return wmkcNet_errorHandler("wmkcNet_bind");
     }
 
-    // 如果绑定失败就返回错误代码
-    if(bind(obj->sockfd, obj->addr_info, obj->addr_info_size) == wmkcErr_Err32) {
-        wmkcErr_return(error, wmkcErr_NetBind, "wmkcNet_bind: Socket binding failed.");
+    wmkcErr_return(error, wmkcErr_OK, "OK.");
+}
+
+WMKC_PUBLIC(wmkcErr_obj) wmkcNet_connect WMKC_OPEN_API
+WMKC_OF((wmkcNet_obj *obj, wmkcCSTR addr, wmkc_u16 port))
+{
+    wmkcErr_obj error;
+    if(!obj || !obj->raddr || !addr || !port) {
+        wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcNet_getaddrinfo: "
+            "obj or obj->raddr or addr or port is NULL.");
+    }
+
+    error = wmkcNet_getaddrinfo(obj->raddr, addr, port, obj->family, obj->type, obj->proto);
+    if(error.code) return error;
+
+    if(connect(obj->sockfd, obj->raddr->sockAddress, obj->raddr->sockAddressSize)) {
+        return wmkcNet_errorHandler("wmkcNet_connect");
+    }
+
+    if(obj->laddr->sockAddress) {
+        wmkcMem_free(obj->laddr->sockAddress);
+    }
+    obj->laddr->sockAddressSize = WMKC_NET_IPV6_ADDR_SIZE;
+    if(!wmkcMem_new(SOCKADDR *, obj->laddr->sockAddress, obj->laddr->sockAddressSize)) {
+        wmkcErr_return(error, wmkcErr_ErrMemory, "wmkcNet_connect: "
+            "Failed to allocate memory for obj->laddr->sockAddress.");
+    }
+
+    if(getsockname(obj->sockfd, obj->laddr->sockAddress, &obj->laddr->sockAddressSize)) {
+        return wmkcNet_errorHandler("wmkcNet_connect");
+    }
+
+    if(obj->laddr->addr) {
+        wmkcMem_free(obj->laddr->addr);
+    }
+    if(!wmkcMem_new(wmkcChar *, obj->laddr->addr, INET6_ADDRSTRLEN)) {
+        wmkcErr_return(error, wmkcErr_ErrMemory, "wmkcNet_connect: "
+            "Failed to allocate memory for obj->laddr->addr.");
+    }
+    if(obj->family == AF_INET) {
+        SOCKADDR_IN *info = (SOCKADDR_IN *)obj->laddr->sockAddress;
+        wmkcNet_GetAddr(AF_INET, &info->sin_addr, obj->laddr->addr);
+        obj->laddr->port = ntohs(info->sin_port);
+    } else if(obj->family == AF_INET6) {
+        SOCKADDR_IN6 *info = (SOCKADDR_IN6 *)obj->laddr->sockAddress;
+        wmkcNet_GetAddr(AF_INET6, &info->sin6_addr, obj->laddr->addr);
+        obj->laddr->port = ntohs(info->sin6_port);
     }
 
     wmkcErr_return(error, wmkcErr_OK, "OK.");
 }
 
 WMKC_PUBLIC(wmkcErr_obj) wmkcNet_listen WMKC_OPEN_API
-WMKC_OF((wmkcNet_obj *obj, wmkc_u32 _Listen))
+WMKC_OF((wmkcNet_obj *obj, wmkc_u32 backlog))
 {
     wmkcErr_obj error;
     if(!obj) {
         wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcNet_listen: obj is NULL.");
     }
 
-    // 监听连接，失败或者Socket类型不正确就返回错误代码
-    if(obj->sockfdType == WMKC_NET_TCP_TYPE) {
-        if(!_Listen) {
-            _Listen = WMKC_NET_DEFAULT_LISTEN;
-        }
-        if(listen(obj->sockfd, _Listen) == wmkcErr_Err32) {
-            wmkcErr_return(error, wmkcErr_NetListen,
-                "wmkcNet_listen: Socket listening failed.");
-        }
-    } else {
-        wmkcErr_return(error, wmkcErr_NetSockfdType,
-            "wmkcNet_listen: Wrong socket type, currently not expected to be UDP.");
+    if(listen(obj->sockfd, backlog)) {
+        return wmkcNet_errorHandler("wmkcNet_listen");
     }
 
     wmkcErr_return(error, wmkcErr_OK, "OK.");
 }
 
 WMKC_PUBLIC(wmkcErr_obj) wmkcNet_accept WMKC_OPEN_API
-WMKC_OF((wmkcNet_obj *dst, wmkcNet_obj *src))
+WMKC_OF((wmkcNet_obj *obj))
 {
-    wmkcErr_obj error;
-    if(!dst || !src) {
-        wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcNet_accept: dst or src is NULL.");
-    }
-    if(!dst->addr_info || !src->addr_info) {
-        wmkcErr_return(error, wmkcErr_ErrNULL,
-            "wmkcNet_accept: dst->addr_info or src->addr_info is NULL.");
-    }
 
-    // 接收连接，失败就返回错误代码
-    if(src->sockfdType == WMKC_NET_TCP_TYPE) {
-        dst->sockfd = accept(src->sockfd, dst->addr_info, &dst->addr_info_size);
-        if(dst->sockfd == wmkcErr_Err32) {
-            wmkcErr_return(error, wmkcErr_NetAccept,
-                "wmkcNet_accept: The socket failed to accept the connection.");
-        }
-    } else {
-        wmkcErr_return(error, wmkcErr_NetSockfdType,
-            "wmkcNet_accept: Wrong socket type, currently not expected to be UDP.");
-    }
-    if(src->ssl_obj) {
-        SSL_accept(src->ssl_obj->ssl);
-    }
-
-    wmkcErr_return(error, wmkcErr_OK, "OK.");
 }
 
 WMKC_PUBLIC(wmkcErr_obj) wmkcNet_send WMKC_OPEN_API
-WMKC_OF((wmkcNet_obj *obj, wmkcNetSize *_tSize, wmkcNetBuf *buf, wmkcNetSize size))
+WMKC_OF((wmkcNet_obj *obj))
 {
-    wmkcErr_obj error;
-    if(!obj || !buf || !size) {
-        wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcNet_send: obj or buf or size is NULL.");
-    }
-    if(!_tSize) {
-        wmkcNetSize size;
-        _tSize = &size;
-    }
 
-    if(obj->sockfdType == WMKC_NET_TCP_TYPE) {
-        if(obj->ssl_obj) {
-            *_tSize = SSL_write(obj->ssl_obj->ssl, buf, size);
-        } else {
-            *_tSize = send(obj->sockfd, buf, size, 0);
-        }
-    } else if(obj->sockfdType == WMKC_NET_UDP_TYPE) {
-        *_tSize = sendto(obj->sockfd, buf, size, 0, obj->addr_info, obj->addr_info_size);
-    } else {
-        wmkcErr_return(error, wmkcErr_NetSockfdType,
-                "wmkcNet_send: Wrong socket type, expected TCP or UDP.");
-    }
-
-    if(*_tSize == wmkcErr_Err32 || *_tSize == 0) {
-        wmkcErr_return(error, wmkcErr_NetSend,
-            "wmkcNet_send: The socket failed to send data.");
-    }
-
-    wmkcErr_return(error, wmkcErr_OK, "OK.");
 }
 
 WMKC_PUBLIC(wmkcErr_obj) wmkcNet_sendall WMKC_OPEN_API
-WMKC_OF((wmkcNet_obj *obj, wmkcNetBuf *buf, wmkcNetSize size))
+WMKC_OF((wmkcNet_obj *obj))
 {
-    wmkcErr_obj error;
-    if(!obj || !buf || !size) {
-        wmkcErr_return(error, wmkcErr_ErrNULL,
-            "wmkcNet_sendall: obj or buf or size is NULL.");
-    }
-    wmkcNetSize index, quotient, leftover, _tSize;
 
-    // 计算需要发送WMKC_NET_BLOCKLEN大小的数据包的次数
-    // 计算是否还有剩下的数据包
-    quotient = size / WMKC_NET_BLOCKLEN;
-    leftover = size % WMKC_NET_BLOCKLEN;
-
-    for(index = 0; index < quotient; ++index) {
-        error = wmkcNet_send(obj, &_tSize, buf, WMKC_NET_BLOCKLEN);
-        if(error.code) return error;
-        buf += WMKC_NET_BLOCKLEN;
-    }
-
-    if(leftover) {
-        error = wmkcNet_send(obj, &_tSize, buf, leftover);
-        if(error.code) return error;
-    }
-
-    wmkcErr_return(error, wmkcErr_OK, "OK.");
 }
 
 WMKC_PUBLIC(wmkcErr_obj) wmkcNet_recv WMKC_OPEN_API
-WMKC_OF((wmkcNet_obj *obj, wmkcNetSize *_tSize, wmkcNetBuf *buf, wmkcNetSize size))
+WMKC_OF((wmkcNet_obj *obj))
+{
+
+}
+
+WMKC_PUBLIC(wmkcErr_obj) wmkcNet_shutdown WMKC_OPEN_API
+WMKC_OF((wmkcNet_obj *obj, wmkc_u32 how))
 {
     wmkcErr_obj error;
-    if(!obj || !buf || !size) {
-        wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcNet_send: obj or buf or size is NULL.");
-    }
-    if(!_tSize) {
-        wmkcNetSize size;
-        _tSize = &size;
+    if(!obj) {
+        wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcNet_shutdown: obj is NULL.");
     }
 
-    if(obj->sockfdType == WMKC_NET_TCP_TYPE) {
-        if(obj->ssl_obj) {
-            *_tSize = SSL_read(obj->ssl_obj->ssl, buf, size);
-        } else {
-            *_tSize = recv(obj->sockfd, buf, size, 0);
-        }
-    } else if(obj->sockfdType == WMKC_NET_UDP_TYPE) {
-        *_tSize = recvfrom(obj->sockfd, buf, size, 0, obj->addr_info, &obj->addr_info_size);
-    } else {
-        wmkcErr_return(error, wmkcErr_NetSockfdType,
-                "wmkcNet_send: Wrong socket type, expected TCP or UDP.");
-    }
-
-    if(*_tSize == wmkcErr_Err32 || *_tSize == 0) {
-        wmkcErr_return(error, wmkcErr_NetSend,
-            "wmkcNet_send: The socket failed to send data.");
+    if(shutdown(obj->sockfd, how) == wmkcErr_Err32) {
+        return wmkcNet_errorHandler("wmkcNet_shutdown");
     }
 
     wmkcErr_return(error, wmkcErr_OK, "OK.");
@@ -400,17 +492,15 @@ WMKC_OF((wmkcNet_obj *obj))
         wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcNet_close: obj is NULL.");
     }
 
-    // 判断系统类型，根据对应系统使用不同的关闭函数将Socket与WSADATA进行关闭
-    // 如果错误，就返回错误代码
-#if defined(WMKC_PLATFORM_LINUX)
-    if((shutdown(obj->sockfd, 2) | close(obj->sockfd)) == wmkcErr_Err32) {
-        wmkcErr_return(error, wmkcErr_NetClose, "wmkcNet_close: Socket close failed.");
+    wmkc_s32 close_err_code = 0;
+#   if defined(WMKC_PLATFORM_WINOS)
+    close_err_code = closesocket(obj->sockfd);
+#   elif defined(WMKC_PLATFORM_LINUX)
+    close_err_code = close(obj->sockfd);
+#   endif
+    if(close_err_code) {
+        return wmkcNet_errorHandler("wmkcNet_close");
     }
-#elif defined(WMKC_PLATFORM_WINOS)
-    if(closesocket(obj->sockfd) == wmkcErr_Err32) {
-        wmkcErr_return(error, wmkcErr_NetClose, "wmkcNet_close: Socket close failed.");
-    }
-#endif
 
     wmkcErr_return(error, wmkcErr_OK, "OK.");
 }

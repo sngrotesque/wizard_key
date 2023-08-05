@@ -68,8 +68,11 @@ typedef struct {
 > upload.py  
 > READMKE.md
 
+#### v6.4.0-dev
+1.  重构wmkcNet库与wmkcError结构。
+
 #### v6.3.0-canary
-1.  预计将所有实现改为内部实现，然后将函数作为类成员的方式使用。
+1.  预计将所有实现改为内部实现，然后将函数作为类成员的方式使用（由于效率原因已弃之）。
 2.  修复了network/wmkc_net库中对于wmkcNet_timeout函数的实现，  
     傻逼微软你妈死了，弄你妈的毫秒单位啊。
 

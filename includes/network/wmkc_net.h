@@ -1,11 +1,3 @@
-﻿/*
-* 2023年2月7日重新开启对WIndows系统的支持
-* 
-* Windows:
-*   不要手动包含Windows.h或WinSock2.h，WS2tcpip.h中包含了WinSock2.h
-*   编译指令：gcc main.c -lws2_32 -o main.exe
-*
-*/
 #include <wmkc_conf.h>
 
 #if WMKC_SUPPORT
@@ -14,22 +6,240 @@
 #include <wmkc_error.h>
 #include <math.h>
 
-#define WMKC_NET_DEFAULT_LISTEN 5  // listen函数使用的默认值
-#define WMKC_NET_TCP_TYPE 0x54     // TCP类型
-#define WMKC_NET_UDP_TYPE 0x55     // UDP类型
 #define WMKC_NET_BLOCKLEN 4096     // wmkcNet的块长度，用作传输
-
 #define WMKC_NET_IPV4_ADDR_SIZE 16 // 用于储存IPv4信息的内存大小
 #define WMKC_NET_IPV6_ADDR_SIZE 28 // 用于储存IPv6信息的内存大小
 
-#define WMKC_NET_OPENSSL_API true     // 是否启用OpenSSL的功能
+/* 常用套接字函数的返回值具体对应的含义
+* General error ********************************************************************************
+* WMKC_NET_ERR_EINTR               accept, send, recv, shutdown, close, connect
+* 执行的调用被操作系统截断。
+* 
+* WMKC_NET_ERR_EACCES              bind, send, socket, connect
+* 以不被允许的方式访问套接字。
+* 
+* WMKC_NET_ERR_EFAULT              bind, accept, send, recv, connect
+* 地址指向了用户的不可访问的地址空间。
+* 
+* WMKC_NET_ERR_EINVAL              bind, shutdown, listen, accept, sned, recv, socket, connect
+* 提供了无效的参数或套接字已绑定某地址或在接受之前未调用侦听函数或套接字是监听套接字。
+* 
+* WMKC_NET_ERR_EMFILE              accept, listen, socket
+* 无法提供更多套接字描述符，已达到每个进程对套接字数量的限制。
+* 
+* WMKC_NET_ERR_EISCONN             listen, send[linux], connect
+* 套接字已被指定连接。
+* 
+* WMKC_NET_ERR_ENOBUFS             bind, accept, send, listen, socket, connect
+* 未提供任何缓冲区空间。
+* 
+* WMKC_NET_ERR_EALREADY            send, connect
+* 另一个快速打开操作（TCP Fast Open）正在执行。指定的套接字上正在进行非阻塞模式connect调用。
+* 
+* WMKC_NET_ERR_ENOTCONN            listen, shutdown, send, recv
+* 套接字已经连接了 or 套接字未连接
+* 
+* WMKC_NET_ERR_EMSGSIZE            send, recv
+* 套接字面向消息，消息大于基础传输支持的最大大小
+* 
+* WMKC_NET_ERR_ENOTSOCK            bind, listen, shutdown, accept, send, recv, closesocket, connect
+* 描述符不是套接字
+* 
+* WMKC_NET_ERR_ETIMEDOUT           send, recv, connect
+* 由于超时导致连接已断开。
+* 
+* WMKC_NET_ERR_EPROTOTYPE          socket, accept, connect
+* 指定的协议是此套接字的错误类型，套接字类型不支持请求的通信协议。
+* 
+* WMKC_NET_ERR_EOPNOTSUPP          send, recv, listen, accept
+* 引用的套接字不是支持面向连接（监听）的服务的类型，或者套接字是单向的，只支持发送或接收操作。
+* 
+* WMKC_NET_ERR_EADDRINUSE          bind, listen, accept, connect
+* 本地地址或端口已被使用。套接字没有绑定到地址。
+* 
+* WMKC_NET_ERR_ECONNRESET          shutdown, accept, send, recv
+* 连接被重置。套接字不可再用，应关闭套接字（此错误仅适用于面向连接的套接字）。
+* 
+* WMKC_NET_ERR_ENETUNREACH         connect
+* 此时不可以从此主机访问该网络。网络不可用。
+* 
+* WMKC_NET_ERR_EWOULDBLOCK         accept, send, recv, closesocket, connect
+* 套接字标记为非阻塞模式，没有要接受的连接，请求的操作会进行阻止。套接字标记为非阻塞模式，无法立即完成连接。
+* 
+* WMKC_NET_ERR_EINPROGRESS         bind, listen, shutdown, accept, send, recv, closesocket, socket, connect
+* 套接字是非阻塞的，调用操作无法立即完成。
+* 
+* WMKC_NET_ERR_ECONNREFUSED        recv, connect
+* 连接被远程主机强制性拒绝。
+* 
+* WMKC_NET_ERR_ECONNABORTED        shutdown, send, recv, accept
+* 面向连接的套接字由于超时或其他故障线路已终止，套接字不可再用。
+* 
+* WMKC_NET_ERR_EAFNOSUPPORT        socket, connect
+* 指定网络族中的地址无法与此套接字一起使用。
+* 
+* WMKC_NET_ERR_EADDRNOTAVAIL       bind, connect
+* 请求的地址在上下文无效或请求的地址不是本地地址。远程地址不是有效的地址。
+* 
+* WMKC_NET_ERR_EPROTONOSUPPORT     socket
+* 不支持指定的协议
+* 
+* **************************************** Linux error *****************************************
+* WMKC_NET_ERR_EIO                 close
+* 出现I/O错误
+* 
+* WMKC_NET_ERR_EPIPE               send
+* 本地端已在面向连接的套接字上关闭，在这种情况下，除非设置了MSG_NOSIGNAL，否则进程也将接收SIGPIPE。
+* 
+* WMKC_NET_ERR_EPERM               accept, connect
+* 防火墙规则禁止连接
+* 
+* WMKC_NET_ERR_EROFS               bind
+* 套接字索引节点将驻留在只读文件系统上
+* 
+* WMKC_NET_ERR_EBADF               bind, accept, close, shutdown, send, recv, listen, connect
+* 参数sockfd不是有效的文件描述符
+* 
+* WMKC_NET_ERR_ELOOP               bind
+* 解析地址时遇到太多符号链接
+* 
+* WMKC_NET_ERR_EDQUOT
+* WMKC_NET_ERR_ENOSPC              close
+* 存储空间不足或已达到磁盘配额限制。
+* 
+* WMKC_NET_ERR_ENOENT              bind
+* 套接字路径名的目录前缀中的组件不存在
+* 
+* WMKC_NET_ERR_ENOMEM              socket, accept, send, recv
+* 可用的内核内存不足
+* 
+* WMKC_NET_ERR_ENFILE              socket, accept
+* 已达到系统范围内打开文件总数的限制
+* 
+* WMKC_NET_ERR_EPROTO              accept
+* 错误的协议
+* 
+* WMKC_NET_ERR_EAGAIN              accept, send, recv, connect
+* 套接字被标记为非阻塞，并且不存在任何可接受的连接。
+* sockfd引用的套接字以前没有绑定到地址，在尝试将其绑定到临时端口时，确定临时端口范围内的所有端口号当前都在使用中。
+* 
+* WMKC_NET_ERR_ENOTDIR             bind
+* 路径前缀的组件不是目录
+* 
+* WMKC_NET_ERR_ENAMETOOLONG        bind
+* 地址太长
+* 
+* WMKC_NET_ERR_EDESTADDRREQ        send
+* 套接字不是连接模式，并且没有设置对等地址。
+* 
+* *************************************** Windows error ****************************************
+* WMKC_NET_ERR_ENETDOWN            bind, listen, shutdown, accept, send, recv, closesocket, socket, connect
+* 网络子系统发生故障
+* 
+* WMKC_NET_ERR_ESHUTDOWN           send, recv
+* 套接字已被shutdown函数关闭
+* 
+* WMKC_NET_ERR_EHOSTUNREACH        send, connect
+* 此时无法从此主机访问远程主机
+* 
+* WMKC_NET_ERR_NOTINITIALISED      bind, listen, shutdown, accept, send, recv, closesocket, socket, connect
+* 未完成对WSAStartup函数的调用
+* 
+* WMKC_NET_ERR_ESOCKTNOSUPPORT     socket
+* 此地址族不支持指定的套接字类型
+* 
+* WMKC_NET_ERR_EINVALIDPROVIDER    socket
+* 服务提供商返回了2.2以外的版本
+* 
+* WMKC_NET_ERR_EINVALIDPROCTABLE   socket
+* 服务提供程序向WSPStartup返回了无效或不完整的过程表
+* 
+* WMKC_NET_ERR_EPROVIDERFAILEDINIT socket
+* 服务提供程序未能初始化。如果分层服务提供程序（LSP）或命名空间提供程序安装不正确或提供程序无法正常运行则会返回此错误。
+* 
+*/
 
-#if WMKC_NET_OPENSSL_API
-#include <openssl/ssl.h>
-#include <openssl/err.h>
-#include <openssl/sslerr.h>
-#include <openssl/crypto.h>
-#endif /* WMKC_NET_OPENSSL_API */
+#if defined(WMKC_PLATFORM_WINOS)
+/* Public *************************************************** */
+#define WMKC_NET_ERR_EINTR               WSAEINTR
+#define WMKC_NET_ERR_EACCES              WSAEACCES
+#define WMKC_NET_ERR_EFAULT              WSAEFAULT
+#define WMKC_NET_ERR_EINVAL              WSAEINVAL
+#define WMKC_NET_ERR_EMFILE              WSAEMFILE
+#define WMKC_NET_ERR_EISCONN             WSAEISCONN
+#define WMKC_NET_ERR_ENOBUFS             WSAENOBUFS
+#define WMKC_NET_ERR_ENOTCONN            WSAENOTCONN
+#define WMKC_NET_ERR_EALREADY            WSAEALREADY
+#define WMKC_NET_ERR_EMSGSIZE            WSAEMSGSIZE
+#define WMKC_NET_ERR_ENOTSOCK            WSAENOTSOCK
+#define WMKC_NET_ERR_ETIMEDOUT           WSAETIMEDOUT
+#define WMKC_NET_ERR_EPROTOTYPE          WSAEPROTOTYPE
+#define WMKC_NET_ERR_EOPNOTSUPP          WSAEOPNOTSUPP
+#define WMKC_NET_ERR_EADDRINUSE          WSAEADDRINUSE
+#define WMKC_NET_ERR_ECONNRESET          WSAECONNRESET
+#define WMKC_NET_ERR_EINPROGRESS         WSAEINPROGRESS
+#define WMKC_NET_ERR_ENETUNREACH         WSAENETUNREACH
+#define WMKC_NET_ERR_EWOULDBLOCK         WSAEWOULDBLOCK
+#define WMKC_NET_ERR_ECONNREFUSED        WSAECONNREFUSED
+#define WMKC_NET_ERR_ECONNABORTED        WSAECONNABORTED
+#define WMKC_NET_ERR_EAFNOSUPPORT        WSAEAFNOSUPPORT
+#define WMKC_NET_ERR_EADDRNOTAVAIL       WSAEADDRNOTAVAIL
+#define WMKC_NET_ERR_EPROTONOSUPPORT     WSAEPROTONOSUPPORT
+/* Pirivate ************************************************** */
+#define WMKC_NET_ERR_ENETDOWN            WSAENETDOWN
+#define WMKC_NET_ERR_ENETRESET           WSAENETRESET
+#define WMKC_NET_ERR_ESHUTDOWN           WSAESHUTDOWN
+#define WMKC_NET_ERR_EHOSTUNREACH        WSAEHOSTUNREACH
+#define WMKC_NET_ERR_NOTINITIALISED      WSANOTINITIALISED
+#define WMKC_NET_ERR_ESOCKTNOSUPPORT     WSAESOCKTNOSUPPORT
+#define WMKC_NET_ERR_EINVALIDPROVIDER    WSAEINVALIDPROVIDER
+#define WMKC_NET_ERR_EINVALIDPROCTABLE   WSAEINVALIDPROCTABLE
+#define WMKC_NET_ERR_EPROVIDERFAILEDINIT WSAEPROVIDERFAILEDINIT
+#   elif defined(WMKC_PLATFORM_LINUX)
+/* Public *************************************************** */
+#define WMKC_NET_ERR_EINTR               EINTR
+#define WMKC_NET_ERR_EACCES              EACCES
+#define WMKC_NET_ERR_EFAULT              EFAULT
+#define WMKC_NET_ERR_EINVAL              EINVAL
+#define WMKC_NET_ERR_EMFILE              EMFILE
+#define WMKC_NET_ERR_EISCONN             EISCONN
+#define WMKC_NET_ERR_ENOBUFS             ENOBUFS
+#define WMKC_NET_ERR_ENOTCONN            ENOTCONN
+#define WMKC_NET_ERR_EALREADY            EALREADY
+#define WMKC_NET_ERR_EMSGSIZE            EMSGSIZE
+#define WMKC_NET_ERR_ENOTSOCK            ENOTSOCK
+#define WMKC_NET_ERR_ETIMEDOUT           ETIMEDOUT
+#define WMKC_NET_ERR_EPROTOTYPE          EPROTOTYPE
+#define WMKC_NET_ERR_EOPNOTSUPP          EOPNOTSUPP
+#define WMKC_NET_ERR_EADDRINUSE          EADDRINUSE
+#define WMKC_NET_ERR_ECONNRESET          ECONNRESET
+#define WMKC_NET_ERR_EINPROGRESS         EINPROGRESS
+#define WMKC_NET_ERR_ENETUNREACH         ENETUNREACH
+#define WMKC_NET_ERR_EWOULDBLOCK         EWOULDBLOCK
+#define WMKC_NET_ERR_ECONNREFUSED        ECONNREFUSED
+#define WMKC_NET_ERR_ECONNABORTED        ECONNABORTED
+#define WMKC_NET_ERR_EAFNOSUPPORT        EAFNOSUPPORT
+#define WMKC_NET_ERR_EADDRNOTAVAIL       EADDRNOTAVAIL
+#define WMKC_NET_ERR_EPROTONOSUPPORT     EPROTONOSUPPORT
+/* Pirivate ************************************************** */
+#define WMKC_NET_ERR_EIO                 EIO
+#define WMKC_NET_ERR_EPERM               EPERM
+#define WMKC_NET_ERR_EROFS               EROFS
+#define WMKC_NET_ERR_EBADF               EBADF
+#define WMKC_NET_ERR_ELOOP               ELOOP
+#define WMKC_NET_ERR_EPIPE               EPIPE
+#define WMKC_NET_ERR_ENOSPC              ENOSPC
+#define WMKC_NET_ERR_EDQUOT              EDQUOT
+#define WMKC_NET_ERR_EPROTO              EPROTO
+#define WMKC_NET_ERR_EAGAIN              EAGAIN
+#define WMKC_NET_ERR_ENOENT              ENOENT
+#define WMKC_NET_ERR_ENFILE              ENFILE
+#define WMKC_NET_ERR_ENOMEM              ENOMEM
+#define WMKC_NET_ERR_ENOTDIR             ENOTDIR
+#define WMKC_NET_ERR_ENAMETOOLONG        ENAMETOOLONG
+#define WMKC_NET_ERR_EDESTADDRREQ        EDESTADDRREQ
+#define WMKC_NET_ERR_ECONNREFUSED        ECONNREFUSED
+#endif
 
 #if defined(WMKC_PLATFORM_LINUX)
 #include <netdb.h>
@@ -40,21 +250,21 @@
 #include <netinet/in.h>
 #include <netinet/ip.h>
 #include <netinet/tcp.h>
-typedef struct sockaddr     SOCKADDR;      // 套接字地址结构
-typedef struct addrinfo     ADDRINFO;      // 域名解析结构
-typedef struct sockaddr_in  SOCKADDR_IN;   // IPv4网络结构
-typedef struct sockaddr_in6 SOCKADDR_IN6;  // IPv6网络结构
-typedef        wmkc_u32     wmkcNetSocket; // wmkcNet的socket类型
-typedef        wmkcVoid     wmkcNetTimer;  // wmkcNet的计时类型
-typedef        wmkcByte     wmkcNetBuf;    // wmkcNet的缓冲区类型
+typedef struct sockaddr     SOCKADDR; // 套接字地址结构
+typedef struct addrinfo     ADDRINFO; // 域名解析结构
+typedef struct sockaddr_in  SOCKADDR_IN;  // IPv4网络结构
+typedef struct sockaddr_in6 SOCKADDR_IN6; // IPv6网络结构
+typedef        wmkcVoid     wmkcNetTimer; // wmkcNet的计时类型
+typedef        wmkc_u32     wmkcNetSock; // wmkcNet的socket类型
+typedef        wmkcByte     wmkcNetBuf;  // wmkcNet的缓冲区类型
 #elif defined(WMKC_PLATFORM_WINOS)
 #include <WS2tcpip.h>
 #if (!defined(__MINGW32__) && !defined(__MINGW64__))
 #   pragma comment(lib, "WS2_32.lib")
 #endif
-typedef SOCKET    wmkcNetSocket; // wmkcNet的socket类型
-typedef wmkcChar  wmkcNetTimer;  // wmkcNet的计时类型
-typedef wmkcChar  wmkcNetBuf;    // wmkcNet的缓冲区类型
+typedef wmkcChar  wmkcNetTimer; // wmkcNet的计时类型
+typedef SOCKET    wmkcNetSock; // wmkcNet的socket类型
+typedef wmkcChar  wmkcNetBuf;  // wmkcNet的缓冲区类型
 #endif /* WMKC_PLATFORM_LINUX */
 
 #include <wmkc_memory.h>
@@ -64,237 +274,22 @@ typedef socklen_t wmkcNetSize; // wmkcNet的长度类型
 typedef wmkc_u32  wmkcNetType; // wmkcNet的类型类型
 
 typedef struct {
-    SSL     *ssl;
-    SSL_CTX *ssl_ctx;
-} wmkcNet_ssl;
+    SOCKADDR *sockAddress;
+    wmkcChar *addr;
+    wmkc_u16  port;
+    wmkcNetSize sockAddressSize;
+} wmkcNet_addr;
 
 // wmkcNet对象类型
 typedef struct {
-    wmkcNetSocket sockfd;         // 套接字【size: win[8], linux[4]】
-    wmkcNetType   sockfdFamily;   // 套接字家族类型
-    wmkcNetType   sockfdType;     // 套接字网络类型（TCP or UDP）
-    wmkcNetSize   addr_info_size; // 网络地址信息结构体的长度
-    SOCKADDR     *addr_info;      // 用于保留地址信息的结构体【size: 8】
-    wmkcNet_ssl  *ssl_obj;        // SSL/TLS协议结构体
+    wmkcNetSock sockfd; // 套接字
+    wmkcNetType family; // 套接字家族类型
+    wmkcNetType type;   // 套接字网络类型（TCP or UDP）
+    wmkcNetType proto;  // 套接字的协议类型（IPPROTO_IP, IPPROTO_TCP...）
+    wmkcNet_addr *laddr; // 本地网络地址信息
+    wmkcNet_addr *raddr; // 目标网络地址信息
+    double timeout; // 套接字的超时时间，用于设置bing, connect, send, recv...
 } wmkcNet_obj;
-
-/**
- * @brief 创建一个TCP协议的套接字
- * @authors SN-Grotesque
- * @note 无
- * @param family 代表你要使用的网络家族，比如AF_INET或AF_INET6
- * @param protocol 代表你要使用的网络协议，比如IPPROTO_IP
- * @return 返回一个wmkcNetSocket类型的变量
- */
-WMKC_PUBLIC(wmkcNetSocket) wmkcNet_TCP_Socket WMKC_OPEN_API
-WMKC_OF((wmkcNetSize family, wmkcNetSize protocol));
-
-/**
- * @brief 创建一个UDP协议的套接字
- * @authors SN-Grotesque
- * @note 无
- * @param family 代表你要使用的网络家族，比如AF_INET或AF_INET6
- * @param protocol 代表你要使用的网络协议，比如IPPROTO_IP
- * @return 返回一个wmkcNetSocket类型的变量
- */
-WMKC_PUBLIC(wmkcNetSocket) wmkcNet_UDP_Socket WMKC_OPEN_API
-WMKC_OF((wmkcNetSize family, wmkcNetSize protocol));
-
-/**
- * @brief 从字节序列获取IPv4地址的字符串
- * @authors SN-Grotesque
- * @note 无
- * @param addr 这是一个in_addr结构体的数据
- * @return 返回一个wmkcChar指针，为字符串或NULL
- */
-WMKC_PUBLIC(wmkcChar *) wmkcNet_GetAddr WMKC_OPEN_API
-WMKC_OF((struct in_addr addr));
-
-/**
- * @brief 从字节序列获取IPv6地址的字符串
- * @authors SN-Grotesque
- * @note 无
- * @param pAddr 指针，指向一个字节序列的地址
- * @param pStringBuf 指针，为字符串地址。
- * @return 返回一个const char类型的指针。
- */
-WMKC_PUBLIC(wmkcCSTR) wmkcNet_GetAddr6 WMKC_OPEN_API
-WMKC_OF((wmkcVoid *pAddr, wmkcChar *pStringBuf));
-
-/**
- * @brief （小端序计算机）将端口号从大端序改为小端序
- * @authors SN-Grotesque
- * @note 无
- * @param port 这是一个端口号，是一个最大为16位的数字。
- * @return 返回一个wmkc_u16类型变量，为端口号。
- */
-WMKC_PUBLIC(wmkc_u16) wmkcNet_GetPort WMKC_OPEN_API
-WMKC_OF((wmkc_u16 port));
-
-/**
- * @brief 创建新的wmkcNet对象
- * @authors SN-Grotesque
- * @note 无
- * @param obj 指针，指向wmkcNet对象指针的地址。
- * @param _ssl_method 指针，指向SSL_METHOD。
- *                    为空时代表不使用OpenSSL组件。
- * @param family 代表你要使用的网络家族，比如AF_INET或AF_INET6。
- * @param UDP 为True时代表使用UDP套接字，反之为TCP套接字。
- * @return 返回一个wmkcErr对象，code为0代表无错误，如果为
- *         其他值，那么需检查message与code。
- */
-WMKC_PUBLIC(wmkcErr_obj) wmkcNet_new WMKC_OPEN_API
-WMKC_OF((wmkcNet_obj **obj, const SSL_METHOD *_ssl_method, wmkcNetType family, wmkcBool UDP));
-
-/**
- * @brief 释放wmkcNet对象
- * @authors SN-Grotesque
- * @note 无
- * @param obj 指针，指向wmkcNet对象指针的地址。
- * @return 返回一个wmkcErr对象，code为0代表无错误，如果为
- *         其他值，那么需检查message与code。
- */
-WMKC_PUBLIC(wmkcErr_obj) wmkcNet_free WMKC_OPEN_API
-WMKC_OF((wmkcNet_obj **obj));
-
-/**
- * @brief 初始化wmkcNet库，并解析域名。
- * @authors SN-Grotesque
- * @note 无
- * @param obj 指针，指向wmkcNet对象的地址。
- *            为NULL时后面的参数全部无效。
- * @param hostname 域名字符串。
- * @param port 目标的网络端口。
- * @return 返回一个wmkcErr对象，code为0代表无错误，如果为
- *         其他值，那么需检查message与code。
- */
-WMKC_PUBLIC(wmkcErr_obj) wmkcNet_init WMKC_OPEN_API
-WMKC_OF((wmkcNet_obj *obj, wmkcCSTR hostname, wmkc_u16 port));
-
-/**
- * @brief 解析域名到SOCKADDR指针中
- * @authors SN-Grotesque
- * @note 无
- * @param dst 指针，指向SOCKADDR类型对象的地址。
- * @param hostname 域名字符串。
- * @param family 代表你要使用的网络家族，比如AF_INET或AF_INET6。
- * @return 返回一个wmkcErr对象，code为0代表无错误，如果为
- *         其他值，那么需检查message与code。
- */
-WMKC_PUBLIC(wmkcErr_obj) wmkcNet_getaddrinfo WMKC_OPEN_API
-WMKC_OF((SOCKADDR *dst, wmkcCSTR hostname, wmkcNetType family));
-
-/**
- * @brief 设置发送与接收超时时间
- * @authors SN-Grotesque
- * @note 无
- * @param obj 指针，指向wmkcNet对象的地址。
- * @param _user_TimeOut 这是超时时间，原型为double类型。为0时不设置超时
- *                     （当然直接不调用这个函数最方便）
- * @return 返回一个wmkcErr对象，code为0代表无错误，如果为
- *         其他值，那么需检查message与code。
- */
-WMKC_PUBLIC(wmkcErr_obj) wmkcNet_timeout WMKC_OPEN_API
-WMKC_OF((wmkcNet_obj *obj, wmkcNetTime _user_TimeOut));
-
-/**
- * @brief 连接函数（连接至目标主机与端口）
- * @authors SN-Grotesque
- * @note 无
- * @param obj 指针，指向wmkcNet对象的地址。
- * @return 返回一个wmkcErr对象，code为0代表无错误，如果为
- *         其他值，那么需检查message与code。
- */
-WMKC_PUBLIC(wmkcErr_obj) wmkcNet_connect WMKC_OPEN_API
-WMKC_OF((wmkcNet_obj *obj));
-
-/**
- * @brief 绑定函数（绑定主机与端口）
- * @authors SN-Grotesque
- * @note 无
- * @param obj 指针，指向wmkcNet对象的地址。
- * @param _user_TimeOut 这是超时时间，用于setsockopt函数设置SO_REUSEADDR时间。
- * @return 返回一个wmkcErr对象，code为0代表无错误，如果为
- *         其他值，那么需检查message与code。
- */
-WMKC_PUBLIC(wmkcErr_obj) wmkcNet_bind WMKC_OPEN_API
-WMKC_OF((wmkcNet_obj *obj, wmkcNetTime _user_TimeOut));
-
-/**
- * @brief 监听函数（监听主机与端口）
- * @authors SN-Grotesque
- * @note 无
- * @param obj 指针，指向wmkcNet对象的地址。
- * @param _Listen 这是一个整数，表示监听队列中的最多个数。
- * @return 返回一个wmkcErr对象，code为0代表无错误，如果为
- *         其他值，那么需检查message与code。
- */
-WMKC_PUBLIC(wmkcErr_obj) wmkcNet_listen WMKC_OPEN_API
-WMKC_OF((wmkcNet_obj *obj, wmkc_u32 _Listen));
-
-/**
- * @brief 等待连接函数
- * @authors SN-Grotesque
- * @note 此函数有两个wmkcNet对象的原因是为了更好的兼容多线程网络编程。
- * @param dst 指针，指向用于接受连接信息的wmkcNet对象地址。
- * @param src 指针，指向wmkcNet对象的地址，源wmkcNet对象。
- * @return 返回一个wmkcErr对象，code为0代表无错误，如果为
- *         其他值，那么需检查message与code。
- */
-WMKC_PUBLIC(wmkcErr_obj) wmkcNet_accept WMKC_OPEN_API
-WMKC_OF((wmkcNet_obj *dst, wmkcNet_obj *src));
-
-/**
- * @brief 发送函数
- * @authors SN-Grotesque
- * @note 无
- * @param obj 指针，指向wmkcNet对象的地址。
- * @param _tSize 指针，指向单次传输长度变量的地址。可以为空。
- * @param buf 指针，指向缓冲区地址。
- * @param size 这是一个长度，表示缓冲区内需要发送的内容的长度。
- * @return 返回一个wmkcErr对象，code为0代表无错误，如果为
- *         其他值，那么需检查message与code。
- */
-WMKC_PUBLIC(wmkcErr_obj) wmkcNet_send WMKC_OPEN_API
-WMKC_OF((wmkcNet_obj *obj, wmkcNetSize *_tSize, wmkcNetBuf *buf, wmkcNetSize size));
-
-/**
- * @brief 全部发送函数
- * @authors SN-Grotesque
- * @note 无
- * @param obj 指针，指向wmkcNet对象的地址。
- * @param buf 指针，指向缓冲区地址。
- * @param size 这是一个长度，表示缓冲区内需要发送的内容的长度。
- * @return 返回一个wmkcErr对象，code为0代表无错误，如果为
- *         其他值，那么需检查message与code。
- */
-WMKC_PUBLIC(wmkcErr_obj) wmkcNet_sendall WMKC_OPEN_API
-WMKC_OF((wmkcNet_obj *obj, wmkcNetBuf *buf, wmkcNetSize size));
-
-/**
- * @brief 接收函数
- * @authors SN-Grotesque
- * @note 无
- * @param obj 指针，指向wmkcNet对象的地址。
- * @param _tSize 指针，指向单次传输长度变量的地址。可以为空。
- * @param buf 指针，指向缓冲区地址。
- * @param size 这是一个长度，表示缓冲区内可以接收的内容的长度。
- * @return 返回一个wmkcErr对象，code为0代表无错误，如果为
- *         其他值，那么需检查message与code。
- */
-WMKC_PUBLIC(wmkcErr_obj) wmkcNet_recv WMKC_OPEN_API
-WMKC_OF((wmkcNet_obj *obj, wmkcNetSize *_tSize, wmkcNetBuf *buf, wmkcNetSize size));
-
-/**
- * @brief 关闭套接字与WSADATA（如果有的话）的函数
- * @authors SN-Grotesque
- * @note 在有些情况下这个函数会返回一个错误代码，那是因为你的套接字没有使用。
- * @param obj 指针，指向wmkcNet对象的地址。
- * @return 返回一个wmkcErr对象，code为0代表无错误，如果为
- *         其他值，那么需检查message与code。
- */
-WMKC_PUBLIC(wmkcErr_obj) wmkcNet_close WMKC_OPEN_API
-WMKC_OF((wmkcNet_obj *obj));
 
 #endif /* WMKC_NETWORK */
 #endif /* WMKC_SUPPORT */

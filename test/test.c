@@ -4,12 +4,9 @@
 // #include <wmkc_sort.c>
 // #include <crypto/snc_412.c>
 
-// #include <network/wmkc_http.c>
 // #include <network/wmkc_ddos.c>
 // #include <network/wmkc_chunk.c>
-#include <network/wmkc_net_new.c>
-// #include <network/wmkc_net.c>
-// #include <network/wmkc_tp.c>
+#include <network/wmkc_net.c>
 // #include <crypto/wmkc_crypto.c>
 #include <crypto/snc.c>
 // #include <crypto/rsa.c>
@@ -98,12 +95,11 @@ void test()
 
     wmkcNet_new(&net);
     wmkcNet_socket(net, AF_INET, SOCK_STREAM, 0);
+    wmkcNet_connect(net, "www.bilibili.com", 80);
 
 
 
-    error = wmkcNet_shutdown(net, 2);
-    if(error.code) printf("func: %s, code: %lld, message: %s\n",
-        error.func, (int64_t)error.code, error.message);
+    wmkcNet_shutdown(net, 2);
     wmkcNet_close(net);
     wmkcNet_free(&net);
 
