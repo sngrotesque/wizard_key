@@ -47,11 +47,11 @@ static wmkcByte testIv[32] = {
     0x3d, 0x41, 0x78, 0x36, 0x4c, 0x50, 0x7d, 0x73, 0x61, 0x4e, 0x33, 0x6f, 0x23, 0x47, 0x4c, 0x36};
 #endif
 
-#define HOSTNAME "angelina-bot.top"
-#define HOSTPORT 80
+#define HOSTNAME "www.bilibili.com"
+#define HOSTPORT 443
 #define HOSTUSER "Mozilla/5.0 (X11; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/114.0"
 
-void test()
+void net_test()
 {
 #   if defined(WMKC_PLATFORM_WINOS)
     WSADATA ws;
@@ -61,24 +61,15 @@ void test()
     wmkcNet_obj *sockfd = wmkcNull;
     wmkcErr_obj error;
 
-    error = wmkcNet_new(&sockfd);
-    if(error.code) printf("%s\n", error.message);
-    error = wmkcNet_socket(sockfd, AF_INET, SOCK_STREAM, IPPROTO_TCP);
-    if(error.code) printf("%s\n", error.message);
-    error = wmkcNet_settimeout(sockfd, 3);
-    if(error.code) printf("%s\n", error.message);
-    error = wmkcNet_connect(sockfd, HOSTNAME, HOSTPORT);
-    if(error.code) printf("%s\n", error.message);
-
-    printf("remote socket addr: %s\n", sockfd->raddr->addr);
-    printf("remote socket port: %u\n", sockfd->raddr->port);
-    printf("local  socket addr: %s\n", sockfd->laddr->addr);
-    printf("local  socket port: %u\n", sockfd->laddr->port);
-    printf("\n");
+    wmkcNet_new(&sockfd);
+    wmkcNet_socket(sockfd, AF_INET, SOCK_STREAM, IPPROTO_TCP);
+    wmkcNet_settimeout(sockfd, 3);
+    wmkcNet_connect(sockfd, HOSTNAME, HOSTPORT);
 
     wmkcNetBuf sendbuf[4096] = {
         "GET / HTTP/1.1\r\n"
         "Host: "HOSTNAME"\r\n"
+        "Accept: */*\r\n"
         "Connection: close\r\n"
         "User-Agent: "HOSTUSER"\r\n\r\n"};
     wmkcNetBuf recvbuf[4096] = {0};
@@ -86,16 +77,35 @@ void test()
     recv(sockfd->sockfd, recvbuf, sizeof(recvbuf), 0);
     printf("%s\n", recvbuf);
 
-    error = wmkcNet_shutdown(sockfd, 2);
-    if(error.code) printf("%s\n", error.message);
-    error = wmkcNet_close(sockfd);
-    if(error.code) printf("%s\n", error.message);
-    error = wmkcNet_free(&sockfd);
-    if(error.code) printf("%s\n", error.message);
+    wmkcNet_shutdown(sockfd, 2);
+    wmkcNet_close(sockfd);
+    wmkcNet_free(&sockfd);
 
 #   if defined(WMKC_PLATFORM_WINOS)
     WSACleanup();
 #   endif
+}
+
+void test()
+{
+    WSADATA ws;
+    WSAStartup(MAKEWORD(2,2), &ws);
+
+    wmkcNet_obj *net = wmkcNull;
+    wmkcErr_obj error;
+
+    wmkcNet_new(&net);
+    wmkcNet_socket(net, AF_INET, SOCK_STREAM, 0);
+
+
+
+    error = wmkcNet_shutdown(net, 2);
+    if(error.code) printf("func: %s, code: %lld, message: %s\n",
+        error.func, (int64_t)error.code, error.message);
+    wmkcNet_close(net);
+    wmkcNet_free(&net);
+
+    WSACleanup();
 }
 
 int main(wmkc_u32 argc, wmkcChar **argv)

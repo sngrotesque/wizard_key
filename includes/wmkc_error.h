@@ -5,8 +5,9 @@
 #define WMKC_ERROR
 
 typedef struct {
-    wmkcCSTR message;
-    wmkcSSize code;
+    wmkcCSTR message; // 错误消息
+    wmkcCSTR func;    // 发送错误的函数的名称
+    wmkcSSize code;   // 错误代码
 } wmkcErr_obj;
 
 #define wmkcErr_OK 0 // 表示一切正常，不需要注意任何错误。
@@ -28,7 +29,6 @@ typedef struct {
 #define wmkcErr_NetSockfdType 9LL // 错误的套接字类型，只能用作：函数要求是TCP但传入的是UDP套接字或相反。
 #define wmkcErr_NetSend    10LL // 套接字发送数据失败，只能用作未能成功且正确的使用send函数时。
 #define wmkcErr_NetRecv    11LL // 套接字接收数据失败，只能用作未能成功且正确的使用recv函数时。
-#define wmkcErr_NetShutdown 12LL // 套接字关闭失败，用作自己实现的关闭套接字的函数中。
 #define wmkcErr_NetClose   13LL // 套接字关闭失败，用作自己实现的关闭套接字的函数中。
 #define wmkcErr_NetWsaData 14LL // 表示启动调用WSAStartup函数时出现错误。
 #define wmkcErr_NetFamily  15LL // 错误的网络家族，应使用AF_INET（PF_INET）或AF_INET6（PF_INET6）
@@ -44,8 +44,15 @@ typedef struct {
 // 将wmkcErr对象赋值并作为返回值返回。
 #define wmkcErr_return(error, _code, _message) \
     error.message = _message; \
+    error.func = wmkcNull; \
     error.code = _code; \
     return error
+
+#define wmkcErr_func_return(error, _func_name, _code, _message) \
+    error->message = _message; \
+    error->func = _func_name; \
+    error->code = _code; \
+    return;
 
 #endif /* WMKC_ERROR */
 #endif /* WMKC_SUPPORT */

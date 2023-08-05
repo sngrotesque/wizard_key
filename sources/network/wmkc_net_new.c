@@ -1,5 +1,92 @@
 #include <network/wmkc_net_new.h>
 
+WMKC_PRIVATE(wmkcVoid) wmkcNet_errorHandler WMKC_OPEN_API
+WMKC_OF((wmkcErr_obj *error, wmkcCSTR funcName))
+{
+#   if defined(WMKC_PLATFORM_WINOS)
+    wmkc_s32 errCodeBySystem = WSAGetLastError();
+#   elif defined(WMKC_PLATFORM_LINUX)
+    wmkc_s32 errCodeBySystem = errno;
+#   endif
+    switch(errCodeBySystem) {
+        case WMKC_NET_ERR_EINTR:
+            wmkcErr_func_return(error, funcName, errCodeBySystem,
+                "The call executed was truncated by the operating system.");
+        case WMKC_NET_ERR_EACCES:
+            wmkcErr_func_return(error, funcName, errCodeBySystem,
+                "Accessing sockets in an impermissible manner.");
+        case WMKC_NET_ERR_EFAULT:
+            wmkcErr_func_return(error, funcName, errCodeBySystem,
+                "The address points to the user's inaccessible address space.");
+        case WMKC_NET_ERR_EINVAL:
+            wmkcErr_func_return(error, funcName, errCodeBySystem,
+                "An invalid socket parameter was provided.");
+        case WMKC_NET_ERR_EMFILE:
+            wmkcErr_func_return(error, funcName, errCodeBySystem,
+                "Unable to provide sockets, the process's limit on the number of sockets has been reached.");
+        case WMKC_NET_ERR_EISCONN:
+            wmkcErr_func_return(error, funcName, errCodeBySystem,
+                "The socket has already been specified for connection.");
+        case WMKC_NET_ERR_ENOBUFS:
+            wmkcErr_func_return(error, funcName, errCodeBySystem,
+                "No buffer space provided.");
+        case WMKC_NET_ERR_EALREADY:
+            wmkcErr_func_return(error, funcName, errCodeBySystem,
+                "Another (TCP Fast Open) is executing or the socket is in non blocking mode.");
+        case WMKC_NET_ERR_ENOTCONN:
+            wmkcErr_func_return(error, funcName, errCodeBySystem,
+                "The socket is already (not) connected.");
+        case WMKC_NET_ERR_EMSGSIZE:
+            wmkcErr_func_return(error, funcName, errCodeBySystem,
+                "The message is greater than the limit supported by the transmission.");
+        case WMKC_NET_ERR_ENOTSOCK:
+            wmkcErr_func_return(error, funcName, errCodeBySystem,
+                "The descriptor is not a socket. :)");
+        case WMKC_NET_ERR_ETIMEDOUT:
+            wmkcErr_func_return(error, funcName, errCodeBySystem,
+                "The connection has been disconnected due to timeout.");
+        case WMKC_NET_ERR_EPROTOTYPE:
+            wmkcErr_func_return(error, funcName, errCodeBySystem,
+                "The socket type does not support this operation.");
+        case WMKC_NET_ERR_EOPNOTSUPP:
+            wmkcErr_func_return(error, funcName, errCodeBySystem,
+                "This socket is not connection oriented, or it is unidirectional.");
+        case WMKC_NET_ERR_EADDRINUSE:
+            wmkcErr_func_return(error, funcName, errCodeBySystem,
+                "The address or port is already (not) in use.");
+        case WMKC_NET_ERR_ECONNRESET:
+            wmkcErr_func_return(error, funcName, errCodeBySystem,
+                "Connection is reset");
+        case WMKC_NET_ERR_ENETUNREACH:
+            wmkcErr_func_return(error, funcName, errCodeBySystem,
+                "The network is not available.");
+        case WMKC_NET_ERR_EWOULDBLOCK:
+            wmkcErr_func_return(error, funcName, errCodeBySystem,
+                "The socket is not in blocking mode.");
+        case WMKC_NET_ERR_EINPROGRESS:
+            wmkcErr_func_return(error, funcName, errCodeBySystem,
+                "The socket is non blocking and cannot be executed immediately.");
+        case WMKC_NET_ERR_ECONNREFUSED:
+            wmkcErr_func_return(error, funcName, errCodeBySystem,
+                "The connection was forcibly rejected by the remote host.");
+        case WMKC_NET_ERR_ECONNABORTED:
+            wmkcErr_func_return(error, funcName, errCodeBySystem,
+                "The socket is unavailable due to timeout or other faults.");
+        case WMKC_NET_ERR_EAFNOSUPPORT:
+            wmkcErr_func_return(error, funcName, errCodeBySystem,
+                "The address in the specified network family cannot be used with this socket.");
+        case WMKC_NET_ERR_EADDRNOTAVAIL:
+            wmkcErr_func_return(error, funcName, errCodeBySystem,
+                "The requested address is invalid.");
+        case WMKC_NET_ERR_EPROTONOSUPPORT:
+            wmkcErr_func_return(error, funcName, errCodeBySystem,
+                "The specified protocol is not supported.");
+        default:
+            wmkcErr_func_return(error, funcName, errCodeBySystem,
+                "Unexpected error.");
+    }
+}
+
 WMKC_PUBLIC(wmkcCSTR) wmkcNet_GetAddr WMKC_OPEN_API
 WMKC_OF((wmkcNetType family, wmkcVoid *pAddr, wmkcChar *pStringBuf))
 {
@@ -255,9 +342,24 @@ WMKC_OF((wmkcNet_obj *obj, wmkcCSTR addr, wmkc_u16 port))
 }
 
 WMKC_PUBLIC(wmkcErr_obj) wmkcNet_listen WMKC_OPEN_API
-WMKC_OF((wmkcNet_obj *obj))
+WMKC_OF((wmkcNet_obj *obj, wmkc_u32 backlog))
 {
+    wmkcErr_obj error;
+    if(!obj) {
+        wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcNet_listen: obj is NULL.");
+    }
 
+    if(obj->type != SOCK_STREAM || obj->type != SOCK_SEQPACKET) {
+        wmkcErr_return(error, wmkcErr_NetSockfdType, "wmkcNet_listen: "
+            "Please do not use non listening socket types.");
+    }
+
+    if(listen(obj->sockfd, backlog) == wmkcErr_Err32) {
+        wmkcErr_return(error, wmkcErr_NetListen,
+            "wmkcNet_listen: Socket listening failed.");
+    }
+
+    wmkcErr_return(error, wmkcErr_OK, "OK.");
 }
 
 WMKC_PUBLIC(wmkcErr_obj) wmkcNet_accept WMKC_OPEN_API
@@ -291,28 +393,10 @@ WMKC_OF((wmkcNet_obj *obj, wmkc_u32 how))
     if(!obj) {
         wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcNet_shutdown: obj is NULL.");
     }
-    wmkc_s32 wmkcNet_shutdown_err_code;
 
     if(shutdown(obj->sockfd, how) == wmkcErr_Err32) {
-#       if defined(WMKC_PLATFORM_WINOS)
-        wmkcNet_shutdown_err_code = WSAGetLastError();
-#       elif defined(WMKC_PLATFORM_LINUX)
-        wmkcNet_shutdown_err_code = errno;
-#       endif
-        switch (wmkcNet_shutdown_err_code) {
-            case WMKC_NET_SHUTDOWN_ERR_EINVAL:
-                wmkcErr_return(error, wmkcErr_NetShutdown, "wmkcNet_shutdown: "
-                    "The parameter is invalid or inconsistent with the socket type.");
-            case WMKC_NET_SHUTDOWN_ERR_ENOTCONN:
-                wmkcErr_return(error, wmkcErr_NetShutdown, "wmkcNet_shutdown: "
-                    "The socket is not connected. This error only applies to connection oriented sockets.");
-            case WMKC_NET_SHUTDOWN_ERR_ENOTSOCK:
-                wmkcErr_return(error, wmkcErr_NetShutdown, "wmkcNet_shutdown: "
-                    "The socket argument does not refer to a socket.");
-            default:
-                wmkcErr_return(error, wmkcErr_NetShutdown, "wmkcNet_shutdown: "
-                    "Other errors occurred after calling the shutdown function.");
-        }
+        wmkcNet_errorHandler(&error, "wmkcNet_shutdown");
+        return error;
     }
 
     wmkcErr_return(error, wmkcErr_OK, "OK.");
