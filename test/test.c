@@ -85,27 +85,7 @@ void net_test()
 
 void test()
 {
-#   if defined(WMKC_PLATFORM_WINOS)
-    WSADATA ws;
-    WSAStartup(MAKEWORD(2,2), &ws);
-#   endif
-
-    wmkcNet_obj *net = wmkcNull;
-    wmkcErr_obj error;
-
-    wmkcNet_new(&net);
-    wmkcNet_socket(net, AF_INET, SOCK_STREAM, 0);
-    wmkcNet_connect(net, "www.bilibili.com", 80);
-
-
-
-    wmkcNet_shutdown(net, 2);
-    wmkcNet_close(net);
-    wmkcNet_free(&net);
-
-#   if defined(WMKC_PLATFORM_WINOS)
-    WSACleanup();
-#   endif
+    
 }
 
 int main(wmkc_u32 argc, wmkcChar **argv)

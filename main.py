@@ -20,17 +20,3 @@ import ssl
 import os
 import re
 
-def server():
-    sockfd = socket.socket()
-    sockfd.bind(('0.0.0.0', 49281))
-    sockfd.listen(1)
-    sockfd.close()
-
-threading.Thread(target=server).start()
-
-client_socket = socket.socket()
-client_socket.settimeout(1)
-try:
-    client_socket.connect(('localhost', 49281))
-except ConnectionResetError:
-    print("The connection has been reset.")

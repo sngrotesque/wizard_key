@@ -1,11 +1,11 @@
 #include <network/wmkc_chunk.h>
 
 WMKC_PUBLIC(wmkcVoid) wmkcChunk_recv WMKC_OPEN_API
-WMKC_OF((wmkcNet_obj *obj, wmkcNetBuf **buf, wmkcNetSize *size))
+WMKC_OF((wmkcNet_obj *obj, wmkcNetBuf **buf, socklen_t *size))
 {
     wmkcNetBuf *p = wmkcNull;
-    wmkcNetSize totalLengthReceived;
-    wmkcNetSize _tSize = 0;
+    socklen_t totalLengthReceived;
+    socklen_t _tSize = 0;
     wmkcByte size_array[4];
     wmkcByte crc32_array[4];
     wmkc_u32 crc32_n;
@@ -36,7 +36,7 @@ WMKC_OF((wmkcNet_obj *obj, wmkcNetBuf **buf, wmkcNetSize *size))
 }
 
 WMKC_PUBLIC(wmkcVoid) wmkcChunk_send WMKC_OPEN_API
-WMKC_OF((wmkcNet_obj *obj, wmkcNetBuf *buf, wmkcNetSize size))
+WMKC_OF((wmkcNet_obj *obj, wmkcNetBuf *buf, socklen_t size))
 {
     wmkcByte size_array[4];
     wmkcByte crc32_array[4];

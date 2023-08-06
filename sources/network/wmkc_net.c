@@ -164,7 +164,7 @@ WMKC_OF((wmkcCSTR funcName))
 }
 
 WMKC_PUBLIC(wmkcCSTR) wmkcNet_GetAddr WMKC_OPEN_API
-WMKC_OF((wmkcNetType family, wmkcVoid *pAddr, wmkcChar *pStringBuf))
+WMKC_OF((wmkc_s32 family, wmkcVoid *pAddr, wmkcChar *pStringBuf))
 {
     return inet_ntop(family, pAddr, pStringBuf, INET6_ADDRSTRLEN);
 }
@@ -239,7 +239,7 @@ WMKC_OF((wmkcNet_obj **obj))
 }
 
 WMKC_PUBLIC(wmkcErr_obj) wmkcNet_socket WMKC_OPEN_API
-WMKC_OF((wmkcNet_obj *obj, wmkcNetType family, wmkcNetType type, wmkcNetSize proto))
+WMKC_OF((wmkcNet_obj *obj, wmkc_s32 family, wmkc_s32 type, socklen_t proto))
 {
     wmkcErr_obj error;
     if(!obj) {
@@ -259,7 +259,7 @@ WMKC_OF((wmkcNet_obj *obj, wmkcNetType family, wmkcNetType type, wmkcNetSize pro
 
 WMKC_PUBLIC(wmkcErr_obj) wmkcNet_getaddrinfo WMKC_OPEN_API
 WMKC_OF((wmkcNet_addr *addr, wmkcCSTR hostname, wmkc_u16 port,
-    wmkcNetType family, wmkcNetType type, wmkcNetType proto))
+    wmkc_s32 family, wmkc_s32 type, wmkc_s32 proto))
 {
     wmkcErr_obj error;
     if(!addr || !hostname || !port) {
@@ -459,19 +459,19 @@ WMKC_OF((wmkcNet_obj *dst, wmkcNet_obj *src))
 }
 
 WMKC_PUBLIC(wmkcErr_obj) wmkcNet_send WMKC_OPEN_API
-WMKC_OF((wmkcNet_obj *obj))
+WMKC_OF((wmkcNet_obj *obj, wmkcNetBuf *content, socklen_t size, wmkc_s32 _flag))
 {
 
 }
 
 WMKC_PUBLIC(wmkcErr_obj) wmkcNet_sendall WMKC_OPEN_API
-WMKC_OF((wmkcNet_obj *obj))
+WMKC_OF((wmkcNet_obj *obj, wmkcNetBuf *content, socklen_t size, wmkc_s32 _flag))
 {
 
 }
 
 WMKC_PUBLIC(wmkcErr_obj) wmkcNet_recv WMKC_OPEN_API
-WMKC_OF((wmkcNet_obj *obj))
+WMKC_OF((wmkcNet_obj *obj, wmkcNetBuf *content, socklen_t size, wmkc_s32 _flag))
 {
 
 }

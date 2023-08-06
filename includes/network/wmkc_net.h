@@ -269,23 +269,20 @@ typedef wmkcChar  wmkcNetBuf;  // wmkcNet的缓冲区类型
 
 #include <wmkc_memory.h>
 
-typedef double    wmkcNetTime; // wmkcNet的时间类型
-typedef socklen_t wmkcNetSize; // wmkcNet的长度类型
-typedef wmkc_u32  wmkcNetType; // wmkcNet的类型类型
-
 typedef struct {
     SOCKADDR *sockAddress;
     wmkcChar *addr;
     wmkc_u16  port;
-    wmkcNetSize sockAddressSize;
+    socklen_t sockAddressSize;
 } wmkcNet_addr;
 
 // wmkcNet对象类型
 typedef struct {
     wmkcNetSock sockfd; // 套接字
-    wmkcNetType family; // 套接字家族类型（AF_INET, AF_INET6...）
-    wmkcNetType type;   // 套接字网络类型（SOCK_STREAM, SOCK_DGRAM...）
-    wmkcNetType proto;  // 套接字的协议类型（IPPROTO_IP, IPPROTO_TCP...）
+    wmkc_s32 family; // 套接字家族类型（AF_INET, AF_INET6...）
+    wmkc_s32 type;   // 套接字网络类型（SOCK_STREAM, SOCK_DGRAM...）
+    wmkc_s32 proto;  // 套接字的协议类型（IPPROTO_IP, IPPROTO_TCP...）
+    wmkc_s32 tSize;  // 单次传输长度（-1或0为错误）
     wmkcNet_addr *laddr; // 本地网络地址信息
     wmkcNet_addr *raddr; // 目标网络地址信息
     double timeout; // 套接字的超时时间，用于设置bind, connect, acceot, send, recv...
