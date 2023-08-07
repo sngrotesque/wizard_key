@@ -344,13 +344,14 @@ WMKC_OF((wmkcNet_obj *obj, double _value))
 
 #   if defined(WMKC_PLATFORM_WINOS)
     DWORD _timeout = (DWORD)(_value * 1000);
+    wmkcChar *optval = (wmkcChar *)&_timeout;
 #   elif defined(WMKC_PLATFORM_LINUX)
     double intpart = 0;
     double fracpart = modf(_value, &intpart);
     struct timeval _timeout = {.tv_sec=(long)intpart, .tv_usec=(long)(fracpart * 1000000)};
+    wmkcVoid *optval = (wmkcVoid *)&_timeout;
 #   endif
 
-    wmkcNetTimer *optval = (wmkcNetTimer *)&_timeout;
     if(setsockopt(obj->sockfd, SOL_SOCKET, SO_SNDTIMEO, optval, sizeof(_timeout))) {
         wmkcErr_return(error, wmkcErr_Err32, "wmkcNet_settimeout: "
             "Error setting send timeout using the setsockopt function.");
@@ -459,19 +460,19 @@ WMKC_OF((wmkcNet_obj *dst, wmkcNet_obj *src))
 }
 
 WMKC_PUBLIC(wmkcErr_obj) wmkcNet_send WMKC_OPEN_API
-WMKC_OF((wmkcNet_obj *obj, wmkcNetBuf *content, socklen_t size, wmkc_s32 _flag))
+WMKC_OF((wmkcNet_obj *obj, wmkcNetBufT *content, socklen_t size, wmkc_s32 _flag))
 {
 
 }
 
 WMKC_PUBLIC(wmkcErr_obj) wmkcNet_sendall WMKC_OPEN_API
-WMKC_OF((wmkcNet_obj *obj, wmkcNetBuf *content, socklen_t size, wmkc_s32 _flag))
+WMKC_OF((wmkcNet_obj *obj, wmkcNetBufT *content, socklen_t size, wmkc_s32 _flag))
 {
 
 }
 
 WMKC_PUBLIC(wmkcErr_obj) wmkcNet_recv WMKC_OPEN_API
-WMKC_OF((wmkcNet_obj *obj, wmkcNetBuf *content, socklen_t size, wmkc_s32 _flag))
+WMKC_OF((wmkcNet_obj *obj, wmkcNetBufT *content, socklen_t size, wmkc_s32 _flag))
 {
 
 }

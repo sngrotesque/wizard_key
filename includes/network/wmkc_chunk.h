@@ -14,10 +14,10 @@
 #include <zlib/zlib.h>
 
 WMKC_PUBLIC(wmkcVoid) wmkcChunk_recv WMKC_OPEN_API
-WMKC_OF((wmkcNet_obj *obj, wmkcNetBuf **buf, socklen_t *size));
+WMKC_OF((wmkcNet_obj *obj, wmkcNetBufT **buf, socklen_t *size));
 
 WMKC_PUBLIC(wmkcVoid) wmkcChunk_send WMKC_OPEN_API
-WMKC_OF((wmkcNet_obj *obj, wmkcNetBuf *buf, socklen_t size));
+WMKC_OF((wmkcNet_obj *obj, wmkcNetBufT *buf, socklen_t size));
 
 #endif /* WMKC_CHUNK */
 #endif /* WMKC_SUPPORT */

@@ -27,7 +27,7 @@
 * WMKC_NET_ERR_EMFILE              accept, listen, socket
 * 无法提供更多套接字描述符，已达到每个进程对套接字数量的限制。
 * 
-* WMKC_NET_ERR_EISCONN             listen, send[linux], connect
+* WMKC_NET_ERR_EISCONN             listen, send, connect
 * 套接字已被指定连接。
 * 
 * WMKC_NET_ERR_ENOBUFS             bind, accept, send, listen, socket, connect
@@ -254,17 +254,15 @@ typedef struct sockaddr     SOCKADDR; // 套接字地址结构
 typedef struct addrinfo     ADDRINFO; // 域名解析结构
 typedef struct sockaddr_in  SOCKADDR_IN;  // IPv4网络结构
 typedef struct sockaddr_in6 SOCKADDR_IN6; // IPv6网络结构
-typedef        wmkcVoid     wmkcNetTimer; // wmkcNet的计时类型
-typedef        wmkc_u32     wmkcNetSock; // wmkcNet的socket类型
-typedef        wmkcByte     wmkcNetBuf;  // wmkcNet的缓冲区类型
+typedef        wmkc_s32     wmkcNetSockT; // wmkcNet的socket类型
+typedef        wmkcByte     wmkcNetBufT;  // wmkcNet的缓冲区类型
 #elif defined(WMKC_PLATFORM_WINOS)
 #include <WS2tcpip.h>
 #if (!defined(__MINGW32__) && !defined(__MINGW64__))
 #   pragma comment(lib, "WS2_32.lib")
 #endif
-typedef wmkcChar  wmkcNetTimer; // wmkcNet的计时类型
-typedef SOCKET    wmkcNetSock; // wmkcNet的socket类型
-typedef wmkcChar  wmkcNetBuf;  // wmkcNet的缓冲区类型
+typedef SOCKET    wmkcNetSockT; // wmkcNet的socket类型
+typedef wmkcChar  wmkcNetBufT;  // wmkcNet的缓冲区类型
 #endif /* WMKC_PLATFORM_LINUX */
 
 #include <wmkc_memory.h>
@@ -278,7 +276,7 @@ typedef struct {
 
 // wmkcNet对象类型
 typedef struct {
-    wmkcNetSock sockfd; // 套接字
+    wmkcNetSockT sockfd; // 套接字
     wmkc_s32 family; // 套接字家族类型（AF_INET, AF_INET6...）
     wmkc_s32 type;   // 套接字网络类型（SOCK_STREAM, SOCK_DGRAM...）
     wmkc_s32 proto;  // 套接字的协议类型（IPPROTO_IP, IPPROTO_TCP...）
@@ -287,6 +285,58 @@ typedef struct {
     wmkcNet_addr *raddr; // 目标网络地址信息
     double timeout; // 套接字的超时时间，用于设置bind, connect, acceot, send, recv...
 } wmkcNet_obj;
+
+WMKC_PUBLIC(wmkcErr_obj) wmkcNet_errorHandler WMKC_OPEN_API
+WMKC_OF((wmkcCSTR funcName));
+
+WMKC_PUBLIC(wmkcCSTR) wmkcNet_GetAddr WMKC_OPEN_API
+WMKC_OF((wmkc_s32 family, wmkcVoid *pAddr, wmkcChar *pStringBuf));
+
+WMKC_PUBLIC(wmkc_u16) wmkcNet_GetPort WMKC_OPEN_API
+WMKC_OF((wmkc_u16 port));
+
+WMKC_PUBLIC(wmkcErr_obj) wmkcNet_new WMKC_OPEN_API
+WMKC_OF((wmkcNet_obj **obj));
+
+WMKC_PUBLIC(wmkcErr_obj) wmkcNet_free WMKC_OPEN_API
+WMKC_OF((wmkcNet_obj **obj));
+
+WMKC_PUBLIC(wmkcErr_obj) wmkcNet_socket WMKC_OPEN_API
+WMKC_OF((wmkcNet_obj *obj, wmkc_s32 family, wmkc_s32 type, socklen_t proto));
+
+WMKC_PUBLIC(wmkcErr_obj) wmkcNet_getaddrinfo WMKC_OPEN_API
+WMKC_OF((wmkcNet_addr *addr, wmkcCSTR hostname, wmkc_u16 port,
+    wmkc_s32 family, wmkc_s32 type, wmkc_s32 proto));
+
+WMKC_PUBLIC(wmkcErr_obj) wmkcNet_settimeout WMKC_OPEN_API
+WMKC_OF((wmkcNet_obj *obj, double _value));
+
+WMKC_PUBLIC(wmkcErr_obj) wmkcNet_bind WMKC_OPEN_API
+WMKC_OF((wmkcNet_obj *obj, wmkcCSTR addr, wmkc_u16 port));
+
+WMKC_PUBLIC(wmkcErr_obj) wmkcNet_connect WMKC_OPEN_API
+WMKC_OF((wmkcNet_obj *obj, wmkcCSTR addr, wmkc_u16 port));
+
+WMKC_PUBLIC(wmkcErr_obj) wmkcNet_listen WMKC_OPEN_API
+WMKC_OF((wmkcNet_obj *obj, wmkc_u32 backlog));
+
+WMKC_PUBLIC(wmkcErr_obj) wmkcNet_accept WMKC_OPEN_API
+WMKC_OF((wmkcNet_obj *dst, wmkcNet_obj *src));
+
+WMKC_PUBLIC(wmkcErr_obj) wmkcNet_send WMKC_OPEN_API
+WMKC_OF((wmkcNet_obj *obj, wmkcNetBufT *content, socklen_t size, wmkc_s32 _flag));
+
+WMKC_PUBLIC(wmkcErr_obj) wmkcNet_sendall WMKC_OPEN_API
+WMKC_OF((wmkcNet_obj *obj, wmkcNetBufT *content, socklen_t size, wmkc_s32 _flag));
+
+WMKC_PUBLIC(wmkcErr_obj) wmkcNet_recv WMKC_OPEN_API
+WMKC_OF((wmkcNet_obj *obj, wmkcNetBufT *content, socklen_t size, wmkc_s32 _flag));
+
+WMKC_PUBLIC(wmkcErr_obj) wmkcNet_shutdown WMKC_OPEN_API
+WMKC_OF((wmkcNet_obj *obj, wmkc_u32 how));
+
+WMKC_PUBLIC(wmkcErr_obj) wmkcNet_close WMKC_OPEN_API
+WMKC_OF((wmkcNet_obj *obj));
 
 #endif /* WMKC_NETWORK */
 #endif /* WMKC_SUPPORT */

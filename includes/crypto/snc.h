@@ -101,7 +101,7 @@ WMKC_OF((wmkcSNC_obj **ctx));
  *         其他值，那么需检查message与code。
  */
 WMKC_PUBLIC(wmkcErr_obj) wmkcSNC_init WMKC_OPEN_API
-WMKC_OF((wmkcSNC_obj *ctx, wmkcByte *keyBuf, wmkcByte *ivBuf));
+WMKC_OF((wmkcSNC_obj *ctx, const wmkcByte *keyBuf, const wmkcByte *ivBuf));
 
 /**
  * @brief SNC-ECB，加密

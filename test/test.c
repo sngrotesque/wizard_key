@@ -63,13 +63,13 @@ void net_test()
     wmkcNet_settimeout(sockfd, 3);
     wmkcNet_connect(sockfd, HOSTNAME, HOSTPORT);
 
-    wmkcNetBuf sendbuf[4096] = {
+    wmkcNetBufT sendbuf[4096] = {
         "GET / HTTP/1.1\r\n"
         "Host: "HOSTNAME"\r\n"
         "Accept: */*\r\n"
         "Connection: close\r\n"
         "User-Agent: "HOSTUSER"\r\n\r\n"};
-    wmkcNetBuf recvbuf[4096] = {0};
+    wmkcNetBufT recvbuf[4096] = {0};
     send(sockfd->sockfd, sendbuf, strlen((wmkcChar *)sendbuf), 0);
     recv(sockfd->sockfd, recvbuf, sizeof(recvbuf), 0);
     printf("%s\n", recvbuf);
@@ -85,7 +85,36 @@ void net_test()
 
 void test()
 {
-    
+#   if defined(WMKC_PLATFORM_WINOS)
+    WSADATA ws;
+    WSAStartup(MAKEWORD(2,2), &ws);
+#   endif
+
+    wmkcNetSockT sockfd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+    wmkcNetSockT cSockfd = 0;
+    SOCKADDR_IN listen_addr = {0};
+    SOCKADDR_IN client_addr = {0};
+    socklen_t client_addr_size = sizeof(client_addr);
+
+    listen_addr.sin_addr.S_un.S_addr = inet_addr("0.0.0.0");
+    listen_addr.sin_port = htons(49281);
+    listen_addr.sin_family = AF_INET;
+
+    bind(sockfd, (SOCKADDR *)&listen_addr, sizeof(listen_addr));
+    listen(sockfd, 3);
+    cSockfd = accept(sockfd, (SOCKADDR *)&client_addr, &client_addr_size);
+
+    SOCKADDR_IN ipv4 = {0};
+    socklen_t ipv4_size = sizeof(ipv4);
+    wmkcChar ipv4_string[32] = {0};
+
+    getsockname(cSockfd, (SOCKADDR *)&ipv4, &ipv4_size);
+
+    printf("%s\n", wmkcNet_GetAddr(AF_INET, &ipv4.sin_addr, ipv4_string));
+
+#   if defined(WMKC_PLATFORM_WINOS)
+    WSACleanup();
+#   endif
 }
 
 int main(wmkc_u32 argc, wmkcChar **argv)

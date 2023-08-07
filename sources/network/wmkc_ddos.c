@@ -25,7 +25,7 @@ WMKC_OF((wmkcCSTR dstIP, wmkc_u16 dstPort, wmkcCSTR srcIP, wmkc_u16 srcPort, wmk
             "wmkcDDos_attack: dstIP or dstPort is NULL.");
     }
     wmkcRandom_seed();
-    wmkcNetBuf packet[2048];
+    wmkcNetBufT packet[2048];
     IPHDR  *ip_header  = (IPHDR *)packet;
     TCPHDR *tcp_header = (TCPHDR *)(packet + sizeof(IPHDR));
     SOCKADDR_IN dest_addr;

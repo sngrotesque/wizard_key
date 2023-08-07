@@ -1,9 +1,9 @@
 #include <network/wmkc_chunk.h>
 
 WMKC_PUBLIC(wmkcVoid) wmkcChunk_recv WMKC_OPEN_API
-WMKC_OF((wmkcNet_obj *obj, wmkcNetBuf **buf, socklen_t *size))
+WMKC_OF((wmkcNet_obj *obj, wmkcNetBufT **buf, socklen_t *size))
 {
-    wmkcNetBuf *p = wmkcNull;
+    wmkcNetBufT *p = wmkcNull;
     socklen_t totalLengthReceived;
     socklen_t _tSize = 0;
     wmkcByte size_array[4];
@@ -14,7 +14,7 @@ WMKC_OF((wmkcNet_obj *obj, wmkcNetBuf **buf, socklen_t *size))
     wmkcStruct_unpack(">I", size, size_array);
     totalLengthReceived = *size;
 
-    if(!wmkcMem_new(wmkcNetBuf *, (*buf), totalLengthReceived + 1)) {
+    if(!wmkcMem_new(wmkcNetBufT *, (*buf), totalLengthReceived + 1)) {
         printf("为buf申请内存失败。\n");
         return;
     }
@@ -36,7 +36,7 @@ WMKC_OF((wmkcNet_obj *obj, wmkcNetBuf **buf, socklen_t *size))
 }
 
 WMKC_PUBLIC(wmkcVoid) wmkcChunk_send WMKC_OPEN_API
-WMKC_OF((wmkcNet_obj *obj, wmkcNetBuf *buf, socklen_t size))
+WMKC_OF((wmkcNet_obj *obj, wmkcNetBufT *buf, socklen_t size))
 {
     wmkcByte size_array[4];
     wmkcByte crc32_array[4];

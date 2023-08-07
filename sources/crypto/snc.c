@@ -490,7 +490,7 @@ WMKC_OF((wmkcSNC_obj **ctx))
 * round based on the basic key input by the user.
 */
 WMKC_PUBLIC(wmkcErr_obj) wmkcSNC_init WMKC_OPEN_API
-WMKC_OF((wmkcSNC_obj *ctx, wmkcByte *keyBuf, wmkcByte *ivBuf))
+WMKC_OF((wmkcSNC_obj *ctx, const wmkcByte *keyBuf, const wmkcByte *ivBuf))
 {
     wmkcErr_obj error;
     if(!ctx || !keyBuf || !ivBuf) {

@@ -20,3 +20,6 @@ import ssl
 import os
 import re
 
+sockfd = socket.socket()
+sockfd.connect(('127.0.0.1', 49281))
+sockfd.close()
