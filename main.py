@@ -21,5 +21,5 @@ import os
 import re
 
 sockfd = socket.socket()
-sockfd.connect(('127.0.0.1', 49281))
+sockfd.connect(('47.243.162.23', 49281))
 sockfd.close()

@@ -96,7 +96,11 @@ void test()
     SOCKADDR_IN client_addr = {0};
     socklen_t client_addr_size = sizeof(client_addr);
 
+#   if defined(WMKC_PLATFORM_WINOS)
     listen_addr.sin_addr.S_un.S_addr = inet_addr("0.0.0.0");
+#   elif defined(WMKC_PLATFORM_LINUX)
+    listen_addr.sin_addr.s_addr = inet_addr("0.0.0.0");
+#   endif
     listen_addr.sin_port = htons(49281);
     listen_addr.sin_family = AF_INET;
 

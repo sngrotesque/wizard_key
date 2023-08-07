@@ -64,7 +64,7 @@ WMKC_OF((wmkcCSTR funcName))
                 "The network is not available.");
         case WMKC_NET_ERR_EWOULDBLOCK:
             wmkcErr_func_return(error, errCodeBySystem, funcName,
-                "The socket is not in blocking mode.");
+                "The socket is non blocking and there is no connection.");
         case WMKC_NET_ERR_EINPROGRESS:
             wmkcErr_func_return(error, errCodeBySystem, funcName,
                 "The socket is non blocking and cannot be executed immediately.");
@@ -118,9 +118,6 @@ WMKC_OF((wmkcCSTR funcName))
         case WMKC_NET_ERR_EPROTO:
             wmkcErr_func_return(error, errCodeBySystem, funcName,
                 "Wrong protocol.");
-        case WMKC_NET_ERR_EAGAIN:
-            wmkcErr_func_return(error, errCodeBySystem, funcName,
-                "The socket is non blocking and there is no connection.");
         case WMKC_NET_ERR_ENOTDIR:
             wmkcErr_func_return(error, errCodeBySystem, funcName,
                 "The component with path prefix is not a directory.");
