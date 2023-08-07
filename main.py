@@ -21,5 +21,25 @@ import os
 import re
 
 sockfd = socket.socket()
-sockfd.connect(('47.243.162.23', 49281))
+sockfd.settimeout(5)
+sockfd.bind(('0.0.0.0', 49281))
+sockfd.listen(1)
+print(f'等待被连接...')
+cSockfd, addr = sockfd.accept()
+
+print(f'开始接收数据...')
+tmp = res = b''
+try:
+    while 1:
+        tmp = cSockfd.recv(4096)
+        if not tmp:
+            break
+        res += tmp
+except:
+    pass
+
+print(f'content: {res}')
+
+cSockfd.shutdown(2)
+cSockfd.close()
 sockfd.close()

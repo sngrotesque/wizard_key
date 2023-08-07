@@ -6,7 +6,6 @@
 #include <wmkc_error.h>
 #include <math.h>
 
-#define WMKC_NET_BLOCKLEN 4096     // wmkcNet的块长度，用作传输
 #define WMKC_NET_IPV4_ADDR_SIZE 16 // 用于储存IPv4信息的内存大小
 #define WMKC_NET_IPV6_ADDR_SIZE 28 // 用于储存IPv6信息的内存大小
 
@@ -231,7 +230,7 @@
 #define WMKC_NET_ERR_ENOSPC              ENOSPC
 #define WMKC_NET_ERR_EDQUOT              EDQUOT
 #define WMKC_NET_ERR_EPROTO              EPROTO
-#define WMKC_NET_ERR_EAGAIN              EAGAIN
+#define WMKC_NET_ERR_EAGAIN              EAGAIN // == WMKC_NET_ERR_EWOULDBLOCK
 #define WMKC_NET_ERR_ENOENT              ENOENT
 #define WMKC_NET_ERR_ENFILE              ENFILE
 #define WMKC_NET_ERR_ENOMEM              ENOMEM
@@ -327,7 +326,7 @@ WMKC_PUBLIC(wmkcErr_obj) wmkcNet_send WMKC_OPEN_API
 WMKC_OF((wmkcNet_obj *obj, wmkcNetBufT *content, socklen_t size, wmkc_s32 _flag));
 
 WMKC_PUBLIC(wmkcErr_obj) wmkcNet_sendall WMKC_OPEN_API
-WMKC_OF((wmkcNet_obj *obj, wmkcNetBufT *content, socklen_t size, wmkc_s32 _flag));
+WMKC_OF((wmkcNet_obj *obj, wmkcNetBufT *content, wmkcSize size, wmkc_s32 _flag));
 
 WMKC_PUBLIC(wmkcErr_obj) wmkcNet_recv WMKC_OPEN_API
 WMKC_OF((wmkcNet_obj *obj, wmkcNetBufT *content, socklen_t size, wmkc_s32 _flag));

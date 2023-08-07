@@ -459,19 +459,64 @@ WMKC_OF((wmkcNet_obj *dst, wmkcNet_obj *src))
 WMKC_PUBLIC(wmkcErr_obj) wmkcNet_send WMKC_OPEN_API
 WMKC_OF((wmkcNet_obj *obj, wmkcNetBufT *content, socklen_t size, wmkc_s32 _flag))
 {
+    wmkcErr_obj error;
+    if(!obj || !content || !size) {
+        wmkcErr_func_return(error, wmkcErr_ErrNULL, "wmkcNet_send",
+            "dst or content or size is NULL.");
+    }
 
+    if((obj->tSize = send(obj->sockfd, content, size, _flag)) == wmkcErr_Err32) {
+        return wmkcNet_errorHandler("wmkcNet_send");
+    }
+
+    wmkcErr_return(error, wmkcErr_OK, "OK.");
 }
 
 WMKC_PUBLIC(wmkcErr_obj) wmkcNet_sendall WMKC_OPEN_API
-WMKC_OF((wmkcNet_obj *obj, wmkcNetBufT *content, socklen_t size, wmkc_s32 _flag))
+WMKC_OF((wmkcNet_obj *obj, wmkcNetBufT *content, wmkcSize size, wmkc_s32 _flag))
 {
+    wmkcErr_obj error;
+    if(!obj || !content || !size) {
+        wmkcErr_func_return(error, wmkcErr_ErrNULL, "wmkcNet_sendall",
+            "dst or content or size is NULL.");
+    }
+    wmkc_u32 retry_count; // 重试次数
 
+    while(size) {
+        retry_count = 5;
+        while(retry_count) {
+            error = wmkcNet_send(obj, content, size, _flag);
+            if(obj->tSize == wmkcErr_Err32) {
+                retry_count--;
+            } else {
+                break;
+            }
+        }
+        if(!retry_count) {
+            return error;
+        }
+
+        size -= obj->tSize;
+        content += obj->tSize;
+    }
+
+    wmkcErr_return(error, wmkcErr_OK, "OK.");
 }
 
 WMKC_PUBLIC(wmkcErr_obj) wmkcNet_recv WMKC_OPEN_API
 WMKC_OF((wmkcNet_obj *obj, wmkcNetBufT *content, socklen_t size, wmkc_s32 _flag))
 {
+    wmkcErr_obj error;
+    if(!obj || !content || !size) {
+        wmkcErr_func_return(error, wmkcErr_ErrNULL, "wmkcNet_recv",
+            "dst or content or size is NULL.");
+    }
 
+    if((obj->tSize = recv(obj->sockfd, content, size, _flag)) == wmkcErr_Err32) {
+        return wmkcNet_errorHandler("wmkcNet_recv");
+    }
+
+    wmkcErr_return(error, wmkcErr_OK, "OK.");
 }
 
 WMKC_PUBLIC(wmkcErr_obj) wmkcNet_shutdown WMKC_OPEN_API

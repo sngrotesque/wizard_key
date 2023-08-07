@@ -11,7 +11,7 @@
 #include <crypto/snc.c>
 // #include <crypto/rsa.c>
 // #include <crypto/pkc.c>
-// #include <wmkc_binascii.c>
+#include <wmkc_binascii.c>
 #include <wmkc_memory.c>
 #include <wmkc_common.c>
 #include <wmkc_base64.c>
@@ -24,7 +24,7 @@
 #include <wmkc_coder.c>
 // #include <wmkc_chat.c>
 #include <wmkc_file.c>
-// #include <wmkc_hash.c>
+#include <wmkc_hash.c>
 #include <wmkc_time.c>
 #include <wmkc_math.c>
 #include <wmkc_misc.c>
@@ -44,8 +44,8 @@ static wmkcByte testIv[32] = {
     0x3d, 0x41, 0x78, 0x36, 0x4c, 0x50, 0x7d, 0x73, 0x61, 0x4e, 0x33, 0x6f, 0x23, 0x47, 0x4c, 0x36};
 #endif
 
-#define HOSTNAME "www.bilibili.com"
-#define HOSTPORT 443
+#define HOSTNAME "127.0.0.1"
+#define HOSTPORT 49281
 #define HOSTUSER "Mozilla/5.0 (X11; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/114.0"
 
 void net_test()
@@ -54,29 +54,30 @@ void net_test()
     WSADATA ws;
     WSAStartup(MAKEWORD(2,2), &ws);
 #   endif
-
-    wmkcNet_obj *sockfd = wmkcNull;
+    wmkcNet_obj *net = wmkcNull;
     wmkcErr_obj error;
 
-    wmkcNet_new(&sockfd);
-    wmkcNet_socket(sockfd, AF_INET, SOCK_STREAM, IPPROTO_TCP);
-    wmkcNet_settimeout(sockfd, 3);
-    wmkcNet_connect(sockfd, HOSTNAME, HOSTPORT);
-
-    wmkcNetBufT sendbuf[4096] = {
+    wmkcNetBufT *content = (wmkcNetBufT *)(
         "GET / HTTP/1.1\r\n"
-        "Host: "HOSTNAME"\r\n"
+        "Host: www.baidu.com\r\n"
         "Accept: */*\r\n"
-        "Connection: close\r\n"
-        "User-Agent: "HOSTUSER"\r\n\r\n"};
-    wmkcNetBufT recvbuf[4096] = {0};
-    send(sockfd->sockfd, sendbuf, strlen((wmkcChar *)sendbuf), 0);
-    recv(sockfd->sockfd, recvbuf, sizeof(recvbuf), 0);
-    printf("%s\n", recvbuf);
+        "Accept-Encoding: br\r\n"
+        "Connection: keep-alive\r\n"
+        "User-Agent: "HOSTUSER"\r\n\r\n"
+    );
 
-    wmkcNet_shutdown(sockfd, 2);
-    wmkcNet_close(sockfd);
-    wmkcNet_free(&sockfd);
+    wmkcNet_new(&net);
+    wmkcNet_socket(net, AF_INET, SOCK_STREAM, IPPROTO_TCP);
+    wmkcNet_settimeout(net, 5);
+    wmkcNet_connect(net, HOSTNAME, HOSTPORT);
+    printf("Waiting...\n");
+    wmkcTime_sleep(10.0);
+
+    error = wmkcNet_sendall(net, content, strlen(content), 0);
+    printf("[%d] %s: %s\n", (int)error.code, error.func, error.message);
+    wmkcNet_shutdown(net, 2);
+    wmkcNet_close(net);
+    wmkcNet_free(&net);
 
 #   if defined(WMKC_PLATFORM_WINOS)
     WSACleanup();
@@ -85,40 +86,7 @@ void net_test()
 
 void test()
 {
-#   if defined(WMKC_PLATFORM_WINOS)
-    WSADATA ws;
-    WSAStartup(MAKEWORD(2,2), &ws);
-#   endif
-
-    wmkcNetSockT sockfd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
-    wmkcNetSockT cSockfd = 0;
-    SOCKADDR_IN listen_addr = {0};
-    SOCKADDR_IN client_addr = {0};
-    socklen_t client_addr_size = sizeof(client_addr);
-
-#   if defined(WMKC_PLATFORM_WINOS)
-    listen_addr.sin_addr.S_un.S_addr = inet_addr("0.0.0.0");
-#   elif defined(WMKC_PLATFORM_LINUX)
-    listen_addr.sin_addr.s_addr = inet_addr("0.0.0.0");
-#   endif
-    listen_addr.sin_port = htons(49281);
-    listen_addr.sin_family = AF_INET;
-
-    bind(sockfd, (SOCKADDR *)&listen_addr, sizeof(listen_addr));
-    listen(sockfd, 3);
-    cSockfd = accept(sockfd, (SOCKADDR *)&client_addr, &client_addr_size);
-
-    SOCKADDR_IN ipv4 = {0};
-    socklen_t ipv4_size = sizeof(ipv4);
-    wmkcChar ipv4_string[32] = {0};
-
-    getsockname(cSockfd, (SOCKADDR *)&ipv4, &ipv4_size);
-
-    printf("%s\n", wmkcNet_GetAddr(AF_INET, &ipv4.sin_addr, ipv4_string));
-
-#   if defined(WMKC_PLATFORM_WINOS)
-    WSACleanup();
-#   endif
+    net_test();
 }
 
 int main(wmkc_u32 argc, wmkcChar **argv)

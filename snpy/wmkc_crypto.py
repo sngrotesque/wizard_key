@@ -19,11 +19,11 @@ EAX = (1 << AES.MODE_EAX)
 GCM = (1 << AES.MODE_GCM)
 OCB = (1 << AES.MODE_OCB)
 
-def wmkcCrypto_sha256(content :object, path :str = None):
+def wmkcCrypto_sha256(content :object = None, path :str = None):
     hash_object = hashlib.sha256()
     if path:
         with open(path, 'rb') as f:
-            hash_object.update(f.read(409600))
+            hash_object.update(f.read())
     else:
         hash_object.update(content)
     return hash_object.hexdigest()
