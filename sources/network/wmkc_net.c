@@ -455,6 +455,7 @@ WMKC_OF((wmkcNet_obj **dst, wmkcNet_obj *src))
     (*dst)->proto = src->proto;
 
     // 我不确定这种强制类型转换是否有效，明天测试一下。
+    // 测试完成，这种方式没有任何问题。
     if((*dst)->family == AF_INET) {
         wmkcNet_GetAddr((*dst)->family, &(((SOCKADDR_IN *)((*dst)->raddr->sockAddress))->sin_addr),
             (*dst)->raddr->addr);

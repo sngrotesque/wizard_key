@@ -94,12 +94,21 @@ void test()
 {
     win_net_init();
 
+    wmkcNet_obj *src = wmkcNull;
+    wmkcNet_obj *dst = wmkcNull;
 
+    wmkcNet_new(&src);
+    wmkcNet_socket(src, AF_INET, SOCK_STREAM, IPPROTO_IP);
+    wmkcNet_bind(src, "0.0.0.0", 49281);
+    wmkcNet_listen(src, 1);
 
+    printf("Waiting to be connected by the client...\n");
+    wmkcNet_accept(&dst, src);
 
+    printf("dst->raddr: %s\n", dst->raddr->addr);
+    printf("dst->rport: %d\n", dst->raddr->port);
 
-
-
+    wmkcNet_send(dst, "hello", 5, 0);
 
     win_net_clear();
 }
