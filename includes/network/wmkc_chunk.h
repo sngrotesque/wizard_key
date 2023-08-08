@@ -4,11 +4,11 @@
 #ifndef WMKC_CHUNK
 #define WMKC_CHUNK
 #include <wmkc_error.h>
-#include <wmkc_memory.h>
 
 #include <network/wmkc_net.h>
 #include <crypto/snc.h>
 #include <wmkc_struct.h>
+#include <wmkc_memory.h>
 #include <wmkc_file.h>
 
 #include <zlib/zlib.h>

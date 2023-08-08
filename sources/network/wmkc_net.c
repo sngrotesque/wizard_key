@@ -452,6 +452,22 @@ WMKC_OF((wmkcNet_obj *dst, wmkcNet_obj *src))
             "dst or src is NULL.");
     }
 
+    if(dst->raddr->sockAddress) {
+        wmkcMem_free(dst->raddr->sockAddress);
+    }
+    if(!wmkcMem_new(SOCKADDR *, dst->raddr->sockAddress, WMKC_NET_IPV6_ADDR_SIZE)) {
+        wmkcErr_func_return(error, wmkcErr_ErrMemory, "wmkcNet_connect",
+            "Failed to allocate memory for dst->raddr->sockAddress.");
+    }
+    dst->raddr->sockAddressSize = WMKC_NET_IPV6_ADDR_SIZE;
+
+    dst->sockfd = accept(src->sockfd, dst->raddr->sockAddress, &dst->raddr->sockAddressSize);
+    if(dst->sockfd == wmkcErr_Err32) {
+        return wmkcNet_errorHandler("wmkcNet_accept");
+    }
+
+    
+
 
     wmkcErr_return(error, wmkcErr_OK, "OK.");
 }

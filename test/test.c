@@ -44,8 +44,8 @@ static wmkcByte testIv[32] = {
     0x3d, 0x41, 0x78, 0x36, 0x4c, 0x50, 0x7d, 0x73, 0x61, 0x4e, 0x33, 0x6f, 0x23, 0x47, 0x4c, 0x36};
 #endif
 
-#define HOSTNAME "127.0.0.1"
-#define HOSTPORT 49281
+#define HOSTNAME "passport.bilibili.com"
+#define HOSTPORT 443
 #define HOSTUSER "Mozilla/5.0 (X11; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/114.0"
 
 void net_test()
@@ -58,26 +58,25 @@ void net_test()
     wmkcErr_obj error;
 
     wmkcNetBufT *content = (wmkcNetBufT *)(
-        "GET / HTTP/1.1\r\n"
-        "Host: www.baidu.com\r\n"
+        "GET /site/site.html HTTP/1.1\r\n"
+        "Host: "HOSTNAME"\r\n"
         "Accept: */*\r\n"
-        "Accept-Encoding: br\r\n"
         "Connection: keep-alive\r\n"
         "User-Agent: "HOSTUSER"\r\n\r\n"
     );
+    wmkcNetBufT recvbuf[4096] = {0};
 
     wmkcNet_new(&net);
     wmkcNet_socket(net, AF_INET, SOCK_STREAM, IPPROTO_TCP);
     wmkcNet_settimeout(net, 5);
     wmkcNet_connect(net, HOSTNAME, HOSTPORT);
-    printf("Waiting...\n");
-    wmkcTime_sleep(10.0);
-
-    error = wmkcNet_sendall(net, content, strlen(content), 0);
-    printf("[%d] %s: %s\n", (int)error.code, error.func, error.message);
+    wmkcNet_sendall(net, content, strlen(content), 0);
+    wmkcNet_recv(net, recvbuf, sizeof(recvbuf), 0);
     wmkcNet_shutdown(net, 2);
     wmkcNet_close(net);
     wmkcNet_free(&net);
+
+    printf("%s\n", recvbuf);
 
 #   if defined(WMKC_PLATFORM_WINOS)
     WSACleanup();
@@ -86,7 +85,8 @@ void net_test()
 
 void test()
 {
-    net_test();
+    wmkcByte *p = (wmkcByte *)1929175748208ULL;
+    wmkcMisc_PRINT(p, 46, 16, 1, 0);
 }
 
 int main(wmkc_u32 argc, wmkcChar **argv)
