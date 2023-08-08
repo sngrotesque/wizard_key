@@ -120,7 +120,7 @@ typedef wmkcChar  wmkcNetBufT;  // wmkcNet的缓冲区类型
 
 typedef struct {
     SOCKADDR *sockAddress;
-    wmkcChar *addr;
+    wmkcChar  addr[INET6_ADDRSTRLEN];
     wmkc_u16  port;
     socklen_t sockAddressSize;
 } wmkcNet_addr;
@@ -172,7 +172,7 @@ WMKC_PUBLIC(wmkcErr_obj) wmkcNet_listen WMKC_OPEN_API
 WMKC_OF((wmkcNet_obj *obj, wmkc_u32 backlog));
 
 WMKC_PUBLIC(wmkcErr_obj) wmkcNet_accept WMKC_OPEN_API
-WMKC_OF((wmkcNet_obj *dst, wmkcNet_obj *src));
+WMKC_OF((wmkcNet_obj **dst, wmkcNet_obj *src));
 
 WMKC_PUBLIC(wmkcErr_obj) wmkcNet_send WMKC_OPEN_API
 WMKC_OF((wmkcNet_obj *obj, wmkcNetBufT *content, socklen_t size, wmkc_s32 _flag));

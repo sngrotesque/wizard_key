@@ -195,10 +195,10 @@ WMKC_OF((wmkcNet_obj **obj))
             "wmkcNet_new: Failed to allocate memory for (*obj)->raddr.");
     }
 
-    (*obj)->laddr->addr = wmkcNull;
+    wmkcMem_zero((*obj)->laddr->addr, sizeof((*obj)->laddr->addr));
     (*obj)->laddr->sockAddress = wmkcNull;
 
-    (*obj)->raddr->addr = wmkcNull;
+    wmkcMem_zero((*obj)->raddr->addr, sizeof((*obj)->raddr->addr));
     (*obj)->raddr->sockAddress = wmkcNull;
 
     wmkcErr_return(error, wmkcErr_OK, "OK.");
@@ -213,23 +213,17 @@ WMKC_OF((wmkcNet_obj **obj))
     }
 
     if((*obj)->laddr) {
-        if((*obj)->laddr->addr)
-            wmkcMem_free((*obj)->laddr->addr);
+        wmkcMem_zero((*obj)->laddr->addr, sizeof((*obj)->laddr->addr));
         if((*obj)->laddr->sockAddress)
             wmkcMem_free((*obj)->laddr->sockAddress);
-
         wmkcMem_free((*obj)->laddr);
     }
-
     if((*obj)->raddr) {
-        if((*obj)->raddr->addr)
-            wmkcMem_free((*obj)->raddr->addr);
+        wmkcMem_zero((*obj)->raddr->addr, sizeof((*obj)->raddr->addr));
         if((*obj)->raddr->sockAddress)
             wmkcMem_free((*obj)->raddr->sockAddress);
-
         wmkcMem_free((*obj)->raddr);
     }
-
     wmkcMem_free((*obj));
 
     wmkcErr_return(error, wmkcErr_OK, "OK.");
@@ -299,15 +293,7 @@ WMKC_OF((wmkcNet_addr *addr, wmkcCSTR hostname, wmkc_u16 port,
                 "The ai_socktype member of the pHints parameter is not supported.");
     }
 
-    if(addr->addr) {
-        wmkcMem_free(addr->addr);
-    }
-    if(!wmkcMem_new(wmkcChar *, addr->addr, INET6_ADDRSTRLEN)) {
-        wmkcErr_return(error, wmkcErr_ErrMemory,
-            "wmkcNet_getaddrinfo: Failed to allocate memory for addr->addr.");
-    }
     wmkcMem_zero(addr->addr, INET6_ADDRSTRLEN);
-
     if(family == AF_INET) {
         SOCKADDR_IN *ip = (SOCKADDR_IN *)result->ai_addr;
         wmkcNet_GetAddr(family, &ip->sin_addr, addr->addr);
@@ -408,13 +394,7 @@ WMKC_OF((wmkcNet_obj *obj, wmkcCSTR addr, wmkc_u16 port))
         return wmkcNet_errorHandler("wmkcNet_connect");
     }
 
-    if(obj->laddr->addr) {
-        wmkcMem_free(obj->laddr->addr);
-    }
-    if(!wmkcMem_new(wmkcChar *, obj->laddr->addr, INET6_ADDRSTRLEN)) {
-        wmkcErr_return(error, wmkcErr_ErrMemory, "wmkcNet_connect: "
-            "Failed to allocate memory for obj->laddr->addr.");
-    }
+    wmkcMem_zero(obj->laddr->addr, INET6_ADDRSTRLEN);
     if(obj->family == AF_INET) {
         SOCKADDR_IN *info = (SOCKADDR_IN *)obj->laddr->sockAddress;
         wmkcNet_GetAddr(AF_INET, &info->sin_addr, obj->laddr->addr);
@@ -444,7 +424,7 @@ WMKC_OF((wmkcNet_obj *obj, wmkc_u32 backlog))
 }
 
 WMKC_PUBLIC(wmkcErr_obj) wmkcNet_accept WMKC_OPEN_API
-WMKC_OF((wmkcNet_obj *dst, wmkcNet_obj *src))
+WMKC_OF((wmkcNet_obj **dst, wmkcNet_obj *src))
 {
     wmkcErr_obj error;
     if(!dst || !src) {
@@ -452,22 +432,41 @@ WMKC_OF((wmkcNet_obj *dst, wmkcNet_obj *src))
             "dst or src is NULL.");
     }
 
-    if(dst->raddr->sockAddress) {
-        wmkcMem_free(dst->raddr->sockAddress);
-    }
-    if(!wmkcMem_new(SOCKADDR *, dst->raddr->sockAddress, WMKC_NET_IPV6_ADDR_SIZE)) {
-        wmkcErr_func_return(error, wmkcErr_ErrMemory, "wmkcNet_connect",
-            "Failed to allocate memory for dst->raddr->sockAddress.");
-    }
-    dst->raddr->sockAddressSize = WMKC_NET_IPV6_ADDR_SIZE;
+    error = wmkcNet_new(dst);
+    if(error.code) return error;
 
-    dst->sockfd = accept(src->sockfd, dst->raddr->sockAddress, &dst->raddr->sockAddressSize);
-    if(dst->sockfd == wmkcErr_Err32) {
+    if(!wmkcMem_new(SOCKADDR *, (*dst)->laddr->sockAddress, WMKC_NET_IPV6_ADDR_SIZE)) {
+        wmkcErr_func_return(error, wmkcErr_ErrMemory, "wmkcNet_accept",
+            "Failed to allocate memory for (*dst)->laddr->sockAddress.");
+    }
+    (*dst)->laddr->sockAddressSize = WMKC_NET_IPV6_ADDR_SIZE;
+    if(!wmkcMem_new(SOCKADDR *, (*dst)->raddr->sockAddress, WMKC_NET_IPV6_ADDR_SIZE)) {
+        wmkcErr_func_return(error, wmkcErr_ErrMemory, "wmkcNet_accept",
+            "Failed to allocate memory for (*dst)->raddr->sockAddress.");
+    }
+    (*dst)->raddr->sockAddressSize = WMKC_NET_IPV6_ADDR_SIZE;
+
+    (*dst)->sockfd = accept(src->sockfd, (*dst)->raddr->sockAddress, &((*dst)->raddr->sockAddressSize));
+    if((*dst)->sockfd == wmkcErr_Err32) {
         return wmkcNet_errorHandler("wmkcNet_accept");
     }
+    (*dst)->family = src->family;
+    (*dst)->type = src->type;
+    (*dst)->proto = src->proto;
 
-    
+    // 我不确定这种强制类型转换是否有效，明天测试一下。
+    if((*dst)->family == AF_INET) {
+        wmkcNet_GetAddr((*dst)->family, &(((SOCKADDR_IN *)((*dst)->raddr->sockAddress))->sin_addr),
+            (*dst)->raddr->addr);
+        (*dst)->raddr->port = wmkcNet_GetPort(((SOCKADDR_IN *)(*dst)->raddr->sockAddress)->sin_port);
+    } else if((*dst)->family == AF_INET6) {
+        wmkcNet_GetAddr((*dst)->family, &(((SOCKADDR_IN6 *)((*dst)->raddr->sockAddress))->sin6_addr),
+            (*dst)->raddr->addr);
+        (*dst)->raddr->port = wmkcNet_GetPort(((SOCKADDR_IN6 *)(*dst)->raddr->sockAddress)->sin6_port);
+    }
 
+    // 还差一个本地地址信息
+    // ...
 
     wmkcErr_return(error, wmkcErr_OK, "OK.");
 }
