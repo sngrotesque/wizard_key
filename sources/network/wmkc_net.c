@@ -565,12 +565,11 @@ WMKC_OF((wmkcNet_obj *obj))
     }
 
 #   if defined(WMKC_PLATFORM_WINOS)
-    if(closesocket(obj->sockfd)) {
+    if(closesocket(obj->sockfd))
 #   elif defined(WMKC_PLATFORM_LINUX)
-    if(close(obj->sockfd)) {
+    if(close(obj->sockfd))
 #   endif
         return wmkcNet_errorHandler("wmkcNet_close");
-    }
 
     wmkcErr_return(error, wmkcErr_OK, "OK.");
 }
