@@ -190,22 +190,22 @@ WMKC_OF((wmkcNet_obj **obj))
 {
     wmkcErr_obj error;
     if(!obj) {
-        wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcNet_new: obj is NULL.");
+        wmkcErr_func_return(error, wmkcErr_ErrNULL, "wmkcNet_new", "obj is NULL.");
     }
 
     if(!wmkcMem_new(wmkcNet_obj *, (*obj), sizeof(wmkcNet_obj))) {
-        wmkcErr_return(error, wmkcErr_ErrMemory,
-            "wmkcNet_new: Failed to allocate memory for (*obj).");
+        wmkcErr_func_return(error, wmkcErr_ErrMemory, "wmkcNet_new",
+            "Failed to allocate memory for (*obj).");
     }
 
     if(!wmkcMem_new(wmkcNet_addr *, (*obj)->laddr, sizeof(wmkcNet_addr))) {
-        wmkcErr_return(error, wmkcErr_ErrMemory,
-            "wmkcNet_new: Failed to allocate memory for (*obj)->laddr.");
+        wmkcErr_func_return(error, wmkcErr_ErrMemory, "wmkcNet_new",
+            "Failed to allocate memory for (*obj)->laddr.");
     }
 
     if(!wmkcMem_new(wmkcNet_addr *, (*obj)->raddr, sizeof(wmkcNet_addr))) {
-        wmkcErr_return(error, wmkcErr_ErrMemory,
-            "wmkcNet_new: Failed to allocate memory for (*obj)->raddr.");
+        wmkcErr_func_return(error, wmkcErr_ErrMemory, "wmkcNet_new",
+            "Failed to allocate memory for (*obj)->raddr.");
     }
 
     wmkcMem_zero((*obj)->laddr->addr, sizeof((*obj)->laddr->addr));
@@ -216,7 +216,7 @@ WMKC_OF((wmkcNet_obj **obj))
     (*obj)->raddr->sockAddress = wmkcNull;
     (*obj)->raddr->port = 0;
 
-    wmkcErr_return(error, wmkcErr_OK, "OK.");
+    wmkcErr_func_return(error, wmkcErr_OK, "wmkcNet_new", "OK.");
 }
 
 WMKC_PUBLIC(wmkcErr_obj) wmkcNet_free WMKC_OPEN_API
@@ -224,7 +224,7 @@ WMKC_OF((wmkcNet_obj **obj))
 {
     wmkcErr_obj error;
     if(!obj) {
-        wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcNet_free: obj is NULL.");
+        wmkcErr_func_return(error, wmkcErr_ErrNULL, "wmkcNet_free", "obj is NULL.");
     }
 
     if((*obj)->laddr) {
@@ -241,7 +241,7 @@ WMKC_OF((wmkcNet_obj **obj))
     }
     wmkcMem_free((*obj));
 
-    wmkcErr_return(error, wmkcErr_OK, "OK.");
+    wmkcErr_func_return(error, wmkcErr_OK, "wmkcNet_free", "OK.");
 }
 
 WMKC_PUBLIC(wmkcErr_obj) wmkcNet_socket WMKC_OPEN_API
@@ -249,7 +249,7 @@ WMKC_OF((wmkcNet_obj *obj, wmkc_s32 family, wmkc_s32 type, socklen_t proto))
 {
     wmkcErr_obj error;
     if(!obj) {
-        wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcNet_socket: obj is NULL.");
+        wmkcErr_func_return(error, wmkcErr_ErrNULL, "wmkcNet_socket", "obj is NULL.");
     }
 
     if((obj->sockfd = socket(family, type, proto)) == wmkcErr_Err32) {
@@ -260,7 +260,7 @@ WMKC_OF((wmkcNet_obj *obj, wmkc_s32 family, wmkc_s32 type, socklen_t proto))
     obj->type = type;     // 套接字类型
     obj->proto = proto;   // 套接字协议
 
-    wmkcErr_return(error, wmkcErr_OK, "OK.");
+    wmkcErr_func_return(error, wmkcErr_OK, "wmkcNet_socket", "OK.");
 }
 
 WMKC_PUBLIC(wmkcErr_obj) wmkcNet_getaddrinfo WMKC_OPEN_API
@@ -269,7 +269,7 @@ WMKC_OF((wmkcNet_addr *addr, wmkcCSTR hostname, wmkc_u16 port,
 {
     wmkcErr_obj error;
     if(!addr || !hostname || !port) {
-        wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcNet_getaddrinfo: "
+        wmkcErr_func_return(error, wmkcErr_ErrNULL, "wmkcNet_getaddrinfo",
             "obj or hostname or port is NULL.");
     }
 
@@ -321,7 +321,7 @@ WMKC_OF((wmkcNet_addr *addr, wmkcCSTR hostname, wmkc_u16 port,
     if(addr->sockAddress)
         wmkcMem_free(addr->sockAddress);
     if(!wmkcMem_new(SOCKADDR *, addr->sockAddress, WMKC_NET_IPV6_ADDR_SIZE)) {
-        wmkcErr_return(error, wmkcErr_ErrMemory, "wmkcNet_getaddrinfo: "
+        wmkcErr_func_return(error, wmkcErr_ErrMemory, "wmkcNet_getaddrinfo",
             "Failed to allocate memory for addr->sockAddress.");
     }
 
@@ -329,7 +329,7 @@ WMKC_OF((wmkcNet_addr *addr, wmkcCSTR hostname, wmkc_u16 port,
     wmkcMem_zero(addr->sockAddress, WMKC_NET_IPV6_ADDR_SIZE);
     memcpy(addr->sockAddress, result->ai_addr, (addr->sockAddressSize = result->ai_addrlen));
 
-    wmkcErr_return(error, wmkcErr_OK, "OK.");
+    wmkcErr_func_return(error, wmkcErr_OK, "wmkcNet_getaddrinfo", "OK.");
 }
 
 WMKC_PUBLIC(wmkcErr_obj) wmkcNet_settimeout WMKC_OPEN_API
@@ -337,7 +337,7 @@ WMKC_OF((wmkcNet_obj *obj, double _val))
 {
     wmkcErr_obj error;
     if(!obj) {
-        wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcNet_settimeout: obj is NULL.");
+        wmkcErr_func_return(error, wmkcErr_ErrNULL, "wmkcNet_settimeout", "obj is NULL.");
     }
 
 #   if defined(WMKC_PLATFORM_WINOS)
@@ -357,7 +357,7 @@ WMKC_OF((wmkcNet_obj *obj, double _val))
         return wmkcNet_errorHandler("wmkcNet_settimeout");
     }
 
-    wmkcErr_return(error, wmkcErr_OK, "OK.");
+    wmkcErr_func_return(error, wmkcErr_OK, "wmkcNet_settimeout", "OK.");
 }
 
 WMKC_PUBLIC(wmkcErr_obj) wmkcNet_bind WMKC_OPEN_API
@@ -365,7 +365,7 @@ WMKC_OF((wmkcNet_obj *obj, wmkcCSTR addr, wmkc_u16 port))
 {
     wmkcErr_obj error;
     if(!obj) {
-        wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcNet_bind: obj is NULL.");
+        wmkcErr_func_return(error, wmkcErr_ErrNULL, "wmkcNet_bind", "obj is NULL.");
     }
 
     // 将传入的地址解析（毕竟可能使用localhost作为地址）
@@ -376,16 +376,16 @@ WMKC_OF((wmkcNet_obj *obj, wmkcCSTR addr, wmkc_u16 port))
         return wmkcNet_errorHandler("wmkcNet_bind");
     }
 
-    wmkcErr_return(error, wmkcErr_OK, "OK.");
+    wmkcErr_func_return(error, wmkcErr_OK, "wmkcNet_bind", "OK.");
 }
 
 WMKC_PUBLIC(wmkcErr_obj) wmkcNet_connect WMKC_OPEN_API
 WMKC_OF((wmkcNet_obj *obj, wmkcCSTR addr, wmkc_u16 port))
 {
     wmkcErr_obj error;
-    if(!obj || !obj->raddr || !addr || !port) {
-        wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcNet_getaddrinfo: "
-            "obj or obj->raddr or addr or port is NULL.");
+    if(!obj || !addr || !port) {
+        wmkcErr_func_return(error, wmkcErr_ErrNULL, "wmkcNet_connect",
+            "obj or addr or port is NULL.");
     }
 
     // 将传入的地址解析（毕竟可能使用localhost作为地址）
@@ -400,7 +400,7 @@ WMKC_OF((wmkcNet_obj *obj, wmkcCSTR addr, wmkc_u16 port))
         wmkcMem_free(obj->laddr->sockAddress);
     obj->laddr->sockAddressSize = WMKC_NET_IPV6_ADDR_SIZE;
     if(!wmkcMem_new(SOCKADDR *, obj->laddr->sockAddress, obj->laddr->sockAddressSize)) {
-        wmkcErr_return(error, wmkcErr_ErrMemory, "wmkcNet_connect: "
+        wmkcErr_func_return(error, wmkcErr_ErrMemory, "wmkcNet_connect",
             "Failed to allocate memory for obj->laddr->sockAddress.");
     }
 
@@ -410,7 +410,7 @@ WMKC_OF((wmkcNet_obj *obj, wmkcCSTR addr, wmkc_u16 port))
     }
     wmkcNet_sockaddr2ipaddr(obj->family, obj->laddr->sockAddress, obj->laddr);
 
-    wmkcErr_return(error, wmkcErr_OK, "OK.");
+    wmkcErr_func_return(error, wmkcErr_OK, "wmkcNet_connect", "OK.");
 }
 
 WMKC_PUBLIC(wmkcErr_obj) wmkcNet_listen WMKC_OPEN_API
@@ -418,14 +418,14 @@ WMKC_OF((wmkcNet_obj *obj, wmkc_s32 backlog))
 {
     wmkcErr_obj error;
     if(!obj) {
-        wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcNet_listen: obj is NULL.");
+        wmkcErr_func_return(error, wmkcErr_ErrNULL, "wmkcNet_listen", "obj is NULL.");
     }
 
     if(listen(obj->sockfd, backlog)) {
         return wmkcNet_errorHandler("wmkcNet_listen");
     }
 
-    wmkcErr_return(error, wmkcErr_OK, "OK.");
+    wmkcErr_func_return(error, wmkcErr_OK, "wmkcNet_listen", "OK.");
 }
 
 WMKC_PUBLIC(wmkcErr_obj) wmkcNet_accept WMKC_OPEN_API
@@ -461,12 +461,12 @@ WMKC_OF((wmkcNet_obj **dst, wmkcNet_obj *src))
 
     wmkcMem_zero((*dst)->laddr->sockAddress, (*dst)->laddr->sockAddressSize);
     if(getsockname((*dst)->sockfd, (*dst)->laddr->sockAddress, &(*dst)->laddr->sockAddressSize)) {
-        return wmkcNet_errorHandler("wmkcNet_connect");
+        return wmkcNet_errorHandler("wmkcNet_accept");
     }
     wmkcNet_sockaddr2ipaddr((*dst)->family, (*dst)->raddr->sockAddress, (*dst)->raddr);
     wmkcNet_sockaddr2ipaddr((*dst)->family, (*dst)->laddr->sockAddress, (*dst)->laddr);
 
-    wmkcErr_return(error, wmkcErr_OK, "OK.");
+    wmkcErr_func_return(error, wmkcErr_OK, "wmkcNet_accept", "OK.");
 }
 
 WMKC_PUBLIC(wmkcErr_obj) wmkcNet_send WMKC_OPEN_API
@@ -482,7 +482,7 @@ WMKC_OF((wmkcNet_obj *obj, wmkcNetBufT *content, socklen_t size, wmkc_s32 _flag)
         return wmkcNet_errorHandler("wmkcNet_send");
     }
 
-    wmkcErr_return(error, wmkcErr_OK, "OK.");
+    wmkcErr_func_return(error, wmkcErr_OK, "wmkcNet_send", "OK.");
 }
 
 WMKC_PUBLIC(wmkcErr_obj) wmkcNet_sendall WMKC_OPEN_API
@@ -522,7 +522,7 @@ WMKC_OF((wmkcNet_obj *obj, wmkcNetBufT *content, wmkcSize size, wmkc_s32 _flag))
         content += obj->tSize;
     }
 
-    wmkcErr_return(error, wmkcErr_OK, "OK.");
+    wmkcErr_func_return(error, wmkcErr_OK, "wmkcNet_sendall", "OK.");
 }
 
 WMKC_PUBLIC(wmkcErr_obj) wmkcNet_recv WMKC_OPEN_API
@@ -538,7 +538,7 @@ WMKC_OF((wmkcNet_obj *obj, wmkcNetBufT *content, socklen_t size, wmkc_s32 _flag)
         return wmkcNet_errorHandler("wmkcNet_recv");
     }
 
-    wmkcErr_return(error, wmkcErr_OK, "OK.");
+    wmkcErr_func_return(error, wmkcErr_OK, "wmkcNet_recv", "OK.");
 }
 
 WMKC_PUBLIC(wmkcErr_obj) wmkcNet_shutdown WMKC_OPEN_API
@@ -546,14 +546,14 @@ WMKC_OF((wmkcNet_obj *obj, wmkc_u32 how))
 {
     wmkcErr_obj error;
     if(!obj) {
-        wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcNet_shutdown: obj is NULL.");
+        wmkcErr_func_return(error, wmkcErr_ErrNULL, "wmkcNet_shutdown", "obj is NULL.");
     }
 
     if(shutdown(obj->sockfd, how) == wmkcErr_Err32) {
         return wmkcNet_errorHandler("wmkcNet_shutdown");
     }
 
-    wmkcErr_return(error, wmkcErr_OK, "OK.");
+    wmkcErr_func_return(error, wmkcErr_OK, "wmkcNet_shutdown", "OK.");
 }
 
 WMKC_PUBLIC(wmkcErr_obj) wmkcNet_close WMKC_OPEN_API
@@ -561,7 +561,7 @@ WMKC_OF((wmkcNet_obj *obj))
 {
     wmkcErr_obj error;
     if(!obj) {
-        wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcNet_close: obj is NULL.");
+        wmkcErr_func_return(error, wmkcErr_ErrNULL, "wmkcNet_close", "obj is NULL.");
     }
 
 #   if defined(WMKC_PLATFORM_WINOS)
@@ -571,5 +571,5 @@ WMKC_OF((wmkcNet_obj *obj))
 #   endif
         return wmkcNet_errorHandler("wmkcNet_close");
 
-    wmkcErr_return(error, wmkcErr_OK, "OK.");
+    wmkcErr_func_return(error, wmkcErr_OK, "wmkcNet_close", "OK.");
 }
