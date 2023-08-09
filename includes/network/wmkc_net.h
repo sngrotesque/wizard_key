@@ -137,55 +137,203 @@ typedef struct {
     double timeout; // 套接字的超时时间，用于设置bind, connect, acceot, send, recv...
 } wmkcNet_obj;
 
+/**
+ * @brief wmkcNet库的错误处理函数
+ * @authors SN-Grotesque
+ * @note 无
+ * @param funcName 指针，指向函数名的字面量
+ * @return wmkcErr对象code为非0代表出错，需检查。
+ */
 WMKC_PUBLIC(wmkcErr_obj) wmkcNet_errorHandler WMKC_OPEN_API
 WMKC_OF((wmkcCSTR funcName));
 
+/**
+ * @brief 通过inet_ntop函数将网络地址结构转为字符串
+ * @authors SN-Grotesque
+ * @note 无
+ * @param family 网络家族类型，如AF_INET, AF_INET6
+ * @param pAddr 指针，指向网络地址结构
+ * @param pStringBuf 指针，指向缓冲区地址
+ * @return wmkcCSTR 只读字符串，为NULL则错误
+ */
 WMKC_PUBLIC(wmkcCSTR) wmkcNet_GetAddr WMKC_OPEN_API
 WMKC_OF((wmkc_s32 family, wmkcVoid *pAddr, wmkcChar *pStringBuf));
 
+/**
+ * @brief 通过ntohs函数将大端序数字转为本机序
+ * @authors SN-Grotesque
+ * @note 无
+ * @param port 端口号：0-65535
+ * @return wmkc_u16 端口号
+ */
 WMKC_PUBLIC(wmkc_u16) wmkcNet_GetPort WMKC_OPEN_API
 WMKC_OF((wmkc_u16 port));
 
+/**
+ * @brief 为wmkcNet对象申请内存空间
+ * @authors SN-Grotesque
+ * @note 无
+ * @param obj 指针，指向wmkcNet对象指针的地址
+ * @return wmkcErr对象code为非0代表出错，需检查。
+ */
 WMKC_PUBLIC(wmkcErr_obj) wmkcNet_new WMKC_OPEN_API
 WMKC_OF((wmkcNet_obj **obj));
 
+/**
+ * @brief 为wmkcNet对象释放内存空间
+ * @authors SN-Grotesque
+ * @note 无
+ * @param obj 指针，指向wmkcNet对象指针的地址
+ * @return wmkcErr对象code为非0代表出错，需检查。
+ */
 WMKC_PUBLIC(wmkcErr_obj) wmkcNet_free WMKC_OPEN_API
 WMKC_OF((wmkcNet_obj **obj));
 
+/**
+ * @brief 为wmkcNet对象创建套接字
+ * @authors SN-Grotesque
+ * @note 无
+ * @param obj 指针，指向wmkcNet对象的地址
+ * @param family 套接字家族，比如AF_IENT...
+ * @param type 套接字类型，比如SOCK_STREAM...
+ * @param proto 套接字协议，比如IPPROTO_TCP
+ * @return wmkcErr对象code为非0代表出错，需检查。
+ */
 WMKC_PUBLIC(wmkcErr_obj) wmkcNet_socket WMKC_OPEN_API
 WMKC_OF((wmkcNet_obj *obj, wmkc_s32 family, wmkc_s32 type, socklen_t proto));
 
+/**
+ * @brief 解析域名函数
+ * @authors SN-Grotesque
+ * @note 此函数如果传入一个IP地址，那么不会进行解析，也不会改变IP地址。
+ * @param addr 指针，指向wmkcNet地址对象的地址
+ * @param hostname 指针，域名(IP地址)，指向只读字符串或字面量
+ * @param port TCP/UDP协议的端口号，范围是0-65535
+ * @param family 套接字家族，比如AF_IENT...
+ * @param type 套接字类型，比如SOCK_STREAM...
+ * @param proto 套接字协议，比如IPPROTO_TCP
+ * @return wmkcErr对象code为非0代表出错，需检查。
+ */
 WMKC_PUBLIC(wmkcErr_obj) wmkcNet_getaddrinfo WMKC_OPEN_API
 WMKC_OF((wmkcNet_addr *addr, wmkcCSTR hostname, wmkc_u16 port,
     wmkc_s32 family, wmkc_s32 type, wmkc_s32 proto));
 
+/**
+ * @brief 设置套接字的超时时间，此函数只会设置发送和接收的超时时间，
+ *        connect和accept函数的超时时间会在对应函数中实现
+ * @authors SN-Grotesque
+ * @note 无
+ * @param obj 指针，指向wmkcNet对象的地址
+ * @param _val 超时时间，类型为浮点数，单位是秒。
+ *             在Windows中，精度至毫秒。在Linux中，精度至微秒。
+ * @return wmkcErr对象code为非0代表出错，需检查。
+ */
 WMKC_PUBLIC(wmkcErr_obj) wmkcNet_settimeout WMKC_OPEN_API
-WMKC_OF((wmkcNet_obj *obj, double _value));
+WMKC_OF((wmkcNet_obj *obj, double _val));
 
+/**
+ * @brief 绑定套接字地址和端口函数
+ * @authors SN-Grotesque
+ * @note 无
+ * @param obj 指针，指向wmkcNet对象的地址
+ * @param addr 指针，域名(IP地址)，指向只读字符串或字面量
+ * @param port TCP/UDP协议的端口号，范围是0-65535
+ * @return wmkcErr对象code为非0代表出错，需检查。
+ */
 WMKC_PUBLIC(wmkcErr_obj) wmkcNet_bind WMKC_OPEN_API
 WMKC_OF((wmkcNet_obj *obj, wmkcCSTR addr, wmkc_u16 port));
 
+/**
+ * @brief 连接函数
+ * @authors SN-Grotesque
+ * @note 无
+ * @param obj 指针，指向wmkcNet对象的地址
+ * @param addr 指针，域名(IP地址)，指向只读字符串或字面量
+ * @param port TCP/UDP协议的端口号，范围是0-65535
+ * @return wmkcErr对象code为非0代表出错，需检查。
+ */
 WMKC_PUBLIC(wmkcErr_obj) wmkcNet_connect WMKC_OPEN_API
 WMKC_OF((wmkcNet_obj *obj, wmkcCSTR addr, wmkc_u16 port));
 
+/**
+ * @brief 监听函数
+ * @authors SN-Grotesque
+ * @note 无
+ * @param obj 指针，指向wmkcNet对象的地址
+ * @param backlog 监听队列的最大长度
+ * @return wmkcErr对象code为非0代表出错，需检查。
+ */
 WMKC_PUBLIC(wmkcErr_obj) wmkcNet_listen WMKC_OPEN_API
-WMKC_OF((wmkcNet_obj *obj, wmkc_u32 backlog));
+WMKC_OF((wmkcNet_obj *obj, wmkc_s32 backlog));
 
+/**
+ * @brief 接受连接函数
+ * @authors SN-Grotesque
+ * @note 无
+ * @param dst 指针，指向wmkcNet对象指针的地址，用于创建新的wmkcNet对象
+ * @param src 指针，指向wmkcNet对象的地址，源wmkcNet对象。
+ * @return wmkcErr对象code为非0代表出错，需检查。
+ */
 WMKC_PUBLIC(wmkcErr_obj) wmkcNet_accept WMKC_OPEN_API
 WMKC_OF((wmkcNet_obj **dst, wmkcNet_obj *src));
 
+/**
+ * @brief 发送函数
+ * @authors SN-Grotesque
+ * @note 无
+ * @param obj 指针，指向wmkcNet对象的地址
+ * @param content 指针，指向待发送的内容
+ * @param size 待发送的内容的长度
+ * @param _flag send函数的标志位
+ * @return wmkcErr对象code为非0代表出错，需检查。
+ */
 WMKC_PUBLIC(wmkcErr_obj) wmkcNet_send WMKC_OPEN_API
 WMKC_OF((wmkcNet_obj *obj, wmkcNetBufT *content, socklen_t size, wmkc_s32 _flag));
 
+/**
+ * @brief 全部发送函数
+ * @authors SN-Grotesque
+ * @note 无
+ * @param obj 指针，指向wmkcNet对象的地址
+ * @param content 指针，指向待发送的内容
+ * @param size 待发送的内容的长度
+ * @param _flag send函数的标志位
+ * @return wmkcErr对象code为非0代表出错，需检查。
+ */
 WMKC_PUBLIC(wmkcErr_obj) wmkcNet_sendall WMKC_OPEN_API
 WMKC_OF((wmkcNet_obj *obj, wmkcNetBufT *content, wmkcSize size, wmkc_s32 _flag));
 
+/**
+ * @brief 接收函数
+ * @authors SN-Grotesque
+ * @note 无
+ * @param obj 指针，指向wmkcNet对象的地址
+ * @param content 指针，指向准备用于接收内容的缓冲区
+ * @param size 待发送的内容的长度
+ * @param _flag send函数的标志位
+ * @return wmkcErr对象code为非0代表出错，需检查。
+ */
 WMKC_PUBLIC(wmkcErr_obj) wmkcNet_recv WMKC_OPEN_API
 WMKC_OF((wmkcNet_obj *obj, wmkcNetBufT *content, socklen_t size, wmkc_s32 _flag));
 
+/**
+ * @brief 将套接字关机的函数
+ * @authors SN-Grotesque
+ * @note 仔细来说，shutdown只会关闭套接字的发送和接收能力，而不会关闭套接字描述符。
+ * @param obj 指针，指向wmkcNet对象的地址
+ * @param how 禁用标志，范围0-2
+ * @return wmkcErr对象code为非0代表出错，需检查。
+ */
 WMKC_PUBLIC(wmkcErr_obj) wmkcNet_shutdown WMKC_OPEN_API
 WMKC_OF((wmkcNet_obj *obj, wmkc_u32 how));
 
+/**
+ * @brief 套接字关闭函数
+ * @authors SN-Grotesque
+ * @note 仔细来说，close会关闭套接字的发送和接收能力，且关闭套接字描述符。
+ * @param obj 指针，指向wmkcNet对象的地址
+ * @return wmkcErr对象code为非0代表出错，需检查。
+ */
 WMKC_PUBLIC(wmkcErr_obj) wmkcNet_close WMKC_OPEN_API
 WMKC_OF((wmkcNet_obj *obj));
 

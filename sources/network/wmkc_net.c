@@ -160,6 +160,19 @@ WMKC_OF((wmkcCSTR funcName))
     }
 }
 
+WMKC_PUBLIC(wmkcVoid) wmkcNet_sockaddr2ipaddr WMKC_OPEN_API
+WMKC_OF((wmkc_s32 family, wmkcVoid *content, wmkcNet_addr *addr))
+{
+    wmkcMem_zero(addr->addr, INET6_ADDRSTRLEN);
+    if(family == AF_INET) {
+        wmkcNet_GetAddr(family, &((SOCKADDR_IN *)content)->sin_addr, addr->addr);
+        addr->port = wmkcNet_GetPort(((SOCKADDR_IN *)content)->sin_port);
+    } else if(family == AF_INET6) {
+        wmkcNet_GetAddr(family, &((SOCKADDR_IN6 *)content)->sin6_addr, addr->addr);
+        addr->port = wmkcNet_GetPort(((SOCKADDR_IN6 *)content)->sin6_port);
+    }
+}
+
 WMKC_PUBLIC(wmkcCSTR) wmkcNet_GetAddr WMKC_OPEN_API
 WMKC_OF((wmkc_s32 family, wmkcVoid *pAddr, wmkcChar *pStringBuf))
 {
@@ -197,9 +210,11 @@ WMKC_OF((wmkcNet_obj **obj))
 
     wmkcMem_zero((*obj)->laddr->addr, sizeof((*obj)->laddr->addr));
     (*obj)->laddr->sockAddress = wmkcNull;
+    (*obj)->laddr->port = 0;
 
     wmkcMem_zero((*obj)->raddr->addr, sizeof((*obj)->raddr->addr));
     (*obj)->raddr->sockAddress = wmkcNull;
+    (*obj)->raddr->port = 0;
 
     wmkcErr_return(error, wmkcErr_OK, "OK.");
 }
@@ -241,9 +256,9 @@ WMKC_OF((wmkcNet_obj *obj, wmkc_s32 family, wmkc_s32 type, socklen_t proto))
         return wmkcNet_errorHandler("wmkcNet_socket");
     }
 
-    obj->type = type;
-    obj->family = family;
-    obj->proto = proto;
+    obj->family = family; // 套接字家族
+    obj->type = type;     // 套接字类型
+    obj->proto = proto;   // 套接字协议
 
     wmkcErr_return(error, wmkcErr_OK, "OK.");
 }
@@ -258,12 +273,16 @@ WMKC_OF((wmkcNet_addr *addr, wmkcCSTR hostname, wmkc_u16 port,
             "obj or hostname or port is NULL.");
     }
 
+    // 根据指定的套接字信息来解析域名
     ADDRINFO *result = wmkcNull;
     ADDRINFO hints = {.ai_family = family, .ai_socktype = type, .ai_protocol = proto};
 
+    // 将端口号转为字符串，用于指定getaddrinfo函数的服务名。
+    // 如果不指定为端口的话，ADDRINFO结构中的sin_port很大概率会错误。
     wmkcChar servname[6] = {0};
     snprintf(servname, sizeof(servname), "%u", port);
 
+    // 执行getaddrinfo函数并判断是否出错。
     switch(getaddrinfo(hostname, servname, &hints, &result)) {
         case EAI_AGAIN:
             wmkcErr_func_return(error, EAI_AGAIN, "wmkcNet_getaddrinfo",
@@ -293,32 +312,28 @@ WMKC_OF((wmkcNet_addr *addr, wmkcCSTR hostname, wmkc_u16 port,
                 "The ai_socktype member of the pHints parameter is not supported.");
     }
 
-    wmkcMem_zero(addr->addr, INET6_ADDRSTRLEN);
-    if(family == AF_INET) {
-        SOCKADDR_IN *ip = (SOCKADDR_IN *)result->ai_addr;
-        wmkcNet_GetAddr(family, &ip->sin_addr, addr->addr);
-    } else if(family == AF_INET6) {
-        SOCKADDR_IN6 *ip = (SOCKADDR_IN6 *)result->ai_addr;
-        wmkcNet_GetAddr(family, &ip->sin6_addr, addr->addr);
-    }
-    addr->port = port;
+    // 根据网络家族将网络地址结构转为字符串地址，设置端口号。
+    wmkcNet_sockaddr2ipaddr(family, result->ai_addr, addr);
 
-    if(addr->sockAddress) {
+    // 如果指针不为空，那么先释放（防止内存泄露）再申请新的内存
+    // 当然也可能出现另一种情况，那就是这个指针不指向空也不指向正确的地址，
+    // 那就需要使用者自行处理了。
+    if(addr->sockAddress)
         wmkcMem_free(addr->sockAddress);
-    }
     if(!wmkcMem_new(SOCKADDR *, addr->sockAddress, WMKC_NET_IPV6_ADDR_SIZE)) {
         wmkcErr_return(error, wmkcErr_ErrMemory, "wmkcNet_getaddrinfo: "
             "Failed to allocate memory for addr->sockAddress.");
     }
-    wmkcMem_zero(addr->sockAddress, WMKC_NET_IPV6_ADDR_SIZE);
 
+    // 先将网络地址结构的内存区域清零以防出现意外
+    wmkcMem_zero(addr->sockAddress, WMKC_NET_IPV6_ADDR_SIZE);
     memcpy(addr->sockAddress, result->ai_addr, (addr->sockAddressSize = result->ai_addrlen));
 
     wmkcErr_return(error, wmkcErr_OK, "OK.");
 }
 
 WMKC_PUBLIC(wmkcErr_obj) wmkcNet_settimeout WMKC_OPEN_API
-WMKC_OF((wmkcNet_obj *obj, double _value))
+WMKC_OF((wmkcNet_obj *obj, double _val))
 {
     wmkcErr_obj error;
     if(!obj) {
@@ -326,22 +341,20 @@ WMKC_OF((wmkcNet_obj *obj, double _value))
     }
 
 #   if defined(WMKC_PLATFORM_WINOS)
-    DWORD _timeout = (DWORD)(_value * 1000);
+    DWORD _timeout = (DWORD)(_val * 1000);
     wmkcChar *optval = (wmkcChar *)&_timeout;
 #   elif defined(WMKC_PLATFORM_LINUX)
     double intpart = 0;
-    double fracpart = modf(_value, &intpart);
+    double fracpart = modf(_val, &intpart);
     struct timeval _timeout = {.tv_sec=(long)intpart, .tv_usec=(long)(fracpart * 1000000)};
     wmkcVoid *optval = (wmkcVoid *)&_timeout;
 #   endif
 
     if(setsockopt(obj->sockfd, SOL_SOCKET, SO_SNDTIMEO, optval, sizeof(_timeout))) {
-        wmkcErr_return(error, wmkcErr_Err32, "wmkcNet_settimeout: "
-            "Error setting send timeout using the setsockopt function.");
+        return wmkcNet_errorHandler("wmkcNet_settimeout");
     }
     if(setsockopt(obj->sockfd, SOL_SOCKET, SO_RCVTIMEO, optval, sizeof(_timeout))) {
-        wmkcErr_return(error, wmkcErr_Err32, "wmkcNet_settimeout: "
-            "Error setting receive timeout using the setsockopt function.");
+        return wmkcNet_errorHandler("wmkcNet_settimeout");
     }
 
     wmkcErr_return(error, wmkcErr_OK, "OK.");
@@ -355,8 +368,9 @@ WMKC_OF((wmkcNet_obj *obj, wmkcCSTR addr, wmkc_u16 port))
         wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcNet_bind: obj is NULL.");
     }
 
-    error = wmkcNet_getaddrinfo(obj->laddr, addr, port, obj->family, obj->type, obj->proto);
-    if(error.code) return error;
+    // 将传入的地址解析（毕竟可能使用localhost作为地址）
+    if((error = wmkcNet_getaddrinfo(obj->laddr, addr, port, obj->family, obj->type, obj->proto)).code)
+        return error;
 
     if(bind(obj->sockfd, obj->laddr->sockAddress, obj->laddr->sockAddressSize)) {
         return wmkcNet_errorHandler("wmkcNet_bind");
@@ -374,42 +388,33 @@ WMKC_OF((wmkcNet_obj *obj, wmkcCSTR addr, wmkc_u16 port))
             "obj or obj->raddr or addr or port is NULL.");
     }
 
-    error = wmkcNet_getaddrinfo(obj->raddr, addr, port, obj->family, obj->type, obj->proto);
-    if(error.code) return error;
+    // 将传入的地址解析（毕竟可能使用localhost作为地址）
+    if((error = wmkcNet_getaddrinfo(obj->raddr, addr, port, obj->family, obj->type, obj->proto)).code)
+        return error;
 
     if(connect(obj->sockfd, obj->raddr->sockAddress, obj->raddr->sockAddressSize)) {
         return wmkcNet_errorHandler("wmkcNet_connect");
     }
 
-    if(obj->laddr->sockAddress) {
+    if(obj->laddr->sockAddress)
         wmkcMem_free(obj->laddr->sockAddress);
-    }
     obj->laddr->sockAddressSize = WMKC_NET_IPV6_ADDR_SIZE;
     if(!wmkcMem_new(SOCKADDR *, obj->laddr->sockAddress, obj->laddr->sockAddressSize)) {
         wmkcErr_return(error, wmkcErr_ErrMemory, "wmkcNet_connect: "
             "Failed to allocate memory for obj->laddr->sockAddress.");
     }
 
+    wmkcMem_zero(obj->laddr->sockAddress, obj->laddr->sockAddressSize);
     if(getsockname(obj->sockfd, obj->laddr->sockAddress, &obj->laddr->sockAddressSize)) {
         return wmkcNet_errorHandler("wmkcNet_connect");
     }
-
-    wmkcMem_zero(obj->laddr->addr, INET6_ADDRSTRLEN);
-    if(obj->family == AF_INET) {
-        SOCKADDR_IN *info = (SOCKADDR_IN *)obj->laddr->sockAddress;
-        wmkcNet_GetAddr(AF_INET, &info->sin_addr, obj->laddr->addr);
-        obj->laddr->port = ntohs(info->sin_port);
-    } else if(obj->family == AF_INET6) {
-        SOCKADDR_IN6 *info = (SOCKADDR_IN6 *)obj->laddr->sockAddress;
-        wmkcNet_GetAddr(AF_INET6, &info->sin6_addr, obj->laddr->addr);
-        obj->laddr->port = ntohs(info->sin6_port);
-    }
+    wmkcNet_sockaddr2ipaddr(obj->family, obj->laddr->sockAddress, obj->laddr);
 
     wmkcErr_return(error, wmkcErr_OK, "OK.");
 }
 
 WMKC_PUBLIC(wmkcErr_obj) wmkcNet_listen WMKC_OPEN_API
-WMKC_OF((wmkcNet_obj *obj, wmkc_u32 backlog))
+WMKC_OF((wmkcNet_obj *obj, wmkc_s32 backlog))
 {
     wmkcErr_obj error;
     if(!obj) {
@@ -432,19 +437,19 @@ WMKC_OF((wmkcNet_obj **dst, wmkcNet_obj *src))
             "dst or src is NULL.");
     }
 
-    error = wmkcNet_new(dst);
-    if(error.code) return error;
+    // 创建一个新的套接字用于接受连接
+    if((error = wmkcNet_new(dst)).code) return error;
 
-    if(!wmkcMem_new(SOCKADDR *, (*dst)->laddr->sockAddress, WMKC_NET_IPV6_ADDR_SIZE)) {
+    (*dst)->laddr->sockAddressSize = WMKC_NET_IPV6_ADDR_SIZE;
+    if(!wmkcMem_new(SOCKADDR *, (*dst)->laddr->sockAddress, (*dst)->laddr->sockAddressSize)) {
         wmkcErr_func_return(error, wmkcErr_ErrMemory, "wmkcNet_accept",
             "Failed to allocate memory for (*dst)->laddr->sockAddress.");
     }
-    (*dst)->laddr->sockAddressSize = WMKC_NET_IPV6_ADDR_SIZE;
-    if(!wmkcMem_new(SOCKADDR *, (*dst)->raddr->sockAddress, WMKC_NET_IPV6_ADDR_SIZE)) {
+    (*dst)->raddr->sockAddressSize = WMKC_NET_IPV6_ADDR_SIZE;
+    if(!wmkcMem_new(SOCKADDR *, (*dst)->raddr->sockAddress, (*dst)->raddr->sockAddressSize)) {
         wmkcErr_func_return(error, wmkcErr_ErrMemory, "wmkcNet_accept",
             "Failed to allocate memory for (*dst)->raddr->sockAddress.");
     }
-    (*dst)->raddr->sockAddressSize = WMKC_NET_IPV6_ADDR_SIZE;
 
     (*dst)->sockfd = accept(src->sockfd, (*dst)->raddr->sockAddress, &((*dst)->raddr->sockAddressSize));
     if((*dst)->sockfd == wmkcErr_Err32) {
@@ -454,20 +459,12 @@ WMKC_OF((wmkcNet_obj **dst, wmkcNet_obj *src))
     (*dst)->type = src->type;
     (*dst)->proto = src->proto;
 
-    // 我不确定这种强制类型转换是否有效，明天测试一下。
-    // 测试完成，这种方式没有任何问题。
-    if((*dst)->family == AF_INET) {
-        wmkcNet_GetAddr((*dst)->family, &(((SOCKADDR_IN *)((*dst)->raddr->sockAddress))->sin_addr),
-            (*dst)->raddr->addr);
-        (*dst)->raddr->port = wmkcNet_GetPort(((SOCKADDR_IN *)(*dst)->raddr->sockAddress)->sin_port);
-    } else if((*dst)->family == AF_INET6) {
-        wmkcNet_GetAddr((*dst)->family, &(((SOCKADDR_IN6 *)((*dst)->raddr->sockAddress))->sin6_addr),
-            (*dst)->raddr->addr);
-        (*dst)->raddr->port = wmkcNet_GetPort(((SOCKADDR_IN6 *)(*dst)->raddr->sockAddress)->sin6_port);
+    wmkcMem_zero((*dst)->laddr->sockAddress, (*dst)->laddr->sockAddressSize);
+    if(getsockname((*dst)->sockfd, (*dst)->laddr->sockAddress, &(*dst)->laddr->sockAddressSize)) {
+        return wmkcNet_errorHandler("wmkcNet_connect");
     }
-
-    // 还差一个本地地址信息
-    // ...
+    wmkcNet_sockaddr2ipaddr((*dst)->family, (*dst)->raddr->sockAddress, (*dst)->raddr);
+    wmkcNet_sockaddr2ipaddr((*dst)->family, (*dst)->laddr->sockAddress, (*dst)->laddr);
 
     wmkcErr_return(error, wmkcErr_OK, "OK.");
 }
@@ -499,6 +496,15 @@ WMKC_OF((wmkcNet_obj *obj, wmkcNetBufT *content, wmkcSize size, wmkc_s32 _flag))
     wmkc_u32 retry_count; // 重试次数
 
     while(size) {
+        /* 重传功能
+        * 默认情况下，重传次数为5。
+        * 但由于TCP协议自带重传功能，并且在不同操作系统中不一样，在Linux中
+        * 为15次，在Windows中，基本上为3次或更多。
+        * 那么实际的重传次数，可能是75 (15 x 5)或15 (3 x 5)次。
+        * 如果5次都失败，那么会直接返回错误信息。
+        * 
+        * 成功传输的话，会根据每次传输的大小来分割数据包，直到传输完毕。
+        */
         retry_count = 5;
         while(retry_count) {
             error = wmkcNet_send(obj, content, size, _flag);
@@ -558,13 +564,11 @@ WMKC_OF((wmkcNet_obj *obj))
         wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcNet_close: obj is NULL.");
     }
 
-    wmkc_s32 close_err_code = 0;
 #   if defined(WMKC_PLATFORM_WINOS)
-    close_err_code = closesocket(obj->sockfd);
+    if(closesocket(obj->sockfd)) {
 #   elif defined(WMKC_PLATFORM_LINUX)
-    close_err_code = close(obj->sockfd);
+    if(close(obj->sockfd)) {
 #   endif
-    if(close_err_code) {
         return wmkcNet_errorHandler("wmkcNet_close");
     }
 

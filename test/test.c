@@ -5,7 +5,7 @@
 // #include <crypto/snc_412.c>
 
 // #include <network/wmkc_ddos.c>
-// #include <network/wmkc_chunk.c>
+#include <network/wmkc_chunk.c>
 #include <network/wmkc_net.c>
 // #include <crypto/wmkc_crypto.c>
 #include <crypto/snc.c>
@@ -90,25 +90,47 @@ void net_test()
     printf("%s\n", recvbuf);
 }
 
+void set_timeout(wmkcNetSockT sockfd, int level, int optname, double _val)
+{
+#   if defined(WMKC_PLATFORM_WINOS)
+    DWORD _timeout = (DWORD)(_val * 1000);
+    wmkcChar *optval = (wmkcChar *)&_timeout;
+#   elif defined(WMKC_PLATFORM_LINUX)
+    double intpart = 0;
+    double fracpart = modf(_val, &intpart);
+    struct timeval _timeout = {.tv_sec=(long)intpart, .tv_usec=(long)(fracpart * 1000000)};
+    wmkcVoid *optval = (wmkcVoid *)&_timeout;
+#   endif
+    setsockopt(sockfd, level, optname, optval, sizeof(_timeout));
+}
+
 void test()
 {
     win_net_init();
 
-    wmkcNet_obj *src = wmkcNull;
+    wmkcErr_obj error;
+    wmkcNet_obj *net = wmkcNull;
     wmkcNet_obj *dst = wmkcNull;
 
-    wmkcNet_new(&src);
-    wmkcNet_socket(src, AF_INET, SOCK_STREAM, IPPROTO_IP);
-    wmkcNet_bind(src, "0.0.0.0", 49281);
-    wmkcNet_listen(src, 1);
+    wmkcNet_new(&net);
+    wmkcNet_socket(net, AF_INET, SOCK_STREAM, 0);
+    error = wmkcNet_connect(net, "www.bilibili.com", 80);
+    if(error.code) printf("%s: %s\n", error.func, error.message);
 
-    printf("Waiting to be connected by the client...\n");
-    wmkcNet_accept(&dst, src);
+    wmkcNetBufT sendbuf[4096] = {
+        "GET / HTTP/1.1\r\n"
+        "Host: www.bilibili.com\r\n"
+        "User-Agent: android\r\n\r\n"};
+    wmkcNetBufT recvbuf[4096]= {0};
 
-    printf("dst->raddr: %s\n", dst->raddr->addr);
-    printf("dst->rport: %d\n", dst->raddr->port);
+    wmkcNet_send(net, sendbuf, strlen(sendbuf), 0);
+    wmkcNet_recv(net, recvbuf, sizeof(recvbuf), 0);
 
-    wmkcNet_send(dst, "hello", 5, 0);
+    printf("%s\n", recvbuf);
+
+    wmkcNet_close(net);
+    if(dst) wmkcNet_free(&dst);
+    wmkcNet_free(&net);
 
     win_net_clear();
 }

@@ -1,29 +1,28 @@
-import sys
-sys.path.append('E:/Projects/_Library_WMKC')
-
-from snpy import *
-import matplotlib.pyplot as plt
-from hexdump import hexdump
-from PIL import Image
-import numpy as np
-import threading
-import requests
-import binascii
-import hashlib
-import base64
-import random
-import struct
-import socket
-import qrcode
-import json
-import time
-import zlib
-import gzip
-import rsa
-import ssl
-import os
 import re
+import os
+import ssl
+import sys
+import rsa
+import gzip
+import zlib
+import time
+import json
+import qrcode
+import socket
+import struct
+import random
+import base64
+import hashlib
+import binascii
+import requests
+import threading
+import numpy as np
+from PIL import Image
+from hexdump import hexdump
+import matplotlib.pyplot as plt
+from snpy import *
 
-sockfd = socket.socket()
-sockfd.connect(('127.0.0.1', 49281))
-print(sockfd.recv(5))
+ctx = wmkcNet('127.0.0.1', 49281)
+ctx.connect()
+print(f'本机套接字：{ctx.sockfd.getsockname()}')
+ctx.close()
