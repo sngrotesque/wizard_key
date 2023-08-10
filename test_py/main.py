@@ -22,7 +22,13 @@ from hexdump import hexdump
 import matplotlib.pyplot as plt
 from snpy import *
 
-ctx = wmkcNet('127.0.0.1', 49281)
-ctx.connect()
-print(f'本机套接字：{ctx.sockfd.getsockname()}')
-ctx.close()
+sockfd = socket.socket()
+sockfd.bind(('0.0.0.0', 49281))
+sockfd.listen(3)
+cSockfd, addr = sockfd.accept()
+
+print(wmkcNet_readChunk(cSockfd))
+
+cSockfd.close()
+sockfd.close()
+

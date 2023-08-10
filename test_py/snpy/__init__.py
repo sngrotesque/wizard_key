@@ -21,7 +21,7 @@ from .wmkc_password import (
 from .wmkc_net import (
     AF_INET, AF_INET6, SOCK_STREAM, SOCK_DGRAM,
     SOL_SOCKET, SO_REUSEADDR,
-    wmkcNet
+    wmkcNet, wmkcNet_writeChunk, wmkcNet_readChunk
 )
 from .wmkc_bili import (
     wmkcBili

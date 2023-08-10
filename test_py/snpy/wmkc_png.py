@@ -1,49 +1,40 @@
 import struct
 import zlib
 
-class wmkcPng:
-    def __init__(self, path :str):
-        self.path = path
-        self.content = None
+# class wmkcPng:
+#     def __init__(self, path :str):
+#         self.path = path
+#         self.content = None
 
-        self.bpp = 0 # 每个像素占用字节的数量
-        self.IHDR = {
-            'width':  0, # 图像宽度
-            'height': 0, # 图像高度
-            'bitDepth':  0, # 位深度
-            'colorType': 0, # 颜色类型
-        }
+#         self.bpp = 0 # 每个像素占用字节的数量
+#         self.IHDR = {
+#             'width':  0, # 图像宽度
+#             'height': 0, # 图像高度
+#             'bitDepth':  0, # 位深度
+#             'colorType': 0, # 颜色类型
+#         }
 
-    def set_u32(self, n :int):
-        return struct.pack('>I', n)
+#     def set_u32(self, n :int):
+#         return struct.pack('>I', n)
 
-    def set_crc(self, content :bytes):
-        return self.set_u32(zlib.crc32(content))
+#     def set_crc(self, content :bytes):
+#         return self.set_u32(zlib.crc32(content))
 
-    def read_image(self):
-        with open(self.path, 'rb') as f:
-            head = f.read(8) # 读取文件头
+#     def read_image(self):
+#         with open(self.path, 'rb') as f:
+#             head = f.read(8) # 读取文件头
 
-
-
-def set_u32(n :int):
-    return struct.pack('>I', n)
-
-def set_crc(content :bytes):
-    return set_u32(zlib.crc32(content))
-
-def generate(width :int, height :int, pixels :bytes):
-    HEADER = b'\x89\x50\x4e\x47\x0d\x0a\x1a\x0a'
-    IHDR = b'IHDR' + set_u32(width) + set_u32(height) + b'\x08\x06\x00\x00\x00'
-    IHDR = set_u32(len(IHDR) - 4) + IHDR + set_crc(IHDR)
-    sRGB = b'\x00\x00\x00\x01\x73\x52\x47\x42\x00\xAE\xCE\x1C\xE9'
-    IDAT = b'IDAT' + zlib.compress(pixels)
-    IDAT = set_u32(len(IDAT) - 4) + IDAT + set_crc(IDAT)
-    END = b'\x00\x00\x00\x00\x49\x45\x4e\x44\xae\x42\x60\x82'
-    return HEADER + IHDR + sRGB + IDAT + END
+# def generate(width :int, height :int, pixels :bytes):
+#     HEADER = b'\x89\x50\x4e\x47\x0d\x0a\x1a\x0a'
+#     IHDR = b'IHDR' + set_u32(width) + set_u32(height) + b'\x08\x06\x00\x00\x00'
+#     IHDR = set_u32(len(IHDR) - 4) + IHDR + set_crc(IHDR)
+#     sRGB = b'\x00\x00\x00\x01\x73\x52\x47\x42\x00\xAE\xCE\x1C\xE9'
+#     IDAT = b'IDAT' + zlib.compress(pixels)
+#     IDAT = set_u32(len(IDAT) - 4) + IDAT + set_crc(IDAT)
+#     END = b'\x00\x00\x00\x00\x49\x45\x4e\x44\xae\x42\x60\x82'
+#     return HEADER + IHDR + sRGB + IDAT + END
 
 
-'''
 class wmkcPng:
     def __init__(self, path :str):
         self.path      = path
@@ -145,4 +136,4 @@ class wmkcPng:
                     pixels.append((rgb >> 24, (rgb >> 16) & 0xff, (rgb >> 8) & 0xff, rgb & 0xff))
                 pixel_index += self.bpp
         return pixels
-'''
+

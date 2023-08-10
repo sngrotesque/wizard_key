@@ -59,37 +59,6 @@ void win_net_clear()
 #   endif
 }
 
-#define HOSTNAME "passport.bilibili.com"
-#define HOSTPORT 443
-#define HOSTUSER "Mozilla/5.0 (X11; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/114.0"
-
-void net_test()
-{
-    wmkcNet_obj *net = wmkcNull;
-    wmkcErr_obj error;
-
-    wmkcNetBufT *content = (wmkcNetBufT *)(
-        "GET /site/site.html HTTP/1.1\r\n"
-        "Host: "HOSTNAME"\r\n"
-        "Accept: */*\r\n"
-        "Connection: keep-alive\r\n"
-        "User-Agent: "HOSTUSER"\r\n\r\n"
-    );
-    wmkcNetBufT recvbuf[4096] = {0};
-
-    wmkcNet_new(&net);
-    wmkcNet_socket(net, AF_INET, SOCK_STREAM, IPPROTO_TCP);
-    wmkcNet_settimeout(net, 5);
-    wmkcNet_connect(net, HOSTNAME, HOSTPORT);
-    wmkcNet_sendall(net, content, strlen(content), 0);
-    wmkcNet_recv(net, recvbuf, sizeof(recvbuf), 0);
-    wmkcNet_shutdown(net, 2);
-    wmkcNet_close(net);
-    wmkcNet_free(&net);
-
-    printf("%s\n", recvbuf);
-}
-
 void set_timeout(wmkcNetSockT sockfd, int level, int optname, double _val)
 {
 #   if defined(WMKC_PLATFORM_WINOS)
@@ -104,33 +73,39 @@ void set_timeout(wmkcNetSockT sockfd, int level, int optname, double _val)
     setsockopt(sockfd, level, optname, optval, sizeof(_timeout));
 }
 
+#define HOSTNAME "passport.bilibili.com"
+#define HOSTPORT 443
+#define HOSTUSER "Mozilla/5.0 (X11; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/114.0"
+#define DEFAULT_PORT 49281
+
+#define LISTEN_ADDR "0.0.0.0"
+#define LOCAL_ADDR "127.0.0.1"
+
+void net_test()
+{
+    wmkcNet_obj *net = wmkcNull;
+    wmkcErr_obj error;
+
+    wmkcNet_new(&net);
+    wmkcNet_socket(net, AF_INET, SOCK_STREAM, 0);
+    wmkcNet_connect(net, LOCAL_ADDR, DEFAULT_PORT);
+
+    wmkcByte *data = wmkcNull;
+    wmkcSize size = 0;
+    wmkcFile_fread(&data, &size, "C:/Users/z7z-h/Desktop/STM32/测试工程/按钮/96x32_Bor8_#48484800.png");
+    wmkcChunk_send(net, (wmkcNetBufT *)data, size);
+    wmkcMem_free(data);
+
+    wmkcNet_shutdown(net, 2);
+    wmkcNet_close(net);
+    wmkcNet_free(&net);
+}
+
 void test()
 {
     win_net_init();
 
-    wmkcErr_obj error;
-    wmkcNet_obj *net = wmkcNull;
-    wmkcNet_obj *dst = wmkcNull;
-
-    wmkcNet_new(&net);
-    wmkcNet_socket(net, AF_INET, SOCK_STREAM, 0);
-    error = wmkcNet_connect(net, "www.bilibili.com", 80);
-    if(error.code) printf("%s: %s\n", error.func, error.message);
-
-    wmkcNetBufT sendbuf[4096] = {
-        "GET / HTTP/1.1\r\n"
-        "Host: www.bilibili.com\r\n"
-        "User-Agent: android\r\n\r\n"};
-    wmkcNetBufT recvbuf[4096]= {0};
-
-    wmkcNet_send(net, sendbuf, strlen(sendbuf), 0);
-    wmkcNet_recv(net, recvbuf, sizeof(recvbuf), 0);
-
-    printf("%s\n", recvbuf);
-
-    wmkcNet_close(net);
-    if(dst) wmkcNet_free(&dst);
-    wmkcNet_free(&net);
+    net_test();
 
     win_net_clear();
 }

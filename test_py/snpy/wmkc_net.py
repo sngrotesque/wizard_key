@@ -3,6 +3,23 @@ import struct
 import zlib
 import ssl
 
+def wmkcNet_readChunk(sockfd :socket):
+    content_size = struct.unpack('>I', sockfd.recv(4))[0]
+    content = b''
+    while content_size:
+        temp = sockfd.recv(min(content_size, 4096))
+        content += temp
+        content_size -= len(temp)
+    crc32 = struct.unpack('>I', sockfd.recv(4))[0]
+    if crc32 == zlib.crc32(content):
+        return content
+    return None
+
+def wmkcNet_writeChunk(sockfd :socket, content :bytes):
+    sockfd.send(struct.pack('>I', len(content)))
+    sockfd.sendall(content)
+    sockfd.send(struct.pack('>I', zlib.crc32(content)))
+
 class wmkcNet:
     def __init__(self, host: str, port :int, sockfd_family :int = AF_INET, sockfd_type: int = SOCK_STREAM):
         self.sockfd = socket(sockfd_family, sockfd_type, 0)
@@ -29,23 +46,6 @@ class wmkcNet:
 
     def connect(self):
         self.sockfd.connect((self.host, self.port))
-
-    def readChunk(self):
-        content_size = struct.unpack('>I', self.sockfd.recv(4))[0]
-        content = b''
-        while content_size:
-            temp = self.sockfd.recv(min(content_size, 4096))
-            content += temp
-            content_size -= len(temp)
-        crc32 = struct.unpack('>I', self.sockfd.recv(4))[0]
-        if crc32 == zlib.crc32(content):
-            return content
-        return None
-
-    def writeChunk(self, content :bytes):
-        self.sockfd.send(struct.pack('>I', len(content)))
-        self.sockfd.sendall(content)
-        self.sockfd.send(struct.pack('>I', zlib.crc32(content)))
 
     def close(self):
         self.sockfd.close()
