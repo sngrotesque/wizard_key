@@ -14,7 +14,7 @@ WMKC_OF((wmkcNet_obj *obj, wmkcNetBufT **buf, socklen_t *size))
     totalLengthReceived = *size;
 
     if(!wmkcMem_new(wmkcNetBufT *, (*buf), totalLengthReceived + 1)) {
-        printf("为buf申请内存失败。\n");
+        printf("Failed to allocate memory for (*buf).\n");
         return;
     }
     (*buf)[totalLengthReceived] = 0x00;

@@ -28,7 +28,7 @@ WMKC_OF((wmkcImg_rgba_obj **rgb, wmkc_u32 width, wmkc_u32 height))
     wmkcErr_return(error, wmkcErr_OK, "OK.");
 }
 
-WMKC_PUBLIC(wmkcErr_obj) wmkcImg_rgba_set_pixel WMKC_OPEN_API
+WMKC_PUBLIC(wmkcVoid) wmkcImg_rgba_set_pixel WMKC_OPEN_API
 WMKC_OF((wmkcImg_rgba_obj *rgb, wmkc_u32 pos_x, wmkc_u32 pos_y,
     wmkcByte r, wmkcByte g, wmkcByte b, wmkcByte a))
 {

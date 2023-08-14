@@ -620,7 +620,7 @@ WMKC_OF((wmkcSNC_obj *ctx, wmkcByte *buf, wmkcSize size))
 WMKC_PUBLIC(wmkcVoid) wmkcSNC_ctr_xcrypt WMKC_OPEN_API
 WMKC_OF((wmkcSNC_obj *ctx, wmkcByte *buf, wmkcSize size))
 {
-    wmkcFast wmkcSize r, i, keyStream_i, counter_i;
+    wmkcFast wmkcSize i, keyStream_i, counter_i;
     wmkcByte counter[SNC_BLOCKLEN];
     wmkcByte keyStream[SNC_BLOCKLEN] = {0};
 

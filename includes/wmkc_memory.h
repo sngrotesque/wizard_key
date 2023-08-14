@@ -10,11 +10,13 @@
 #endif
 
 // 内存空间申请
-#define wmkcMem_new(type, x, size) (x = (type)malloc(size))
+#define wmkcMem_new(_Type, _Ptr, _Size) (_Ptr = (_Type)malloc(_Size))
+// 内存追加申请
+#define wmkcMem_append(_Type, _DstP, _SrcP, _Size) (_DstP = (_Type)realloc(_SrcP, _Size))
 // 内存空间释放并指向空指针
-#define wmkcMem_free(x) free(x); x = wmkcNull
+#define wmkcMem_free(_Ptr) {free(_Ptr); _Ptr = wmkcNull;}
 // 内存内容初始化为零
-#define wmkcMem_zero(x, s) memset(x, 0x0, s)
+#define wmkcMem_zero(_Ptr, _Size) memset(_Ptr, 0, _Size)
 
 /**
  * @brief 安全清除内存数据函数

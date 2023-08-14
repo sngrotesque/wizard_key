@@ -11,7 +11,6 @@
 #include <cjson/cJSON.h>
 
 #include <wmkc_binascii.h>
-#include <wmkc_object.h>
 #include <wmkc_stream.h>
 #include <wmkc_random.h>
 #include <wmkc_struct.h>

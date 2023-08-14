@@ -15,9 +15,9 @@
 #include <wmkc_memory.c>
 #include <wmkc_common.c>
 #include <wmkc_base64.c>
-// #include <wmkc_object.c>
+#include <wmkc_object.c>
 #include <wmkc_random.c>
-// #include <wmkc_stream.c>
+#include <wmkc_stream.c>
 #include <wmkc_struct.c>
 // #include <wmkc_thread.c>
 #include <wmkc_basic.c>
@@ -30,19 +30,6 @@
 #include <wmkc_misc.c>
 #include <wmkc_img.c>
 #include <wmkc_pad.c>
-
-#if 1
-static wmkcByte testKey[96] = {
-    0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f,
-    0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17, 0x18, 0x19, 0x1a, 0x1b, 0x1c, 0x1d, 0x1e, 0x1f,
-    0x20, 0x21, 0x22, 0x23, 0x24, 0x25, 0x26, 0x27, 0x28, 0x29, 0x2a, 0x2b, 0x2c, 0x2d, 0x2e, 0x2f,
-    0x30, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38, 0x39, 0x3a, 0x3b, 0x3c, 0x3d, 0x3e, 0x3f,
-    0x40, 0x41, 0x42, 0x43, 0x44, 0x45, 0x46, 0x47, 0x48, 0x49, 0x4a, 0x4b, 0x4c, 0x4d, 0x4e, 0x4f,
-    0x50, 0x51, 0x52, 0x53, 0x54, 0x55, 0x56, 0x57, 0x58, 0x59, 0x5a, 0x5b, 0x5c, 0x5d, 0x5e, 0x5f};
-static wmkcByte testIv[32] = {
-    0x60, 0x61, 0x62, 0x63, 0x64, 0x65, 0x66, 0x67, 0x68, 0x69, 0x6a, 0x6b, 0x6c, 0x6d, 0x6e, 0x6f,
-    0x70, 0x71, 0x72, 0x73, 0x74, 0x75, 0x76, 0x77, 0x78, 0x79, 0x7a, 0x7b, 0x7c, 0x7d, 0x7e, 0x7f};
-#endif
 
 void win_net_init()
 {
@@ -59,58 +46,74 @@ void win_net_clear()
 #   endif
 }
 
-void set_timeout(wmkcNetSockT sockfd, int level, int optname, double _val)
-{
-#   if defined(WMKC_PLATFORM_WINOS)
-    DWORD _timeout = (DWORD)(_val * 1000);
-    wmkcChar *optval = (wmkcChar *)&_timeout;
-#   elif defined(WMKC_PLATFORM_LINUX)
-    double intpart = 0;
-    double fracpart = modf(_val, &intpart);
-    struct timeval _timeout = {.tv_sec=(long)intpart, .tv_usec=(long)(fracpart * 1000000)};
-    wmkcVoid *optval = (wmkcVoid *)&_timeout;
-#   endif
-    setsockopt(sockfd, level, optname, optval, sizeof(_timeout));
-}
+#define HOSTNAME "example.com"
+#define HOSTPORT 80
+#define USERAGENT "Mozilla/5.0 (X11; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/114.0"
 
-#define HOSTNAME "passport.bilibili.com"
-#define HOSTPORT 443
-#define HOSTUSER "Mozilla/5.0 (X11; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/114.0"
-#define DEFAULT_PORT 49281
-
-#define LISTEN_ADDR "0.0.0.0"
-#define LOCAL_ADDR "127.0.0.1"
-
-void net_test()
-{
-    wmkcNet_obj *net = wmkcNull;
-    wmkcErr_obj error;
-
-    wmkcNet_new(&net);
-    wmkcNet_socket(net, AF_INET, SOCK_STREAM, 0);
-    wmkcNet_connect(net, LOCAL_ADDR, DEFAULT_PORT);
-
-    wmkcByte *data = wmkcNull;
-    wmkcSize size = 0;
-    wmkcFile_fread(&data, &size, "C:/Users/z7z-h/Desktop/STM32/测试工程/按钮/96x32_Bor8_#48484800.png");
-    wmkcChunk_send(net, (wmkcNetBufT *)data, size);
-    wmkcMem_free(data);
-
-    wmkcNet_shutdown(net, 2);
-    wmkcNet_close(net);
-    wmkcNet_free(&net);
-}
-
-void test()
+void HTTP_Client()
 {
     win_net_init();
 
-    net_test();
+    wmkc_obj *SendStream = wmkcNull;
+    wmkc_obj *RecvStream = wmkcNull;
+    wmkcNet_obj *net = wmkcNull;
+    wmkcNetBufT _recvbuf[4096];
+
+    wmkcObj_new(&SendStream);
+    wmkcObj_new(&RecvStream);
+    wmkcNet_new(&net);
+
+    wmkcNet_socket(net, AF_INET, SOCK_STREAM, 0);
+    wmkcNet_settimeout(net, 0.5);
+    wmkcNet_connect(net, HOSTNAME, HOSTPORT);
+
+    wmkcObj_append(SendStream, "GET / HTTP/1.1\r\n");
+    wmkcObj_append(SendStream, "Host: "HOSTNAME"\r\n");
+    wmkcObj_append(SendStream, "Accept: text/html; */*\r\n");
+    wmkcObj_append(SendStream, "Connection: keep-alive\r\n");
+    wmkcObj_append(SendStream, "User-Agent: "USERAGENT"\r\n\r\n");
+
+    wmkcNet_sendall(net, SendStream->buf, SendStream->size, 0);
+
+    for(;;) {
+        wmkcMem_zero(_recvbuf, sizeof(_recvbuf));
+        wmkcErr_obj error = wmkcNet_recv(net, _recvbuf, sizeof(_recvbuf), 0);
+        if(error.code) {
+            printf("%s: %s\n", error.func, error.message);
+            break;
+        }
+        wmkcObj_append(RecvStream, _recvbuf);
+    }
+
+    wmkcFile_fwrite(RecvStream->buf, RecvStream->size, "wmkcNet_test_index.html");
+
+    wmkcNet_shutdown(net, 2);
+    wmkcNet_close(net);
+
+    wmkcObj_free(&SendStream);
+    wmkcObj_free(&RecvStream);
+    wmkcNet_free(&net);
 
     win_net_clear();
 }
 
-int main(wmkc_u32 argc, wmkcChar **argv)
+void test()
+{
+    wmkc_obj *stream = wmkcNull;
+
+    wmkcObj_new(&stream);
+    wmkcObj_append(stream, "GET / HTTP/1.1\r\n");
+    wmkcObj_append(stream, "Host: exmple.com\r\n");
+    wmkcObj_append(stream, "User-Agent: android\r\n\r\n");
+
+    printf("stream->buf:     "); wmkcMisc_PRINT_RAW(stream->buf, stream->size, 1);
+    printf("stream->size:    %llu\n", stream->size);
+    printf("stream->memSize: %llu\n", stream->memSize);
+
+    wmkcObj_free(&stream);
+}
+
+int main(wmkc_s32 argc, wmkcChar **argv)
 {
     void (*func)() = test;
     func();

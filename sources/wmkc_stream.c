@@ -13,27 +13,27 @@
  * @return 返回一个wmkcErr对象，code为0代表无错误，如果为
  *         其他值，那么需检查message与code。
 */
-WMKC_PUBLIC(wmkcErr_obj) wmkcStream_Splicing WMKC_OPEN_API
-WMKC_OF((wmkc_obj **dst, wmkc_obj *left, wmkc_obj *right))
-{
-    wmkcErr_obj error;
-    if(!dst || !left || !right) {
-        wmkcErr_return(error, wmkcErr_ErrNULL,
-            "wmkcStream_Splicing: dst or left or right is NULL.");
-    }
+// WMKC_PUBLIC(wmkcErr_obj) wmkcStream_Splicing WMKC_OPEN_API
+// WMKC_OF((wmkc_obj **dst, wmkc_obj *left, wmkc_obj *right))
+// {
+//     wmkcErr_obj error;
+//     if(!dst || !left || !right) {
+//         wmkcErr_return(error, wmkcErr_ErrNULL,
+//             "wmkcStream_Splicing: dst or left or right is NULL.");
+//     }
 
-    (*dst)->size = (left->size + right->size);
-    if(!(*dst)->size) {
-        wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcStream_Splicing: dst->size is zero.");
-    }
+//     (*dst)->size = (left->size + right->size);
+//     if(!(*dst)->size) {
+//         wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcStream_Splicing: dst->size is zero.");
+//     }
 
-    wmkcObject_new(dst, (left->size + right->size) + 1, true);
+//     wmkcObject_new(dst, (left->size + right->size) + 1, true);
 
-    memcpy((*dst)->buf, left->buf, left->size);
-    memcpy((*dst)->buf + left->size, right->buf, right->size);
+//     memcpy((*dst)->buf, left->buf, left->size);
+//     memcpy((*dst)->buf + left->size, right->buf, right->size);
 
-    wmkcErr_return(error, wmkcErr_OK, "OK.");
-}
+//     wmkcErr_return(error, wmkcErr_OK, "OK.");
+// }
 
 /**
  * @brief 此函数将内容进行切片
@@ -49,45 +49,45 @@ WMKC_OF((wmkc_obj **dst, wmkc_obj *left, wmkc_obj *right))
  * @return 返回一个wmkcErr对象，code为0代表无错误，如果为
  *         其他值，那么需检查message与code。
 */
-WMKC_PUBLIC(wmkcErr_obj) wmkcStream_Slice WMKC_OPEN_API
-WMKC_OF((wmkc_obj **dst, wmkc_obj *src, wmkcSSize start, wmkcSSize end))
-{
-    wmkcErr_obj error;
-    if(end < 0) {
-        if((end = src->size + end) > src->size) {
-            wmkcErr_return(error, wmkcErr_ErrOutRange,
-                "wmkcStream_Slice: The range at the end is too large.");
-        }
-    } else if(end > src->size) {
-        wmkcErr_return(error, wmkcErr_ErrOutRange,
-            "wmkcStream_Slice: The range at the end is too large.");
-    }
-    if(start < 0) {
-        if((start = src->size + start) > src->size) {
-            wmkcErr_return(error, wmkcErr_ErrOutRange,
-                "wmkcStream_Slice: The range at the start is too large.");
-        }
-    } else if(start > src->size) {
-        wmkcErr_return(error, wmkcErr_ErrOutRange,
-            "wmkcStream_Slice: The range at the start is too large.");
-    }
-    if(start > end) {
-        if(end) {
-        wmkcErr_return(error, wmkcErr_ErrInvalidRange,
-            "wmkcStream_Slice: The starting subscript exceeds the ending subscript.");
-        } else {
-            end = src->size;
-        }
-    }
+// WMKC_PUBLIC(wmkcErr_obj) wmkcStream_Slice WMKC_OPEN_API
+// WMKC_OF((wmkc_obj **dst, wmkc_obj *src, wmkcSSize start, wmkcSSize end))
+// {
+//     wmkcErr_obj error;
+//     if(end < 0) {
+//         if((end = src->size + end) > src->size) {
+//             wmkcErr_return(error, wmkcErr_ErrOutRange,
+//                 "wmkcStream_Slice: The range at the end is too large.");
+//         }
+//     } else if(end > src->size) {
+//         wmkcErr_return(error, wmkcErr_ErrOutRange,
+//             "wmkcStream_Slice: The range at the end is too large.");
+//     }
+//     if(start < 0) {
+//         if((start = src->size + start) > src->size) {
+//             wmkcErr_return(error, wmkcErr_ErrOutRange,
+//                 "wmkcStream_Slice: The range at the start is too large.");
+//         }
+//     } else if(start > src->size) {
+//         wmkcErr_return(error, wmkcErr_ErrOutRange,
+//             "wmkcStream_Slice: The range at the start is too large.");
+//     }
+//     if(start > end) {
+//         if(end) {
+//         wmkcErr_return(error, wmkcErr_ErrInvalidRange,
+//             "wmkcStream_Slice: The starting subscript exceeds the ending subscript.");
+//         } else {
+//             end = src->size;
+//         }
+//     }
 
-    wmkcObject_new(dst, (end - start) + 1, false);
-    (*dst)->buf[end - start] = 0x00;
-    (*dst)->size = (end - start);
+//     wmkcObject_new(dst, (end - start) + 1, false);
+//     (*dst)->buf[end - start] = 0x00;
+//     (*dst)->size = (end - start);
 
-    memcpy((*dst)->buf, src->buf + start, (*dst)->size);
+//     memcpy((*dst)->buf, src->buf + start, (*dst)->size);
 
-    wmkcErr_return(error, wmkcErr_OK, "OK.");
-}
+//     wmkcErr_return(error, wmkcErr_OK, "OK.");
+// }
 
 /**
  * @brief 此函数用于求出指定数字的二进制值
