@@ -46,8 +46,8 @@ void win_net_clear()
 #   endif
 }
 
-#define HOSTNAME "example.com"
-#define HOSTPORT 80
+#define HOSTNAME "www.bilibili.com"
+#define HOSTPORT 443
 #define USERAGENT "Mozilla/5.0 (X11; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/114.0"
 
 void HTTP_Client()
@@ -63,29 +63,34 @@ void HTTP_Client()
     wmkcObj_new(&RecvStream);
     wmkcNet_new(&net);
 
+    printf("创建套接字。\n");
     wmkcNet_socket(net, AF_INET, SOCK_STREAM, 0);
     wmkcNet_settimeout(net, 0.5);
+    printf("连接服务器：%s:%u\n", HOSTNAME, HOSTPORT);
     wmkcNet_connect(net, HOSTNAME, HOSTPORT);
 
+    printf("构建发送流。\n");
     wmkcObj_append(SendStream, "GET / HTTP/1.1\r\n");
+    wmkcObj_append(SendStream, "Acceot: text/html; image/jpeg; application/json; */*\r\n");
+    wmkcObj_append(SendStream, "Connection: close\r\n");
     wmkcObj_append(SendStream, "Host: "HOSTNAME"\r\n");
-    wmkcObj_append(SendStream, "Accept: text/html; */*\r\n");
-    wmkcObj_append(SendStream, "Connection: keep-alive\r\n");
     wmkcObj_append(SendStream, "User-Agent: "USERAGENT"\r\n\r\n");
 
+    printf("发送发送流。\n");
     wmkcNet_sendall(net, SendStream->buf, SendStream->size, 0);
 
+    printf("接收接收流。\n");
     for(;;) {
         wmkcMem_zero(_recvbuf, sizeof(_recvbuf));
         wmkcErr_obj error = wmkcNet_recv(net, _recvbuf, sizeof(_recvbuf), 0);
-        if(error.code) {
+        if(error.code || !net->tSize) {
             printf("%s: %s\n", error.func, error.message);
             break;
         }
         wmkcObj_append(RecvStream, _recvbuf);
     }
 
-    wmkcFile_fwrite(RecvStream->buf, RecvStream->size, "wmkcNet_test_index.html");
+    wmkcMisc_PRINT_RAW(RecvStream->buf, RecvStream->size, true);
 
     wmkcNet_shutdown(net, 2);
     wmkcNet_close(net);
@@ -99,18 +104,7 @@ void HTTP_Client()
 
 void test()
 {
-    wmkc_obj *stream = wmkcNull;
-
-    wmkcObj_new(&stream);
-    wmkcObj_append(stream, "GET / HTTP/1.1\r\n");
-    wmkcObj_append(stream, "Host: exmple.com\r\n");
-    wmkcObj_append(stream, "User-Agent: android\r\n\r\n");
-
-    printf("stream->buf:     "); wmkcMisc_PRINT_RAW(stream->buf, stream->size, 1);
-    printf("stream->size:    %llu\n", stream->size);
-    printf("stream->memSize: %llu\n", stream->memSize);
-
-    wmkcObj_free(&stream);
+    
 }
 
 int main(wmkc_s32 argc, wmkcChar **argv)
