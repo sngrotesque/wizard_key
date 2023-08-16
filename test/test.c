@@ -104,7 +104,29 @@ void HTTP_Client()
 
 void test()
 {
-    
+    win_net_init();
+
+    ADDRINFO *result = NULL;
+    ADDRINFO hints = {.ai_family = AF_UNSPEC, .ai_socktype = SOCK_STREAM, .ai_protocol = IPPROTO_TCP};
+    ADDRINFO *p = NULL;
+    char ip_string[INET6_ADDRSTRLEN];
+
+    getaddrinfo("www.google.com", "https", &hints, &result);
+
+    for(p = result; p; p = p->ai_next) {
+        wmkcMem_zero(ip_string, sizeof(ip_string));
+        if(p->ai_family == AF_INET) {
+            wmkcNet_GetAddr(p->ai_family, &(((SOCKADDR_IN *)p->ai_addr)->sin_addr), ip_string);
+            printf("IPv4 address: %s\n", ip_string);
+        } else if(p->ai_family == AF_INET6) {
+            wmkcNet_GetAddr(p->ai_family, &(((SOCKADDR_IN6 *)p->ai_addr)->sin6_addr), ip_string);
+            printf("IPv6 address: %s\n", ip_string);
+        }
+    }
+
+    freeaddrinfo(result);
+
+    win_net_clear();
 }
 
 int main(wmkc_s32 argc, wmkcChar **argv)

@@ -22,14 +22,10 @@ from hexdump import hexdump
 import matplotlib.pyplot as plt
 from snpy import *
 
-class ArrayIsNULL(Exception):
-    pass
+print(socket.getaddrinfo('e-hentai.org', 29))
 
-arr = []
-try:
-    if not arr:
-        raise ArrayIsNULL
-except ArrayIsNULL:
-    print(f'数组为空：{arr}')
+
+
+
 
 

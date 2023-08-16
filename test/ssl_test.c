@@ -1,17 +1,17 @@
 #include <network/wmkc_ssl.c>
 #include <network/wmkc_net.c>
 
-#define HOSTNAME "passport.bilibili.com"
+#define HOSTNAME "www.pixiv.net"
 #define SSL_DISABLE(_Ctx) SSL_CTX_set_options(_Ctx, \
     SSL_OP_NO_SSLv2 | SSL_OP_NO_SSLv3 | SSL_OP_NO_TLSv1 | SSL_OP_NO_TLSv1_1 | \
     SSL_OP_CIPHER_SERVER_PREFERENCE   | SSL_OP_NO_RENEGOTIATION);\
     SSL_CTX_set_cipher_list(_Ctx, "HIGH:!aNULL:!eNULL");
 
 static const char* sendbuf = (
-    "GET /qrcode/getLoginUrl HTTP/1.1\r\n"
+    "GET / HTTP/1.1\r\n"
     "Host: "HOSTNAME"\r\n"
     "Accept: */*\r\n"
-    "Connection: keep-alive\r\n"
+    "Connection: close\r\n"
     "User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/114.0\r\n\r\n"
 );
 
@@ -19,6 +19,7 @@ SSL_CTX *ssl_ctx = NULL;
 BIO *bio = NULL;
 SSL *ssl = NULL;
 char recvbuf[4096];
+wmkcErr_obj error;
 
 void openssl_sock_test()
 {
@@ -28,13 +29,24 @@ void openssl_sock_test()
 
     wmkcNet_obj *net = wmkcNull;
     wmkcNet_new(&net);
-    wmkcNet_socket(net, AF_INET, SOCK_STREAM, 0);
+    if((error = wmkcNet_socket(net, AF_INET, SOCK_STREAM, 0)).code)
+        printf("%s: %s\n", error.func, error.message);
 
-    SSL_set_fd(ssl, net->sockfd);
-    SSL_set_tlsext_host_name(ssl, HOSTNAME);
+    if(!SSL_set_fd(ssl, net->sockfd)) {
+        ERR_print_errors_fp(stderr);
+        return;
+    }
+    if(!SSL_set_tlsext_host_name(ssl, HOSTNAME)) {
+        ERR_print_errors_fp(stderr);
+        return;
+    }
 
-    wmkcNet_connect(net, HOSTNAME, 443);
-    SSL_connect(ssl);
+    if((error = wmkcNet_connect(net, "104.18.26.235", 443)).code)
+        printf("%s: %s\n", error.func, error.message);
+    if(!SSL_connect(ssl)) {
+        ERR_print_errors_fp(stderr);
+        return;
+    }
 
     memset(recvbuf, 0, sizeof(recvbuf));
     SSL_write(ssl, sendbuf, strlen(sendbuf));
@@ -61,7 +73,6 @@ void openssl_bio_test()
     BIO_set_conn_port(bio, "443");
 
     if (BIO_do_connect(bio) != 1) {
-        printf("BIO_do_connect error.\n");
         ERR_print_errors_fp(stderr);
         return;
     }
@@ -83,6 +94,7 @@ int main(int argc, char **argv)
     WSAStartup(MAKEWORD(2,2), &ws);
 #   endif
 
+    printf("Action...\n");
     openssl_sock_test();
     // openssl_bio_test();
 
