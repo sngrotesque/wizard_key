@@ -22,10 +22,3 @@ from hexdump import hexdump
 import matplotlib.pyplot as plt
 from snpy import *
 
-print(socket.getaddrinfo('e-hentai.org', 29))
-
-
-
-
-
-

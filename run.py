@@ -12,7 +12,7 @@ class action:
     def call(self, command :str):
         status = subprocess.call(command, shell = True)
         if status:
-            exit(f'错误的执行状态码：{status}')
+            exit(f'错误的执行状态码：{status} {hex(status)}.')
 
     def init(self):
         if sys.platform == 'win32':
