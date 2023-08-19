@@ -12,6 +12,8 @@
 #include <openssl/sslerr.h>
 #include <openssl/crypto.h>
 
+#define WMKC_SSL_STRICT_MODE true
+
 typedef struct {
 	SSL *ssl;         // SSL对象
 	SSL_CTX *ctx;     // SSL上下文对象
