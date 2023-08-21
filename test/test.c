@@ -32,7 +32,7 @@
 #include <wmkc_img.c>
 #include <wmkc_pad.c>
 
-#define HOSTNAME "www.pixiv.net"
+#define HOSTNAME "passport.bilibili.com"
 #define HOSTPORT 443
 #define USERAGENT "Mozilla/5.0 (X11; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/114.0"
 
@@ -124,21 +124,19 @@ void test()
     wmkcSSL_new(&ssl_ctx);
     wmkcNet_new(&sockfd);
 
+    wmkcSSL_context(ssl_ctx, TLS_method());
     wmkcNet_socket(sockfd, AF_INET, SOCK_STREAM, IPPROTO_TCP);
-    wmkcSSL_Context(ssl_ctx, TLS_method());
     wmkcSSL_wrap_socket(ssl_ctx, sockfd, HOSTNAME);
-
-    wmkcNet_connect(sockfd, HOSTNAME, HOSTPORT);
-    SSL_connect(ssl_ctx->ssl);
+    wmkcSSL_connect(ssl_ctx, HOSTNAME, HOSTPORT);
 
     wmkcChar sendbuf[4096] = {
-        "GET / HTTP/1.1\r\n"
+        "GET /qrcode/getLoginUrl HTTP/1.1\r\n"
         "Host: "HOSTNAME"\r\nConnection: close\r\n"
         "Accept: */*; text/html\r\n"
         "User-Agent: "USERAGENT"\r\n\r\n"};
     wmkcChar recvbuf[4096];
-    SSL_write(ssl_ctx->ssl, sendbuf, strlen(sendbuf));
-    SSL_read(ssl_ctx->ssl, recvbuf, sizeof(recvbuf));
+    wmkcSSL_sendall(ssl_ctx, sendbuf, strlen(sendbuf));
+    wmkcSSL_recv(ssl_ctx, recvbuf, sizeof(recvbuf));
 
     printf("%s\n", recvbuf);
 

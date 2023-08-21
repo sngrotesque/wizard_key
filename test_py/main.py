@@ -22,3 +22,8 @@ from hexdump import hexdump
 import matplotlib.pyplot as plt
 from snpy import *
 
+sockfd = ssl.SSLContext().wrap_socket(socket.socket(), server_hostname='www.a.com')
+sockfd.settimeout(3)
+
+
+
