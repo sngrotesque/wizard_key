@@ -110,7 +110,9 @@ WMKC_OF((wmkcSSL_obj *obj, wmkcNet_obj *socket_fd, wmkcCSTR server_hostname))
 WMKC_PUBLIC(wmkcErr_obj) wmkcSSL_settimeout WMKC_OPEN_API
 WMKC_OF((wmkcSSL_obj *obj, double _val))
 {
+    wmkcErr_obj error;
 
+    wmkcErr_func_return(error, wmkcErr_OK, "wmkcSSL_settimeout", "OK.");
 }
 
 WMKC_PUBLIC(wmkcErr_obj) wmkcSSL_connect WMKC_OPEN_API

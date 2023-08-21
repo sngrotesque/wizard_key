@@ -193,7 +193,7 @@ WMKC_OF((wmkcByte **buf, wmkcSize *size, wmkcCSTR fn))
             "wmkcFile_fread: obj or buf or size or fn is NULL.");
     }
     wmkcFile_obj *file = wmkcNull;
-    wmkc_u32 _tmp;
+    
 
     error = wmkcFile_open(&file, fn, "rb");
     if(error.code) return error;
@@ -212,11 +212,12 @@ WMKC_OF((wmkcByte **buf, wmkcSize *size, wmkcCSTR fn))
     p[file->fsize] = 0x00;
 
     for(wmkcSize x = 0; x < quotient; ++x) {
-        _tmp = fread(p, 1, WMKC_FILE_BLOCKLEN, file->fp);
+        WMKC_FILE_FREAD(p, WMKC_FILE_BLOCKLEN, file->fp);
         p += WMKC_FILE_BLOCKLEN;
     }
-    if(leftover)
-        _tmp = fread(p, 1, leftover, file->fp);
+    if(leftover) {
+        WMKC_FILE_FREAD(p, leftover, file->fp);
+    }
 
     wmkcFile_close(&file);
     wmkcErr_return(error, wmkcErr_OK, "OK.");

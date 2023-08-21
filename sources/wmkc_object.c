@@ -43,7 +43,7 @@ WMKC_OF((wmkc_obj *obj, wmkcCSTR content))
             "obj or content is NULL.");
     }
 
-    wmkcChar *p = wmkcNull;
+    wmkcByte *p = wmkcNull;
     wmkcSize size = strlen(content);
 
     if(obj->buf) {

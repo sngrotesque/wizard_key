@@ -32,10 +32,7 @@
 #include <wmkc_img.c>
 #include <wmkc_pad.c>
 
-#define HOSTNAME "passport.bilibili.com"
-#define HOSTPORT 443
-#define USERAGENT "Mozilla/5.0 (X11; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/114.0"
-
+#if 0
 WMKC_PRIVATE_CONST(wmkcByte) SNC_TEST_KEY[96] = {
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01,
@@ -47,6 +44,7 @@ WMKC_PRIVATE_CONST(wmkcByte) SNC_TEST_IV[32] = {
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
 };
+#endif
 
 void win_net_init()
 {
@@ -63,86 +61,48 @@ void win_net_clear()
 #   endif
 }
 
+#define HOSTNAME "passport.bilibili.com"
+#define HOSTPORT 443
+#define USERAGENT "Mozilla/5.0 (X11; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/114.0"
+
 void HTTP_Client()
-{
-    win_net_init();
-
-    wmkc_obj *SendStream = wmkcNull;
-    wmkc_obj *RecvStream = wmkcNull;
-    wmkcNet_obj *net = wmkcNull;
-    wmkcNetBufT _recvbuf[4096];
-
-    wmkcObj_new(&SendStream);
-    wmkcObj_new(&RecvStream);
-    wmkcNet_new(&net);
-
-    printf("创建套接字。\n");
-    wmkcNet_socket(net, AF_INET, SOCK_STREAM, 0);
-    wmkcNet_settimeout(net, 0.5);
-    printf("连接服务器：%s:%u\n", HOSTNAME, HOSTPORT);
-    wmkcNet_connect(net, HOSTNAME, HOSTPORT);
-
-    printf("构建发送流。\n");
-    wmkcObj_append(SendStream, "GET / HTTP/1.1\r\n");
-    wmkcObj_append(SendStream, "Acceot: text/html; image/jpeg; application/json; */*\r\n");
-    wmkcObj_append(SendStream, "Connection: close\r\n");
-    wmkcObj_append(SendStream, "Host: "HOSTNAME"\r\n");
-    wmkcObj_append(SendStream, "User-Agent: "USERAGENT"\r\n\r\n");
-
-    printf("发送发送流。\n");
-    wmkcNet_sendall(net, SendStream->buf, SendStream->size, 0);
-
-    printf("接收接收流。\n");
-    for(;;) {
-        wmkcMem_zero(_recvbuf, sizeof(_recvbuf));
-        wmkcErr_obj error = wmkcNet_recv(net, _recvbuf, sizeof(_recvbuf), 0);
-        if(error.code || !net->tSize) {
-            printf("%s: %s\n", error.func, error.message);
-            break;
-        }
-        wmkcObj_append(RecvStream, _recvbuf);
-    }
-
-    wmkcMisc_PRINT_RAW(RecvStream->buf, RecvStream->size, true);
-
-    wmkcNet_shutdown(net, 2);
-    wmkcNet_close(net);
-
-    wmkcObj_free(&SendStream);
-    wmkcObj_free(&RecvStream);
-    wmkcNet_free(&net);
-
-    win_net_clear();
-}
-
-void test()
 {
     win_net_init();
     wmkcSSL_obj *ssl_ctx = wmkcNull;
     wmkcNet_obj *sockfd = wmkcNull;
+    wmkc_obj *SendStream = wmkcNull;
+    wmkcByte recvbuf[4096];
 
     wmkcSSL_new(&ssl_ctx);
     wmkcNet_new(&sockfd);
+    wmkcObj_new(&SendStream);
 
     wmkcSSL_context(ssl_ctx, TLS_method());
     wmkcNet_socket(sockfd, AF_INET, SOCK_STREAM, IPPROTO_TCP);
     wmkcSSL_wrap_socket(ssl_ctx, sockfd, HOSTNAME);
     wmkcSSL_connect(ssl_ctx, HOSTNAME, HOSTPORT);
 
-    wmkcChar sendbuf[4096] = {
-        "GET /qrcode/getLoginUrl HTTP/1.1\r\n"
-        "Host: "HOSTNAME"\r\nConnection: close\r\n"
-        "Accept: */*; text/html\r\n"
-        "User-Agent: "USERAGENT"\r\n\r\n"};
-    wmkcChar recvbuf[4096];
-    wmkcSSL_sendall(ssl_ctx, sendbuf, strlen(sendbuf));
-    wmkcSSL_recv(ssl_ctx, recvbuf, sizeof(recvbuf));
+    wmkcMem_zero(recvbuf, sizeof(recvbuf));
+    wmkcObj_append(SendStream, "GET /qrcode/getLoginInfo HTTP/1.1\r\n");
+    wmkcObj_append(SendStream, "Host: "HOSTNAME"\r\n");
+    wmkcObj_append(SendStream, "Accept: */*; text/html\r\n");
+    wmkcObj_append(SendStream, "Accept-Encoding: identity\r\n");
+    wmkcObj_append(SendStream, "Connection: close\r\n");
+    wmkcObj_append(SendStream, "User-Agent: "USERAGENT"\r\n\r\n");
+    wmkcSSL_sendall(ssl_ctx, (wmkcNetBufT *)SendStream->buf, SendStream->size);
+    wmkcSSL_recv(ssl_ctx, (wmkcNetBufT *)recvbuf, sizeof(recvbuf));
 
-    printf("%s\n", recvbuf);
+    wmkcMisc_PRINT_RAW(recvbuf, strlen((wmkcChar *)recvbuf), 1);
 
     wmkcNet_close(sockfd);
     wmkcSSL_free(&ssl_ctx);
+    wmkcObj_free(&SendStream);
     win_net_clear();
+}
+
+void test()
+{
+    HTTP_Client();
 }
 
 int main(wmkc_s32 argc, wmkcChar **argv)

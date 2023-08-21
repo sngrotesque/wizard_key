@@ -19,6 +19,8 @@
 #define WMKC_FILE_MODE_READ  0x01 // 文件模式：读取
 #define WMKC_FILE_MODE_WRITE 0x02 // 文件模式：写入
 
+#define WMKC_FILE_FREAD(x, s, p) fread(x, 1, s, p)
+
 #if defined(WMKC_PLATFORM_WINOS)
 #include <Windows.h>
 #include <shlwapi.h> // -lshlwapi
