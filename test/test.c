@@ -102,7 +102,9 @@ void HTTP_Client()
 
 void test()
 {
-    HTTP_Client();
+    double n = pow(4, 256);
+    printf("%.0lf\n", n);
+    wmkcMisc_PRINT((wmkcByte *)&n, sizeof(n), sizeof(n), 0, 0);
 }
 
 int main(wmkc_s32 argc, wmkcChar **argv)
