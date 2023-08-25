@@ -452,11 +452,12 @@ WMKC_OF((wmkcSNC_obj **ctx, SNC_mode mode))
     wmkcErr_obj error;
 
     if(!ctx) {
-        wmkcErr_return(error, wmkcErr_ErrNULL, "ctx is NULL.");
+        wmkcErr_func_return(error, wmkcErr_ErrNULL, "wmkcSNC_new", "ctx is NULL.");
     }
 
     if(!wmkcMem_new(wmkcSNC_obj *, (*ctx), sizeof(wmkcSNC_obj))) {
-        wmkcErr_return(error, wmkcErr_ErrMemory, "Failed to allocate memory for (*ctx).");
+        wmkcErr_func_return(error, wmkcErr_ErrMemory, "wmkcSNC_new",
+            "Failed to allocate memory for (*ctx).");
     }
 
     (*ctx)->mode = mode;
@@ -465,7 +466,7 @@ WMKC_OF((wmkcSNC_obj **ctx, SNC_mode mode))
     wmkcMem_secure((*ctx)->roundKey, sizeof((*ctx)->roundKey));
     wmkcMem_secure((*ctx)->iv, SNC_BLOCKLEN);
 
-    wmkcErr_return(error, wmkcErr_OK, "OK.");
+    wmkcErr_func_return(error, wmkcErr_OK, "wmkcSNC_new", "OK.");
 }
 
 // 释放SNC对象
@@ -474,14 +475,14 @@ WMKC_OF((wmkcSNC_obj **ctx))
 {
     wmkcErr_obj error;
     if(!ctx) {
-        wmkcErr_return(error, wmkcErr_ErrNULL, "ctx is NULL.");
+        wmkcErr_func_return(error, wmkcErr_ErrNULL, "wmkcSNC_free", "ctx is NULL.");
     }
 
     wmkcMem_secure((*ctx)->iv, SNC_BLOCKLEN);
     wmkcMem_secure((*ctx)->roundKey, sizeof((*ctx)->roundKey));
     wmkcMem_free((*ctx));
 
-    wmkcErr_return(error, wmkcErr_OK, "OK.");
+    wmkcErr_func_return(error, wmkcErr_OK, "wmkcSNC_free", "OK.");
 }
 
 /*
@@ -494,7 +495,8 @@ WMKC_OF((wmkcSNC_obj *ctx, const wmkcByte *keyBuf, const wmkcByte *ivBuf))
 {
     wmkcErr_obj error;
     if(!ctx || !keyBuf || !ivBuf) {
-        wmkcErr_return(error, wmkcErr_ErrNULL, "ctx or keyBuf or ivBuf is NULL.");
+        wmkcErr_func_return(error, wmkcErr_ErrNULL, "wmkcSNC_init",
+            "ctx or keyBuf or ivBuf is NULL.");
     }
 
     wmkcByte *key = wmkcNull;
@@ -511,7 +513,8 @@ WMKC_OF((wmkcSNC_obj *ctx, const wmkcByte *keyBuf, const wmkcByte *ivBuf))
     *     vector does not change.
     */
     if(!wmkcMem_new(wmkcByte *, key, ctx->KN)) {
-        wmkcErr_return(error, wmkcErr_ErrMemory, "Failed to allocate memory for key.");
+        wmkcErr_func_return(error, wmkcErr_ErrMemory, "wmkcSNC_init",
+            "Failed to allocate memory for key.");
     }
 
     memcpy(ctx->iv, ivBuf, SNC_BLOCKLEN);
@@ -547,7 +550,7 @@ WMKC_OF((wmkcSNC_obj *ctx, const wmkcByte *keyBuf, const wmkcByte *ivBuf))
     wmkcMem_secure(key, ctx->KN);
     wmkcMem_secure(iv, SNC_BLOCKLEN);
     wmkcMem_free(key);
-    wmkcErr_return(error, wmkcErr_OK, "OK.");
+    wmkcErr_func_return(error, wmkcErr_OK, "wmkcSNC_init", "OK.");
 }
 
 //* ECB模式加密
