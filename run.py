@@ -16,8 +16,8 @@ class action:
 
     def init(self):
         if sys.platform == 'win32':
-            os.environ['PATH'] = os.environ['PATH'] + ';' + os.path.join(
-                'E:', 'Projects', '_Library_WMKC', 'includes', 'libpng')
+            os.environ['PATH'] += (';' + 'E:\\Projects\\_Library_WMKC\\includes\\libpng')
+            os.environ['PATH'] += (';' + 'E:\\Projects\\_Library_WMKC\\library')
 
         self.out_path = list(re.findall(r'(\w+)[/\\]+(\w+\.\w+)', self.in_path, re.S | re.I)[0])
         self.out_path[0] = os.path.join('misc', 'compiled')

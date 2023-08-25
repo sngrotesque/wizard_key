@@ -34,6 +34,25 @@ WMKC_OF((wmkc_obj **obj))
     wmkcErr_func_return(error, wmkcErr_OK, "wmkcObj_free", "OK.");
 }
 
+WMKC_PUBLIC(wmkcErr_obj) wmkcObj_reverse WMKC_OPEN_API
+WMKC_OF((wmkc_obj *obj))
+{
+    wmkcErr_obj error;
+    if(!obj) {
+        wmkcErr_func_return(error, wmkcErr_ErrNULL, "wmkcObj_reverse", "obj is NULL.");
+    }
+    wmkcFast wmkcByte swap;
+    wmkcFast wmkcSize i;
+
+    for(i = 0; i < (obj->size >> 1); ++i) {
+        swap = obj->buf[i];
+        obj->buf[i] = obj->buf[obj->size - i - 1];
+        obj->buf[obj->size - i - 1] = swap;
+    }
+
+    wmkcErr_func_return(error, wmkcErr_OK, "wmkcObj_reverse", "OK.");
+}
+
 WMKC_PUBLIC(wmkcErr_obj) wmkcObj_append WMKC_OPEN_API
 WMKC_OF((wmkc_obj *obj, wmkcCSTR content))
 {
