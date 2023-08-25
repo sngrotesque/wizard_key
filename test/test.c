@@ -4,30 +4,27 @@
 // #include <wmkc_sort.c>
 // #include <crypto/snc_412.c>
 
-// #include <network/wmkc_chunk.c>
-// #include <network/wmkc_net.c>
-// #include <network/wmkc_ssl.c>
-// #include <crypto/snc.c>
-// #include <wmkc_binascii.c>
-// #include <wmkc_memory.c>
-// #include <wmkc_common.c>
-// #include <wmkc_base64.c>
-// #include <wmkc_object.c>
-// #include <wmkc_random.c>
-// #include <wmkc_stream.c>
-// #include <wmkc_struct.c>
-// #include <wmkc_basic.c>
-// #include <wmkc_coder.c>
-// #include <wmkc_file.c>
-// #include <wmkc_hash.c>
-// #include <wmkc_time.c>
-// #include <wmkc_math.c>
-// #include <wmkc_misc.c>
-// #include <wmkc_img.c>
-// #include <wmkc_pad.c>
-
-#include <crypto/snc.h>
-#include <wmkc_binascii.h>
+#include <network/wmkc_chunk.c>
+#include <network/wmkc_net.c>
+#include <network/wmkc_ssl.c>
+#include <crypto/snc.c>
+#include <wmkc_binascii.c>
+#include <wmkc_memory.c>
+#include <wmkc_common.c>
+#include <wmkc_base64.c>
+#include <wmkc_object.c>
+#include <wmkc_random.c>
+#include <wmkc_stream.c>
+#include <wmkc_struct.c>
+#include <wmkc_basic.c>
+#include <wmkc_coder.c>
+#include <wmkc_file.c>
+#include <wmkc_hash.c>
+#include <wmkc_time.c>
+#include <wmkc_math.c>
+#include <wmkc_misc.c>
+#include <wmkc_img.c>
+#include <wmkc_pad.c>
 
 #if 1
 WMKC_PRIVATE_CONST(wmkcByte) SNC_TEST_KEY[96] = {

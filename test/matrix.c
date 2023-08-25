@@ -1,21 +1,20 @@
 #include <wmkc_conf.h>
 #include <wmkc_random.h>
 
-#define ID_TIMER    1
+#define ID_TIMER   1
 #define STRMAXLEN  25 //一个显示列的最大长度
 #define STRMINLEN  8  //一个显示列的最小长度
 
 LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
 
-typedef struct tagCharChain //整个当作屏幕的一个显示列,这是个双向列表
-{
+//整个当作屏幕的一个显示列,这是个双向列表
+typedef struct tagCharChain {
     struct tagCharChain *prev; //链表的前个元素
     struct tagCharChain *next; //链表的后个元素
-    TCHAR  ch;                 //一个显示列中的一个字符
+    TCHAR  ch; //一个显示列中的一个字符
 } CharChain, *pCharChain;
 
-typedef struct tagCharColumn
-{
+typedef struct tagCharColumn {
     CharChain *head;
     CharChain *current;
     CharChain *point;
@@ -68,9 +67,7 @@ int main(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine, int iCmdS
 
 TCHAR randomChar() //随机字符产生函数
 {
-    // return (TCHAR)wmkcRandom_randint(0x4e00, 0xffff);
-    return (TCHAR)0x6211;
-    // return (TCHAR)(rand() % (126 - 33) + 33); //33到126之间
+    return (TCHAR)(rand() % (126 - 33) + 33); //33到126之间
 }
 
 int init(CharColumn* cc, int cyScreen, int column_x) //初始化
