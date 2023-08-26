@@ -18,15 +18,28 @@
 // 判断是否是64位系统，不是的话，不进行支持。
 #if defined(_WIN64) || (__SIZEOF_SIZE_T__ == 8) || defined(__x86_64__) || defined(__LP64__)
 //  如果是Linux或Windows操作系统，那么支持。否则不支持。
-#if defined(__linux) || defined(__linux__)
+#if defined(__linux)
+#   if __BYTE_ORDER__
+#       if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
+#           define WMKC_LE_DIAN true // 小端序
+#       elif __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
+#           define WMKC_LE_DIAN false // 大端序
+#       else
+#           error "Endian judgment error."
+#       endif
+#   else
+#       error "Endian judgment error."
+#   endif
 #   define WMKC_PLATFORM_LINUX
 #   define WMKC_SUPPORT true
 #elif defined(_WIN32) || defined(_WIN64)
 #   define WMKC_PLATFORM_WINOS
 #   define WMKC_SUPPORT true
+#   define WMKC_LE_DIAN true // 小端序
 #else
 #   define WMKC_SUPPORT false
-#endif // #if defined(__linux) || defined(__linux__)
+#   warning "This library may not support the computer you are using."
+#endif // #if defined(__linux)
 
 // 定义版本号
 #define WMKC_VERSION     "v6.4.0-dev"
@@ -67,5 +80,6 @@ typedef const char *              wmkcCSTR;   // 固定字符串类型
 
 #else
 #   define WMKC_SUPPORT false
-#endif
-#endif // #ifndef WMKC_CONF__
+#   warning "This library may not support the computer you are using."
+#endif // #if defined(_WIN64) || (__SIZEOF_SIZE_T__ == 8) || defined(__x86_64__) || defined(__LP64__)
+#endif // #ifndef WMKC

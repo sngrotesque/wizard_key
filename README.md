@@ -31,9 +31,6 @@
 > 此库的所有更新必须写在更新日志中。
  -  关于第三方库：
 > 如果使用了任何第三方库，请在对应的文件中列出，并在此文档的`特别鸣谢`中指出库的名称与对应的链接。
- -  关于C++：
-> 此库不应包含任何C++代码。除非非常必要，否则没有商量余地。  
-> 如果你要问我对于C++的态度，请参考[Linus Torvalds(Linux之父)](https://medium.com/nerd-for-tech/linus-torvalds-c-is-really-a-terrible-language-2248b839bee3)的态度。
  -  关于定义与实现：
 ```c
 // 所有函数内部都不应使用static将变量声明为静态变量。

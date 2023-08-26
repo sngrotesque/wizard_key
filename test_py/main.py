@@ -25,13 +25,3 @@ from snpy import *
 
 
 
-
-
-
-
-
-
-
-
-
-
