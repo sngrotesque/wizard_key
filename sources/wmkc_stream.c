@@ -1,80 +1,80 @@
 #include <wmkc_stream.h>
 
-/**
- * @brief 此函数将参数二与参数三拼接
- * @authors SN-Grotesque
- * 
- * 此函数将参数二与参数三拼接，会自动申请内存空间。
- * 
- * @note 无
- * @param dst 指针，指向结果指针的地址。
- * @param left 指针，指向左侧内容的wmkc对象的地址。
- * @param right 指针，指向右侧内容的wmkc对象的地址。
- * @return 返回一个wmkcErr对象，code为0代表无错误，如果为
- *         其他值，那么需检查message与code。
-*/
+// /**
+//  * @brief 此函数将参数二与参数三拼接
+//  * @authors SN-Grotesque
+//  * 
+//  * 此函数将参数二与参数三拼接，会自动申请内存空间。
+//  * 
+//  * @note 无
+//  * @param dst 指针，指向结果指针的地址。
+//  * @param left 指针，指向左侧内容的wmkc对象的地址。
+//  * @param right 指针，指向右侧内容的wmkc对象的地址。
+//  * @return 返回一个wmkcErr对象，code为0代表无错误，如果为
+//  *         其他值，那么需检查message与code。
+// */
 // WMKC_PUBLIC(wmkcErr_obj) wmkcStream_Splicing WMKC_OPEN_API
 // WMKC_OF((wmkc_obj **dst, wmkc_obj *left, wmkc_obj *right))
 // {
 //     wmkcErr_obj error;
 //     if(!dst || !left || !right) {
-//         wmkcErr_return(error, wmkcErr_ErrNULL,
-//             "wmkcStream_Splicing: dst or left or right is NULL.");
+//         wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcStream_Splicing",
+//             "dst or left or right is NULL.");
 //     }
 
 //     (*dst)->size = (left->size + right->size);
 //     if(!(*dst)->size) {
-//         wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcStream_Splicing: dst->size is zero.");
+//         wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcStream_Splicing", "dst->size is zero.");
 //     }
 
-//     wmkcObject_new(dst, (left->size + right->size) + 1, true);
+//     wmkcObj_new(dst, (left->size + right->size) + 1, true);
 
 //     memcpy((*dst)->buf, left->buf, left->size);
 //     memcpy((*dst)->buf + left->size, right->buf, right->size);
 
-//     wmkcErr_return(error, wmkcErr_OK, "OK.");
+//     wmkcErr_return(error, wmkcErr_OK, "wmkcStream_Splicing", "OK.");
 // }
 
-/**
- * @brief 此函数将内容进行切片
- * @authors SN-Grotesque
- * 
- * 此函数将内容进行切片，会自动申请内存空间。
- * 
- * @note 无
- * @param dst 指针，指向结果指针的地址。
- * @param src 指针，指向源内容wmkc对象的地址。
- * @param start 这是起始下标，用于标注切片的起始位置。
- * @param end 这是末尾下标，用于标注切片的末尾位置。
- * @return 返回一个wmkcErr对象，code为0代表无错误，如果为
- *         其他值，那么需检查message与code。
-*/
+// /**
+//  * @brief 此函数将内容进行切片
+//  * @authors SN-Grotesque
+//  * 
+//  * 此函数将内容进行切片，会自动申请内存空间。
+//  * 
+//  * @note 无
+//  * @param dst 指针，指向结果指针的地址。
+//  * @param src 指针，指向源内容wmkc对象的地址。
+//  * @param start 这是起始下标，用于标注切片的起始位置。
+//  * @param end 这是末尾下标，用于标注切片的末尾位置。
+//  * @return 返回一个wmkcErr对象，code为0代表无错误，如果为
+//  *         其他值，那么需检查message与code。
+// */
 // WMKC_PUBLIC(wmkcErr_obj) wmkcStream_Slice WMKC_OPEN_API
 // WMKC_OF((wmkc_obj **dst, wmkc_obj *src, wmkcSSize start, wmkcSSize end))
 // {
 //     wmkcErr_obj error;
 //     if(end < 0) {
 //         if((end = src->size + end) > src->size) {
-//             wmkcErr_return(error, wmkcErr_ErrOutRange,
-//                 "wmkcStream_Slice: The range at the end is too large.");
+//             wmkcErr_return(error, wmkcErr_ErrOutRange, "wmkcStream_Slice",
+//                 "The range at the end is too large.");
 //         }
 //     } else if(end > src->size) {
-//         wmkcErr_return(error, wmkcErr_ErrOutRange,
-//             "wmkcStream_Slice: The range at the end is too large.");
+//         wmkcErr_return(error, wmkcErr_ErrOutRange, "wmkcStream_Slice",
+//             "The range at the end is too large.");
 //     }
 //     if(start < 0) {
 //         if((start = src->size + start) > src->size) {
-//             wmkcErr_return(error, wmkcErr_ErrOutRange,
-//                 "wmkcStream_Slice: The range at the start is too large.");
+//             wmkcErr_return(error, wmkcErr_ErrOutRange, "wmkcStream_Slice",
+//                 "The range at the start is too large.");
 //         }
 //     } else if(start > src->size) {
-//         wmkcErr_return(error, wmkcErr_ErrOutRange,
-//             "wmkcStream_Slice: The range at the start is too large.");
+//         wmkcErr_return(error, wmkcErr_ErrOutRange, "wmkcStream_Slice",
+//             "The range at the start is too large.");
 //     }
 //     if(start > end) {
 //         if(end) {
-//         wmkcErr_return(error, wmkcErr_ErrInvalidRange,
-//             "wmkcStream_Slice: The starting subscript exceeds the ending subscript.");
+//         wmkcErr_return(error, wmkcErr_ErrInvalidRange, "wmkcStream_Slice",
+//             "The starting subscript exceeds the ending subscript.");
 //         } else {
 //             end = src->size;
 //         }
@@ -86,7 +86,7 @@
 
 //     memcpy((*dst)->buf, src->buf + start, (*dst)->size);
 
-//     wmkcErr_return(error, wmkcErr_OK, "OK.");
+//     wmkcErr_return(error, wmkcErr_OK, "wmkcStream_Slice", "OK.");
 // }
 
 /**
@@ -106,7 +106,7 @@ WMKC_OF((wmkcByte **dst, wmkcSize src))
 {
     wmkcErr_obj error;
     if(!dst || !src) {
-        wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcStream_Binary: dst or src is NULL.");
+        wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcStream_Binary", "dst or src is NULL.");
     }
     wmkcSize temp;
     wmkcSize size;
@@ -115,8 +115,8 @@ WMKC_OF((wmkcByte **dst, wmkcSize src))
     for(temp = src, size = 0; temp; size += 8, temp >>= 8);
 
     if(!wmkcMem_new(wmkcByte *, (*dst), size + 1)) {
-        wmkcErr_return(error, wmkcErr_ErrMemory,
-            "wmkcStream_Binary: Failed to allocate memory for (*dst).");
+        wmkcErr_return(error, wmkcErr_ErrMemory, "wmkcStream_Binary",
+            "Failed to allocate memory for (*dst).");
     }
     (*dst)[size] = 0x00;
     memset((*dst), 0x30, size);
@@ -126,7 +126,7 @@ WMKC_OF((wmkcByte **dst, wmkcSize src))
     }
 
     wmkc_reverse((*dst), size, 1);
-    wmkcErr_return(error, wmkcErr_OK, "OK.");
+    wmkcErr_return(error, wmkcErr_OK, "wmkcStream_Binary", "OK.");
 }
 
 /**

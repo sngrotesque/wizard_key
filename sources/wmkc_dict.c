@@ -5,7 +5,7 @@ WMKC_OF((wmkcDict_obj *obj, wmkcChar *string, wmkcChar delimiter))
 {
     wmkcErr_obj error;
     if(!obj || !string) {
-        wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcDict_read: obj or string is NULL.");
+        wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcDict_read", "obj or string is NULL.");
     }
     wmkcChar *_key = wmkcNull;
     wmkcChar *_val = wmkcNull;
@@ -38,7 +38,7 @@ WMKC_OF((wmkcDict_obj *obj, wmkcChar *string, wmkcChar delimiter))
     wmkcMem_free(_val);
 
 done:
-    wmkcErr_return(error, wmkcErr_OK, "OK.");
+    wmkcErr_return(error, wmkcErr_OK, "wmkcDict_read", "OK.");
 }
 
 WMKC_PUBLIC(wmkcErr_obj) wmkcDict_new WMKC_OPEN_API
@@ -46,18 +46,18 @@ WMKC_OF((wmkcDict_obj **obj))
 {
     wmkcErr_obj error;
     if(!obj) {
-        wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcDict_read: obj is NULL.");
+        wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcDict_read", "obj is NULL.");
     }
     if(!wmkcMem_new(wmkcDict_obj *, (*obj), sizeof(wmkcDict_obj))) {
-        wmkcErr_return(error, wmkcErr_ErrMemory,
-            "wmkcDict_read: Failed to allocate memory for (*obj).");
+        wmkcErr_return(error, wmkcErr_ErrMemory, "wmkcDict_read",
+            "Failed to allocate memory for (*obj).");
     }
 
     (*obj)->key = wmkcNull;
     (*obj)->value = wmkcNull;
     (*obj)->delimiter = 0x00;
 
-    wmkcErr_return(error, wmkcErr_OK, "OK.");
+    wmkcErr_return(error, wmkcErr_OK, "wmkcDict_read", "OK.");
 }
 
 WMKC_PUBLIC(wmkcErr_obj) wmkcDict_free WMKC_OPEN_API
@@ -65,7 +65,7 @@ WMKC_OF((wmkcDict_obj **obj))
 {
     wmkcErr_obj error;
     if(!obj) {
-        wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcDict_read: obj is NULL.");
+        wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcDict_read", "obj is NULL.");
     }
 
     if((*obj)->key) {
@@ -76,5 +76,5 @@ WMKC_OF((wmkcDict_obj **obj))
     }
     wmkcMem_free((*obj));
 
-    wmkcErr_return(error, wmkcErr_OK, "OK.");
+    wmkcErr_return(error, wmkcErr_OK, "wmkcDict_read", "OK.");
 }

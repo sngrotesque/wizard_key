@@ -22,11 +22,11 @@ WMKC_OF((wmkcHash_obj **obj, wmkcSize size))
 
     (*obj)->hexdigest = wmkcNull;
     if(!wmkcMem_new(wmkcByte *, (*obj)->digest, size)) {
-        wmkcErr_return(error, wmkcErr_ErrMemory,
-            "_wmkcHash_init: Failed to allocate memory for (*obj)->digest.");
+        wmkcErr_return(error, wmkcErr_ErrMemory, "_wmkcHash_init",
+            "Failed to allocate memory for (*obj)->digest.");
     }
 
-    wmkcErr_return(error, wmkcErr_OK, "OK.");
+    wmkcErr_return(error, wmkcErr_OK, "_wmkcHash_init", "OK.");
 }
 
 /**
@@ -46,15 +46,15 @@ WMKC_OF((wmkcHash_obj **obj, wmkcHash_Type hashType))
 {
     wmkcErr_obj error;
     if(!obj) {
-        wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcHash_new: obj is NULL.");
+        wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcHash_new", "obj is NULL.");
     }
     if((wmkc_u32)hashType > 5) {
-        wmkcErr_return(error, wmkcErr_ErrType,
-            "wmkcHash_new: Wrong hashType, must be 0 to 5.");
+        wmkcErr_return(error, wmkcErr_ErrType, "wmkcHash_new",
+            "Wrong hashType, must be 0 to 5.");
     }
     if(!wmkcMem_new(wmkcHash_obj *, (*obj), sizeof(wmkcHash_obj))) {
-        wmkcErr_return(error, wmkcErr_ErrMemory,
-            "wmkcHash_new: Failed to allocate memory for (*obj).");
+        wmkcErr_return(error, wmkcErr_ErrMemory, "wmkcHash_new",
+            "Failed to allocate memory for (*obj).");
     }
 
     const EVP_MD *wmkcHash_EVP_Type[6] = {
@@ -71,7 +71,7 @@ WMKC_OF((wmkcHash_obj **obj, wmkcHash_Type hashType))
     error = _wmkcHash_init(obj, wmkcHash_SIZE[hashType]);
     if(error.code) return error;
 
-    wmkcErr_return(error, wmkcErr_OK, "OK.");
+    wmkcErr_return(error, wmkcErr_OK, "wmkcHash_new", "OK.");
 }
 
 /**
@@ -95,7 +95,7 @@ WMKC_OF((wmkcHash_obj *hash, wmkcByte *buf, wmkcSize size))
 {
     wmkcErr_obj error;
     if(!hash || !buf || !size) {
-        wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcHash: hash or buf or size is NULL.");
+        wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcHash", "hash or buf or size is NULL.");
     }
     EVP_MD_CTX *md_ctx = EVP_MD_CTX_new();
 
@@ -109,7 +109,7 @@ WMKC_OF((wmkcHash_obj *hash, wmkcByte *buf, wmkcSize size))
         return error;
     }
 
-    wmkcErr_return(error, wmkcErr_OK, "OK.");
+    wmkcErr_return(error, wmkcErr_OK, "wmkcHash", "OK.");
 }
 
 /**
@@ -133,8 +133,8 @@ WMKC_OF((wmkcHash_obj *hash, wmkcCSTR fn))
 {
     wmkcErr_obj error;
     if(!hash || !fn) {
-        wmkcErr_return(error, wmkcErr_ErrNULL,
-            "wmkcHash_file: hash or fn is NULL.");
+        wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcHash_file",
+            "hash or fn is NULL.");
     }
     EVP_MD_CTX *md_ctx = wmkcNull;
     wmkcFile_obj *file = wmkcNull;
@@ -142,8 +142,8 @@ WMKC_OF((wmkcHash_obj *hash, wmkcCSTR fn))
     wmkcSize index;
 
     if(!wmkcMem_new(wmkcByte *, buf, SN_HASH_BLOCKLEN)) {
-        wmkcErr_return(error, wmkcErr_ErrMemory,
-            "wmkcHash_file: Failed to allocate memory for buf.");
+        wmkcErr_return(error, wmkcErr_ErrMemory, "wmkcHash_file",
+            "Failed to allocate memory for buf.");
     }
 
     error = wmkcFile_open(&file, fn, "rb");
@@ -175,7 +175,7 @@ WMKC_OF((wmkcHash_obj *hash, wmkcCSTR fn))
 
     error = wmkcFile_close(&file);
     if(error.code) return error;
-    wmkcErr_return(error, wmkcErr_OK, "OK.");
+    wmkcErr_return(error, wmkcErr_OK, "wmkcHash_file", "OK.");
 }
 
 /**
@@ -194,12 +194,12 @@ WMKC_OF((wmkcHash_obj **obj))
 {
     wmkcErr_obj error;
     if(!obj) {
-        wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcHash_free: obj is NULL.");
+        wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcHash_free", "obj is NULL.");
     }
     if((*obj)->hexdigest) {
         wmkcMem_free((*obj)->hexdigest);
     }
     wmkcMem_free((*obj)->digest);
     wmkcMem_free((*obj));
-    wmkcErr_return(error, wmkcErr_OK, "OK.");
+    wmkcErr_return(error, wmkcErr_OK, "wmkcHash_free", "OK.");
 }

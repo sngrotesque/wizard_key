@@ -15,8 +15,8 @@ WMKC_OF((wmkcChar **dst, wmkcChar *src, wmkcChar *code_string))
     if(error.code) return error;
 
     if(!wmkcMem_new(wmkcChar *, (*dst), dst_size + 2)) {
-        wmkcErr_return(error, wmkcErr_ErrMemory,
-            "wmkcCoder_convert: Failed to allocate memory for (*dst).");
+        wmkcErr_return(error, wmkcErr_ErrMemory, "wmkcCoder_convert",
+            "Failed to allocate memory for (*dst).");
     }
     dst_ptr = (*dst);
     dst_ptr[dst_size] = dst_ptr[dst_size + 1] = 0x00;
@@ -24,17 +24,19 @@ WMKC_OF((wmkcChar **dst, wmkcChar *src, wmkcChar *code_string))
 
     iconv_t cd = iconv_open(tocode, fromcode);
     if(cd == (iconv_t)-1) {
-        wmkcErr_return(error, wmkcErr_Err32, "wmkcCoder_convert: iconv_open failed.");
+        wmkcErr_return(error, wmkcErr_Err32, "wmkcCoder_convert",
+            "iconv_open failed.");
     }
 
     wmkcSize rc = iconv(cd, &src_ptr, &src_size, &dst_ptr, &dst_size);
     if(rc == -1) {
-        wmkcErr_return(error, wmkcErr_Err32, "wmkcCoder_convert: iconv failed.");
+        wmkcErr_return(error, wmkcErr_Err32, "wmkcCoder_convert",
+            "iconv failed.");
     }
 
     iconv_close(cd);
     wmkcMem_free(tocode);
     wmkcMem_free(fromcode);
 
-    wmkcErr_return(error, wmkcErr_OK, "OK.");
+    wmkcErr_return(error, wmkcErr_OK, "wmkcCoder_convert", "OK.");
 }

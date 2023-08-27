@@ -14,19 +14,19 @@ WMKC_OF((wmkc_u32 *width, wmkc_u32 *height))
 {
     wmkcErr_obj error;
     if(!width || !height) {
-        wmkcErr_return(error, wmkcErr_ErrNULL,
-            "wmkcWinapi_getScreenWidthHeight: width or height is NULL.");
+        wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcWinapi_getScreenWidthHeight",
+            "width or height is NULL.");
     }
 
     *width = GetSystemMetrics(SM_CXSCREEN);
     *height =  GetSystemMetrics(SM_CYSCREEN);
 
     if(!(*width) || !(*height)) {
-        wmkcErr_return(error, wmkcErr_ErrSysFunc,
-            "wmkcWinapi_getScreenWidthHeight: GetSystemMetrics function returned an error code when called.");
+        wmkcErr_return(error, wmkcErr_ErrSysFunc, "wmkcWinapi_getScreenWidthHeight",
+            "GetSystemMetrics function returned an error code when called.");
     }
 
-    wmkcErr_return(error, wmkcErr_OK, "OK.");
+    wmkcErr_return(error, wmkcErr_OK, "wmkcWinapi_getScreenWidthHeight", "OK.");
 }
 
 /**
@@ -43,16 +43,16 @@ WMKC_OF((LPSTR name, LPDWORD size))
 {
     wmkcErr_obj error;
     if(!name) {
-        wmkcErr_return(error, wmkcErr_ErrNULL,
-            "wmkcWinapi_getUserName: name is NULL.");
+        wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcWinapi_getUserName",
+            "name is NULL.");
     }
 
     if(!GetUserNameA(name, size)) {
-        wmkcErr_return(error, wmkcErr_ErrSysFunc,
-            "wmkcWinapi_getUserName: GetUserNameA function returned an error code when called.");
+        wmkcErr_return(error, wmkcErr_ErrSysFunc, "wmkcWinapi_getUserName",
+            "GetUserNameA function returned an error code when called.");
     }
 
-    wmkcErr_return(error, wmkcErr_OK, "OK.");
+    wmkcErr_return(error, wmkcErr_OK, "wmkcWinapi_getUserName", "OK.");
 }
 
 /**
@@ -69,11 +69,11 @@ WMKC_OF((wmkc_u32 x, wmkc_u32 y))
 {
     wmkcErr_obj error;
     if(!SetCursorPos(x, y)) {
-        wmkcErr_return(error, wmkcErr_ErrSysFunc,
-            "wmkcWinapi_setCursorPos: SetCursorPos function returned an error code when called.");
+        wmkcErr_return(error, wmkcErr_ErrSysFunc, "wmkcWinapi_setCursorPos",
+            "SetCursorPos function returned an error code when called.");
     }
 
-    wmkcErr_return(error, wmkcErr_OK, "OK.");
+    wmkcErr_return(error, wmkcErr_OK, "wmkcWinapi_setCursorPos", "OK.");
 }
 
 /**
@@ -89,13 +89,13 @@ WMKC_OF((LPWSTR path))
 {
     wmkcErr_obj error;
     if(!path) {
-        wmkcErr_return(error, wmkcErr_ErrNULL,
-            "wmkcWinapi_getUserName: path is NULL.");
+        wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcWinapi_getUserName",
+            "path is NULL.");
     }
     if(!SystemParametersInfoW(SPI_SETDESKWALLPAPER, 0, path, SPIF_UPDATEINIFILE | SPIF_SENDCHANGE)) {
-        wmkcErr_return(error, wmkcErr_ErrSysFunc,
-            "wmkcWinapi_setDesktopWallpaper: SystemParametersInfoW function returned an error code when called.");
+        wmkcErr_return(error, wmkcErr_ErrSysFunc, "wmkcWinapi_setDesktopWallpaper",
+            "SystemParametersInfoW function returned an error code when called.");
     }
 
-    wmkcErr_return(error, wmkcErr_OK, "OK.");
+    wmkcErr_return(error, wmkcErr_OK, "wmkcWinapi_setDesktopWallpaper", "OK.");
 }

@@ -6,19 +6,19 @@ WMKC_OF((wmkcRsa_obj **obj))
 {
     wmkcErr_obj error;
     if(!obj) {
-        wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcRsa_new: obj is NULL.");
+        wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcRsa_new", "obj is NULL.");
     }
     if(!wmkcMem_new(wmkcRsa_obj *, (*obj), sizeof(wmkcRsa_obj))) {
-        wmkcErr_return(error, wmkcErr_ErrMemory, "wmkcRsa_new: "
+        wmkcErr_return(error, wmkcErr_ErrMemory, "wmkcRsa_new",
             "Failed to allocate memory for (*obj).");
     }
 
     if(!wmkcMem_new(wmkcRsa_pk_obj *, (*obj)->pub, sizeof(wmkcRsa_pk_obj))) {
-        wmkcErr_return(error, wmkcErr_ErrMemory, "wmkcRsa_new: "
+        wmkcErr_return(error, wmkcErr_ErrMemory, "wmkcRsa_new",
             "Failed to allocate memory for (*obj)->pub.");
     }
     if(!wmkcMem_new(wmkcRsa_sk_obj *, (*obj)->pri, sizeof(wmkcRsa_sk_obj))) {
-        wmkcErr_return(error, wmkcErr_ErrMemory, "wmkcRsa_new: "
+        wmkcErr_return(error, wmkcErr_ErrMemory, "wmkcRsa_new",
             "Failed to allocate memory for (*obj)->pri.");
     }
 
@@ -40,7 +40,7 @@ WMKC_OF((wmkcRsa_obj **obj))
     (*obj)->pri->q = wmkcNull;
     (*obj)->pri->p = wmkcNull;
 
-    wmkcErr_return(error, wmkcErr_OK, "OK.");
+    wmkcErr_return(error, wmkcErr_OK, "wmkcRsa_new", "OK.");
 }
 
 WMKC_PUBLIC(wmkcErr_obj) wmkcRsa_newkeys WMKC_OPEN_API
@@ -48,7 +48,7 @@ WMKC_OF((wmkcRsa_obj *obj, wmkc_u32 key_bit))
 {
     wmkcErr_obj error;
     if(!obj || !key_bit) {
-        wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcRsa_newkeys: "
+        wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcRsa_newkeys",
             "obj or key_bit is NULL.");
     }
 
@@ -59,24 +59,22 @@ WMKC_OF((wmkcRsa_obj *obj, wmkc_u32 key_bit))
     ctx = EVP_PKEY_CTX_new_id(EVP_PKEY_RSA, wmkcNull);
 
     if(EVP_PKEY_keygen_init(ctx) != 1) {
-        wmkcErr_return(error, wmkcErr_Err32, "wmkcRsa_newkeys: "
+        wmkcErr_return(error, wmkcErr_Err32, "wmkcRsa_newkeys",
             "Function EVP_PKEY_keygen_init returned an error code.");
     }
     if(EVP_PKEY_CTX_set_rsa_keygen_bits(ctx, key_bit) != 1) {
-        wmkcErr_return(error, wmkcErr_Err32, "wmkcRsa_newkeys: "
+        wmkcErr_return(error, wmkcErr_Err32, "wmkcRsa_newkeys",
             "Function EVP_PKEY_CTX_set_rsa_keygen_bits returned an error code.");
     }
 
     if(EVP_PKEY_keygen(ctx, &keyPair) != 1) {
-        wmkcErr_return(error, wmkcErr_Err32, "wmkcRsa_newkeys: "
+        wmkcErr_return(error, wmkcErr_Err32, "wmkcRsa_newkeys",
             "Function EVP_PKEY_keygen returned an error code.");
     }
     obj->pub->key = EVP_PKEY_new();
     obj->pri->key = EVP_PKEY_new();
 
-
-
-    wmkcErr_return(error, wmkcErr_OK, "OK.");
+    wmkcErr_return(error, wmkcErr_OK, "wmkcRsa_newkeys", "OK.");
 }
 #endif /* WMKC_RSA */
 

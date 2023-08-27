@@ -5,11 +5,11 @@ WMKC_OF((wmkcSSL_obj **obj))
 {
     wmkcErr_obj error;
     if(!obj) {
-        wmkcErr_func_return(error, wmkcErr_ErrNULL, "wmkcSSL_new", "obj is NULL.");
+        wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcSSL_new", "obj is NULL.");
     }
 
     if(!wmkcMem_new(wmkcSSL_obj *, (*obj), sizeof(wmkcSSL_obj))) {
-        wmkcErr_func_return(error, wmkcErr_ErrMemory, "wmkcSSL_new",
+        wmkcErr_return(error, wmkcErr_ErrMemory, "wmkcSSL_new",
             "Failed to allocate memory for (*obj).");
     }
 
@@ -17,7 +17,7 @@ WMKC_OF((wmkcSSL_obj **obj))
     (*obj)->ssl = wmkcNull;
     (*obj)->net = wmkcNull;
 
-    wmkcErr_func_return(error, wmkcErr_OK, "wmkcSSL_new", "OK.");
+    wmkcErr_return(error, wmkcErr_OK, "wmkcSSL_new", "OK.");
 }
 
 WMKC_PUBLIC(wmkcErr_obj) wmkcSSL_free WMKC_OPEN_API
@@ -25,7 +25,7 @@ WMKC_OF((wmkcSSL_obj **obj))
 {
     wmkcErr_obj error;
     if(!obj) {
-        wmkcErr_func_return(error, wmkcErr_ErrNULL, "wmkcSSL_free", "obj is NULL.");
+        wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcSSL_free", "obj is NULL.");
     }
 
     if((*obj)->ctx) {
@@ -41,7 +41,7 @@ WMKC_OF((wmkcSSL_obj **obj))
     }
     wmkcMem_free((*obj));
 
-    wmkcErr_func_return(error, wmkcErr_OK, "wmkcSSL_free", "OK.");
+    wmkcErr_return(error, wmkcErr_OK, "wmkcSSL_free", "OK.");
 }
 
 WMKC_PUBLIC(wmkcErr_obj) wmkcSSL_context WMKC_OPEN_API
@@ -49,7 +49,7 @@ WMKC_OF((wmkcSSL_obj *obj, const SSL_METHOD *_method))
 {
     wmkcErr_obj error;
     if(!obj || !_method) {
-        wmkcErr_func_return(error, wmkcErr_ErrNULL, "wmkcSSL_context",
+        wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcSSL_context",
             "obj or _method is NULL.");
     }
 
@@ -71,7 +71,7 @@ WMKC_OF((wmkcSSL_obj *obj, const SSL_METHOD *_method))
     options |= SSL_OP_SINGLE_ECDH_USE;
 #endif
     if(!(obj->ctx = SSL_CTX_new(_method))) {
-        wmkcErr_func_return(error, wmkcErr_Err32, "wmkcSSL_context",
+        wmkcErr_return(error, wmkcErr_Err32, "wmkcSSL_context",
             "Failed to establish SSL context.");
     }
 
@@ -84,11 +84,11 @@ WMKC_OF((wmkcSSL_obj *obj, const SSL_METHOD *_method))
 #undef SID_CTX
 
     if(!(obj->ssl = SSL_new(obj->ctx))) {
-        wmkcErr_func_return(error, wmkcErr_Err32, "wmkcSSL_context",
+        wmkcErr_return(error, wmkcErr_Err32, "wmkcSSL_context",
             "Failed to create a new SSL object.");
     }
 
-    wmkcErr_func_return(error, wmkcErr_OK, "wmkcSSL_context", "OK.");
+    wmkcErr_return(error, wmkcErr_OK, "wmkcSSL_context", "OK.");
 }
 
 WMKC_PUBLIC(wmkcErr_obj) wmkcSSL_wrap_socket WMKC_OPEN_API
@@ -96,7 +96,7 @@ WMKC_OF((wmkcSSL_obj *obj, wmkcNet_obj *socket_fd, wmkcCSTR server_hostname))
 {
     wmkcErr_obj error;
     if(!obj || !socket_fd || !server_hostname) {
-        wmkcErr_func_return(error, wmkcErr_ErrNULL, "wmkcSSL_wrap_socket",
+        wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcSSL_wrap_socket",
             "obj or socket_fd or server_hostname is NULL.");
     }
 
@@ -104,7 +104,7 @@ WMKC_OF((wmkcSSL_obj *obj, wmkcNet_obj *socket_fd, wmkcCSTR server_hostname))
     SSL_set_fd(obj->ssl, obj->net->sockfd);
     SSL_set_tlsext_host_name(obj->ssl, server_hostname);
 
-    wmkcErr_func_return(error, wmkcErr_OK, "wmkcSSL_wrap_socket", "OK.");
+    wmkcErr_return(error, wmkcErr_OK, "wmkcSSL_wrap_socket", "OK.");
 }
 
 WMKC_PUBLIC(wmkcErr_obj) wmkcSSL_settimeout WMKC_OPEN_API
@@ -112,7 +112,7 @@ WMKC_OF((wmkcSSL_obj *obj, double _val))
 {
     wmkcErr_obj error;
 
-    wmkcErr_func_return(error, wmkcErr_OK, "wmkcSSL_settimeout", "OK.");
+    wmkcErr_return(error, wmkcErr_OK, "wmkcSSL_settimeout", "OK.");
 }
 
 WMKC_PUBLIC(wmkcErr_obj) wmkcSSL_connect WMKC_OPEN_API
@@ -120,7 +120,7 @@ WMKC_OF((wmkcSSL_obj *obj, wmkcCSTR addr, wmkc_u16 port))
 {
     wmkcErr_obj error;
     if(!obj) {
-        wmkcErr_func_return(error, wmkcErr_ErrNULL, "wmkcSSL_connect", "obj is NULL.");
+        wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcSSL_connect", "obj is NULL.");
     }
 
     if((error = wmkcNet_connect(obj->net, addr, port)).code) {
@@ -128,7 +128,7 @@ WMKC_OF((wmkcSSL_obj *obj, wmkcCSTR addr, wmkc_u16 port))
     }
     SSL_connect(obj->ssl);
 
-    wmkcErr_func_return(error, wmkcErr_OK, "wmkcSSL_connect", "OK.");
+    wmkcErr_return(error, wmkcErr_OK, "wmkcSSL_connect", "OK.");
 }
 
 WMKC_PUBLIC(wmkcErr_obj) wmkcSSL_send WMKC_OPEN_API
@@ -136,15 +136,15 @@ WMKC_OF((wmkcSSL_obj *obj, wmkcNetBufT *content, socklen_t size))
 {
     wmkcErr_obj error;
     if(!obj) {
-        wmkcErr_func_return(error, wmkcErr_ErrNULL, "wmkcSSL_send", "obj is NULL.");
+        wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcSSL_send", "obj is NULL.");
     }
 
     if((obj->net->tSize = SSL_write(obj->ssl, content, size)) < 1) {
-        wmkcErr_func_return(error, wmkcErr_Err32, "wmkcSSL_send",
+        wmkcErr_return(error, wmkcErr_Err32, "wmkcSSL_send",
             "The socket failed to send data.");
     }
 
-    wmkcErr_func_return(error, wmkcErr_OK, "wmkcSSL_send", "OK.");
+    wmkcErr_return(error, wmkcErr_OK, "wmkcSSL_send", "OK.");
 }
 
 WMKC_PUBLIC(wmkcErr_obj) wmkcSSL_sendall WMKC_OPEN_API
@@ -152,7 +152,7 @@ WMKC_OF((wmkcSSL_obj *obj, wmkcNetBufT *content, wmkcSize size))
 {
     wmkcErr_obj error;
     if(!obj || !content || !size) {
-        wmkcErr_func_return(error, wmkcErr_ErrNULL, "wmkcSSL_sendall",
+        wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcSSL_sendall",
             "dst or content or size is NULL.");
     }
     wmkc_u32 retry_count; // 重试次数
@@ -183,7 +183,7 @@ WMKC_OF((wmkcSSL_obj *obj, wmkcNetBufT *content, wmkcSize size))
         content += obj->net->tSize;
     }
 
-    wmkcErr_func_return(error, wmkcErr_OK, "wmkcSSL_sendall", "OK.");
+    wmkcErr_return(error, wmkcErr_OK, "wmkcSSL_sendall", "OK.");
 }
 
 WMKC_PUBLIC(wmkcErr_obj) wmkcSSL_recv WMKC_OPEN_API
@@ -191,13 +191,13 @@ WMKC_OF((wmkcSSL_obj *obj, wmkcNetBufT *content, socklen_t size))
 {
     wmkcErr_obj error;
     if(!obj) {
-        wmkcErr_func_return(error, wmkcErr_ErrNULL, "wmkcSSL_recv", "obj is NULL.");
+        wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcSSL_recv", "obj is NULL.");
     }
 
     if((obj->net->tSize = SSL_read(obj->ssl, content, size)) < 1) {
-        wmkcErr_func_return(error, wmkcErr_Err32, "wmkcSSL_recv",
+        wmkcErr_return(error, wmkcErr_Err32, "wmkcSSL_recv",
             "The socket receiving data failed.");
     }
 
-    wmkcErr_func_return(error, wmkcErr_OK, "wmkcSSL_recv", "OK.");
+    wmkcErr_return(error, wmkcErr_OK, "wmkcSSL_recv", "OK.");
 }

@@ -108,12 +108,12 @@ WMKC_OF((wmkcCSTR format, wmkcByte *dst, wmkcSize src))
 {
     wmkcErr_obj error;
     if(!format || !dst || !src) {
-        wmkcErr_return(error, wmkcErr_ErrNULL,
-            "wmkcStruct_pack: format or dst or src is NULL");
+        wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcStruct_pack",
+            "format or dst or src is NULL");
     }
     if(!wmkcStruct_check_format(format)) {
-        wmkcErr_return(error, wmkcErr_ErrType,
-            "wmkcStruct_pack: Incorrect formatting symbol.");
+        wmkcErr_return(error, wmkcErr_ErrType, "wmkcStruct_pack",
+            "Incorrect formatting symbol.");
     }
     wmkcBool little_end = wmkcStruct_PlatformEnd();
     wmkcByte order  = format[0]; // 字节顺序
@@ -168,7 +168,7 @@ WMKC_OF((wmkcCSTR format, wmkcByte *dst, wmkcSize src))
         }
     }
 
-    wmkcErr_return(error, wmkcErr_OK, "OK.");
+    wmkcErr_return(error, wmkcErr_OK, "wmkcStruct_pack", "OK.");
 }
 
 /**
@@ -202,12 +202,12 @@ WMKC_OF((wmkcCSTR format, wmkcVoid *dst, wmkcByte *src))
     */
     wmkcErr_obj error;
     if(!format || !dst || !src) {
-        wmkcErr_return(error, wmkcErr_ErrNULL,
-            "wmkcStruct_unpack: format or dst or src is NULL");
+        wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcStruct_unpack",
+            "format or dst or src is NULL");
     }
     if(!wmkcStruct_check_format(format)) {
-        wmkcErr_return(error, wmkcErr_ErrType,
-            "wmkcStruct_unpack: Incorrect formatting symbol.");
+        wmkcErr_return(error, wmkcErr_ErrType, "wmkcStruct_unpack",
+            "Incorrect formatting symbol.");
     }
     wmkcBool little_end = wmkcStruct_PlatformEnd();
     wmkcByte order  = format[0]; // 字节顺序
@@ -222,7 +222,7 @@ WMKC_OF((wmkcCSTR format, wmkcVoid *dst, wmkcByte *src))
 
     wmkcByte *buf = wmkcNull;
     if(!wmkcMem_new(wmkcByte *, buf, size)) {
-        wmkcErr_return(error, wmkcErr_ErrMemory, "wmkcStruct_unpack: "
+        wmkcErr_return(error, wmkcErr_ErrMemory, "wmkcStruct_unpack",
             "Failed to allocate memory for buf.");
     }
     memcpy(buf, src, size);
@@ -270,5 +270,5 @@ WMKC_OF((wmkcCSTR format, wmkcVoid *dst, wmkcByte *src))
     memcpy(dst, buf, size);
     wmkcMem_free(buf);
 
-    wmkcErr_return(error, wmkcErr_OK, "OK.");
+    wmkcErr_return(error, wmkcErr_OK, "wmkcStruct_unpack", "OK.");
 }

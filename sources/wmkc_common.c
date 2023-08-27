@@ -5,8 +5,8 @@ WMKC_OF((wmkcVoid *buf, wmkcSize size, wmkc_u32 elementSize))
 {
     wmkcErr_obj error;
     if(!buf || !size || !elementSize) {
-        wmkcErr_return(error, wmkcErr_ErrNULL,
-            "wmkc_reverse: obj or size or elementSize is NULL.");
+        wmkcErr_return(error, wmkcErr_ErrNULL, "wmkc_reverse",
+            "obj or size or elementSize is NULL.");
     }
 
     wmkcSize i;
@@ -14,8 +14,8 @@ WMKC_OF((wmkcVoid *buf, wmkcSize size, wmkc_u32 elementSize))
     wmkcByte *buf_p = (wmkcByte *)buf;
 
     if(!wmkcMem_new(wmkcByte *, swap, elementSize)) {
-        wmkcErr_return(error, wmkcErr_ErrMemory,
-            "wmkc_reverse: Failed to allocate memory for swap.");
+        wmkcErr_return(error, wmkcErr_ErrMemory, "wmkc_reverse",
+            "Failed to allocate memory for swap.");
     }
 
     for(i = 0; i < size / 2; ++i) {
@@ -25,7 +25,7 @@ WMKC_OF((wmkcVoid *buf, wmkcSize size, wmkc_u32 elementSize))
     }
 
     wmkcMem_free(swap);
-    wmkcErr_return(error, wmkcErr_OK, "OK.");
+    wmkcErr_return(error, wmkcErr_OK, "wmkc_reverse", "OK.");
 }
 
 WMKC_PUBLIC(wmkcErr_obj) wmkc_split WMKC_OPEN_API
@@ -46,20 +46,20 @@ WMKC_OF((wmkcChar **key, wmkcChar **value, wmkcChar *string, wmkcChar symbol))
     }
 
     if(!signal) {
-        wmkcErr_return(error, wmkcErr_Err32,
-            "wmkc_split: The corresponding symbol was not found.");
+        wmkcErr_return(error, wmkcErr_Err32, "wmkc_split",
+            "The corresponding symbol was not found.");
     }
 
     keySize = index;
     valueSize = strlen(string + index + 1);
 
     if(!wmkcMem_new(wmkcChar *, (*key), keySize + 1)) {
-        wmkcErr_return(error, wmkcErr_ErrMemory,
-            "wmkc_split: Failed to allocate memory for (*key).");
+        wmkcErr_return(error, wmkcErr_ErrMemory, "wmkc_split",
+            "Failed to allocate memory for (*key).");
     }
     if(!wmkcMem_new(wmkcChar *, (*value), valueSize + 1)) {
-        wmkcErr_return(error, wmkcErr_ErrMemory,
-            "wmkc_split: Failed to allocate memory for (*value).");
+        wmkcErr_return(error, wmkcErr_ErrMemory, "wmkc_split",
+            "Failed to allocate memory for (*value).");
     }
     (*key)[keySize] = 0x00;
     (*value)[valueSize] = 0x00;
@@ -67,7 +67,7 @@ WMKC_OF((wmkcChar **key, wmkcChar **value, wmkcChar *string, wmkcChar symbol))
     memcpy((*key), string, keySize);
     memcpy((*value), string + keySize + 1, valueSize);
 
-    wmkcErr_return(error, wmkcErr_OK, "OK.");
+    wmkcErr_return(error, wmkcErr_OK, "wmkc_split", "OK.");
 }
 
 WMKC_PUBLIC(wmkcErr_obj) wmkc_scanf WMKC_OPEN_API
@@ -75,7 +75,8 @@ WMKC_OF((wmkcByte *buf, wmkcSize size))
 {
     wmkcErr_obj error;
     if(!buf || !size) {
-        wmkcErr_return(error, wmkcErr_ErrNULL, "wmkc_scanf: buf or size is NULL.");
+        wmkcErr_return(error, wmkcErr_ErrNULL, "wmkc_scanf",
+            "buf or size is NULL.");
     }
 
     for(wmkcSize x = 0; x < size; ++x) {
@@ -84,13 +85,12 @@ WMKC_OF((wmkcByte *buf, wmkcSize size))
             break;
         }
     }
-
-    fflush(stdin);
+    fflush(stdin); // 清空输入缓冲区
 
     if(!(*buf)) {
-        wmkcErr_return(error, wmkcErr_ErrNULL, "wmkc_scanf: buf is NULL.");
+        wmkcErr_return(error, wmkcErr_ErrNULL, "wmkc_scanf", "buf is NULL.");
     }
-    wmkcErr_return(error, wmkcErr_OK, "OK.");
+    wmkcErr_return(error, wmkcErr_OK, "wmkc_scanf", "OK.");
 }
 
 WMKC_PUBLIC(wmkcErr_obj) wmkc_trim WMKC_OPEN_API
@@ -98,7 +98,7 @@ WMKC_OF((wmkcChar **dst, wmkcChar *src, wmkcChar symbol))
 {
     wmkcErr_obj error;
     if(!dst || !src) {
-        wmkcErr_return(error, wmkcErr_ErrNULL, "wmkc_trim: dst or src is NULL.");
+        wmkcErr_return(error, wmkcErr_ErrNULL, "wmkc_trim", "dst or src is NULL.");
     }
 
     wmkcChar *end = wmkcNull;
@@ -107,8 +107,8 @@ WMKC_OF((wmkcChar **dst, wmkcChar *src, wmkcChar symbol))
     wmkcSize size;
 
     if(!swap) {
-        wmkcErr_return(error, wmkcErr_ErrMemory,
-            "wmkc_trim: Failed to allocate memory for swap.");
+        wmkcErr_return(error, wmkcErr_ErrMemory, "wmkc_trim",
+            "Failed to allocate memory for swap.");
     }
 
     if(*swap == symbol) {
@@ -125,13 +125,13 @@ WMKC_OF((wmkcChar **dst, wmkcChar *src, wmkcChar symbol))
         goto done;
     }
     if(!wmkcMem_new(wmkcChar *, (*dst), size + 1)) {
-        wmkcErr_return(error, wmkcErr_ErrMemory,
-            "wmkc_trim: Failed to allocate memory for (*dst).");
+        wmkcErr_return(error, wmkcErr_ErrMemory, "wmkc_trim",
+            "Failed to allocate memory for (*dst).");
     }
     memcpy((*dst), swap, size);
     (*dst)[size] = 0x00;
 
 done:
     wmkcMem_free(swap_p);
-    wmkcErr_return(error, wmkcErr_OK, "OK.");
+    wmkcErr_return(error, wmkcErr_OK, "wmkc_trim", "OK.");
 }

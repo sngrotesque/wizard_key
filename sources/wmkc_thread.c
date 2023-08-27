@@ -75,18 +75,18 @@ WMKC_OF((wmkcThread_obj **obj))
 {
     wmkcErr_obj error;
     if(!obj) {
-        wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcThread_new: obj is NULL.");
+        wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcThread_new", "obj is NULL.");
     }
     if(!wmkcMem_new(wmkcThread_obj *, (*obj), sizeof(wmkcThread_obj))) {
-        wmkcErr_return(error, wmkcErr_ErrMemory,
-            "wmkcThread_new: Failed to allocate memory for (*obj).");
+        wmkcErr_return(error, wmkcErr_ErrMemory, "wmkcThread_new",
+            "Failed to allocate memory for (*obj).");
     }
     if(!wmkcMem_new(wmkcThread_handle_obj *, (*obj)->handle, sizeof(wmkcThread_handle_obj))) {
-        wmkcErr_return(error, wmkcErr_ErrMemory,
-            "wmkcThread_new: Failed to allocate memory for (*obj)->handle.");
+        wmkcErr_return(error, wmkcErr_ErrMemory, "wmkcThread_new",
+            "Failed to allocate memory for (*obj)->handle.");
     }
 
-    wmkcErr_return(error, wmkcErr_OK, "OK.");
+    wmkcErr_return(error, wmkcErr_OK, "wmkcThread_new", "OK.");
 }
 
 WMKC_PUBLIC(wmkcErr_obj) wmkcThread_free WMKC_OPEN_API
@@ -94,7 +94,7 @@ WMKC_OF((wmkcThread_obj **obj))
 {
     wmkcErr_obj error;
     if(!obj) {
-        wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcThread_new: obj is NULL.");
+        wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcThread_free", "obj is NULL.");
     }
 
     if((*obj)->handle) {
@@ -102,7 +102,7 @@ WMKC_OF((wmkcThread_obj **obj))
     }
     (*obj)->args = wmkcNull;
 
-    wmkcErr_return(error, wmkcErr_OK, "OK.");
+    wmkcErr_return(error, wmkcErr_OK, "wmkcThread_free", "OK.");
 }
 
 WMKC_PUBLIC(wmkcErr_obj) wmkcThread_Thread WMKC_OPEN_API
@@ -110,15 +110,15 @@ WMKC_OF((wmkcThread_obj *obj, wmkcThreadFunc funcAddr, wmkcThreadParam funcArgs)
 {
     wmkcErr_obj error;
     if(!obj || !obj->handle) {
-        wmkcErr_return(error, wmkcErr_ErrNULL,
-            "wmkcThread_Thread: obj or obj->handle is NULL.");
+        wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcThread_Thread",
+            "obj or obj->handle is NULL.");
     }
     obj->args = funcArgs;
     if(!_wmkcThread_create(obj, funcAddr)) {
-        wmkcErr_return(error, wmkcErr_ThreadCreate,
-            "wmkcThread_Thread: Error creating obj.");
+        wmkcErr_return(error, wmkcErr_ThreadCreate, "wmkcThread_Thread",
+            "Error creating obj.");
     }
-    wmkcErr_return(error, wmkcErr_OK, "OK.");
+    wmkcErr_return(error, wmkcErr_OK, "wmkcThread_Thread", "OK.");
 }
 
 WMKC_PUBLIC(wmkcErr_obj) wmkcThread_join WMKC_OPEN_API
@@ -126,14 +126,14 @@ WMKC_OF((wmkcThread_obj *obj))
 {
     wmkcErr_obj error;
     if(!obj || !obj->handle) {
-        wmkcErr_return(error, wmkcErr_ErrNULL,
-            "wmkcThread_join: obj or obj->handle is NULL.");
+        wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcThread_join",
+            "obj or obj->handle is NULL.");
     }
     if(!_wmkcThread_join(obj)) {
-        wmkcErr_return(error, wmkcErr_ThreadJoin,
-            "wmkcThread_join: Thread blocking error.");
+        wmkcErr_return(error, wmkcErr_ThreadJoin, "wmkcThread_join",
+            "Thread blocking error.");
     }
-    wmkcErr_return(error, wmkcErr_OK, "OK.");
+    wmkcErr_return(error, wmkcErr_OK, "wmkcThread_join", "OK.");
 }
 
 WMKC_PUBLIC(wmkcErr_obj) wmkcThread_start WMKC_OPEN_API
@@ -141,13 +141,13 @@ WMKC_OF((wmkcThread_obj *obj))
 {
     wmkcErr_obj error;
     if(!obj || !obj->handle) {
-        wmkcErr_return(error, wmkcErr_ErrNULL,
-            "wmkcThread_start: obj or obj->handle is NULL.");
+        wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcThread_start",
+            "obj or obj->handle is NULL.");
     }
     if(!_wmkcThread_start(obj)) {
-        wmkcErr_return(error, wmkcErr_ThreadStart,
-            "wmkcThread_start: Thread startup error.");
+        wmkcErr_return(error, wmkcErr_ThreadStart, "wmkcThread_start",
+            "Thread startup error.");
     }
-    wmkcErr_return(error, wmkcErr_OK, "OK.");
+    wmkcErr_return(error, wmkcErr_OK, "wmkcThread_start", "OK.");
 }
 

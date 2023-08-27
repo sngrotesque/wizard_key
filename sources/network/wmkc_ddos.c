@@ -21,8 +21,8 @@ WMKC_OF((wmkcCSTR dstIP, wmkc_u16 dstPort, wmkcCSTR srcIP, wmkc_u16 srcPort, wmk
 {
     wmkcErr_obj error;
     if(!dstIP || !dstPort) {
-        wmkcErr_return(error, wmkcErr_ErrNULL,
-            "wmkcDDos_attack: dstIP or dstPort is NULL.");
+        wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcDDos_attack",
+            "dstIP or dstPort is NULL.");
     }
     wmkcRandom_seed();
     wmkcNetBufT packet[2048];
@@ -83,6 +83,6 @@ WMKC_OF((wmkcCSTR dstIP, wmkc_u16 dstPort, wmkcCSTR srcIP, wmkc_u16 srcPort, wmk
 
     // 关闭套接字
     close(sockfd);
-    wmkcErr_return(error, wmkcErr_OK, "OK.");
+    wmkcErr_return(error, wmkcErr_OK, "wmkcDDos_attack", "OK.");
 }
 #endif /* WMKC_DDOS */

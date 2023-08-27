@@ -5,12 +5,12 @@ WMKC_OF((wmkcImg_rgba_obj **rgb, wmkc_u32 width, wmkc_u32 height))
 {
     wmkcErr_obj error;
     if(!rgb || !width || !height) {
-        wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcImg_rgba_new: "
+        wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcImg_rgba_new",
             "rgb or width or height is NULL.");
     }
 
     if(!wmkcMem_new(wmkcImg_rgba_obj *, (*rgb), sizeof(wmkcImg_rgba_obj))) {
-        wmkcErr_return(error, wmkcErr_ErrMemory, "wmkcImg_rgba_new: "
+        wmkcErr_return(error, wmkcErr_ErrMemory, "wmkcImg_rgba_new",
             "Failed to allocate memory for (*rgb).");
     }
     (*rgb)->width = width;
@@ -20,12 +20,12 @@ WMKC_OF((wmkcImg_rgba_obj **rgb, wmkc_u32 width, wmkc_u32 height))
 
     if(!wmkcMem_new(wmkcImg_rgba *, (*rgb)->rgb, memory_size)) {
         wmkcMem_free((*rgb));
-        wmkcErr_return(error, wmkcErr_ErrMemory, "wmkcImg_rgba_new: "
+        wmkcErr_return(error, wmkcErr_ErrMemory, "wmkcImg_rgba_new",
             "Failed to allocate memory for (*rgb)->rgb.");
     }
     wmkcMem_zero((*rgb)->rgb, memory_size);
 
-    wmkcErr_return(error, wmkcErr_OK, "OK.");
+    wmkcErr_return(error, wmkcErr_OK, "wmkcImg_rgba_new", "OK.");
 }
 
 WMKC_PUBLIC(wmkcVoid) wmkcImg_rgba_set_pixel WMKC_OPEN_API
@@ -51,7 +51,7 @@ WMKC_OF((wmkcImg_png_chunk_obj **chunk))
 {
     wmkcErr_obj error;
     if(!chunk) {
-        wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcImg_png_chunk_free: chunk is NULL.");
+        wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcImg_png_chunk_free", "chunk is NULL.");
     }
     if((*chunk)->data) {
         wmkcMem_free((*chunk)->data);
@@ -65,13 +65,13 @@ WMKC_OF((wmkcImg_png_obj **chunk))
 {
     wmkcErr_obj error;
     if(!chunk) {
-        wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcImg_png_free: chunk is NULL.");
+        wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcImg_png_free", "chunk is NULL.");
     }
     if((*chunk)->data) {
         wmkcMem_free((*chunk)->data);
     }
     wmkcMem_free((*chunk));
-    wmkcErr_return(error, wmkcErr_OK, "OK.");
+    wmkcErr_return(error, wmkcErr_OK, "wmkcImg_png_free", "OK.");
 }
 
 WMKC_PUBLIC(wmkcErr_obj) wmkcImg_png_setCrc32 WMKC_OPEN_API
@@ -82,14 +82,14 @@ WMKC_OF((wmkcImg_png_obj *chunk))
     */
     wmkcErr_obj error;
     if(!chunk || !chunk->data) {
-        wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcImg_png_setCrc32: "
+        wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcImg_png_setCrc32",
             "chunk or chunk->data is NULL.");
     }
     wmkc_u32 chunk_total_size = sizeof(chunk->name) + chunk->size_n;
     wmkcByte *chunk_total = wmkcNull;
 
     if(!wmkcMem_new(wmkcByte *, chunk_total, chunk_total_size)) {
-        wmkcErr_return(error, wmkcErr_ErrMemory, "wmkcImg_png_setCrc32: "
+        wmkcErr_return(error, wmkcErr_ErrMemory, "wmkcImg_png_setCrc32",
             "Failed to allocate memory for (*chunk).");
     }
 
@@ -100,7 +100,7 @@ WMKC_OF((wmkcImg_png_obj *chunk))
     wmkcStruct_pack(">I", chunk->crc, chunk->crc_n);
 
     wmkcMem_free(chunk_total);
-    wmkcErr_return(error, wmkcErr_OK, "OK.");
+    wmkcErr_return(error, wmkcErr_OK, "wmkcImg_png_setCrc32", "OK.");
 }
 
 WMKC_PUBLIC(wmkcErr_obj) wmkcImg_png_setIHDR WMKC_OPEN_API
@@ -114,20 +114,20 @@ WMKC_OF((wmkcImg_png_obj **chunk,
 {
     wmkcErr_obj error;
     if(!chunk || !width || !height) {
-        wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcImg_png_setIHDR: "
+        wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcImg_png_setIHDR",
             "chunk or width or height is NULL.");
     }
 
     // 为chunk对象申请内存空间和初始化
     if(!wmkcMem_new(wmkcImg_png_obj *, (*chunk), sizeof(wmkcImg_png_obj))) {
-        wmkcErr_return(error, wmkcErr_ErrMemory, "wmkcImg_png_setIHDR: "
+        wmkcErr_return(error, wmkcErr_ErrMemory, "wmkcImg_png_setIHDR",
             "Failed to allocate memory for (*chunk).");
     }
     wmkcMem_zero((*chunk), sizeof(wmkcImg_png_obj));
 
     // 为chunk对象的块申请内存空间
     if(!wmkcMem_new(wmkcByte *, (*chunk)->data, ((*chunk)->size_n = 0x0d))) {
-        wmkcErr_return(error, wmkcErr_ErrMemory, "wmkcImg_png_setIHDR: "
+        wmkcErr_return(error, wmkcErr_ErrMemory, "wmkcImg_png_setIHDR",
             "Failed to allocate memory for (*chunk)->data.");
     }
     wmkcMem_zero((*chunk)->data, (*chunk)->size_n);
@@ -145,7 +145,7 @@ WMKC_OF((wmkcImg_png_obj **chunk,
 
     wmkcImg_png_setCrc32((*chunk)); // 获取CRC32校验值
 
-    wmkcErr_return(error, wmkcErr_OK, "OK.");
+    wmkcErr_return(error, wmkcErr_OK, "wmkcImg_png_setIHDR", "OK.");
 }
 
 WMKC_PUBLIC(wmkcErr_obj) wmkcImg_png_buildChunk WMKC_OPEN_API
@@ -153,12 +153,12 @@ WMKC_OF((wmkcImg_png_chunk_obj **chunk, wmkcImg_png_obj *png))
 {
     wmkcErr_obj error;
     if(!chunk || !png) {
-        wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcImg_png_buildChunk: "
+        wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcImg_png_buildChunk",
             "chunk or png is NULL.");
     }
 
     if(!wmkcMem_new(wmkcImg_png_chunk_obj *, (*chunk), sizeof(wmkcImg_png_chunk_obj))) {
-        wmkcErr_return(error, wmkcErr_Err32, "wmkcImg_png_buildChunk: "
+        wmkcErr_return(error, wmkcErr_Err32, "wmkcImg_png_buildChunk",
             "Failed to allocate memory for (*chunk).");
     }
 
@@ -166,7 +166,7 @@ WMKC_OF((wmkcImg_png_chunk_obj **chunk, wmkcImg_png_obj *png))
     // Size[4 Bytes] + Name[4 Bytes] + Data[... Bytes] + CRC[4 Bytes]
     (*chunk)->size = 4 + 4 + png->size_n + 4;
     if(!wmkcMem_new(wmkcByte *, (*chunk)->data, (*chunk)->size)) {
-        wmkcErr_return(error, wmkcErr_Err32, "wmkcImg_png_buildChunk: "
+        wmkcErr_return(error, wmkcErr_Err32, "wmkcImg_png_buildChunk",
             "Failed to allocate memory for (*chunk)->data.");
     }
 
@@ -175,6 +175,6 @@ WMKC_OF((wmkcImg_png_chunk_obj **chunk, wmkcImg_png_obj *png))
     memcpy((*chunk)->data + 8,               png->data, png->size_n);
     memcpy((*chunk)->data + 8 + png->size_n, png->crc,  sizeof(png->crc));
 
-    wmkcErr_return(error, wmkcErr_OK, "OK.");
+    wmkcErr_return(error, wmkcErr_OK, "wmkcImg_png_buildChunk", "OK.");
 }
 #endif /* WMKC_IMG_CUSTOMIZED_PNG */

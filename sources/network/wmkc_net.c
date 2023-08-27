@@ -12,150 +12,150 @@ WMKC_OF((wmkcCSTR funcName))
 
     switch(errCodeBySystem) {
         case WMKC_NET_ERR_EINTR:
-            wmkcErr_func_return(error, errCodeBySystem, funcName,
+            wmkcErr_return(error, errCodeBySystem, funcName,
                 "The call executed was truncated by the operating system.");
         case WMKC_NET_ERR_EACCES:
-            wmkcErr_func_return(error, errCodeBySystem, funcName,
+            wmkcErr_return(error, errCodeBySystem, funcName,
                 "Accessing sockets in an impermissible manner.");
         case WMKC_NET_ERR_EFAULT:
-            wmkcErr_func_return(error, errCodeBySystem, funcName,
+            wmkcErr_return(error, errCodeBySystem, funcName,
                 "The address points to the user's inaccessible address space.");
         case WMKC_NET_ERR_EINVAL:
-            wmkcErr_func_return(error, errCodeBySystem, funcName,
+            wmkcErr_return(error, errCodeBySystem, funcName,
                 "An invalid socket parameter was provided.");
         case WMKC_NET_ERR_EMFILE:
-            wmkcErr_func_return(error, errCodeBySystem, funcName,
+            wmkcErr_return(error, errCodeBySystem, funcName,
                 "Unable to provide sockets, the process's limit on the number of sockets has been reached.");
         case WMKC_NET_ERR_EISCONN:
-            wmkcErr_func_return(error, errCodeBySystem, funcName,
+            wmkcErr_return(error, errCodeBySystem, funcName,
                 "The socket has already been specified for connection.");
         case WMKC_NET_ERR_ENOBUFS:
-            wmkcErr_func_return(error, errCodeBySystem, funcName,
+            wmkcErr_return(error, errCodeBySystem, funcName,
                 "No buffer space provided.");
         case WMKC_NET_ERR_EALREADY:
-            wmkcErr_func_return(error, errCodeBySystem, funcName,
+            wmkcErr_return(error, errCodeBySystem, funcName,
                 "Another (TCP Fast Open) is executing or the socket is in non blocking mode.");
         case WMKC_NET_ERR_ENOTCONN:
-            wmkcErr_func_return(error, errCodeBySystem, funcName,
+            wmkcErr_return(error, errCodeBySystem, funcName,
                 "The socket is already (not) connected.");
         case WMKC_NET_ERR_EMSGSIZE:
-            wmkcErr_func_return(error, errCodeBySystem, funcName,
+            wmkcErr_return(error, errCodeBySystem, funcName,
                 "The message is greater than the limit supported by the transmission.");
         case WMKC_NET_ERR_ENOTSOCK:
-            wmkcErr_func_return(error, errCodeBySystem, funcName,
+            wmkcErr_return(error, errCodeBySystem, funcName,
                 "The descriptor is not a socket. :)");
         case WMKC_NET_ERR_ETIMEDOUT:
-            wmkcErr_func_return(error, errCodeBySystem, funcName,
+            wmkcErr_return(error, errCodeBySystem, funcName,
                 "The connection has been disconnected due to timeout.");
         case WMKC_NET_ERR_EPROTOTYPE:
-            wmkcErr_func_return(error, errCodeBySystem, funcName,
+            wmkcErr_return(error, errCodeBySystem, funcName,
                 "The socket type does not support this operation.");
         case WMKC_NET_ERR_EOPNOTSUPP:
-            wmkcErr_func_return(error, errCodeBySystem, funcName,
+            wmkcErr_return(error, errCodeBySystem, funcName,
                 "This socket is not connection oriented, or it is unidirectional.");
         case WMKC_NET_ERR_EADDRINUSE:
-            wmkcErr_func_return(error, errCodeBySystem, funcName,
+            wmkcErr_return(error, errCodeBySystem, funcName,
                 "The address or port is already (not) in use.");
         case WMKC_NET_ERR_ECONNRESET:
-            wmkcErr_func_return(error, errCodeBySystem, funcName,
+            wmkcErr_return(error, errCodeBySystem, funcName,
                 "Connection is reset");
         case WMKC_NET_ERR_ENETUNREACH:
-            wmkcErr_func_return(error, errCodeBySystem, funcName,
+            wmkcErr_return(error, errCodeBySystem, funcName,
                 "The network is not available.");
         case WMKC_NET_ERR_EWOULDBLOCK:
-            wmkcErr_func_return(error, errCodeBySystem, funcName,
+            wmkcErr_return(error, errCodeBySystem, funcName,
                 "The socket is non blocking and there is no connection.");
         case WMKC_NET_ERR_EINPROGRESS:
-            wmkcErr_func_return(error, errCodeBySystem, funcName,
+            wmkcErr_return(error, errCodeBySystem, funcName,
                 "The socket is non blocking and cannot be executed immediately.");
         case WMKC_NET_ERR_ECONNREFUSED:
-            wmkcErr_func_return(error, errCodeBySystem, funcName,
+            wmkcErr_return(error, errCodeBySystem, funcName,
                 "The connection was forcibly rejected by the remote host.");
         case WMKC_NET_ERR_ECONNABORTED:
-            wmkcErr_func_return(error, errCodeBySystem, funcName,
+            wmkcErr_return(error, errCodeBySystem, funcName,
                 "The socket is unavailable due to timeout or other faults.");
         case WMKC_NET_ERR_EAFNOSUPPORT:
-            wmkcErr_func_return(error, errCodeBySystem, funcName,
+            wmkcErr_return(error, errCodeBySystem, funcName,
                 "The address in the specified network family cannot be used with this socket.");
         case WMKC_NET_ERR_EADDRNOTAVAIL:
-            wmkcErr_func_return(error, errCodeBySystem, funcName,
+            wmkcErr_return(error, errCodeBySystem, funcName,
                 "The requested address is invalid.");
         case WMKC_NET_ERR_EPROTONOSUPPORT:
-            wmkcErr_func_return(error, errCodeBySystem, funcName,
+            wmkcErr_return(error, errCodeBySystem, funcName,
                 "The specified protocol is not supported.");
 #       if defined(WMKC_PLATFORM_LINUX)
         case WMKC_NET_ERR_EIO:
-            wmkcErr_func_return(error, errCodeBySystem, funcName,
+            wmkcErr_return(error, errCodeBySystem, funcName,
                 "An I/O error occurred.");
         case WMKC_NET_ERR_EPIPE:
-            wmkcErr_func_return(error, errCodeBySystem, funcName,
+            wmkcErr_return(error, errCodeBySystem, funcName,
                 "The local end has been closed on a connection oriented socket.");
         case WMKC_NET_ERR_EPERM:
-            wmkcErr_func_return(error, errCodeBySystem, funcName,
+            wmkcErr_return(error, errCodeBySystem, funcName,
                 "Firewall rules prohibit connections.");
         case WMKC_NET_ERR_EROFS:
-            wmkcErr_func_return(error, errCodeBySystem, funcName,
+            wmkcErr_return(error, errCodeBySystem, funcName,
                 "The socket index node will reside on a read-only file system.");
         case WMKC_NET_ERR_EBADF:
-            wmkcErr_func_return(error, errCodeBySystem, funcName,
+            wmkcErr_return(error, errCodeBySystem, funcName,
                 "The descriptor is not a socket.");
         case WMKC_NET_ERR_ELOOP:
-            wmkcErr_func_return(error, errCodeBySystem, funcName,
+            wmkcErr_return(error, errCodeBySystem, funcName,
                 "Too many Symbolic link were encountered while resolving addresses.");
         case WMKC_NET_ERR_EDQUOT:
         case WMKC_NET_ERR_ENOSPC:
-            wmkcErr_func_return(error, errCodeBySystem, funcName,
+            wmkcErr_return(error, errCodeBySystem, funcName,
                 "The disk quota limit has been reached (insufficient storage space).");
         case WMKC_NET_ERR_ENOENT:
-            wmkcErr_func_return(error, errCodeBySystem, funcName,
+            wmkcErr_return(error, errCodeBySystem, funcName,
                 "The component in the directory prefix of the socket path name does not exist.");
         case WMKC_NET_ERR_ENOMEM:
-            wmkcErr_func_return(error, errCodeBySystem, funcName,
+            wmkcErr_return(error, errCodeBySystem, funcName,
                 "Insufficient available kernel memory.");
         case WMKC_NET_ERR_ENFILE:
-            wmkcErr_func_return(error, errCodeBySystem, funcName,
+            wmkcErr_return(error, errCodeBySystem, funcName,
                 "Unable to provide sockets, the process's limit on the number of sockets has been reached.");
         case WMKC_NET_ERR_EPROTO:
-            wmkcErr_func_return(error, errCodeBySystem, funcName,
+            wmkcErr_return(error, errCodeBySystem, funcName,
                 "Wrong protocol.");
         case WMKC_NET_ERR_ENOTDIR:
-            wmkcErr_func_return(error, errCodeBySystem, funcName,
+            wmkcErr_return(error, errCodeBySystem, funcName,
                 "The component with path prefix is not a directory.");
         case WMKC_NET_ERR_ENAMETOOLONG:
-            wmkcErr_func_return(error, errCodeBySystem, funcName,
+            wmkcErr_return(error, errCodeBySystem, funcName,
                 "addr is too long.");
         case WMKC_NET_ERR_EDESTADDRREQ:
-            wmkcErr_func_return(error, errCodeBySystem, funcName,
+            wmkcErr_return(error, errCodeBySystem, funcName,
                 "The socket is not in connection mode and has no peer address set.");
 #       elif defined(WMKC_PLATFORM_WINOS)
         case WMKC_NET_ERR_ENETDOWN:
-            wmkcErr_func_return(error, errCodeBySystem, funcName,
+            wmkcErr_return(error, errCodeBySystem, funcName,
                 "The network subsystem has malfunctioned.");
         case WMKC_NET_ERR_ESHUTDOWN:
-            wmkcErr_func_return(error, errCodeBySystem, funcName,
+            wmkcErr_return(error, errCodeBySystem, funcName,
                 "The socket has been closed by the shutdown function.");
         case WMKC_NET_ERR_EHOSTUNREACH:
-            wmkcErr_func_return(error, errCodeBySystem, funcName,
+            wmkcErr_return(error, errCodeBySystem, funcName,
                 "Unable to access the remote host at this time.");
         case WMKC_NET_ERR_NOTINITIALISED:
-            wmkcErr_func_return(error, errCodeBySystem, funcName,
+            wmkcErr_return(error, errCodeBySystem, funcName,
                 "The call to the WSAStartup function was not completed.");
         case WMKC_NET_ERR_ESOCKTNOSUPPORT:
-            wmkcErr_func_return(error, errCodeBySystem, funcName,
+            wmkcErr_return(error, errCodeBySystem, funcName,
                 "This address family does not support the specified socket type.");
         case WMKC_NET_ERR_EINVALIDPROVIDER:
-            wmkcErr_func_return(error, errCodeBySystem, funcName,
+            wmkcErr_return(error, errCodeBySystem, funcName,
                 "The service provider returned a version other than 2.2.");
         case WMKC_NET_ERR_EINVALIDPROCTABLE:
-            wmkcErr_func_return(error, errCodeBySystem, funcName,
+            wmkcErr_return(error, errCodeBySystem, funcName,
                 "The service provider returned an invalid or incomplete procedure table to the WSPStartup.");
         case WMKC_NET_ERR_EPROVIDERFAILEDINIT:
-            wmkcErr_func_return(error, errCodeBySystem, funcName,
+            wmkcErr_return(error, errCodeBySystem, funcName,
                 "The service provider failed to initialize.");
 #       endif
 
         default:
-            wmkcErr_func_return(error, errCodeBySystem, funcName,
+            wmkcErr_return(error, errCodeBySystem, funcName,
                 "Unexpected error.");
     }
 }
@@ -190,21 +190,21 @@ WMKC_OF((wmkcNet_obj **obj))
 {
     wmkcErr_obj error;
     if(!obj) {
-        wmkcErr_func_return(error, wmkcErr_ErrNULL, "wmkcNet_new", "obj is NULL.");
+        wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcNet_new", "obj is NULL.");
     }
 
     if(!wmkcMem_new(wmkcNet_obj *, (*obj), sizeof(wmkcNet_obj))) {
-        wmkcErr_func_return(error, wmkcErr_ErrMemory, "wmkcNet_new",
+        wmkcErr_return(error, wmkcErr_ErrMemory, "wmkcNet_new",
             "Failed to allocate memory for (*obj).");
     }
 
     if(!wmkcMem_new(wmkcNet_addr *, (*obj)->laddr, sizeof(wmkcNet_addr))) {
-        wmkcErr_func_return(error, wmkcErr_ErrMemory, "wmkcNet_new",
+        wmkcErr_return(error, wmkcErr_ErrMemory, "wmkcNet_new",
             "Failed to allocate memory for (*obj)->laddr.");
     }
 
     if(!wmkcMem_new(wmkcNet_addr *, (*obj)->raddr, sizeof(wmkcNet_addr))) {
-        wmkcErr_func_return(error, wmkcErr_ErrMemory, "wmkcNet_new",
+        wmkcErr_return(error, wmkcErr_ErrMemory, "wmkcNet_new",
             "Failed to allocate memory for (*obj)->raddr.");
     }
 
@@ -216,7 +216,7 @@ WMKC_OF((wmkcNet_obj **obj))
     (*obj)->raddr->sockAddress = wmkcNull;
     (*obj)->raddr->port = 0;
 
-    wmkcErr_func_return(error, wmkcErr_OK, "wmkcNet_new", "OK.");
+    wmkcErr_return(error, wmkcErr_OK, "wmkcNet_new", "OK.");
 }
 
 WMKC_PUBLIC(wmkcErr_obj) wmkcNet_free WMKC_OPEN_API
@@ -224,7 +224,7 @@ WMKC_OF((wmkcNet_obj **obj))
 {
     wmkcErr_obj error;
     if(!obj) {
-        wmkcErr_func_return(error, wmkcErr_ErrNULL, "wmkcNet_free", "obj is NULL.");
+        wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcNet_free", "obj is NULL.");
     }
 
     if((*obj)->laddr) {
@@ -241,7 +241,7 @@ WMKC_OF((wmkcNet_obj **obj))
     }
     wmkcMem_free((*obj));
 
-    wmkcErr_func_return(error, wmkcErr_OK, "wmkcNet_free", "OK.");
+    wmkcErr_return(error, wmkcErr_OK, "wmkcNet_free", "OK.");
 }
 
 WMKC_PUBLIC(wmkcErr_obj) wmkcNet_socket WMKC_OPEN_API
@@ -249,7 +249,7 @@ WMKC_OF((wmkcNet_obj *obj, wmkc_s32 family, wmkc_s32 type, socklen_t proto))
 {
     wmkcErr_obj error;
     if(!obj) {
-        wmkcErr_func_return(error, wmkcErr_ErrNULL, "wmkcNet_socket", "obj is NULL.");
+        wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcNet_socket", "obj is NULL.");
     }
 
     if((obj->sockfd = socket(family, type, proto)) == wmkcErr_Err32) {
@@ -260,7 +260,7 @@ WMKC_OF((wmkcNet_obj *obj, wmkc_s32 family, wmkc_s32 type, socklen_t proto))
     obj->type = type;     // 套接字类型
     obj->proto = proto;   // 套接字协议
 
-    wmkcErr_func_return(error, wmkcErr_OK, "wmkcNet_socket", "OK.");
+    wmkcErr_return(error, wmkcErr_OK, "wmkcNet_socket", "OK.");
 }
 
 WMKC_PUBLIC(wmkcErr_obj) wmkcNet_getaddrinfo WMKC_OPEN_API
@@ -269,7 +269,7 @@ WMKC_OF((wmkcNet_addr *addr, wmkcCSTR hostname, wmkc_u16 port,
 {
     wmkcErr_obj error;
     if(!addr || !hostname || !port) {
-        wmkcErr_func_return(error, wmkcErr_ErrNULL, "wmkcNet_getaddrinfo",
+        wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcNet_getaddrinfo",
             "obj or hostname or port is NULL.");
     }
 
@@ -285,30 +285,30 @@ WMKC_OF((wmkcNet_addr *addr, wmkcCSTR hostname, wmkc_u16 port,
     // 执行getaddrinfo函数并判断是否出错。
     switch(getaddrinfo(hostname, servname, &hints, &result)) {
         case EAI_AGAIN:
-            wmkcErr_func_return(error, EAI_AGAIN, "wmkcNet_getaddrinfo",
+            wmkcErr_return(error, EAI_AGAIN, "wmkcNet_getaddrinfo",
                 "A temporary failure in name resolution occurred.");
         case EAI_BADFLAGS:
-            wmkcErr_func_return(error, EAI_AGAIN, "wmkcNet_getaddrinfo",
+            wmkcErr_return(error, EAI_AGAIN, "wmkcNet_getaddrinfo",
                 "An invalid value was provided for the ai_flags member of the pHints parameter.");
         case EAI_FAIL:
-            wmkcErr_func_return(error, EAI_AGAIN, "wmkcNet_getaddrinfo",
+            wmkcErr_return(error, EAI_AGAIN, "wmkcNet_getaddrinfo",
                 "A nonrecoverable failure in name resolution occurred.");
         case EAI_FAMILY:
-            wmkcErr_func_return(error, EAI_AGAIN, "wmkcNet_getaddrinfo",
+            wmkcErr_return(error, EAI_AGAIN, "wmkcNet_getaddrinfo",
                 "The ai_family member of the pHints parameter is not supported.");
         case EAI_MEMORY:
-            wmkcErr_func_return(error, EAI_AGAIN, "wmkcNet_getaddrinfo",
+            wmkcErr_return(error, EAI_AGAIN, "wmkcNet_getaddrinfo",
                 "A memory allocation failure occurred.");
         case EAI_NONAME:
-            wmkcErr_func_return(error, EAI_AGAIN, "wmkcNet_getaddrinfo",
+            wmkcErr_return(error, EAI_AGAIN, "wmkcNet_getaddrinfo",
                 "The name does not resolve for the supplied parameters or the pNodeName and "
                 "pServiceName parameters were not provided.");
         case EAI_SERVICE:
-            wmkcErr_func_return(error, EAI_AGAIN, "wmkcNet_getaddrinfo",
+            wmkcErr_return(error, EAI_AGAIN, "wmkcNet_getaddrinfo",
                 "The pServiceName parameter is not supported for the specified ai_socktype member of "
                 "the pHints parameter.");
         case EAI_SOCKTYPE:
-            wmkcErr_func_return(error, EAI_AGAIN, "wmkcNet_getaddrinfo",
+            wmkcErr_return(error, EAI_AGAIN, "wmkcNet_getaddrinfo",
                 "The ai_socktype member of the pHints parameter is not supported.");
     }
 
@@ -321,7 +321,7 @@ WMKC_OF((wmkcNet_addr *addr, wmkcCSTR hostname, wmkc_u16 port,
     if(addr->sockAddress)
         wmkcMem_free(addr->sockAddress);
     if(!wmkcMem_new(SOCKADDR *, addr->sockAddress, WMKC_NET_IPV6_ADDR_SIZE)) {
-        wmkcErr_func_return(error, wmkcErr_ErrMemory, "wmkcNet_getaddrinfo",
+        wmkcErr_return(error, wmkcErr_ErrMemory, "wmkcNet_getaddrinfo",
             "Failed to allocate memory for addr->sockAddress.");
     }
 
@@ -329,7 +329,7 @@ WMKC_OF((wmkcNet_addr *addr, wmkcCSTR hostname, wmkc_u16 port,
     wmkcMem_zero(addr->sockAddress, WMKC_NET_IPV6_ADDR_SIZE);
     memcpy(addr->sockAddress, result->ai_addr, (addr->sockAddressSize = result->ai_addrlen));
 
-    wmkcErr_func_return(error, wmkcErr_OK, "wmkcNet_getaddrinfo", "OK.");
+    wmkcErr_return(error, wmkcErr_OK, "wmkcNet_getaddrinfo", "OK.");
 }
 
 WMKC_PUBLIC(wmkcErr_obj) wmkcNet_settimeout WMKC_OPEN_API
@@ -337,7 +337,7 @@ WMKC_OF((wmkcNet_obj *obj, double _val))
 {
     wmkcErr_obj error;
     if(!obj) {
-        wmkcErr_func_return(error, wmkcErr_ErrNULL, "wmkcNet_settimeout", "obj is NULL.");
+        wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcNet_settimeout", "obj is NULL.");
     }
 
 #   if defined(WMKC_PLATFORM_WINOS)
@@ -357,7 +357,7 @@ WMKC_OF((wmkcNet_obj *obj, double _val))
         return wmkcNet_errorHandler("wmkcNet_settimeout");
     }
 
-    wmkcErr_func_return(error, wmkcErr_OK, "wmkcNet_settimeout", "OK.");
+    wmkcErr_return(error, wmkcErr_OK, "wmkcNet_settimeout", "OK.");
 }
 
 WMKC_PUBLIC(wmkcErr_obj) wmkcNet_bind WMKC_OPEN_API
@@ -365,7 +365,7 @@ WMKC_OF((wmkcNet_obj *obj, wmkcCSTR addr, wmkc_u16 port))
 {
     wmkcErr_obj error;
     if(!obj) {
-        wmkcErr_func_return(error, wmkcErr_ErrNULL, "wmkcNet_bind", "obj is NULL.");
+        wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcNet_bind", "obj is NULL.");
     }
 
     // 将传入的地址解析（毕竟可能使用localhost作为地址）
@@ -376,7 +376,7 @@ WMKC_OF((wmkcNet_obj *obj, wmkcCSTR addr, wmkc_u16 port))
         return wmkcNet_errorHandler("wmkcNet_bind");
     }
 
-    wmkcErr_func_return(error, wmkcErr_OK, "wmkcNet_bind", "OK.");
+    wmkcErr_return(error, wmkcErr_OK, "wmkcNet_bind", "OK.");
 }
 
 WMKC_PUBLIC(wmkcErr_obj) wmkcNet_connect WMKC_OPEN_API
@@ -384,7 +384,7 @@ WMKC_OF((wmkcNet_obj *obj, wmkcCSTR addr, wmkc_u16 port))
 {
     wmkcErr_obj error;
     if(!obj || !addr || !port) {
-        wmkcErr_func_return(error, wmkcErr_ErrNULL, "wmkcNet_connect",
+        wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcNet_connect",
             "obj or addr or port is NULL.");
     }
 
@@ -400,7 +400,7 @@ WMKC_OF((wmkcNet_obj *obj, wmkcCSTR addr, wmkc_u16 port))
         wmkcMem_free(obj->laddr->sockAddress);
     obj->laddr->sockAddressSize = WMKC_NET_IPV6_ADDR_SIZE;
     if(!wmkcMem_new(SOCKADDR *, obj->laddr->sockAddress, obj->laddr->sockAddressSize)) {
-        wmkcErr_func_return(error, wmkcErr_ErrMemory, "wmkcNet_connect",
+        wmkcErr_return(error, wmkcErr_ErrMemory, "wmkcNet_connect",
             "Failed to allocate memory for obj->laddr->sockAddress.");
     }
 
@@ -410,7 +410,7 @@ WMKC_OF((wmkcNet_obj *obj, wmkcCSTR addr, wmkc_u16 port))
     }
     wmkcNet_sockaddr2ipaddr(obj->family, obj->laddr->sockAddress, obj->laddr);
 
-    wmkcErr_func_return(error, wmkcErr_OK, "wmkcNet_connect", "OK.");
+    wmkcErr_return(error, wmkcErr_OK, "wmkcNet_connect", "OK.");
 }
 
 WMKC_PUBLIC(wmkcErr_obj) wmkcNet_listen WMKC_OPEN_API
@@ -418,14 +418,14 @@ WMKC_OF((wmkcNet_obj *obj, wmkc_s32 backlog))
 {
     wmkcErr_obj error;
     if(!obj) {
-        wmkcErr_func_return(error, wmkcErr_ErrNULL, "wmkcNet_listen", "obj is NULL.");
+        wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcNet_listen", "obj is NULL.");
     }
 
     if(listen(obj->sockfd, backlog)) {
         return wmkcNet_errorHandler("wmkcNet_listen");
     }
 
-    wmkcErr_func_return(error, wmkcErr_OK, "wmkcNet_listen", "OK.");
+    wmkcErr_return(error, wmkcErr_OK, "wmkcNet_listen", "OK.");
 }
 
 WMKC_PUBLIC(wmkcErr_obj) wmkcNet_accept WMKC_OPEN_API
@@ -433,7 +433,7 @@ WMKC_OF((wmkcNet_obj **dst, wmkcNet_obj *src))
 {
     wmkcErr_obj error;
     if(!dst || !src) {
-        wmkcErr_func_return(error, wmkcErr_ErrNULL, "wmkcNet_accept",
+        wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcNet_accept",
             "dst or src is NULL.");
     }
 
@@ -442,12 +442,12 @@ WMKC_OF((wmkcNet_obj **dst, wmkcNet_obj *src))
 
     (*dst)->laddr->sockAddressSize = WMKC_NET_IPV6_ADDR_SIZE;
     if(!wmkcMem_new(SOCKADDR *, (*dst)->laddr->sockAddress, (*dst)->laddr->sockAddressSize)) {
-        wmkcErr_func_return(error, wmkcErr_ErrMemory, "wmkcNet_accept",
+        wmkcErr_return(error, wmkcErr_ErrMemory, "wmkcNet_accept",
             "Failed to allocate memory for (*dst)->laddr->sockAddress.");
     }
     (*dst)->raddr->sockAddressSize = WMKC_NET_IPV6_ADDR_SIZE;
     if(!wmkcMem_new(SOCKADDR *, (*dst)->raddr->sockAddress, (*dst)->raddr->sockAddressSize)) {
-        wmkcErr_func_return(error, wmkcErr_ErrMemory, "wmkcNet_accept",
+        wmkcErr_return(error, wmkcErr_ErrMemory, "wmkcNet_accept",
             "Failed to allocate memory for (*dst)->raddr->sockAddress.");
     }
 
@@ -466,7 +466,7 @@ WMKC_OF((wmkcNet_obj **dst, wmkcNet_obj *src))
     wmkcNet_sockaddr2ipaddr((*dst)->family, (*dst)->raddr->sockAddress, (*dst)->raddr);
     wmkcNet_sockaddr2ipaddr((*dst)->family, (*dst)->laddr->sockAddress, (*dst)->laddr);
 
-    wmkcErr_func_return(error, wmkcErr_OK, "wmkcNet_accept", "OK.");
+    wmkcErr_return(error, wmkcErr_OK, "wmkcNet_accept", "OK.");
 }
 
 WMKC_PUBLIC(wmkcErr_obj) wmkcNet_send WMKC_OPEN_API
@@ -474,7 +474,7 @@ WMKC_OF((wmkcNet_obj *obj, wmkcNetBufT *content, socklen_t size, wmkc_s32 _flag)
 {
     wmkcErr_obj error;
     if(!obj || !content || !size) {
-        wmkcErr_func_return(error, wmkcErr_ErrNULL, "wmkcNet_send",
+        wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcNet_send",
             "dst or content or size is NULL.");
     }
 
@@ -482,7 +482,7 @@ WMKC_OF((wmkcNet_obj *obj, wmkcNetBufT *content, socklen_t size, wmkc_s32 _flag)
         return wmkcNet_errorHandler("wmkcNet_send");
     }
 
-    wmkcErr_func_return(error, wmkcErr_OK, "wmkcNet_send", "OK.");
+    wmkcErr_return(error, wmkcErr_OK, "wmkcNet_send", "OK.");
 }
 
 WMKC_PUBLIC(wmkcErr_obj) wmkcNet_sendall WMKC_OPEN_API
@@ -490,7 +490,7 @@ WMKC_OF((wmkcNet_obj *obj, wmkcNetBufT *content, wmkcSize size, wmkc_s32 _flag))
 {
     wmkcErr_obj error;
     if(!obj || !content || !size) {
-        wmkcErr_func_return(error, wmkcErr_ErrNULL, "wmkcNet_sendall",
+        wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcNet_sendall",
             "dst or content or size is NULL.");
     }
     wmkc_u32 retry_count; // 重试次数
@@ -522,7 +522,7 @@ WMKC_OF((wmkcNet_obj *obj, wmkcNetBufT *content, wmkcSize size, wmkc_s32 _flag))
         content += obj->tSize;
     }
 
-    wmkcErr_func_return(error, wmkcErr_OK, "wmkcNet_sendall", "OK.");
+    wmkcErr_return(error, wmkcErr_OK, "wmkcNet_sendall", "OK.");
 }
 
 WMKC_PUBLIC(wmkcErr_obj) wmkcNet_recv WMKC_OPEN_API
@@ -530,7 +530,7 @@ WMKC_OF((wmkcNet_obj *obj, wmkcNetBufT *content, socklen_t size, wmkc_s32 _flag)
 {
     wmkcErr_obj error;
     if(!obj || !content || !size) {
-        wmkcErr_func_return(error, wmkcErr_ErrNULL, "wmkcNet_recv",
+        wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcNet_recv",
             "dst or content or size is NULL.");
     }
 
@@ -538,7 +538,7 @@ WMKC_OF((wmkcNet_obj *obj, wmkcNetBufT *content, socklen_t size, wmkc_s32 _flag)
         return wmkcNet_errorHandler("wmkcNet_recv");
     }
 
-    wmkcErr_func_return(error, wmkcErr_OK, "wmkcNet_recv", "OK.");
+    wmkcErr_return(error, wmkcErr_OK, "wmkcNet_recv", "OK.");
 }
 
 WMKC_PUBLIC(wmkcErr_obj) wmkcNet_shutdown WMKC_OPEN_API
@@ -546,14 +546,14 @@ WMKC_OF((wmkcNet_obj *obj, wmkc_u32 how))
 {
     wmkcErr_obj error;
     if(!obj) {
-        wmkcErr_func_return(error, wmkcErr_ErrNULL, "wmkcNet_shutdown", "obj is NULL.");
+        wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcNet_shutdown", "obj is NULL.");
     }
 
     if(shutdown(obj->sockfd, how) == wmkcErr_Err32) {
         return wmkcNet_errorHandler("wmkcNet_shutdown");
     }
 
-    wmkcErr_func_return(error, wmkcErr_OK, "wmkcNet_shutdown", "OK.");
+    wmkcErr_return(error, wmkcErr_OK, "wmkcNet_shutdown", "OK.");
 }
 
 WMKC_PUBLIC(wmkcErr_obj) wmkcNet_close WMKC_OPEN_API
@@ -561,7 +561,7 @@ WMKC_OF((wmkcNet_obj *obj))
 {
     wmkcErr_obj error;
     if(!obj) {
-        wmkcErr_func_return(error, wmkcErr_ErrNULL, "wmkcNet_close", "obj is NULL.");
+        wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcNet_close", "obj is NULL.");
     }
 
 #   if defined(WMKC_PLATFORM_WINOS)
@@ -571,5 +571,5 @@ WMKC_OF((wmkcNet_obj *obj))
 #   endif
         return wmkcNet_errorHandler("wmkcNet_close");
 
-    wmkcErr_func_return(error, wmkcErr_OK, "wmkcNet_close", "OK.");
+    wmkcErr_return(error, wmkcErr_OK, "wmkcNet_close", "OK.");
 }

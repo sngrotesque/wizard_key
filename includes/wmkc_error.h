@@ -29,13 +29,7 @@ typedef struct {
 #define wmkcErr_ThreadStart  50LL // 此指表示线程启动出现错误
 
 // 将wmkcErr对象赋值并作为返回值返回。
-#define wmkcErr_return(error, _code, _message) \
-    error.message = _message; \
-    error.func = wmkcNull; \
-    error.code = _code; \
-    return error
-
-#define wmkcErr_func_return(error, _code, _func_name, _message) \
+#define wmkcErr_return(error, _code, _func_name, _message) \
     error.message = _message; \
     error.func = _func_name; \
     error.code = _code; \

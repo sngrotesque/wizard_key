@@ -63,19 +63,16 @@ WMKC_PUBLIC(wmkcErr_obj) wmkcBase64_encode WMKC_OPEN_API
 WMKC_OF((wmkcByte **dst, wmkcByte *src, wmkcSize srcSize))
 {
     wmkcErr_obj error;
-    if(!dst || !src) {
-        wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcBase64_encode: dst or src is null.");
-    }
-    if(!srcSize) {
-        wmkcErr_return(error, wmkcErr_ErrNULL,
-            "wmkcBase64_encode: srcSize is null.");
+    if(!dst || !src || !srcSize) {
+        wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcBase64_encode",
+            "dst or src or srcSize is null.");
     }
     wmkcSize dst_i, src_i, dstSize;
 
     dstSize = _wmkcBase64_encodeSize(srcSize);
     if(!wmkcMem_new(wmkcByte *, (*dst), dstSize + 1)) {
-        wmkcErr_return(error, wmkcErr_ErrMemory,
-            "wmkcBase64_encode: Failed to allocate memory for (*dst).");
+        wmkcErr_return(error, wmkcErr_ErrMemory, "wmkcBase64_encode",
+            "Failed to allocate memory for (*dst).");
     }
     (*dst)[dstSize] = 0x00;
 
@@ -94,7 +91,7 @@ WMKC_OF((wmkcByte **dst, wmkcByte *src, wmkcSize srcSize))
             break;
     }
 
-    wmkcErr_return(error, wmkcErr_OK, "OK.");
+    wmkcErr_return(error, wmkcErr_OK, "wmkcBase64_encode", "OK.");
 }
 
 /**
@@ -111,23 +108,20 @@ WMKC_PUBLIC(wmkcErr_obj) wmkcBase64_decode WMKC_OPEN_API
 WMKC_OF((wmkcByte **dst, wmkcByte *src, wmkcSize srcSize))
 {
     wmkcErr_obj error;
-    if(!dst || !src) {
-        wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcBase64_decode: dst or src is null.");
-    }
-    if(!srcSize) {
-        wmkcErr_return(error, wmkcErr_ErrNULL,
-            "wmkcBase64_decode: srcSize is null.");
+    if(!dst || !src || !srcSize) {
+        wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcBase64_decode",
+            "dst or src or srcSize is null.");
     }
     if(srcSize & 3) {
-        wmkcErr_return(error, wmkcErr_ErrType,
-            "wmkcBase64_decode: The length of the src is incorrect.");
+        wmkcErr_return(error, wmkcErr_ErrType, "wmkcBase64_decode",
+            "The length of the src is incorrect.");
     }
     wmkcSize dst_i, src_i, dstSize;
 
     dstSize = _wmkcBase64_decodeSize(src, srcSize);
     if(!wmkcMem_new(wmkcByte *, (*dst), dstSize + 1)) {
-        wmkcErr_return(error, wmkcErr_ErrMemory,
-            "wmkcBase64_decode: Failed to allocate memory for (*dst).");
+        wmkcErr_return(error, wmkcErr_ErrMemory, "wmkcBase64_decode",
+            "Failed to allocate memory for (*dst).");
     }
     (*dst)[dstSize] = 0x00;
 
@@ -137,5 +131,5 @@ WMKC_OF((wmkcByte **dst, wmkcByte *src, wmkcSize srcSize))
         (*dst)[dst_i+2] = (_B64DT[src[src_i+2]] << 6) |   _B64DT[src[src_i+3]];
     }
 
-    wmkcErr_return(error, wmkcErr_OK, "OK.");
+    wmkcErr_return(error, wmkcErr_OK, "wmkcBase64_decode", "OK.");
 }

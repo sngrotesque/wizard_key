@@ -16,12 +16,12 @@ WMKC_OF((wmkcChar **dst))
 {
     wmkcErr_obj error;
     if(!dst) {
-        wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcTime_GetNowTime: dst is NULL.");
+        wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcTime_GetNowTime", "dst is NULL.");
     }
     wmkc_u32 dst_size = 24;
     if(!wmkcMem_new(wmkcChar *, (*dst), dst_size)) {
-        wmkcErr_return(error, wmkcErr_ErrMemory,
-            "wmkcTime_GetNowTime: Failed to allocate memory for (*dst).");
+        wmkcErr_return(error, wmkcErr_ErrMemory, "wmkcTime_GetNowTime",
+            "Failed to allocate memory for (*dst).");
     }
     time_t t;
     struct tm *tp;
@@ -32,7 +32,7 @@ WMKC_OF((wmkcChar **dst))
 
     strftime((*dst), dst_size, "%Y-%m-%d %H:%M:%S", tp);
 
-    wmkcErr_return(error, wmkcErr_OK, "OK.");
+    wmkcErr_return(error, wmkcErr_OK, "wmkcTime_GetNowTime", "OK.");
 }
 
 /**

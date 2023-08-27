@@ -35,7 +35,7 @@ WMKC_OF((wmkcCSTR fn))
 {
     wmkcErr_obj error;
     if(!fn) {
-        wmkcErr_func_return(error, wmkcErr_ErrNULL, "wmkcHexdump", "fn is NULL.");
+        wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcHexdump", "fn is NULL.");
     }
     wmkcFile_obj *file = wmkcNull;
     wmkcByte buf[WMKC_HEXDUMP_BLOCKLEN];
@@ -54,6 +54,6 @@ WMKC_OF((wmkcCSTR fn))
     if((error = wmkcFile_close(&file)).code)
         return error;
 
-    wmkcErr_func_return(error, wmkcErr_OK, "wmkcHexdump", "OK.");
+    wmkcErr_return(error, wmkcErr_OK, "wmkcHexdump", "OK.");
 }
 

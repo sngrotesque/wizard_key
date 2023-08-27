@@ -5,17 +5,17 @@ WMKC_OF((wmkc_obj **obj))
 {
     wmkcErr_obj error;
     if(!obj) {
-        wmkcErr_func_return(error, wmkcErr_ErrNULL, "wmkcObj_new", "obj is NULL.");
+        wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcObj_new", "obj is NULL.");
     }
     if(!wmkcMem_new(wmkc_obj*, (*obj), sizeof(wmkc_obj))) {
-        wmkcErr_func_return(error, wmkcErr_ErrMemory, "wmkcObj_new",
+        wmkcErr_return(error, wmkcErr_ErrMemory, "wmkcObj_new",
             "Failed to allocate memory for (*obj).");
     }
 
     (*obj)->buf = wmkcNull;
     (*obj)->size = 0;
 
-    wmkcErr_func_return(error, wmkcErr_OK, "wmkcObj_new", "OK.");
+    wmkcErr_return(error, wmkcErr_OK, "wmkcObj_new", "OK.");
 }
 
 WMKC_PUBLIC(wmkcErr_obj) wmkcObj_free WMKC_OPEN_API
@@ -23,7 +23,7 @@ WMKC_OF((wmkc_obj **obj))
 {
     wmkcErr_obj error;
     if(!obj) {
-        wmkcErr_func_return(error, wmkcErr_ErrNULL, "wmkcObj_free", "obj is NULL.");
+        wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcObj_free", "obj is NULL.");
     }
 
     if((*obj)->buf) {
@@ -31,7 +31,7 @@ WMKC_OF((wmkc_obj **obj))
     }
     wmkcMem_free((*obj));
 
-    wmkcErr_func_return(error, wmkcErr_OK, "wmkcObj_free", "OK.");
+    wmkcErr_return(error, wmkcErr_OK, "wmkcObj_free", "OK.");
 }
 
 WMKC_PUBLIC(wmkcErr_obj) wmkcObj_reverse WMKC_OPEN_API
@@ -39,7 +39,7 @@ WMKC_OF((wmkc_obj *obj))
 {
     wmkcErr_obj error;
     if(!obj) {
-        wmkcErr_func_return(error, wmkcErr_ErrNULL, "wmkcObj_reverse", "obj is NULL.");
+        wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcObj_reverse", "obj is NULL.");
     }
     wmkcFast wmkcByte swap;
     wmkcFast wmkcSize i;
@@ -50,7 +50,7 @@ WMKC_OF((wmkc_obj *obj))
         obj->buf[obj->size - i - 1] = swap;
     }
 
-    wmkcErr_func_return(error, wmkcErr_OK, "wmkcObj_reverse", "OK.");
+    wmkcErr_return(error, wmkcErr_OK, "wmkcObj_reverse", "OK.");
 }
 
 WMKC_PUBLIC(wmkcErr_obj) wmkcObj_append WMKC_OPEN_API
@@ -58,7 +58,7 @@ WMKC_OF((wmkc_obj *obj, wmkcCSTR content))
 {
     wmkcErr_obj error;
     if(!obj || !content) {
-        wmkcErr_func_return(error, wmkcErr_ErrNULL, "wmkcObj_append",
+        wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcObj_append",
             "obj or content is NULL.");
     }
 
@@ -67,14 +67,14 @@ WMKC_OF((wmkc_obj *obj, wmkcCSTR content))
 
     if(obj->buf) {
         if(!wmkcMem_append(wmkcByte *, p, obj->buf, obj->size + size + 1)) {
-            wmkcErr_func_return(error, wmkcErr_ErrMemory, "wmkcObj_append",
+            wmkcErr_return(error, wmkcErr_ErrMemory, "wmkcObj_append",
                 "Failed to allocate memory for p.");
         }
         memcpy(p + obj->size, content, size);
         obj->buf = p;
     } else {
         if(!wmkcMem_new(wmkcByte *, obj->buf, size + 1)) {
-            wmkcErr_func_return(error, wmkcErr_ErrMemory, "wmkcObj_append",
+            wmkcErr_return(error, wmkcErr_ErrMemory, "wmkcObj_append",
                 "Failed to allocate memory for obj->buf.");
         }
         memcpy(obj->buf, content, size);
@@ -82,6 +82,6 @@ WMKC_OF((wmkc_obj *obj, wmkcCSTR content))
     obj->size += size;
     obj->buf[obj->size] = 0x00;
 
-    wmkcErr_func_return(error, wmkcErr_OK, "wmkcObj_append", "OK.");
+    wmkcErr_return(error, wmkcErr_OK, "wmkcObj_append", "OK.");
 }
 

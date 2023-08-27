@@ -80,14 +80,14 @@ WMKC_OF((wmkcByte **dst, wmkcByte *src, wmkcSize srcSize))
 {
     wmkcErr_obj error;
     if(!dst || !src || !srcSize) {
-        wmkcErr_return(error, wmkcErr_ErrNULL,
-            "wmkcBinascii_b2a_hex: dst or src or srcSize is NULL.");
+        wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcBinascii_b2a_hex",
+            "dst or src or srcSize is NULL.");
     }
     wmkcFast wmkcSize i;
 
     if(!wmkcMem_new(wmkcByte *, (*dst), (srcSize << 1) + 1)) {
-        wmkcErr_return(error, wmkcErr_ErrMemory,
-            "wmkcBinascii_b2a_hex: Failed to allocate memory for (*dst).");
+        wmkcErr_return(error, wmkcErr_ErrMemory, "wmkcBinascii_b2a_hex",
+            "Failed to allocate memory for (*dst).");
     }
 
     (*dst)[srcSize << 1] = 0x00;
@@ -97,7 +97,7 @@ WMKC_OF((wmkcByte **dst, wmkcByte *src, wmkcSize srcSize))
         (*dst)[(i<<1)+1] = _wmkcBinasciiToBot(src[i]);
     }
 
-    wmkcErr_return(error, wmkcErr_OK, "OK.");
+    wmkcErr_return(error, wmkcErr_OK, "wmkcBinascii_b2a_hex", "OK.");
 }
 
 /**
@@ -122,20 +122,20 @@ WMKC_OF((wmkcByte **dst, wmkcByte *src, wmkcSize srcSize))
 {
     wmkcErr_obj error;
     if(!dst || !src || !srcSize) {
-        wmkcErr_return(error, wmkcErr_ErrNULL,
-            "wmkcBinascii_a2b_hex: dst or src or srcSize is NULL.");
+        wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcBinascii_a2b_hex",
+            "dst or src or srcSize is NULL.");
     }
     wmkcSize src_i, dst_i;
     wmkc_s32 top, bot;
 
     if(srcSize % 2) {
-        wmkcErr_return(error, wmkcErr_ErrType,
-            "wmkcBinascii_a2b_hex: Wrong type, should not be an odd length.");
+        wmkcErr_return(error, wmkcErr_ErrType, "wmkcBinascii_a2b_hex",
+            "Wrong type, should not be an odd length.");
     }
 
     if(!wmkcMem_new(wmkcByte *, (*dst), (srcSize >> 1) + 1)) {
-        wmkcErr_return(error, wmkcErr_ErrMemory,
-            "wmkcBinascii_a2b_hex: Failed to allocate memory for (*dst).");
+        wmkcErr_return(error, wmkcErr_ErrMemory, "wmkcBinascii_a2b_hex",
+            "Failed to allocate memory for (*dst).");
     }
     (*dst)[(srcSize >> 1)] = 0x00;
 
@@ -143,11 +143,11 @@ WMKC_OF((wmkcByte **dst, wmkcByte *src, wmkcSize srcSize))
         top = _wmkc_a2b_hexTable[src[src_i]];
         bot = _wmkc_a2b_hexTable[src[src_i+1]];
         if((top | bot) > 30) {
-            wmkcErr_return(error, wmkcErr_ErrType,
-                "wmkcBinascii_a2b_hex: Wrong type, characters must be from 0 to f.");
+            wmkcErr_return(error, wmkcErr_ErrType, "wmkcBinascii_a2b_hex",
+                "Wrong type, characters must be from 0 to f.");
         }
         (*dst)[dst_i] = (top << 4) + bot;
     }
 
-    wmkcErr_return(error, wmkcErr_OK, "OK.");
+    wmkcErr_return(error, wmkcErr_OK, "wmkcBinascii_a2b_hex", "OK.");
 }

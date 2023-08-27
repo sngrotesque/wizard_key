@@ -8,8 +8,8 @@ WMKC_OF((wmkcLink **obj, wmkcSize length))
 {
     wmkcErr_obj error;
     if(!obj || !length) {
-        wmkcErr_return(error, wmkcErr_ErrNULL,
-            "wmkcLinkList_new: obj or length is NULL.");
+        wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcLinkList_new",
+            "obj or length is NULL.");
     }
     wmkcLink *head = wmkcNull;
     wmkcLink *ptr = wmkcNull;
@@ -18,14 +18,14 @@ WMKC_OF((wmkcLink **obj, wmkcSize length))
     for(index = 0; index < length; ++index) {
         if(head == wmkcNull) {
             if(!wmkcMem_new(wmkcLink *, head, sizeof(wmkcLink))) {
-                wmkcErr_return(error, wmkcErr_ErrMemory,
-                    "wmkcLinkList_new: Failed to allocate memory for head.");
+                wmkcErr_return(error, wmkcErr_ErrMemory, "wmkcLinkList_new",
+                    "Failed to allocate memory for head.");
             }
             ptr = head;
         } else {
             if(!wmkcMem_new(wmkcLink *, ptr->next, sizeof(wmkcLink))) {
-                wmkcErr_return(error, wmkcErr_ErrMemory,
-                    "wmkcLinkList_new: Failed to allocate memory for ptr->next.");
+                wmkcErr_return(error, wmkcErr_ErrMemory, "wmkcLinkList_new",
+                    "Failed to allocate memory for ptr->next.");
             }
             ptr = ptr->next;
         }
@@ -34,7 +34,7 @@ WMKC_OF((wmkcLink **obj, wmkcSize length))
     ptr->next = wmkcNull;
     (*obj) = head;
 
-    wmkcErr_return(error, wmkcErr_OK, "OK.");
+    wmkcErr_return(error, wmkcErr_OK, "wmkcLinkList_new", "OK.");
 }
 
 WMKC_PUBLIC(wmkcErr_obj) wmkcLinkList_free WMKC_OPEN_API
@@ -42,8 +42,8 @@ WMKC_OF((wmkcLink **obj))
 {
     wmkcErr_obj error;
     if(!obj) {
-        wmkcErr_return(error, wmkcErr_ErrNULL,
-            "wmkcLinkList_free: obj or length is NULL.");
+        wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcLinkList_free",
+            "obj or length is NULL.");
     }
     wmkcLink *ptr = wmkcNull;
     while(*obj)
@@ -53,5 +53,5 @@ WMKC_OF((wmkcLink **obj))
         free(ptr);
     }
 
-    wmkcErr_return(error, wmkcErr_OK, "OK.");
+    wmkcErr_return(error, wmkcErr_OK, "wmkcLinkList_free", "OK.");
 }

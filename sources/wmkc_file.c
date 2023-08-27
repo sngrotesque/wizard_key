@@ -53,16 +53,16 @@ WMKC_OF((wmkcSize *size, wmkcCSTR fn))
 {
     wmkcErr_obj error;
     if(!wmkcFile_exists(fn)) {
-        wmkcErr_func_return(error, wmkcErr_FileFolderPath, "wmkcFile_fileSize",
+        wmkcErr_return(error, wmkcErr_FileFolderPath, "wmkcFile_fileSize",
             "No files or directories.");
     }
     if(!size) {
-        wmkcErr_func_return(error, wmkcErr_ErrNULL, "wmkcFile_fileSize", "size is NULL.");
+        wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcFile_fileSize", "size is NULL.");
     }
     if(!(*size = _wmkcFile_fileSize(fn))) {
-        wmkcErr_func_return(error, wmkcErr_FileNull, "wmkcFile_fileSize", "The file is empty.");
+        wmkcErr_return(error, wmkcErr_FileNull, "wmkcFile_fileSize", "The file is empty.");
     }
-    wmkcErr_func_return(error, wmkcErr_OK, "wmkcFile_fileSize", "OK.");
+    wmkcErr_return(error, wmkcErr_OK, "wmkcFile_fileSize", "OK.");
 }
 
 WMKC_PUBLIC(wmkcErr_obj) wmkcFile_open WMKC_OPEN_API
@@ -70,11 +70,11 @@ WMKC_OF((wmkcFile_obj **obj, wmkcCSTR _filePath, wmkcCSTR _openMode))
 {
     wmkcErr_obj error;
     if(!obj || !_filePath || !_openMode) {
-        wmkcErr_func_return(error, wmkcErr_ErrNULL, "wmkcFile_open",
+        wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcFile_open",
             "obj or _filePath or _openMode is NULL.");
     }
     if(!wmkcMem_new(wmkcFile_obj *, (*obj), sizeof(wmkcFile_obj))) {
-        wmkcErr_func_return(error, wmkcErr_ErrMemory, "wmkcFile_open",
+        wmkcErr_return(error, wmkcErr_ErrMemory, "wmkcFile_open",
             "Failed to allocate memory for (*obj).");
     }
     wmkcChar *filePath = wmkcNull; // 实际使用的文件路径
@@ -90,13 +90,13 @@ WMKC_OF((wmkcFile_obj **obj, wmkcCSTR _filePath, wmkcCSTR _openMode))
 
     if(!wmkcMem_new(wmkcChar *, filePath, filePathLength << 1)) {
         wmkcMem_free((*obj));
-        wmkcErr_func_return(error, wmkcErr_ErrMemory, "wmkcFile_open",
+        wmkcErr_return(error, wmkcErr_ErrMemory, "wmkcFile_open",
             "Failed to allocate memory for filePath.");
     }
     if(!wmkcMem_new(wmkcChar *, openMode, openModeLength << 1)) {
         wmkcMem_free((*obj));
         wmkcMem_free(filePath);
-        wmkcErr_func_return(error, wmkcErr_ErrMemory, "wmkcFile_open",
+        wmkcErr_return(error, wmkcErr_ErrMemory, "wmkcFile_open",
             "Failed to allocate memory for openMode.");
     }
     MultiByteToWideChar(CP_UTF8, 0, _filePath, -1, (LPWSTR)filePath, filePathLength);
@@ -111,7 +111,7 @@ WMKC_OF((wmkcFile_obj **obj, wmkcCSTR _filePath, wmkcCSTR _openMode))
         wmkcMem_free(openMode);
 #       endif
         wmkcMem_free((*obj));
-        wmkcErr_func_return(error, wmkcErr_FileOpen, "wmkcFile_open", "File opening failed.");
+        wmkcErr_return(error, wmkcErr_FileOpen, "wmkcFile_open", "File opening failed.");
     }
     // 获取打开模式
     if(strchr(_openMode, 'r')) {
@@ -135,7 +135,7 @@ WMKC_OF((wmkcFile_obj **obj, wmkcCSTR _filePath, wmkcCSTR _openMode))
     wmkcMem_free(openMode);
 #   endif
 
-    wmkcErr_func_return(error, wmkcErr_OK, "wmkcFile_open", "OK.");
+    wmkcErr_return(error, wmkcErr_OK, "wmkcFile_open", "OK.");
 }
 
 WMKC_PUBLIC(wmkcErr_obj) wmkcFile_close WMKC_OPEN_API
@@ -143,17 +143,17 @@ WMKC_OF((wmkcFile_obj **obj))
 {
     wmkcErr_obj error;
     if(!obj) {
-        wmkcErr_func_return(error, wmkcErr_ErrNULL, "wmkcFile_close", "obj is NULL.");
+        wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcFile_close", "obj is NULL.");
     }
     if((*obj)->fp) {
         if(fclose((*obj)->fp)) {
-            wmkcErr_func_return(error, wmkcErr_FileClose, "wmkcFile_close",
+            wmkcErr_return(error, wmkcErr_FileClose, "wmkcFile_close",
                 "File closing failed.");
         }
     }
     wmkcMem_free((*obj));
 
-    wmkcErr_func_return(error, wmkcErr_OK, "wmkcFile_close", "OK.");
+    wmkcErr_return(error, wmkcErr_OK, "wmkcFile_close", "OK.");
 }
 
 WMKC_PUBLIC(wmkcErr_obj) wmkcFile_fread WMKC_OPEN_API
@@ -161,7 +161,7 @@ WMKC_OF((wmkcByte **buf, wmkcSize *size, wmkcCSTR fn))
 {
     wmkcErr_obj error;
     if(!buf || !size || !fn) {
-        wmkcErr_func_return(error, wmkcErr_ErrNULL, "wmkcFile_fread",
+        wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcFile_fread",
             "obj or buf or size or fn is NULL.");
     }
     wmkcFile_obj *file = wmkcNull;
@@ -173,7 +173,7 @@ WMKC_OF((wmkcByte **buf, wmkcSize *size, wmkcCSTR fn))
 
     if(!wmkcMem_new(wmkcByte *, (*buf), file->fsize + 1)) {
         wmkcFile_close(&file);
-        wmkcErr_func_return(error, wmkcErr_ErrMemory, "wmkcFile_fread",
+        wmkcErr_return(error, wmkcErr_ErrMemory, "wmkcFile_fread",
             "Failed to allocate memory for (*buf).");
     }
     wmkcByte *p = (*buf);
@@ -189,7 +189,7 @@ WMKC_OF((wmkcByte **buf, wmkcSize *size, wmkcCSTR fn))
     *size = file->fsize;
 
     wmkcFile_close(&file);
-    wmkcErr_func_return(error, wmkcErr_OK, "wmkcFile_fread", "OK.");
+    wmkcErr_return(error, wmkcErr_OK, "wmkcFile_fread", "OK.");
 }
 
 WMKC_PUBLIC(wmkcErr_obj) wmkcFile_fwrite WMKC_OPEN_API
@@ -197,7 +197,7 @@ WMKC_OF((wmkcByte *buf, wmkcSize size, wmkcCSTR fn))
 {
     wmkcErr_obj error;
     if(!buf || !size || !fn) {
-        wmkcErr_func_return(error, wmkcErr_ErrNULL, "wmkcFile_fwrite",
+        wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcFile_fwrite",
             "buf or size or fn is NULL.");
     }
     wmkcFile_obj *file = wmkcNull;
@@ -216,5 +216,5 @@ WMKC_OF((wmkcByte *buf, wmkcSize size, wmkcCSTR fn))
         fwrite(p, 1, leftover, file->fp);
 
     wmkcFile_close(&file);
-    wmkcErr_func_return(error, wmkcErr_OK, "wmkcFile_fwrite", "OK.");
+    wmkcErr_return(error, wmkcErr_OK, "wmkcFile_fwrite", "OK.");
 }
