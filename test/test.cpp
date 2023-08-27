@@ -27,29 +27,6 @@ WMKC_PRIVATE_CONST(wmkcByte) SNC_TEST_IV[32] = {
 };
 #endif
 
-int file_read(const char *fn, string *FileStream)
-{
-    fstream *fp = new fstream(fn, ios::in | ios::binary);
-    streamsize fileReadSize;
-    wmkcChar _tmp_buffer[2048];
-
-    if(!fp->is_open()) {
-        cout << "Failed to open file." << endl;
-        return EOF;
-    }
-
-    do {
-        wmkcMem_zero(_tmp_buffer, sizeof(_tmp_buffer));
-        fileReadSize = fp->read(_tmp_buffer, sizeof(_tmp_buffer)).gcount();
-        FileStream->append(_tmp_buffer, fileReadSize);
-    } while(fileReadSize);
-
-    fp->close();
-
-    delete fp;
-    return 0;
-}
-
 class wmkcFile_obj {
     private:
         wmkcChar recvbuf[4096];
@@ -59,10 +36,30 @@ class wmkcFile_obj {
     public:
         string FileStream;
 
-        wmkcFile_obj(wmkcCSTR path, ios::openmode mode)
+        wmkcFile_obj(filesystem::path path, ios::openmode mode)
         : recvbuf(), _buf_size()
         {
+            fp = fstream(path, mode);
+            if(!fp.is_open()) {
+                throw runtime_error("File opening failed.");
+            }
+        }
 
+        ~wmkcFile_obj()
+        {
+            fp.close();
+        }
+
+        void read_all()
+        {
+            for(; ; ) {
+                _buf_size = fp.read(recvbuf, sizeof(recvbuf)).gcount();
+                if(!_buf_size) {
+                    break;
+                }
+
+                FileStream.append(recvbuf, _buf_size);
+            }
         }
 };
 
@@ -270,7 +267,19 @@ class sslSocket {
 
 int main()
 {
-    cout << "hello, world" << endl;
+    wmkcCSTR utf8 = "p:/传送手机/11.png";
+    wmkcSize size = MultiByteToWideChar(CP_UTF8, 0, utf8, -1, NULL, 0);
 
+    PWCHAR utf16 = new WCHAR[size];
+    wmkcMem_zero(utf16, size * sizeof(WCHAR));
+
+    MultiByteToWideChar(CP_UTF8, 0, utf8, -1, utf16, size);
+
+    FILE *fp = _wfopen(utf16, L"rb");
+    if(!fp) {
+        cout << "文件打开失败。" << endl;
+    }
+
+    delete[] utf16;
     return 0;
 }

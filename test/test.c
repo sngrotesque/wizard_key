@@ -1,4 +1,4 @@
-// #include <wmkc_hexdump.c>
+
 // #include <wmkc_winapi.c>
 // #include <wmkc_dict.c>
 // #include <wmkc_sort.c>
@@ -9,6 +9,7 @@
 #include <network/wmkc_ssl.c>
 #include <crypto/snc.c>
 #include <wmkc_binascii.c>
+#include <wmkc_hexdump.c>
 #include <wmkc_memory.c>
 #include <wmkc_common.c>
 #include <wmkc_base64.c>
@@ -40,20 +41,20 @@ WMKC_PRIVATE_CONST(wmkcByte) SNC_TEST_IV[32] = {
 };
 #endif
 
-// void win_net_init()
-// {
-// #   if defined(WMKC_PLATFORM_WINOS)
-//     WSADATA ws;
-//     WSAStartup(MAKEWORD(2,2), &ws);
-// #   endif
-// }
+void win_net_init()
+{
+#   if defined(WMKC_PLATFORM_WINOS)
+    WSADATA ws;
+    WSAStartup(MAKEWORD(2,2), &ws);
+#   endif
+}
 
-// void win_net_clear()
-// {
-// #   if defined(WMKC_PLATFORM_WINOS)
-//     WSACleanup();
-// #   endif
-// }
+void win_net_clear()
+{
+#   if defined(WMKC_PLATFORM_WINOS)
+    WSACleanup();
+#   endif
+}
 
 // #define HOSTNAME "www.pixiv.net"
 // #define HOSTPORT 443
@@ -111,19 +112,7 @@ WMKC_PRIVATE_CONST(wmkcByte) SNC_TEST_IV[32] = {
 
 void test()
 {
-    wmkcSNC_obj *snc = wmkcNull;
-    wmkcChar _tmp[2048] = {"hello, world.\n"};
-    wmkcSize size = strlen(_tmp);
-    wmkcByte *src = (wmkcByte *)_tmp;
-    wmkcByte *dst = wmkcNull;
-
-    wmkcSNC_new(&snc, SNC_512);
-    wmkcSNC_init(snc, SNC_TEST_KEY, SNC_TEST_IV);
-    wmkcSNC_ctr_xcrypt(snc, src, size);
-    wmkcSNC_free(&snc);
-
-    wmkcBinascii_b2a_hex(&dst, src, size);
-    printf("dst: %s\n", dst);
+    wmkcHexdump("p:/传送手机/12.png");
 }
 
 int main(wmkc_s32 argc, wmkcChar **argv)

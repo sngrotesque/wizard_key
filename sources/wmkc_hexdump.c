@@ -30,43 +30,30 @@ WMKC_OF((wmkcSize offset, wmkcByte *buf, wmkc_u32 size))
     printf("\n");
 }
 
-/**
- * @brief 以十六进制打印文件完整内容
- * @authors SN-Grotesque
- * 
- * 以十六进制打印文件的完整内容，每一行的长度为WMKC_HEXDUMP_BLOCKLEN。
- * 
- * @note 无
- * @param fn 指针，指向路径的字符串地址，如果传入字符串而不是指针，那么
- *           应使用wmkcFile_text宏对字符串进行转换。
- * @return 返回一个wmkcErr对象，code为0代表无错误，如果为
- *         其他值，那么需检查message与code。
-*/
 WMKC_PUBLIC(wmkcErr_obj) wmkcHexdump WMKC_OPEN_API
 WMKC_OF((wmkcCSTR fn))
 {
     wmkcErr_obj error;
     if(!fn) {
-        wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcHexdump: fn is NULL.");
+        wmkcErr_func_return(error, wmkcErr_ErrNULL, "wmkcHexdump", "fn is NULL.");
     }
-    FILE *fp = wmkcNull;
+    wmkcFile_obj *file = wmkcNull;
     wmkcByte buf[WMKC_HEXDUMP_BLOCKLEN];
     wmkcSize offset = 0;
     wmkcSize nRead = 0;
 
-    if(!(fp = wmkcFile_fopen(fn, "rb"))) {
-        wmkcErr_return(error, wmkcErr_FileOpen, "wmkcHexdump: File opening failed.");
-    }
+    if((error = wmkcFile_open(&file, fn, "rb")).code)
+        return error;
 
-    while(!feof(fp)) {
-        nRead = fread(buf, 1, WMKC_HEXDUMP_BLOCKLEN, fp);
+    while(!feof(file->fp)) {
+        nRead = fread(buf, 1, WMKC_HEXDUMP_BLOCKLEN, file->fp);
         _hexdump(offset, buf, nRead);
         offset += WMKC_HEXDUMP_BLOCKLEN;
     }
 
-    if(fclose(fp)) {
-        wmkcErr_return(error, wmkcErr_FileClose, "wmkcHexdump: File closing failed.");
-    }
-    wmkcErr_return(error, wmkcErr_OK, "OK.");
+    if((error = wmkcFile_close(&file)).code)
+        return error;
+
+    wmkcErr_func_return(error, wmkcErr_OK, "wmkcHexdump", "OK.");
 }
 

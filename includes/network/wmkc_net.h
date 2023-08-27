@@ -109,8 +109,8 @@ typedef        wmkc_s32     wmkcNetSockT; // wmkcNet的socket类型
 typedef        wmkcByte     wmkcNetBufT;  // wmkcNet的缓冲区类型
 #elif defined(WMKC_PLATFORM_WINOS)
 #include <WS2tcpip.h>
-#if (!defined(__MINGW32__) && !defined(__MINGW64__))
-#   pragma comment(lib, "WS2_32.lib")
+#if defined(_MSC_VER)
+#   pragma comment(lib, "WS2_32")
 #endif
 typedef SOCKET    wmkcNetSockT; // wmkcNet的socket类型
 typedef wmkcChar  wmkcNetBufT;  // wmkcNet的缓冲区类型

@@ -7,7 +7,7 @@
 #include <wmkc_file.h>
 
 #ifndef WMKC_HEXDUMP_BLOCKLEN
-#define WMKC_HEXDUMP_BLOCKLEN 32
+#define WMKC_HEXDUMP_BLOCKLEN 16
 #endif
 
 /**
