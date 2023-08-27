@@ -67,6 +67,10 @@ typedef struct {
 
 #### v6.4.0-dev
 1.  重构wmkcNet库与wmkcError结构。
+2.  优化了wmkc_obj结构。
+3.  优化了wmkc_file库的编码转换功能。
+4.  新增了wmkcSSL库用于进行HTTPS通信。
+5.  新增了C++代码，以便于实现各种面向对象的功能。
 
 #### v6.3.0-canary
 1.  预计将所有实现改为内部实现，然后将函数作为类成员的方式使用（由于效率原因已弃之）。
