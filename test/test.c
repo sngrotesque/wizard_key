@@ -111,7 +111,7 @@ void HTTP_Client()
 
 void test()
 {
-    HTTP_Client();
+    
 }
 
 int main(wmkc_s32 argc, wmkcChar **argv)

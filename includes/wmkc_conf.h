@@ -58,7 +58,11 @@
 #define WMKC_PUBLIC(type)         type        // 动态函数（公共函数）
 #define WMKC_OF(args)             args        // 函数取消调用消耗
 
-#define wmkcNull                  NULL        // 空指针
+#if __cplusplus
+#   define wmkcNull               nullptr     // 空指针
+#else
+#   define wmkcNull               NULL        // 空指针
+#endif
 #define wmkcFast                  register    // 寄存器类型
 typedef char                      wmkcChar;   // 字符类型
 typedef uint8_t                   wmkcByte;   // 字节类型

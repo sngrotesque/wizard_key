@@ -8,278 +8,158 @@
 #include <network/wmkc_ssl.c>
 #include <crypto/snc.c>
 #include <wmkc_memory.c>
+#include <wmkc_struct.c>
+#include <wmkc_file.c>
 #include <wmkc_misc.c>
 #include <wmkc_time.c>
 
 using namespace std;
 
-#if 1
-WMKC_PRIVATE_CONST(wmkcByte) SNC_TEST_KEY[96] = {
-    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01,
-    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
-WMKC_PRIVATE_CONST(wmkcByte) SNC_TEST_IV[32] = {
-    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
-};
-#endif
+typedef struct {
+    wmkcByte size[4];
+    wmkcByte name[4];
+    wmkcByte *data;
+    wmkcByte crc[4];
+} PNG_Chunk_t;
 
-class wmkcFile_obj {
+typedef struct {
+    wmkc_u32 width;
+    wmkc_u32 height;
+    wmkcByte bitDepth;
+    wmkcByte colorType;
+    wmkcByte compressMethod;
+    wmkcByte filterMethod;
+    wmkcByte interlaceMethod;
+} PNG_IHDR_Chunk_t;
+
+class PNG {
     private:
-        wmkcChar recvbuf[4096];
-        streamsize _buf_size;
-        fstream fp;
-
-    public:
-        string FileStream;
-
-        wmkcFile_obj(filesystem::path path, ios::openmode mode)
-        : recvbuf(), _buf_size()
-        {
-            fp = fstream(path, mode);
-            if(!fp.is_open()) {
-                throw runtime_error("File opening failed.");
-            }
-        }
-
-        ~wmkcFile_obj()
-        {
-            fp.close();
-        }
-
-        void read_all()
-        {
-            for(; ; ) {
-                _buf_size = fp.read(recvbuf, sizeof(recvbuf)).gcount();
-                if(!_buf_size) {
-                    break;
-                }
-
-                FileStream.append(recvbuf, _buf_size);
-            }
-        }
-};
-
-class SNC_Encryption {
-    private:
+        wmkcFile_obj *FileStream;
         wmkcErr_obj error;
-        SNC_mode mode;
-        wmkcSNC_obj *snc = wmkcNull;
-        const wmkcByte *key = wmkcNull;
-        const wmkcByte *iv  = wmkcNull;
+        wmkcCSTR _path;
+        wmkcCSTR _mode;
+
+        wmkcByte chunk_data[4];
+
+        wmkc_u32 offset()
+        {
+            wmkc_u32 _offset_n = ftell(this->FileStream->fp);
+            if(_offset_n == -1) {
+                throw runtime_error("Error in ftell function.");
+            }
+            return _offset_n;
+        }
+
+        wmkcVoid offset(wmkc_u32 offset, wmkc_u32 origin)
+        {
+            if(fseek(this->FileStream->fp, offset, origin)) {
+                throw runtime_error("Error in fseek function.");
+            }
+        }
+
+        wmkcVoid is_png()
+        {
+            if(this->offset())
+                this->offset(0, SEEK_SET);
+            wmkcByte png_header[8];
+            fread(png_header, sizeof(wmkcByte), 8, this->FileStream->fp);
+            if(memcmp(png_header, "\x89\x50\x4e\x47\x0d\x0a\x1a\x0a", 8)) {
+                throw runtime_error("This file is not a PNG image.");
+            }
+        }
+
+        wmkcVoid read_IHDR()
+        {
+            if(this->offset() != 8) {
+                throw runtime_error("File offset error, expected 8.");
+            }
+            wmkc_u32 size = 0;
+
+            this->IHDR = new PNG_IHDR_Chunk_t;
+
+            // 获取长度
+            fread(this->chunk_data, 1, 4, this->FileStream->fp);
+            wmkcStruct_unpack(">I", &size, this->chunk_data);
+            // 获取块名
+            fread(this->chunk_data, 1, 4, this->FileStream->fp);
+            if(memcmp(this->chunk_data, "IHDR", 4)) {
+                throw runtime_error("Detected that the current block is not an IHDR block.");
+            }
+            // 获取宽度与高度
+            fread(this->chunk_data, 1, 4, this->FileStream->fp);
+            wmkcStruct_unpack(">I", &this->IHDR->width, this->chunk_data);
+            fread(this->chunk_data, 1, 4, this->FileStream->fp);
+            wmkcStruct_unpack(">I", &this->IHDR->height, this->chunk_data);
+            // 获取位深，颜色类型，压缩方法，过滤方法，交错方法
+            this->IHDR->bitDepth = fgetc(this->FileStream->fp);
+            this->IHDR->colorType = fgetc(this->FileStream->fp);
+            this->IHDR->compressMethod = fgetc(this->FileStream->fp);
+            this->IHDR->filterMethod = fgetc(this->FileStream->fp);
+            this->IHDR->interlaceMethod = fgetc(this->FileStream->fp);
+        }
 
     public:
-        SNC_Encryption(SNC_mode mode, const wmkcByte *key, const wmkcByte *iv)
-        {
-            this->mode = mode;
-            this->snc = snc;
-            this->key = key;
-            this->iv = iv;
+        PNG_IHDR_Chunk_t *IHDR;
 
-            if((error = wmkcSNC_new(&this->snc, this->mode)).code ||
-                (error = wmkcSNC_init(this->snc, this->key, this->iv)).code) {
-                throw runtime_error(error.func + string(": ") + error.message);
-            }
+        PNG(wmkcCSTR pngPath, wmkcCSTR openMode)
+        : FileStream(), error(), IHDR()
+        {
+            this->_path = pngPath;
+            this->_mode = openMode;
         }
 
-        ~SNC_Encryption()
+        wmkcVoid open()
         {
-            wmkcSNC_free(&this->snc);
-        }
-
-        void ecb_encrypt(wmkcByte *content, wmkcSize size)
-        {
-            wmkcSNC_ecb_encrypt(this->snc, content, size);
-        }
-
-        void ecb_decrypt(wmkcByte *content, wmkcSize size)
-        {
-            wmkcSNC_ecb_decrypt(this->snc, content, size);
-        }
-
-        void cbc_encrypt(wmkcByte *content, wmkcSize size)
-        {
-            wmkcSNC_cbc_encrypt(this->snc, content, size);
-        }
-
-        void cbc_decrypt(wmkcByte *content, wmkcSize size)
-        {
-            wmkcSNC_cbc_decrypt(this->snc, content, size);
-        }
-
-        void ctr_encrypt(wmkcByte *content, wmkcSize size)
-        {
-            wmkcSNC_ctr_xcrypt(this->snc, content, size);
-        }
-
-        void cfb_encrypt(wmkcByte *content, wmkcSize size, wmkc_u16 segment_size = 256)
-        {
-            wmkcSNC_cfb_encrypt(this->snc, content, size, segment_size);
-        }
-
-        void cfb_decrypt(wmkcByte *content, wmkcSize size, wmkc_u16 segment_size = 256)
-        {
-            wmkcSNC_cfb_decrypt(this->snc, content, size, segment_size);
-        }
-};
-
-class sockSocket {
-    private:
-        wmkcNet_obj *net;
-        wmkcErr_obj error;
-        wmkcNetBufT recvbuf[4096];
-
-        wmkcCSTR remote_host;
-        wmkc_u16 remote_port;
-
-    public:
-        string httpSendStream;
-        string httpRecvStream;
-
-        sockSocket(wmkcCSTR name, wmkc_u16 port)
-        {
-            this->remote_host = name;
-            this->remote_port = port;
-
-            #ifdef WMKC_PLATFORM_WINOS
-            WSADATA ws;
-            if (WSAStartup(MAKEWORD(2, 2), &ws)) {
-                this->error = wmkcNet_errorHandler("HTTP_Client::new_object");
-                throw runtime_error(this->error.func + string(": ") + this->error.message);
-            }
-            #endif
-
-            if ((this->error = wmkcNet_new(&this->net)).code ||
-                (this->error = wmkcNet_socket(this->net, AF_INET, SOCK_STREAM, 0)).code) {
+            this->error = wmkcFile_open(&this->FileStream, this->_path, this->_mode);
+            if(this->error.code) {
                 throw runtime_error(this->error.func + string(": ") + this->error.message);
             }
         }
 
-        ~sockSocket()
+        wmkcVoid close()
         {
-            wmkcNet_free(&this->net);
-            #ifdef WMKC_PLATFORM_WINOS
-            WSACleanup();
-            #endif
-        }
-
-        void add_header(wmkcCSTR content)
-        {
-            this->httpSendStream.append(content);
-        }
-
-        void conn()
-        {
-            if ((this->error = wmkcNet_connect(this->net, this->remote_host, this->remote_port)).code) {
-                throw runtime_error(error.func + string(": ") + error.message);
-            }
-        }
-
-        void send()
-        {
-            if ((this->error = wmkcNet_sendall(this->net, (wmkcNetBufT *)this->httpSendStream.c_str(),
-                this->httpSendStream.size(), 0)).code) {
+            this->error = wmkcFile_close(&this->FileStream);
+            if(this->error.code) {
                 throw runtime_error(this->error.func + string(": ") + this->error.message);
             }
         }
 
-        void recv()
+        wmkcVoid read()
         {
-            if((this->error = wmkcNet_recv(this->net, this->recvbuf, sizeof(this->recvbuf), 0)).code) {
-                throw runtime_error(this->error.func + string(": ") + this->error.message);
-            }
-            this->httpRecvStream.append(this->recvbuf, this->net->tSize);
-        }
-};
-
-class sslSocket {
-    private:
-        wmkcErr_obj error;
-        wmkcCSTR remote_host;
-        wmkc_u16 remote_port;
-
-        wmkcSSL_obj *ssl;
-        wmkcNet_obj *net;
-
-        wmkcNetBufT recvbuf[4096];
-
-        double timeout;
-
-    public:
-        string httpSendStream;
-        string httpRecvStream;
-
-        sslSocket(wmkcCSTR host, wmkc_u16 port)
-        {
-            this->remote_host = host;
-            this->remote_port = port;
-
-            #ifdef WMKC_PLATFORM_WINOS
-            WSADATA ws;
-            if (WSAStartup(MAKEWORD(2, 2), &ws)) {
-                this->error = wmkcNet_errorHandler("HTTP_Client::new_object");
-                throw runtime_error(this->error.func + string(": ") + this->error.message);
-            }
-            #endif
-
-            if ((this->error = wmkcNet_new(&this->net)).code ||
-                (this->error = wmkcNet_socket(this->net, AF_INET, SOCK_STREAM, 0)).code) {
-                throw runtime_error(this->error.func + string(": ") + this->error.message);
-            }
-            wmkcSSL_new(&this->ssl);
-            wmkcSSL_context(this->ssl, TLS_method());
-            wmkcSSL_wrap_socket(this->ssl, this->net, this->remote_host);
-        }
-
-        ~sslSocket()
-        {
-            wmkcNet_close(this->net);
-            wmkcNet_free(&this->net);
-            wmkcSSL_free(&this->ssl);
-        }
-
-        void add_header(wmkcCSTR content)
-        {
-            this->httpSendStream.append(content);
-        }
-
-        void conn()
-        {
-            wmkcSSL_connect(this->ssl, this->remote_host, this->remote_port);
-        }
-
-        void send()
-        {
-            wmkcSSL_sendall(this->ssl, (wmkcNetBufT *)httpSendStream.c_str(), httpSendStream.size());
-        }
-
-        void recv()
-        {
-            wmkcMem_zero(this->recvbuf, sizeof(this->recvbuf));
-            wmkcSSL_recv(this->ssl, this->recvbuf, sizeof(this->recvbuf) - 1);
-
-            this->httpRecvStream.append(this->recvbuf, this->ssl->net->tSize);
+            this->is_png();
+            this->read_IHDR();
         }
 };
 
 int main()
 {
-    wmkcCSTR utf8 = "p:/传送手机/11.png";
-    wmkcSize size = MultiByteToWideChar(CP_UTF8, 0, utf8, -1, NULL, 0);
-
-    PWCHAR utf16 = new WCHAR[size];
-    wmkcMem_zero(utf16, size * sizeof(WCHAR));
-
-    MultiByteToWideChar(CP_UTF8, 0, utf8, -1, utf16, size);
-
-    FILE *fp = _wfopen(utf16, L"rb");
-    if(!fp) {
-        cout << "文件打开失败。" << endl;
+    PNG *png_obj = wmkcNull;
+    try {
+        png_obj = new PNG("p:/VisualStudio2022_profile_1560x1560.png", "rb");
+    } catch(bad_alloc &e) {
+        cout << "Failed to create PNG object." << endl;
+        return EOF;
     }
 
-    delete[] utf16;
+    try {
+        png_obj->open();
+        png_obj->read();
+    } catch(exception &e) {
+        cout << e.what() << endl;
+        return EOF;
+    }
+
+    cout << "IHDR width:      "  << dec << png_obj->IHDR->width << endl;
+    cout <<  "IHDR height:     " << dec << png_obj->IHDR->height << endl;
+    cout << setfill('0') << hex << endl;
+    cout <<  "IHDR Bit Depth:  " << setw(2) << (int)png_obj->IHDR->bitDepth << endl;
+    cout <<  "IHDR Color Type: " << setw(2) << (int)png_obj->IHDR->colorType << endl;
+    cout <<  "IHDR Compress:   " << setw(2) << (int)png_obj->IHDR->compressMethod << endl;
+    cout <<  "IHDR Filter:     " << setw(2) << (int)png_obj->IHDR->filterMethod << endl;
+    cout <<  "IHDR Interlace:  " << setw(2) << (int)png_obj->IHDR->interlaceMethod << endl;
+
+    if(png_obj->IHDR)
+        delete png_obj->IHDR;
+    delete png_obj;
     return 0;
 }
