@@ -20,6 +20,7 @@ typedef struct {
     wmkcByte name[4];
     wmkcByte *data;
     wmkcByte crc[4];
+    wmkc_u32 size32;
 } PNG_Chunk_t;
 
 typedef struct {
@@ -40,6 +41,7 @@ class PNG {
         wmkcCSTR _mode;
 
         wmkcByte chunk_data[4];
+        wmkc_u32 chunk_size;
 
         wmkc_u32 offset()
         {
@@ -96,16 +98,48 @@ class PNG {
             this->IHDR->compressMethod = fgetc(this->FileStream->fp);
             this->IHDR->filterMethod = fgetc(this->FileStream->fp);
             this->IHDR->interlaceMethod = fgetc(this->FileStream->fp);
+            // 跳过CRC校验
+            this->offset(4, SEEK_CUR);
         }
 
     public:
         PNG_IHDR_Chunk_t *IHDR;
+        PNG_Chunk_t *sRGB;
+        PNG_Chunk_t *gAMA;
+        PNG_Chunk_t *pHYs;
+        PNG_Chunk_t *IDAT;
 
         PNG(wmkcCSTR pngPath, wmkcCSTR openMode)
-        : FileStream(), error(), IHDR()
+        : FileStream(), error(), IHDR(), sRGB(), gAMA(), pHYs(), IDAT()
         {
             this->_path = pngPath;
             this->_mode = openMode;
+        }
+
+        ~PNG()
+        {
+            if(this->IHDR) delete this->IHDR;
+            if(this->sRGB) {
+                delete this->sRGB->data;
+                delete this->sRGB;
+            }
+            if(this->gAMA) {
+                delete this->gAMA->data;
+                delete this->gAMA;
+            }
+            if(this->pHYs) {
+                delete this->pHYs->data;
+                delete this->pHYs;
+            }
+            if(this->IDAT) {
+                delete this->IDAT->data;
+                delete this->IDAT;
+            }
+            this->IHDR = wmkcNull;
+            this->sRGB = wmkcNull;
+            this->gAMA = wmkcNull;
+            this->pHYs = wmkcNull;
+            this->IDAT = wmkcNull;
         }
 
         wmkcVoid open()
@@ -124,18 +158,67 @@ class PNG {
             }
         }
 
+        wmkcVoid read_chunk()
+        {
+            PNG_Chunk_t *p = new PNG_Chunk_t;
+
+            // 获取块长度
+            fread(p->size, 1, 4, this->FileStream->fp);
+            wmkcStruct_unpack(">I", &p->size32, p->size);
+            // 获取块名称
+            fread(p->name, 1, 4, this->FileStream->fp);
+            // 获取块内容
+            p->data = new wmkcByte[p->size32];
+            fread(p->data, 1, p->size32, this->FileStream->fp);
+            // 获取块CRC
+            fread(p->crc, 1, 4, this->FileStream->fp);
+
+            if(!memcmp(p->name, "sRGB", 4)) {
+                this->sRGB = p;
+            } else if(!memcmp(p->name, "gAMA", 4)) {
+                this->gAMA = p;
+            } else if(!memcmp(p->name, "pHYs", 4)) {
+                this->pHYs = p;
+            } else if(!memcmp(p->name, "IDAT", 4)) {
+                this->IDAT = p;
+            }
+        }
+
         wmkcVoid read()
         {
             this->is_png();
             this->read_IHDR();
+            this->read_chunk();
         }
 };
+
+void print(PNG *png_obj)
+{
+    PNG_Chunk_t *p = wmkcNull;
+    if(png_obj->sRGB) {
+        p = png_obj->sRGB;
+    } else if(png_obj->pHYs) {
+        p = png_obj->pHYs;
+    } else if(png_obj->IDAT) {
+        p = png_obj->IDAT;
+    } else if(png_obj->gAMA) {
+        p = png_obj->gAMA;
+    } else {
+        cout << "Error, not matching a supported block name." << endl;
+        exit(EOF);
+    }
+
+    printf("Chunk size: %u\n", p->size32);
+    printf("Chunk name: "); wmkcMisc_PRINT(p->name, 4, 5, 1, 0);
+    printf("Chunk data: "); wmkcMisc_PRINT(p->data, p->size32, p->size32+1, 1, 0);
+    printf("Chunk CRC:  "); wmkcMisc_PRINT(p->crc, 4, 5, 1, 0);
+}
 
 int main()
 {
     PNG *png_obj = wmkcNull;
     try {
-        png_obj = new PNG("p:/VisualStudio2022_profile_1560x1560.png", "rb");
+        png_obj = new PNG("p:/QQ/QQ_Images/45732748e031b6557ab3960aadcbf906.png", "rb");
     } catch(bad_alloc &e) {
         cout << "Failed to create PNG object." << endl;
         return EOF;
@@ -148,18 +231,19 @@ int main()
         cout << e.what() << endl;
         return EOF;
     }
+    printf("PNG IHDR Width:     %u\n",   png_obj->IHDR->width);
+    printf("PNG IHDR Height:    %u\n",   png_obj->IHDR->height);
+    printf("PNG IHDR BitDepth:  %02x\n", png_obj->IHDR->bitDepth);
+    printf("PNG IHDR ColorType: %02x\n", png_obj->IHDR->colorType);
+    printf("PNG IHDR Compress:  %02x\n", png_obj->IHDR->compressMethod);
+    printf("PNG IHDR Filter:    %02x\n", png_obj->IHDR->filterMethod);
+    printf("PNG IHDR Interlace: %02x\n", png_obj->IHDR->interlaceMethod);
 
-    cout << "IHDR width:      "  << dec << png_obj->IHDR->width << endl;
-    cout <<  "IHDR height:     " << dec << png_obj->IHDR->height << endl;
-    cout << setfill('0') << hex << endl;
-    cout <<  "IHDR Bit Depth:  " << setw(2) << (int)png_obj->IHDR->bitDepth << endl;
-    cout <<  "IHDR Color Type: " << setw(2) << (int)png_obj->IHDR->colorType << endl;
-    cout <<  "IHDR Compress:   " << setw(2) << (int)png_obj->IHDR->compressMethod << endl;
-    cout <<  "IHDR Filter:     " << setw(2) << (int)png_obj->IHDR->filterMethod << endl;
-    cout <<  "IHDR Interlace:  " << setw(2) << (int)png_obj->IHDR->interlaceMethod << endl;
+    print(png_obj);
 
-    if(png_obj->IHDR)
-        delete png_obj->IHDR;
+    png_obj->read_chunk();
+    print(png_obj);
+
     delete png_obj;
     return 0;
 }
