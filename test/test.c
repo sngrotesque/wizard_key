@@ -25,6 +25,7 @@
 #include <wmkc_math.c>
 #include <wmkc_misc.c>
 #include <wmkc_img.c>
+#include <wmkc_png.c>
 #include <wmkc_pad.c>
 
 #if 1
@@ -111,7 +112,25 @@ void HTTP_Client()
 
 void test()
 {
-    
+    wmkcErr_obj error;
+    wmkcPNG_obj *png = wmkcNull;
+    wmkcPNG_new(&png);
+
+    error = wmkcPNG_read(png, 0, "I:/Pitchers/VisualStudio2022_profile_1560x1560.png");
+    if(error.code) {
+        printf("%s[%d]: %s\n", error.func, (wmkc_s32)error.code, error.message);
+        return;
+    }
+
+    printf("PNG Width:      %u\n",   png->width);
+    printf("PNG height:     %u\n",   png->height);
+    printf("PNG Bit depth:  %02x\n", png->bitDepth);
+    printf("PNG Color type: %02x\n", png->colorType);
+    printf("PNG Compress:   %02x\n", png->compressMethod);
+    printf("PNG Filter:     %02x\n", png->filterMethod);
+    printf("PNG Interlace:  %02x\n", png->interlaceMethod);
+
+    wmkcPNG_free(&png);
 }
 
 int main(wmkc_s32 argc, wmkcChar **argv)

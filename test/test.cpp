@@ -15,12 +15,13 @@
 
 using namespace std;
 
-typedef struct {
+typedef struct PNG_Chunk_t {
     wmkcByte size[4];
     wmkcByte name[4];
     wmkcByte *data;
     wmkcByte crc[4];
     wmkc_u32 size32;
+    struct PNG_Chunk_t *next;
 } PNG_Chunk_t;
 
 typedef struct {
