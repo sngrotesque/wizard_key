@@ -54,6 +54,16 @@ WMKC_OF((wmkc_u32 x, wmkc_u32 y));
 WMKC_PUBLIC(wmkcErr_obj) wmkcWinapi_setDesktopWallpaper WMKC_OPEN_API
 WMKC_OF((LPWSTR path));
 
+/**
+ * @brief 设置开始菜单透明度
+ * @authors SN-Grotesque
+ * @note 此函数目前只能将开始菜单设置为透明或不透明，不包含任何效果（如亚克力）
+ * @param bAlpha 开始菜单的不透明度
+ * @return wmkcErr对象code为非0代表出错，需检查。
+ */
+WMKC_PUBLIC(wmkcErr_obj) wmkcWinapi_opacityStartMenu WMKC_OPEN_API
+WMKC_OF((BYTE bAlpha));
+
 #endif /* WMKC_PLATFORM_WINOS */
 #endif /* WMKC_WINAPI */
 #endif /* WMKC_SUPPORT */

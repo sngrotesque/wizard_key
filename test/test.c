@@ -1,5 +1,4 @@
 
-// #include <wmkc_winapi.c>
 // #include <wmkc_dict.c>
 // #include <wmkc_sort.c>
 // #include <crypto/snc_412.c>
@@ -17,6 +16,7 @@
 #include <wmkc_random.c>
 #include <wmkc_stream.c>
 #include <wmkc_struct.c>
+#include <wmkc_winapi.c>
 #include <wmkc_basic.c>
 #include <wmkc_coder.c>
 #include <wmkc_file.c>
@@ -110,13 +110,13 @@ void HTTP_Client()
     win_net_clear();
 }
 
-void test()
+void png_test()
 {
     wmkcErr_obj error;
     wmkcPNG_obj *png = wmkcNull;
     wmkcPNG_new(&png);
 
-    error = wmkcPNG_read(png, 0, "I:/Pitchers/VisualStudio2022_profile_1560x1560.png");
+    error = wmkcPNG_read(png, 0, "I:/Pitchers/PictureArchive/Pixiv/1628723-0ded1ec008-00000008.png");
     if(error.code) {
         printf("%s[%d]: %s\n", error.func, (wmkc_s32)error.code, error.message);
         return;
@@ -131,6 +131,12 @@ void test()
     printf("PNG Interlace:  %02x\n", png->interlaceMethod);
 
     wmkcPNG_free(&png);
+}
+
+void test()
+{
+    wmkcErr_obj error = wmkcWinapi_opacityStartMenu(168);
+    printf("%d.%s.%s\n", error.code, error.func, error.message);
 }
 
 int main(wmkc_s32 argc, wmkcChar **argv)

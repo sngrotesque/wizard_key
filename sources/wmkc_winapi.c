@@ -99,3 +99,25 @@ WMKC_OF((LPWSTR path))
 
     wmkcErr_return(error, wmkcErr_OK, "wmkcWinapi_setDesktopWallpaper", "OK.");
 }
+
+WMKC_PUBLIC(wmkcErr_obj) wmkcWinapi_opacityStartMenu WMKC_OPEN_API
+WMKC_OF((BYTE bAlpha))
+{
+    wmkcErr_obj error;
+    HWND handle = FindWindowW(L"Windows.UI.Core.CoreWindow", L"启动");
+    if(!handle) {
+        wmkcErr_return(error, wmkcErr_ErrSysFunc, "wmkcWinapi_opacityStartMenu",
+            "The handle was not found. Please check the window name.");
+    }
+
+    if(!SetWindowLongW(handle, GWL_EXSTYLE, GetWindowLongW(handle, GWL_EXSTYLE) | WS_EX_LAYERED)) {
+        wmkcErr_return(error, wmkcErr_ErrSysFunc, "wmkcWinapi_opacityStartMenu",
+            "SetWindowLongW function returned an error code when called.");
+    }
+    if(!SetLayeredWindowAttributes(handle, 0, bAlpha, LWA_ALPHA)) {
+        wmkcErr_return(error, wmkcErr_ErrSysFunc, "wmkcWinapi_opacityStartMenu",
+            "SetLayeredWindowAttributes function returned an error code when called.");
+    }
+
+    wmkcErr_return(error, wmkcErr_OK, "wmkcWinapi_opacityStartMenu", "OK.");
+}
