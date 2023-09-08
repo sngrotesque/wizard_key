@@ -4,7 +4,6 @@
 #ifndef WMKC_PADDING
 #define WMKC_PADDING
 #include <wmkc_random.h>
-#include <wmkc_time.h>
 
 #define WMKC_PAD_VALUE 0xac // 填充值
 
