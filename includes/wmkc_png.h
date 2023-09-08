@@ -30,25 +30,6 @@ typedef struct {
     wmkcPNG_chunk *chunk;
 } wmkcPNG_obj;
 
-// IHDR块与IEND块默认包含
-typedef enum {
-    IDAT = (1 << 0),
-    tEXt = (1 << 1),
-    sRGB = (1 << 2),
-    pHYs = (1 << 3),
-    iTXt = (1 << 4),
-    iCCP = (1 << 5),
-    cHRM = (1 << 6),
-    gAMA = (1 << 7),
-    sBIT = (1 << 8),
-    hIST = (1 << 9),
-    sPLT = (1 << 10),
-    bKGD = (1 << 11),
-    tIME = (1 << 12),
-    tRNS = (1 << 13),
-    zTXt = (1 << 14)
-} wmkcPNG_type;
-
 /**
  * @brief 为wmkcPNG对象申请内存空间
  * @authors SN-Grotesque
@@ -80,7 +61,7 @@ WMKC_OF((wmkcPNG_obj **obj));
  * @return wmkcErr对象code为非0代表出错，需检查。
  */
 WMKC_PUBLIC(wmkcErr_obj) wmkcPNG_read WMKC_OPEN_API
-WMKC_OF((wmkcPNG_obj *obj, wmkcPNG_type type, wmkcCSTR path));
+WMKC_OF((wmkcPNG_obj *obj, wmkcCSTR path));
 
 #endif /* WMKC_PNG */
 #endif /* WMKC_SUPPORT */

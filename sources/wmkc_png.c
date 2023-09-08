@@ -1,28 +1,5 @@
 #include <wmkc_png.h>
 
-WMKC_PRIVATE(wmkcVoid) wmkcPNG_match
-WMKC_OF((wmkcPNG_chunk *chunk, wmkcPNG_type type))
-{
-    switch(type) {
-        case IDAT:
-        case tEXt:
-        case sRGB:
-        case pHYs:
-        case iTXt:
-        case iCCP:
-        case cHRM:
-        case gAMA:
-        case sBIT:
-        case hIST:
-        case sPLT:
-        case bKGD:
-        case tIME:
-        case tRNS:
-        case zTXt:
-            break;
-    }
-}
-
 WMKC_PUBLIC(wmkcErr_obj) wmkcPNG_new WMKC_OPEN_API
 WMKC_OF((wmkcPNG_obj **obj))
 {
@@ -65,7 +42,7 @@ WMKC_OF((wmkcPNG_obj **obj))
 }
 
 WMKC_PUBLIC(wmkcErr_obj) wmkcPNG_read WMKC_OPEN_API
-WMKC_OF((wmkcPNG_obj *obj, wmkcPNG_type type, wmkcCSTR path))
+WMKC_OF((wmkcPNG_obj *obj, wmkcCSTR path))
 {
     wmkcErr_obj error;
     if(!obj || !path) {
@@ -98,6 +75,9 @@ WMKC_OF((wmkcPNG_obj *obj, wmkcPNG_type type, wmkcCSTR path))
     obj->compressMethod = fgetc(file->fp);
     obj->filterMethod = fgetc(file->fp);
     obj->interlaceMethod = fgetc(file->fp);
+
+
+
 
     wmkcFile_close(&file);
     wmkcErr_return(error, wmkcErr_OK, "wmkcPNG_read", "OK.");
