@@ -22,22 +22,7 @@ from hexdump import hexdump
 import matplotlib.pyplot as plt
 from snpy import *
 
-RED   = '\x1b[91m'
-CYAN  = '\x1b[96m'
-RESET = '\x1b[0m'
+ctx = wmkcCrypto(b'0123456789abcdef', b'0123456789abcdef', None, AES.MODE_CFB, None, None, 12)
+res = ctx.aes_encrypt(b'1234567890')
+print(res)
 
-def unpack(content :bytes):
-    return struct.unpack('>I', content)[0]
-
-def PNG_read(png_path :str):
-    with open(png_path, 'rb') as f:
-        if f.read(8) != b'\x89\x50\x4E\x47\x0D\x0A\x1A\x0A':
-            print(f'{RED}[-]{RESET} {CYAN}{png_path}{RESET} is not a PNG image.')
-            exit(-1)
-        png_size = unpack(f.read(4))
-        f.seek(4, os.SEEK_CUR)
-        print(f.read(4))
-
-path = 'p:/VisualStudio2022_profile_1560x1560.png'
-
-PNG_read(path)

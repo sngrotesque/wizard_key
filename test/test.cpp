@@ -215,14 +215,14 @@ void print(PNG *png_obj)
     printf("Chunk CRC:  "); wmkcMisc_PRINT(p->crc, 4, 5, 1, 0);
 }
 
-int main()
+void test()
 {
     PNG *png_obj = wmkcNull;
     try {
         png_obj = new PNG("p:/QQ/QQ_Images/45732748e031b6557ab3960aadcbf906.png", "rb");
     } catch(bad_alloc &e) {
         cout << "Failed to create PNG object." << endl;
-        return EOF;
+        return;
     }
 
     try {
@@ -230,7 +230,7 @@ int main()
         png_obj->read();
     } catch(exception &e) {
         cout << e.what() << endl;
-        return EOF;
+        return;
     }
     printf("PNG IHDR Width:     %u\n",   png_obj->IHDR->width);
     printf("PNG IHDR Height:    %u\n",   png_obj->IHDR->height);
@@ -246,5 +246,10 @@ int main()
     print(png_obj);
 
     delete png_obj;
+}
+
+int main()
+{
+    
     return 0;
 }

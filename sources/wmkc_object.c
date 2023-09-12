@@ -84,4 +84,3 @@ WMKC_OF((wmkc_obj *obj, wmkcCSTR content))
 
     wmkcErr_return(error, wmkcErr_OK, "wmkcObj_append", "OK.");
 }
-

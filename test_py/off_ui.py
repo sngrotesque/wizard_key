@@ -53,8 +53,7 @@ class MyWindow(QWidget):
         # 停止定时器
         self.timer.stop()
         # 调用系统命令，强制关机
-        # subprocess.call('shutdown /f /p', shell = True)
-        win32api.MessageBox(0, '关机测试', '关机测试')
+        subprocess.call('shutdown /f /p', shell = True)
 
 # 创建一个应用对象
 app = QApplication(sys.argv)
