@@ -152,6 +152,7 @@ void test()
         if(wmkcObj_find(obj, subString, strlen(subString), true).code) {
             break;
         }
+        printf("%s Index: 0x%llx\n", subString, obj->index);
         fprintf(file->fp, "%s Index: 0x%llx\n", subString, obj->index);
     }
     wmkcTime_TimerEnd(&timer);
