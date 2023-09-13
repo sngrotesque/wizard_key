@@ -15,6 +15,7 @@ typedef struct {
     wmkcByte *buf; // 缓冲区数据
     wmkcSize size; // 缓冲区长度
     wmkcSize index; // 下标（用于在调用find，index函数后查找下一个指定子串）
+    wmkcBool found; // 用于wmkcObj_find函数查找下一个内容时使用
 } wmkc_obj;
 /**
  * @brief Common methods for Bytes objects in Python.
@@ -60,7 +61,10 @@ WMKC_PUBLIC(wmkcErr_obj) wmkcObj_reverse WMKC_OPEN_API
 WMKC_OF((wmkc_obj *obj));
 
 WMKC_PUBLIC(wmkcErr_obj) wmkcObj_append WMKC_OPEN_API
-WMKC_OF((wmkc_obj *obj, wmkcCSTR content));
+WMKC_OF((wmkc_obj *obj, wmkcCSTR content, wmkcSize size));
+
+WMKC_PUBLIC(wmkcErr_obj) wmkcObj_find WMKC_OPEN_API
+WMKC_OF((wmkc_obj *obj, wmkcCSTR content, wmkcSize size, wmkcBool findNext));
 
 #ifdef __cplusplus
 }

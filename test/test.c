@@ -83,12 +83,12 @@ void HTTP_Client()
     error = wmkcSSL_connect(ssl_ctx, HOSTNAME, HOSTPORT);
     if(error.code) printf("%s: %s\n", error.func, error.message);
 
-    wmkcObj_append(SendStream, "GET / HTTP/1.1\r\n");
-    wmkcObj_append(SendStream, "Host: "HOSTNAME"\r\n");
-    wmkcObj_append(SendStream, "Accept: */*; text/html\r\n");
-    wmkcObj_append(SendStream, "Accept-Encoding: identity\r\n");
-    wmkcObj_append(SendStream, "Connection: close\r\n");
-    wmkcObj_append(SendStream, "User-Agent: "USERAGENT"\r\n\r\n");
+    wmkcObj_append(SendStream, "GET / HTTP/1.1\r\n", 0);
+    wmkcObj_append(SendStream, "Host: "HOSTNAME"\r\n", 0);
+    wmkcObj_append(SendStream, "Accept: */*; text/html\r\n", 0);
+    wmkcObj_append(SendStream, "Accept-Encoding: identity\r\n", 0);
+    wmkcObj_append(SendStream, "Connection: close\r\n", 0);
+    wmkcObj_append(SendStream, "User-Agent: "USERAGENT"\r\n\r\n", 0);
     wmkcSSL_sendall(ssl_ctx, (wmkcNetBufT *)SendStream->buf, SendStream->size);
 
     for(;;) {
@@ -97,7 +97,7 @@ void HTTP_Client()
             break;
         }
 
-        wmkcObj_append(RecvStream, (wmkcCSTR)recvbuf);
+        wmkcObj_append(RecvStream, (wmkcCSTR)recvbuf, ssl_ctx->net->tSize);
     }
 
     wmkcFile_fwrite(RecvStream->buf, RecvStream->size, "test."HOSTNAME".html");
@@ -136,13 +136,30 @@ void png_test()
 void test()
 {
     wmkc_obj *obj = wmkcNull;
+    wmkcFile_obj *file = wmkcNull;
+    wmkcCSTR subString = "IDAT";
+    wmkcCSTR filePath = "find_match.txt";
+    wmkcCSTR fileMode = "w";
+    wmkcTime_obj timer;
 
     wmkcObj_new(&obj);
+    wmkcFile_fread(&obj->buf, &obj->size, "I:/Pitchers/PictureArchive/Pixiv/illust_78960320_20200314_102922.png");
 
-    wmkcObj_append(obj, "123\r\n");
-    wmkcObj_reverse(obj);
+    wmkcFile_open(&file, filePath, fileMode);
+    printf("Timer begin.\n");
+    wmkcTime_TimerBegin(&timer);
+    for(;;) {
+        if(wmkcObj_find(obj, subString, strlen(subString), true).code) {
+            break;
+        }
+        fprintf(file->fp, "%s Index: 0x%llx\n", subString, obj->index);
+    }
+    wmkcTime_TimerEnd(&timer);
+    printf("Timer end.\n");
+    wmkcFile_close(&file);
 
-    wmkcMisc_PRINT(obj->buf, obj->size, 16, 1, 0);
+    printf("Timer: %.4lf\n", timer.totalTime);
+
     wmkcObj_free(&obj);
 }
 

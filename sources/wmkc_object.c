@@ -14,6 +14,8 @@ WMKC_OF((wmkc_obj **obj))
 
     (*obj)->buf = wmkcNull;
     (*obj)->size = 0;
+    (*obj)->index = 0;
+    (*obj)->found = false;
 
     wmkcErr_return(error, wmkcErr_OK, "wmkcObj_new", "OK.");
 }
@@ -54,7 +56,7 @@ WMKC_OF((wmkc_obj *obj))
 }
 
 WMKC_PUBLIC(wmkcErr_obj) wmkcObj_append WMKC_OPEN_API
-WMKC_OF((wmkc_obj *obj, wmkcCSTR content))
+WMKC_OF((wmkc_obj *obj, wmkcCSTR content, wmkcSize size))
 {
     wmkcErr_obj error;
     if(!obj || !content) {
@@ -63,7 +65,7 @@ WMKC_OF((wmkc_obj *obj, wmkcCSTR content))
     }
 
     wmkcByte *p = wmkcNull;
-    wmkcSize size = strlen(content);
+    if(!size) size = strlen(content);
 
     if(obj->buf) {
         if(!wmkcMem_append(wmkcByte *, p, obj->buf, obj->size + size + 1)) {
@@ -83,4 +85,32 @@ WMKC_OF((wmkc_obj *obj, wmkcCSTR content))
     obj->buf[obj->size] = 0x00;
 
     wmkcErr_return(error, wmkcErr_OK, "wmkcObj_append", "OK.");
+}
+
+WMKC_PUBLIC(wmkcErr_obj) wmkcObj_find WMKC_OPEN_API
+WMKC_OF((wmkc_obj *obj, wmkcCSTR content, wmkcSize size, wmkcBool findNext))
+{
+    wmkcErr_obj error;
+    if(!obj || !content) {
+        wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcObj_find",
+            "obj or content is NULL.");
+    }
+    wmkcSize i;
+    wmkcBool findFlag = false;
+    if(!size) size = strlen(content);
+
+    for(i = (findNext)?((obj->found)?(obj->index+1):(obj->index)):(0); i < obj->size; ++i) {
+        if(!memcmp(obj->buf + i, content, size)) {
+            findFlag = true;
+            if(!obj->found)
+                obj->found = true;
+            obj->index = i;
+            break;
+        }
+    }
+
+    if(!findFlag) {
+        wmkcErr_return(error, wmkcErr_ErrOutRange, "wmkcObj_find", "No substring found.");
+    }
+    wmkcErr_return(error, wmkcErr_OK, "wmkcObj_find", "OK.");
 }
