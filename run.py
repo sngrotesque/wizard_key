@@ -21,8 +21,8 @@ class action:
 
         self.out_path = list(re.findall(r'(\w+)[/\\]+(\w+\.\w+)', self.in_path, re.S | re.I)[0])
         self.out_path[0] = os.path.join('misc', 'compiled')
-        self.out_path[1] = re.sub(r'.[cpp]+', r'.exe', self.out_path[1]) \
-            if sys.platform=='win32' else re.sub(r'.[cpp]+', r'', self.out_path[1])
+        self.out_path[1] = re.sub(r'\.[cpp]+', r'.exe', self.out_path[1]) \
+            if sys.platform=='win32' else re.sub(r'\.[cpp]+', r'', self.out_path[1])
         self.out_path = os.path.join(self.out_path[0], self.out_path[1])
 
     def run_code(self):

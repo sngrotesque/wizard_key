@@ -22,7 +22,13 @@ from hexdump import hexdump
 import matplotlib.pyplot as plt
 from snpy import *
 
-ctx = wmkcCrypto(b'0123456789abcdef', b'0123456789abcdef', None, AES.MODE_CFB, None, None, 12)
-res = ctx.aes_encrypt(b'1234567890')
-print(res)
+def encrypt(p :int, k :list):
+    for i in range(len(k)):
+        p ^= k[i]
+    return p
+
+k = [194, 45, 244, 120, 181, 125, 175, 216, 156, 102, 74, 141, 216, 152, 121, 129]
+
+for x in range(0x02, 0x102, 0x10):
+    print(f'{x:02x}, {encrypt(x, k):02x}')
 

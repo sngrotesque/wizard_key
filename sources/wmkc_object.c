@@ -124,10 +124,7 @@ WMKC_OF((wmkc_obj *obj, wmkcCSTR content, wmkcSize size))
     wmkcErr_return(error, wmkcErr_OK, "wmkcObj_append", "OK.");
 }
 
-/**
- * @brief 此函数使用暴力匹配算法，时间复杂度会很糟糕
- */
-WMKC_PUBLIC(wmkcErr_obj) wmkcObj_find_old WMKC_OPEN_API
+WMKC_PUBLIC(wmkcErr_obj) wmkcObj_find WMKC_OPEN_API
 WMKC_OF((wmkc_obj *obj, wmkcCSTR content, wmkcSize size, wmkcBool findNext))
 {
     wmkcErr_obj error;
@@ -158,7 +155,7 @@ WMKC_OF((wmkc_obj *obj, wmkcCSTR content, wmkcSize size, wmkcBool findNext))
 /**
  * @brief 此函数使用KMP算法时针对“查找下一个”项时会重复下标
  */
-WMKC_PUBLIC(wmkcErr_obj) wmkcObj_find WMKC_OPEN_API
+WMKC_PUBLIC(wmkcErr_obj) wmkcObj_find_kmp WMKC_OPEN_API
 WMKC_OF((wmkc_obj *obj, wmkcCSTR sub, wmkcSize subSize, wmkcBool findNext))
 {
     wmkcErr_obj error;
@@ -166,7 +163,14 @@ WMKC_OF((wmkc_obj *obj, wmkcCSTR sub, wmkcSize subSize, wmkcBool findNext))
         wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcObj_find", "obj or sub is NULL.");
     }
     if(!subSize) subSize = strlen(sub);
+    wmkcSize pos;
 
+    if(!findNext) {
+        obj->index = wmkcObj_KMP(obj->buf, sub, obj->size, subSize);
+        if(obj->index == wmkcErr_Err64) {
+            wmkcErr_return(error, wmkcErr_ErrOutRange, "wmkcObj_find", "No substring found.");
+        }
+    }
 
     wmkcErr_return(error, wmkcErr_OK, "wmkcObj_find", "OK.");
 }

@@ -16,7 +16,9 @@
 #include <wmkc_random.c>
 #include <wmkc_stream.c>
 #include <wmkc_struct.c>
-#include <wmkc_winapi.c>
+#ifdef WMKC_PLATFORM_WINOS
+#   include <wmkc_winapi.c>
+#endif
 #include <wmkc_basic.c>
 #include <wmkc_coder.c>
 #include <wmkc_file.c>
@@ -57,9 +59,10 @@ void win_net_clear()
 #   endif
 }
 
-#define HOSTNAME "music.163.com"
+#define HOSTNAME "passport.bilibili.com"
 #define HOSTPORT 443
 #define USERAGENT "Mozilla/5.0 (X11; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/114.0"
+#define HOSTPATH "/login"
 
 void HTTP_Client()
 {
@@ -83,7 +86,7 @@ void HTTP_Client()
     error = wmkcSSL_connect(ssl_ctx, HOSTNAME, HOSTPORT);
     if(error.code) printf("%s: %s\n", error.func, error.message);
 
-    wmkcObj_append(SendStream, "GET / HTTP/1.1\r\n", 0);
+    wmkcObj_append(SendStream, "GET "HOSTPATH" HTTP/1.1\r\n", 0);
     wmkcObj_append(SendStream, "Host: "HOSTNAME"\r\n", 0);
     wmkcObj_append(SendStream, "Accept: */*; text/html\r\n", 0);
     wmkcObj_append(SendStream, "Accept-Encoding: identity\r\n", 0);
@@ -100,7 +103,7 @@ void HTTP_Client()
         wmkcObj_append(RecvStream, (wmkcCSTR)recvbuf, ssl_ctx->net->tSize);
     }
 
-    wmkcFile_fwrite(RecvStream->buf, RecvStream->size, "test."HOSTNAME".html");
+    wmkcFile_fwrite(RecvStream->buf, RecvStream->size, "test.html");
     wmkcMisc_PRINT_RAW(RecvStream->buf, RecvStream->size, 1);
 
     wmkcNet_close(sockfd);
@@ -133,12 +136,12 @@ void png_test()
     wmkcPNG_free(&png);
 }
 
-void test()
+void wmkcObj_find_test()
 {
     wmkc_obj *obj = wmkcNull;
     wmkcFile_obj *file = wmkcNull;
     wmkcCSTR subString = "IDAT";
-    wmkcCSTR filePath = "find_match.txt";
+    wmkcCSTR filePath = "find_match_kmp.txt";
     wmkcCSTR fileMode = "w";
     wmkcTime_obj timer;
 
@@ -152,7 +155,7 @@ void test()
         if(wmkcObj_find(obj, subString, strlen(subString), true).code) {
             break;
         }
-        printf("%s Index: 0x%llx\n", subString, obj->index);
+        // printf("%s Index: 0x%llx\n", subString, obj->index);
         fprintf(file->fp, "%s Index: 0x%llx\n", subString, obj->index);
     }
     wmkcTime_TimerEnd(&timer);
@@ -162,6 +165,27 @@ void test()
     printf("Timer: %.4lf\n", timer.totalTime);
 
     wmkcObj_free(&obj);
+}
+
+void snc_test()
+{
+    wmkcSNC_obj *snc = wmkcNull;
+    wmkcChar text[4096] = {
+        "0000000000000000000000"};
+    wmkcSize size = strlen(text);
+    wmkcByte *buf = (wmkcByte *)text;
+
+    wmkcSNC_new(&snc, SNC_256);
+    wmkcSNC_init(snc, SNC_TEST_KEY, SNC_TEST_IV);
+    wmkcSNC_cfb_encrypt(snc, buf, size, 8);
+    wmkcSNC_free(&snc);
+
+    wmkcMisc_PRINT(buf, size, 32, 1, 0);
+}
+
+void test()
+{
+    HTTP_Client();
 }
 
 int main(wmkc_s32 argc, wmkcChar **argv)

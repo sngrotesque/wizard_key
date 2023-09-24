@@ -1,11 +1,15 @@
 #include <network/wmkc_chunk.h>
 
-WMKC_PUBLIC(wmkcVoid) wmkcChunk_recv WMKC_OPEN_API
+WMKC_PUBLIC(wmkcErr_obj) wmkcChunk_recv WMKC_OPEN_API
 WMKC_OF((wmkcNet_obj *obj, wmkcNetBufT **buf, socklen_t *size))
 {
+    wmkcErr_obj error;
+    if(!obj || !buf || !size) {
+        wmkcErr_return(error, wmkcErr_ErrNULL, "wmkcChunk_recv", "obj or buf or size is NULL.");
+    }
+
+    wmkcNetBufT size_array[4], crc32_array[4];
     wmkcNetBufT *p = wmkcNull;
-    wmkcNetBufT size_array[4] = {0};
-    wmkcNetBufT crc32_array[4] = {0};
     socklen_t totalLengthReceived;
     wmkc_u32 crc32_n;
 
@@ -14,8 +18,8 @@ WMKC_OF((wmkcNet_obj *obj, wmkcNetBufT **buf, socklen_t *size))
     totalLengthReceived = *size;
 
     if(!wmkcMem_new(wmkcNetBufT *, (*buf), totalLengthReceived + 1)) {
-        printf("Failed to allocate memory for (*buf).\n");
-        return;
+        wmkcErr_return(error, wmkcErr_ErrMemory, "wmkcChunk_recv",
+            "Failed to allocate memory for (*buf).\n");
     }
     (*buf)[totalLengthReceived] = 0x00;
 
