@@ -93,7 +93,7 @@ WMKC_OF((wmkcSize min, wmkcSize max))
  * 此函数通过调用系统对应的安全随机数函数获取一个随机序列。
  * 可用作加密算法密钥等需要安全性的随机序列。
  * 
- * @note 无
+ * @note Windows中的这套提供安全随机数的API后期可能会被Microsoft弃用，请注意。
  * @param buf 指针，指向用于保存结果的序列的地址。
  * @param size 这是一个长度，代表buf指针指向的内容的长度
  *            （需要获取的随机序列的长度）。
