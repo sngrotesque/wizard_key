@@ -12,8 +12,8 @@ static const offTimeStructure defaultOffTime = {17, 27, 15};
 
 wmkcVoid system_off(wmkcVoid)
 {
-    system("shutdown /f /p");
-    // MessageBoxExW(wmkcNull, L"将系统关机", L"测试窗口", MB_OK, 0);
+    // system("shutdown /f /p");
+    MessageBoxExW(wmkcNull, L"将系统关机", L"测试窗口", MB_OK, 0);
 }
 
 wmkcBool check_chcp(wmkcVoid)
@@ -55,11 +55,14 @@ wmkc_s32 main(wmkc_s32 argc, wmkcChar **argv)
     }
     if(!directlyShutdown) {
         remain_second = (defaultOffTime.hour - now_arr.hour) * 3600 +
-                        (defaultOffTime.min - now_arr.min) * 60 - now_arr.sec;
+                        (defaultOffTime.min - now_arr.min) * 60 + 
+                        (defaultOffTime.sec - now_arr.sec);
         while(remain_second) {
             printf("\r现在是%02u:%02u:%02u，距离下班还有%5d秒",
                 now->tm_hour, now->tm_min, now->tm_sec++, remain_second--);
             mktime(now);
+            now->tm_min = now->tm_min; // 获取调整后的分钟数
+            now->tm_sec = now->tm_sec; // 获取调整后的秒数
             wmkcTime_sleep(1);
         }
     }

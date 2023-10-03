@@ -22,13 +22,7 @@ from hexdump import hexdump
 import matplotlib.pyplot as plt
 from snpy import *
 
-def encrypt(p :int, k :list):
-    for i in range(len(k)):
-        p ^= k[i]
-    return p
-
-k = [194, 45, 244, 120, 181, 125, 175, 216, 156, 102, 74, 141, 216, 152, 121, 129]
-
-for x in range(0x02, 0x102, 0x10):
-    print(f'{x:02x}, {encrypt(x, k):02x}')
-
+sha256 = hashlib.sha256()
+sha256.update()
+result = sha256.hexdigest()
+print(result)
