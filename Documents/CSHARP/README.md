@@ -2,6 +2,7 @@
 
 ### 类
 ```cs
+// https://learn.microsoft.com/zh-cn/dotnet/csharp/programming-guide/classes-and-structs/access-modifiers
 // 定义一个正常类
 public class Human {
     public string name;
@@ -29,4 +30,10 @@ public class Tom : Human {
         Console.WriteLine($"{this.name} sleep.");
     }
 }
+
+// internal类
+// 同一程序集中的任何代码都可以访问该类型或成员，但其他程序集中的代码不可以。
+// 换句话说，internal 类型或成员可以从属于同一编译的代码中访问。
+internal class Human {..}
+class Human {...}
 ```
