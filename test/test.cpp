@@ -17,66 +17,7 @@
 #include <wmkc_time.c>
 #include <wmkc_pad.c>
 
-using namespace std;
-
-class SNC_Object {
-    private:
-        wmkcSNC_obj *snc;
-        wmkcErr_obj error;
-
-    public:
-        wmkc_u32 segmentSize;
-        enum SNC_Xcrypt_Mode {
-            SNC_ECB, SNC_CBC, SNC_CFB, SNC_CTR
-        };
-
-        SNC_Object(const wmkcByte *key, const wmkcByte *iv, SNC_mode mode)
-        : snc(), error(), segmentSize(256)
-        {
-            switch(mode) {
-                case SNC_256:
-                case SNC_512:
-                case SNC_768: break;
-                default:
-                    throw runtime_error("Illegal mode, only supported: SNC_256, SNC_512, SNC_768");
-            }
-            if((error = wmkcSNC_new(&this->snc, mode)).code) {
-                throw runtime_error(format("{0}[{1}]:{2}", error.func, error.code, error.message));
-            }
-        }
-
-        ~SNC_Object() {
-            wmkcSNC_free(&this->snc);
-        }
-
-        void encrypt(wmkcByte *content, wmkcSize size, SNC_Xcrypt_Mode mode)
-        {
-            switch(mode) {
-                case SNC_ECB:
-                    wmkcSNC_ecb_encrypt(this->snc, content, size); break;
-                case SNC_CBC:
-                    wmkcSNC_cbc_encrypt(this->snc, content, size); break;
-                case SNC_CFB:
-                    wmkcSNC_cfb_encrypt(this->snc, content, size, this->segmentSize); break;
-                case SNC_CTR:
-                    wmkcSNC_ctr_xcrypt(this->snc, content, size); break;
-            }
-        }
-
-        void decrypt(wmkcByte *content, wmkcSize size, SNC_Xcrypt_Mode mode)
-        {
-            switch(mode) {
-                case SNC_ECB:
-                    wmkcSNC_ecb_decrypt(this->snc, content, size); break;
-                case SNC_CBC:
-                    wmkcSNC_cbc_decrypt(this->snc, content, size); break;
-                case SNC_CFB:
-                    wmkcSNC_cfb_decrypt(this->snc, content, size, this->segmentSize); break;
-                case SNC_CTR:
-                    wmkcSNC_ctr_xcrypt(this->snc, content, size); break;
-            }
-        }
-};
+#include <crypto/snc.hpp>
 
 WMKC_PRIVATE_CONST(wmkcByte) SNC_TEST_KEY[96] = {
     0xf1, 0x4b, 0xac, 0x47, 0x97, 0x28, 0x9b, 0x2b, 0xac, 0x54, 0xa8, 0xc7, 0xd4, 0xe2, 0xe8, 0xa2,
@@ -91,25 +32,19 @@ WMKC_PRIVATE_CONST(wmkcByte) SNC_TEST_IV[32] = {
 
 void sncObject_test()
 {
-    SNC_Object *SNC = wmkcNull;
-    wmkcChar _tmp[2048] = {"hello, world.\n"};
-    wmkcByte *buf = (wmkcByte *)_tmp;
-    wmkcSize size = strlen(_tmp);
+    wmkcSNC *snc = new wmkcSNC(SNC_TEST_KEY, SNC_TEST_IV, SNC_256, 8);
+    wmkcChar text[2048] = {"hello, world"};
+    wmkcByte *content = (wmkcByte *)text;
+    wmkcSize size = strlen(text);
 
-    wmkcPad_add(buf, &size, SNC_BLOCKLEN, false);
+    wmkcPad_add(content, &size, SNC_BLOCKLEN, false);
 
-    SNC = new SNC_Object(SNC_TEST_KEY, SNC_TEST_IV, SNC_768);
-    SNC->segmentSize = 32;
+    wmkcMisc_PRINT(content, size, 32, 1, 0);
+    snc->encrypt(content, size, SNC_CFB);
 
-    cout << "Plaintext" << endl;
-    wmkcMisc_PRINT(buf, size, 32, 1, 0);
+    wmkcMisc_PRINT(content, size, 32, 1, 0);
 
-    SNC->encrypt(buf, size, SNC_Object::SNC_CFB);
-
-    cout << "Ciphertext" << endl;
-    wmkcMisc_PRINT(buf, size, 32, 1, 0);
-
-    delete SNC;
+    delete snc;
 }
 
 int main(int argc, char **argv)
