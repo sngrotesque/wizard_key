@@ -7,12 +7,13 @@ typedef enum {
 
 class wmkcSNC {
     private:
-        wmkcSNC_obj *snc_ctx = wmkcNull;
+        wmkcSNC_obj *snc_ctx;
         wmkcErr_obj error;
     public:
         wmkc_u32 segmentSize;
+
         wmkcSNC(const wmkcByte *key, const wmkcByte *iv, SNC_mode KeyMode, wmkc_u32 segmentSize = 256)
-        : segmentSize(segmentSize)
+        : snc_ctx(), segmentSize(segmentSize)
         {
             if((error = wmkcSNC_new(&this->snc_ctx, KeyMode)).code ||
                 (error = wmkcSNC_init(this->snc_ctx, key, iv)).code) {

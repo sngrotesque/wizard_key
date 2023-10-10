@@ -32,15 +32,15 @@ WMKC_PRIVATE_CONST(wmkcByte) SNC_TEST_IV[32] = {
 
 void sncObject_test()
 {
-    wmkcSNC *snc = new wmkcSNC(SNC_TEST_KEY, SNC_TEST_IV, SNC_256, 8);
-    wmkcChar text[2048] = {"hello, world"};
+    wmkcSNC *snc = new wmkcSNC(SNC_TEST_KEY, SNC_TEST_IV, SNC_256);
+    wmkcChar text[2048] = {""};
     wmkcByte *content = (wmkcByte *)text;
     wmkcSize size = strlen(text);
 
     wmkcPad_add(content, &size, SNC_BLOCKLEN, false);
 
     wmkcMisc_PRINT(content, size, 32, 1, 0);
-    snc->encrypt(content, size, SNC_CFB);
+    snc->encrypt(content, size, SNC_CTR);
 
     wmkcMisc_PRINT(content, size, 32, 1, 0);
 

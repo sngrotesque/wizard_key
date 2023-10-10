@@ -89,8 +89,8 @@ T(message);
 <img src="https://github-readme-stats.vercel.app/api/top-langs?username=sngrotesque&title_color=ffff00&bg_color=151515&text_color=efefef&hide_border=true&layout=compact" align="right">
 
 <p>
-    主要使用的语言有[<code>C</code>, <code>C++</code>, <code>Python</code>]。<br>
-    偶尔使用或正在学习的语言有[<code>Java</code>, <code>C#</code>, <code>Ruby</code>, <code>Rust</code>, <code>Perl</code>]。<br>
+    主要使用的语言有[<code>C</code>, <code>C++</code>, <code>Python</code>, <code>Java</code>, <code>C#</code>]。<br>
+    偶尔使用或正在学习的语言有[<code>Ruby</code>, <code>Rust</code>, <code>Perl</code>]。<br>
     正在学习游戏开发，建模与图形学。<br>
     目前完成了对称加密算法，图像生成工具，与网络爬虫的开发。<br>
     未来用作游戏开发和底层程序开发主要使用的框架与引擎为：Qt，Unity，Unreal Engine，OpenGL，OpenSSL。
