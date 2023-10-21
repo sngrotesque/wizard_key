@@ -34,8 +34,11 @@ WMKC_OF((wmkcNet_obj *obj, wmkcNetBufT **buf, socklen_t *size))
 
     if(crc32(0, (wmkcByte *)(*buf), *size) != crc32_n) {
         wmkcMem_free((*buf));
-        return;
+        wmkcErr_return(error, wmkcErr_Err32, "wmkcChunk_recv",
+            "The CRC of the obtained data is different from the actual data.");
     }
+
+    wmkcErr_return(error, wmkcErr_OK, "wmkcChunk_recv", "OK.");
 }
 
 WMKC_PUBLIC(wmkcVoid) wmkcChunk_send WMKC_OPEN_API

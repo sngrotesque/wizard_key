@@ -13,7 +13,7 @@
 
 #include <zlib/zlib.h>
 
-WMKC_PUBLIC(wmkcVoid) wmkcChunk_recv WMKC_OPEN_API
+WMKC_PUBLIC(wmkcErr_obj) wmkcChunk_recv WMKC_OPEN_API
 WMKC_OF((wmkcNet_obj *obj, wmkcNetBufT **buf, socklen_t *size));
 
 WMKC_PUBLIC(wmkcVoid) wmkcChunk_send WMKC_OPEN_API

@@ -22,8 +22,7 @@ from hexdump import hexdump
 import matplotlib.pyplot as plt
 from snpy import *
 
-dice = [random.randint(1, 6) for _ in range(6)]
-
-print(dice)
-
-
+sockfd = socket.socket(AF_INET, SOCK_STREAM)
+sockfd.connect(('127.0.0.1', 49281))
+sockfd.send(b'Test.')
+sockfd.close()

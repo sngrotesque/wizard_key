@@ -18,6 +18,8 @@
 #include <wmkc_pad.c>
 
 #include <crypto/snc.hpp>
+// #include <network/wmkc_net.hpp>
+#include <network/wmkc_net.cpp>
 
 WMKC_PRIVATE_CONST(wmkcByte) SNC_TEST_KEY[96] = {
     0xf1, 0x4b, 0xac, 0x47, 0x97, 0x28, 0x9b, 0x2b, 0xac, 0x54, 0xa8, 0xc7, 0xd4, 0xe2, 0xe8, 0xa2,
@@ -47,8 +49,30 @@ void sncObject_test()
     delete snc;
 }
 
+void net_test()
+{
+    WSADATA ws;
+    WSAStartup(MAKEWORD(2,2), &ws);
+
+    wmkcNet *sockfd = new wmkcNet(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+    wmkcNet *cSockfd = wmkcNull;
+
+    sockfd->bind("0.0.0.0", 49281);
+    sockfd->listen(3);
+    cout << "Waiting for client connection..." << endl;
+    cSockfd = sockfd->accept();
+
+    cout << cSockfd->recv(4096) << endl;
+
+    cSockfd->close();
+    sockfd->close();
+    delete cSockfd, sockfd;
+    WSACleanup();
+}
+
 int main(int argc, char **argv)
 {
-    sncObject_test();
+    net_test();
+    
     return 0;
 }
