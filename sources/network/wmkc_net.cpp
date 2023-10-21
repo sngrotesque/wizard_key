@@ -228,11 +228,7 @@ void wmkcNet::send(wmkcNetBufT *buf, wmkc_s32 len, wmkc_s32 flag)
 
 void wmkcNet::sendall(wmkcNetBufT *buf, wmkc_s32 len, wmkc_s32 flag)
 {
-    while(len) {
-        this->send(buf, len);
-        len -= this->size;
-        buf += this->size;
-    }
+    
 }
 
 void wmkcNet::send(string content, wmkc_s32 flag)

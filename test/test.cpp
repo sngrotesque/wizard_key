@@ -51,23 +51,24 @@ void sncObject_test()
 
 void net_test()
 {
+#   ifdef WMKC_PLATFORM_WINOS
     WSADATA ws;
     WSAStartup(MAKEWORD(2,2), &ws);
-
+#   endif
     wmkcNet *sockfd = new wmkcNet(AF_INET, SOCK_STREAM, IPPROTO_TCP);
-    wmkcNet *cSockfd = wmkcNull;
+    string headers = (
+        "GET / HTTP/1.1\r\nHost: www.baidu.com\r\n"
+        "User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/116.0\r\n\r\n");
 
-    sockfd->bind("0.0.0.0", 49281);
-    sockfd->listen(3);
-    cout << "Waiting for client connection..." << endl;
-    cSockfd = sockfd->accept();
-
-    cout << cSockfd->recv(4096) << endl;
-
-    cSockfd->close();
+    sockfd->connect("www.baidu.com", 80);
+    sockfd->send(headers);
+    cout << sockfd->recv(4096) << endl;
     sockfd->close();
-    delete cSockfd, sockfd;
+
+    delete sockfd;
+#   ifdef WMKC_PLATFORM_WINOS
     WSACleanup();
+#   endif
 }
 
 int main(int argc, char **argv)
