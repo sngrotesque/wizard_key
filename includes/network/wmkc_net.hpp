@@ -130,22 +130,19 @@ class wmkcNet {
         wmkc_s32 type;
         wmkc_s32 proto;
         wmkc_s32 err;
-        wmkc_s32 size; // 单次传输长度
         double timeout;
         ADDRINFO hints;
-        ADDRINFO *sockAddrResult;
 
-        string localAddr;
-        string remoteAddr;
-        wmkc_u16 localPort;
-        wmkc_u16 remotePort;
+        string localSocketAddr;
+        string remoteSocketAddr;
 
         void wmkcNet_exception(string funcName);
         string getAddr(wmkcVoid *pAddr);
         wmkc_u16 getPort(wmkc_u16 port);
     public:
+        wmkc_s32 size; // 单次传输长度
         wmkcNet(wmkc_s32 _family, wmkc_s32 _type, wmkc_s32 _proto, wmkcNetSockT _fd = EOF)
-        : family(_family), type(_type), proto(_proto), hints(), sockAddrResult()
+        : family(_family), type(_type), proto(_proto), hints()
         {
             if(_fd == EOF) {
                 this->sockfd = socket(this->family, this->type, this->proto);
@@ -157,7 +154,7 @@ class wmkcNet {
             }
         }
         ~wmkcNet();
-        void getAddrInfo(string addr, string serviceName);
+        ADDRINFO *getAddrInfo(string addr, string serviceName);
         void settimeout(double _time);
         void connect(string addr, wmkc_u16 port);
         void bind(string addr, wmkc_u16 port);

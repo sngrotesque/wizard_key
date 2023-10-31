@@ -147,55 +147,65 @@ wmkc_u16 wmkcNet::getPort(wmkc_u16 port)
     return ntohs(port);
 }
 
-wmkcNet::~wmkcNet()
-{
-    if(this->sockAddrResult) {
-        freeaddrinfo(this->sockAddrResult);
-    }
-}
+wmkcNet::~wmkcNet() {}
 
-void wmkcNet::getAddrInfo(string addr, string serviceName)
+ADDRINFO *wmkcNet::getAddrInfo(string addr, string serviceName)
 {
     this->hints.ai_family = this->family;
     this->hints.ai_socktype = this->type;
     this->hints.ai_protocol = this->proto;
 
-    this->err = getaddrinfo(addr.c_str(), serviceName.c_str(), &this->hints, &this->sockAddrResult);
+    ADDRINFO *sockAddrRes = wmkcNull;
+    this->err = getaddrinfo(addr.c_str(), serviceName.c_str(), &this->hints, &sockAddrRes);
     if(this->err) {
         this->wmkcNet_exception("wmkcNet::getAddrInfo");
     }
+    return sockAddrRes;
 }
 
-void wmkcNet::settimeout(double _time)
+void wmkcNet::settimeout(double _val)
 {
+    this->timeout = _val;
+#   if defined(WMKC_PLATFORM_WINOS)
+    DWORD _timeout = (DWORD)(this->timeout * 1000);
+    wmkcChar *optval = (wmkcChar *)&_timeout;
+#   elif defined(WMKC_PLATFORM_LINUX)
+    double intpart = 0;
+    double fracpart = modf(this->timeout, &intpart);
+    struct timeval _timeout = {.tv_sec=(long)intpart, .tv_usec=(long)(fracpart * 1000000)};
+    wmkcVoid *optval = (wmkcVoid *)&_timeout;
+#   endif
 
+    if(setsockopt(this->sockfd, SOL_SOCKET, SO_SNDTIMEO, optval, sizeof(_timeout)) ||
+        setsockopt(this->sockfd, SOL_SOCKET, SO_RCVTIMEO, optval, sizeof(_timeout))) {
+        this->wmkcNet_exception("wmkcNet::settimeout");
+    }
 }
 
 void wmkcNet::connect(string addr, wmkc_u16 port)
 {
-    this->getAddrInfo(addr, format("{}", port));
-    this->err = ::connect(this->sockfd, this->sockAddrResult->ai_addr, this->sockAddrResult->ai_addrlen);
+    ADDRINFO *sockAddrResult = this->getAddrInfo(addr, format("{}", port));
+    this->err = ::connect(this->sockfd, sockAddrResult->ai_addr, sockAddrResult->ai_addrlen);
     if(this->err == EOF) {
         this->wmkcNet_exception("wmkcNet::connect");
     }
-
-    SOCKADDR *localAddr = nullptr;
-    if(!wmkcMem_new(SOCKADDR *, localAddr, this->sockAddrResult->ai_addrlen)) {
-        throw wmkcNet_error(wmkcErr_ErrMemory, "wmkcNet::connect",
-            "Failed to allocate memory for localAddr.");
-    }
-    wmkcMem_free(localAddr);
+    freeaddrinfo(sockAddrResult);
 
     // getsockname(this->sockfd, )
+    this->remoteSocketAddr = format("{}:{}", addr, port);
+    this->localSocketAddr = ""; // 在覆盖之前应检查此项是否为空
 }
 
 void wmkcNet::bind(string addr, wmkc_u16 port)
 {
-    this->getAddrInfo(addr, format("{}", port));
-    this->err = ::bind(this->sockfd, this->sockAddrResult->ai_addr, this->sockAddrResult->ai_addrlen);
+    ADDRINFO *sockAddrResult = this->getAddrInfo(addr, format("{}", port));
+    this->err = ::bind(this->sockfd, sockAddrResult->ai_addr, sockAddrResult->ai_addrlen);
     if(this->err == EOF) {
         this->wmkcNet_exception("wmkcNet::bind");
     }
+    freeaddrinfo(sockAddrResult);
+
+    this->localSocketAddr = format("{}:{}", addr, port);
 }
 
 void wmkcNet::listen(wmkc_s32 backlog)
@@ -228,7 +238,15 @@ void wmkcNet::send(wmkcNetBufT *buf, wmkc_s32 len, wmkc_s32 flag)
 
 void wmkcNet::sendall(wmkcNetBufT *buf, wmkc_s32 len, wmkc_s32 flag)
 {
-    
+    while(len) {
+        this->size = ::send(this->sockfd, buf, len, flag);
+
+        if(this->size == EOF) {
+            this->wmkcNet_exception("wmkcNet::sendall");
+        }
+        len -= this->size;
+        buf += this->size;
+    }
 }
 
 void wmkcNet::send(string content, wmkc_s32 flag)
