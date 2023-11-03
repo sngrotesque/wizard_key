@@ -140,7 +140,7 @@ class wmkcNet {
         string getAddr(wmkcVoid *pAddr);
         wmkc_u16 getPort(wmkc_u16 port);
     public:
-        wmkc_s32 size; // 单次传输长度
+        wmkc_s32 transmissionLength; // 单次传输长度
         wmkcNet(wmkc_s32 _family, wmkc_s32 _type, wmkc_s32 _proto, wmkcNetSockT _fd = EOF)
         : family(_family), type(_type), proto(_proto), hints()
         {

@@ -230,8 +230,8 @@ wmkcNet *wmkcNet::accept()
 
 void wmkcNet::send(wmkcNetBufT *buf, wmkc_s32 len, wmkc_s32 flag)
 {
-    this->size = ::send(this->sockfd, buf, len, flag);
-    if(this->size == EOF) {
+    this->transmissionLength = ::send(this->sockfd, buf, len, flag);
+    if(this->transmissionLength == EOF) {
         this->wmkcNet_exception("wmkcNet::send");
     }
 }
@@ -239,33 +239,46 @@ void wmkcNet::send(wmkcNetBufT *buf, wmkc_s32 len, wmkc_s32 flag)
 void wmkcNet::sendall(wmkcNetBufT *buf, wmkc_s32 len, wmkc_s32 flag)
 {
     while(len) {
-        this->size = ::send(this->sockfd, buf, len, flag);
+        this->transmissionLength = ::send(this->sockfd, buf, len, flag);
 
-        if(this->size == EOF) {
+        if(this->transmissionLength == EOF) {
             this->wmkcNet_exception("wmkcNet::sendall");
         }
-        len -= this->size;
-        buf += this->size;
+        len -= this->transmissionLength;
+        buf += this->transmissionLength;
     }
 }
 
 void wmkcNet::send(string content, wmkc_s32 flag)
 {
-    this->size = ::send(this->sockfd, (wmkcNetBufT *)content.c_str(), content.size(), flag);
-    if(this->size == EOF) {
+    this->transmissionLength = ::send(this->sockfd, (wmkcNetBufT *)content.c_str(), content.size(), flag);
+    if(this->transmissionLength == EOF) {
         this->wmkcNet_exception("wmkcNet::send");
     }
 }
 
 void wmkcNet::sendall(string content, wmkc_s32 flag)
 {
-    
+    char *offset_ptr = (char *)content.c_str();
+    uint32_t size = (socklen_t)content.size();
+    uint32_t retry_count = 5;
+
+    while(size) {
+        this->transmissionLength = ::send(this->sockfd, offset_ptr, size, flag);
+        if(this->transmissionLength == SOCKET_ERROR && retry_count--) {
+            // 将retry_count放入此块中，并判断是否为0，如果是，那么就返回一个false
+            // 同时记得改变这些函数的返回类型为布尔型
+            continue;
+        }
+        offset_ptr += this->transmissionLength;
+        size -= this->transmissionLength;
+    }
 }
 
 void wmkcNet::recv(wmkcNetBufT *buf, wmkc_s32 len, wmkc_s32 flag)
 {
-    this->size = ::recv(this->sockfd, buf, len, flag);
-    if(this->size == EOF) {
+    this->transmissionLength = ::recv(this->sockfd, buf, len, flag);
+    if(this->transmissionLength == EOF) {
         this->wmkcNet_exception("wmkcNet::recv");
     }
 }
@@ -278,11 +291,11 @@ string wmkcNet::recv(wmkc_s32 len, wmkc_s32 flag)
             "Failed to allocate memory for _tmp.");
     }
 
-    this->size = ::recv(this->sockfd, _tmp, len, flag);
-    if(this->size == EOF) {
+    this->transmissionLength = ::recv(this->sockfd, _tmp, len, flag);
+    if(this->transmissionLength == EOF) {
         this->wmkcNet_exception("wmkcNet::recv");
     }
-    string content(_tmp, this->size);
+    string content(_tmp, this->transmissionLength);
     wmkcMem_free(_tmp);
     return content;
 }
