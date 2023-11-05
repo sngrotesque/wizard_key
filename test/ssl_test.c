@@ -3,8 +3,9 @@
 
 #define HOSTNAME "www.pixiv.net"
 #define SSL_DISABLE(_Ctx) SSL_CTX_set_options(_Ctx, \
-    SSL_OP_NO_SSLv2 | SSL_OP_NO_SSLv3 | SSL_OP_NO_TLSv1 | SSL_OP_NO_TLSv1_1 | \
-    SSL_OP_CIPHER_SERVER_PREFERENCE   | SSL_OP_NO_RENEGOTIATION);\
+    SSL_OP_NO_SSLv2 | SSL_OP_NO_SSLv3 | \
+    SSL_OP_NO_TLSv1 | SSL_OP_NO_TLSv1_1 | \
+    SSL_OP_CIPHER_SERVER_PREFERENCE | SSL_OP_NO_RENEGOTIATION);\
     SSL_CTX_set_cipher_list(_Ctx, "HIGH:!aNULL:!eNULL");
 
 static const char* sendbuf = (
