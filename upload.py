@@ -86,6 +86,7 @@ class git_process:
         self.repo.index.commit(self.DefinedCommit)
         self.repo.remote().push(self.DefinedVersion)
 
+os.system('git rm --cached -r *')
 git = git_process()
 git.init()
 git.versionCheck()
