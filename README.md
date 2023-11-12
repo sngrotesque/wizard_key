@@ -61,9 +61,11 @@ typedef struct {
 
 ### 版本更新日志
 > 修改了版本后需要更改的文件  
-> includes/wmkc_conf.h  
 > upload.py  
 > READMKE.md
+
+#### v6.5.0
+1.  新增C++代码
 
 #### v6.4.0-dev
 1.  重构wmkcNet库与wmkcError结构。

@@ -22,7 +22,7 @@ class git_process:
         self.repo              = Repo.init(folder_path)
         self.DefinedRemoteUrl  = 'git@github.com:sngrotesque/WMKC.git'
         self.DefinedCommit     = 'Wizard Magic Key Cyber'
-        self.DefinedVersion    = 'v6.4.0-dev'
+        self.DefinedVersion    = 'v6.5.0'
         self.DefinedFolderPath = folder_path
 
         self.path = os.listdir(folder_path)
@@ -37,11 +37,6 @@ class git_process:
             test.c
         '''
         self.path.remove('.git')
-        self.path.remove('keys')
-        self.path.remove('Reference')
-        # self.path.remove('Documents')
-        self.path.remove('misc')
-        deleteListData(self.path, '___')
 
     def view(self):
         print(f'>>>> +---------- 现有文件(BEGIN) ----------+')
