@@ -78,7 +78,7 @@ class git_process:
         self.repo.remote().push(self.DefinedVersion)
 
 try:
-    if (sys.argv[2].lower() == 'yes') or (sys.argv[2].lower() == 'y'):
+    if (sys.argv[1].lower() == 'yes') or (sys.argv[1].lower() == 'y'):
         os.system('git rm --cached -r *')
 except IndexError:
     print('未指定是否从git暂存中删除所有暂存内容，默认为No。')
