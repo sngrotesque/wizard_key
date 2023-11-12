@@ -75,6 +75,15 @@ def main():
         exit(f'Too few parameters: {RED}{sys.argv[0]}{RESET} {CYAN}[src_file, [parameter]]{RESET}')
 
     cmp = compile(sys.argv[1], sys.argv[2:])
+
+    cmp.add_parameter('-I .')
+    cmp.add_parameter('-I c')
+    cmp.add_parameter('-I cpp')
+    cmp.add_parameter('-I c/includes')
+    cmp.add_parameter('-I c/sources')
+    cmp.add_parameter('-I cpp/includes')
+    cmp.add_parameter('-I cpp/sources')
+
     cmp.add_parameter('c/sources/crypto/snc.c')
     cmp.add_parameter('c/sources/wmkc_base64.c')
     cmp.add_parameter('c/sources/wmkc_memory.c')
@@ -82,6 +91,7 @@ def main():
     cmp.add_parameter('cpp/sources/network/wmkc_net.cpp')
     cmp.add_parameter('cpp/sources/wmkc_exception.cpp')
     cmp.add_parameter('cpp/sources/wmkc_base64.cpp')
+
     cmp.build()
     cmp.run()
 
