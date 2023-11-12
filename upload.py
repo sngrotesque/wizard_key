@@ -1,6 +1,6 @@
 from subprocess import Popen, PIPE, call
 from git.repo import Repo
-import re, os
+import sys, re, os
 
 def RunPopen(cmd :str):
     p = Popen(cmd, shell=True, stdout=PIPE)
@@ -77,7 +77,12 @@ class git_process:
         self.repo.index.commit(self.DefinedCommit)
         self.repo.remote().push(self.DefinedVersion)
 
-os.system('git rm --cached -r *')
+try:
+    if (sys.argv[2].lower() == 'yes') or (sys.argv[2].lower() == 'y'):
+        os.system('git rm --cached -r *')
+except IndexError:
+    print('未指定是否从git暂存中删除所有暂存内容，默认为No。')
+
 git = git_process()
 git.init()
 git.versionCheck()
