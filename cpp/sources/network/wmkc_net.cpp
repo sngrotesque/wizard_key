@@ -1,6 +1,6 @@
 #include <network/wmkc_net.hpp>
 
-void wmkcNet::wmkcNet_exception(string funcName)
+void wmkcNet::wmkcNet_exception(std::string funcName)
 {
 #   if defined(WMKC_PLATFORM_WINOS)
     wmkc_s32 err = WSAGetLastError();
@@ -130,16 +130,16 @@ void wmkcNet::wmkcNet_exception(string funcName)
                     msg = "Unexpected error."; break;
             }
     }
-    throw runtime_error(format("{0}[{1}]: {2}", funcName, err, msg));
+    throw std::runtime_error(std::string(funcName) + "[" + std::to_string(err) + "]: " + msg);
 }
 
-string wmkcNet::getAddr(wmkcVoid *pAddr)
+std::string wmkcNet::getAddr(wmkcVoid *pAddr)
 {
     char tmp_addr[INET6_ADDRSTRLEN];
     if(!inet_ntop(this->family, pAddr, tmp_addr, INET6_ADDRSTRLEN)) {
         throw wmkcNet_error(WSAGetLastError(), "wmkcNet::getAddr", "inet_ntop error.");
     }
-    return string(tmp_addr);
+    return std::string(tmp_addr);
 }
 
 wmkc_u16 wmkcNet::getPort(wmkc_u16 port)
@@ -149,7 +149,7 @@ wmkc_u16 wmkcNet::getPort(wmkc_u16 port)
 
 wmkcNet::~wmkcNet() {}
 
-ADDRINFO *wmkcNet::getAddrInfo(string addr, string serviceName)
+ADDRINFO *wmkcNet::getAddrInfo(std::string addr, std::string serviceName)
 {
     this->hints.ai_family = this->family;
     this->hints.ai_socktype = this->type;
@@ -182,9 +182,9 @@ void wmkcNet::settimeout(double _val)
     }
 }
 
-void wmkcNet::connect(string addr, wmkc_u16 port)
+void wmkcNet::connect(std::string addr, wmkc_u16 port)
 {
-    ADDRINFO *sockAddrResult = this->getAddrInfo(addr, format("{}", port));
+    ADDRINFO *sockAddrResult = this->getAddrInfo(addr, std::to_string(port));
     this->err = ::connect(this->sockfd, sockAddrResult->ai_addr, sockAddrResult->ai_addrlen);
     if(this->err == EOF) {
         this->wmkcNet_exception("wmkcNet::connect");
@@ -192,20 +192,20 @@ void wmkcNet::connect(string addr, wmkc_u16 port)
     freeaddrinfo(sockAddrResult);
 
     // getsockname(this->sockfd, )
-    this->remoteSocketAddr = format("{}:{}", addr, port);
+    this->remoteSocketAddr = addr + ":" + std::to_string(port);
     this->localSocketAddr = ""; // 在覆盖之前应检查此项是否为空
 }
 
-void wmkcNet::bind(string addr, wmkc_u16 port)
+void wmkcNet::bind(std::string addr, wmkc_u16 port)
 {
-    ADDRINFO *sockAddrResult = this->getAddrInfo(addr, format("{}", port));
+    ADDRINFO *sockAddrResult = this->getAddrInfo(addr, std::to_string(port));
     this->err = ::bind(this->sockfd, sockAddrResult->ai_addr, sockAddrResult->ai_addrlen);
     if(this->err == EOF) {
         this->wmkcNet_exception("wmkcNet::bind");
     }
     freeaddrinfo(sockAddrResult);
 
-    this->localSocketAddr = format("{}:{}", addr, port);
+    this->localSocketAddr = addr + ":" + std::to_string(port);
 }
 
 void wmkcNet::listen(wmkc_s32 backlog)
@@ -249,7 +249,7 @@ void wmkcNet::sendall(wmkcNetBufT *buf, wmkc_s32 len, wmkc_s32 flag)
     }
 }
 
-void wmkcNet::send(string content, wmkc_s32 flag)
+void wmkcNet::send(std::string content, wmkc_s32 flag)
 {
     this->transmissionLength = ::send(this->sockfd, (wmkcNetBufT *)content.c_str(), content.size(), flag);
     if(this->transmissionLength == EOF) {
@@ -257,7 +257,7 @@ void wmkcNet::send(string content, wmkc_s32 flag)
     }
 }
 
-void wmkcNet::sendall(string content, wmkc_s32 flag)
+void wmkcNet::sendall(std::string content, wmkc_s32 flag)
 {
     char *offset_ptr = (char *)content.c_str();
     uint32_t size = (socklen_t)content.size();
@@ -283,7 +283,7 @@ void wmkcNet::recv(wmkcNetBufT *buf, wmkc_s32 len, wmkc_s32 flag)
     }
 }
 
-string wmkcNet::recv(wmkc_s32 len, wmkc_s32 flag)
+std::string wmkcNet::recv(wmkc_s32 len, wmkc_s32 flag)
 {
     wmkcNetBufT *_tmp = wmkcNull;
     if(!wmkcMem_new(wmkcNetBufT *, _tmp, len)) {
@@ -295,7 +295,7 @@ string wmkcNet::recv(wmkc_s32 len, wmkc_s32 flag)
     if(this->transmissionLength == EOF) {
         this->wmkcNet_exception("wmkcNet::recv");
     }
-    string content(_tmp, this->transmissionLength);
+    std::string content(_tmp, this->transmissionLength);
     wmkcMem_free(_tmp);
     return content;
 }

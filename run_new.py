@@ -4,7 +4,7 @@ import os
 
 path_join = os.path.join
 path_exists = os.path.exists
-output_folder = 'compiled'
+output_folder = '_compiled'
 
 def run(cmd :str):
     subprocess.call(cmd, shell=True)
@@ -18,6 +18,7 @@ def main():
         '-I c/includes',
         '-I cpp',
         '-I cpp/includes/',
+        '-lws2_32',
         '-O3'
     ])
     sources_path = ' '.join([
@@ -27,7 +28,8 @@ def main():
         'c/sources/wmkc_base64.c',
         'cpp/sources/wmkc_exception.cpp',
         'cpp/sources/crypto/snc.cpp',
-        'cpp/sources/wmkc_base64.cpp'
+        'cpp/sources/wmkc_base64.cpp',
+        'cpp/sources/network/wmkc_net.cpp'
     ])
 
     compile_command = f'g++ {inFile} {sources_path} {args} -o {outFile}'

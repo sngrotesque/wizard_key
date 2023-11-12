@@ -27,7 +27,7 @@ class git_process:
 
         self.path = os.listdir(folder_path)
         self.path.remove('.git')
-        self.path.remove('compiled')
+        self.path.remove('_compiled')
 
     def view(self):
         print(f'>>>> +---------- 现有文件(BEGIN) ----------+')
@@ -77,7 +77,7 @@ class git_process:
         self.repo.index.commit(self.DefinedCommit)
         self.repo.remote().push(self.DefinedVersion)
 
-os.system('git rm --cached -r *')
+# os.system('git rm --cached -r *')
 git = git_process()
 git.init()
 git.versionCheck()
