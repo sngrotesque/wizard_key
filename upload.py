@@ -26,17 +26,8 @@ class git_process:
         self.DefinedFolderPath = folder_path
 
         self.path = os.listdir(folder_path)
-        '''\
-        此处的排序逻辑是隐藏目录优先级最高，其次是名称长的，最后是文件。
-        如下：
-            .1234/
-            .git/
-            12345/
-            123/
-            hello.c
-            test.c
-        '''
         self.path.remove('.git')
+        self.path.remove('compiled')
 
     def view(self):
         print(f'>>>> +---------- 现有文件(BEGIN) ----------+')
