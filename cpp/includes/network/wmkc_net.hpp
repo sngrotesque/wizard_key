@@ -1,5 +1,5 @@
 #include <wmkc_conf.hpp>
-#include <wmkc_error.h>
+#include <wmkc_exception.hpp>
 #include <math.h>
 
 // 关于这些宏的说明：includes/network/wmkc_net_macro.md
@@ -126,10 +126,6 @@ class wmkcNet_error : public std::exception {
 
 class wmkcNet {
     private:
-        wmkcNetSockT sockfd;
-        wmkc_s32 family;
-        wmkc_s32 type;
-        wmkc_s32 proto;
         wmkc_s32 err;
         double timeout;
         ADDRINFO hints;
@@ -141,6 +137,10 @@ class wmkcNet {
         std::string getAddr(wmkcVoid *pAddr);
         wmkc_u16 getPort(wmkc_u16 port);
     public:
+        wmkcNetSockT sockfd;
+        wmkc_s32 family;
+        wmkc_s32 type;
+        wmkc_s32 proto;
         wmkc_s32 transmissionLength; // 单次传输长度
         wmkcNet(wmkc_s32 _family, wmkc_s32 _type, wmkc_s32 _proto, wmkcNetSockT _fd = EOF)
         : family(_family), type(_type), proto(_proto), hints()

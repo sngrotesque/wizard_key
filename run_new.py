@@ -89,6 +89,7 @@ def main():
     cmp.add_parameter('c/sources/wmkc_memory.c')
     cmp.add_parameter('cpp/sources/crypto/snc.cpp')
     cmp.add_parameter('cpp/sources/network/wmkc_net.cpp')
+    # cmp.add_parameter('cpp/sources/network/wmkc_ssl.cpp')
     cmp.add_parameter('cpp/sources/wmkc_exception.cpp')
     cmp.add_parameter('cpp/sources/wmkc_base64.cpp')
 
