@@ -137,7 +137,7 @@ std::string wmkcNet::getAddr(wmkcVoid *pAddr)
 {
     char tmp_addr[INET6_ADDRSTRLEN];
     if(!inet_ntop(this->family, pAddr, tmp_addr, INET6_ADDRSTRLEN)) {
-        throw wmkcNet_error(WSAGetLastError(), "wmkcNet::getAddr", "inet_ntop error.");
+        this->wmkcNet_exception("wmkcNet::getAddr");
     }
     return std::string(tmp_addr);
 }
@@ -265,7 +265,7 @@ void wmkcNet::sendall(std::string content, wmkc_s32 flag)
 
     while(size) {
         this->transmissionLength = ::send(this->sockfd, offset_ptr, size, flag);
-        if(this->transmissionLength == SOCKET_ERROR && retry_count--) {
+        if(this->transmissionLength == EOF && retry_count--) {
             // 将retry_count放入此块中，并判断是否为0，如果是，那么就返回一个false
             // 同时记得改变这些函数的返回类型为布尔型
             continue;
@@ -295,7 +295,7 @@ std::string wmkcNet::recv(wmkc_s32 len, wmkc_s32 flag)
     if(this->transmissionLength == EOF) {
         this->wmkcNet_exception("wmkcNet::recv");
     }
-    std::string content(_tmp, this->transmissionLength);
+    std::string content((wmkcChar *)_tmp, this->transmissionLength);
     wmkcMem_free(_tmp);
     return content;
 }
