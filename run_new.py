@@ -1,42 +1,58 @@
 import subprocess
 import time
+import sys
+import re
 import os
 
 path_join = os.path.join
 path_exists = os.path.exists
 output_folder = '_compiled'
 
-def run(cmd :str):
-    subprocess.call(cmd, shell=True)
+RED = '\x1b[91m'
+CYAN = '\x1b[96m'
+RESET = '\x1b[0m'
+
+def create_output_name(input_path :str):
+    tmp = re.findall(r'(?:.*[/\\])?(.*)$', input_path, re.S)[0]
+    if ('.c' not in tmp) or ('.cpp' not in tmp):
+        raise TypeError(f'\'{tmp}\' is not a C or C++ code file.')
+    if sys.platform == 'win32':
+        return re.sub(r'\.[cpp|c]+', r'.exe', tmp)
+    return re.sub(r'\.[cpp|c]', r'', tmp)
+
+class compile:
+    def __init__(self, source_file_path :str):
+        if not path_exists(source_file_path):
+            raise FileExistsError(f'\'{source_file_path}\' does not exists.')
+
+        self.compile_args = ['-O3']
+        self.source_file_path = source_file_path
+
+    def __run_command(self, cmd :str):
+        return subprocess.call(cmd, shell=True)
+
+    # 合并GCC参数
+    def merge_parameter(self):
+        return ' '.join(self.compile_args)
+
+    # 添加GCC参数
+    def add_parameter(self, args :str):
+        self.compile_args.append(args)
 
 def main():
-    inFile = path_join('test', 'main.cpp')
-    outFile = path_join(output_folder, 'main.exe')
-    args = ' '.join([
-        '-I .',
-        '-I c',
-        '-I c/includes',
-        '-I cpp',
-        '-I cpp/includes/',
-        '-lws2_32',
-        '-O3'
-    ])
-    sources_path = ' '.join([
-        'c/sources/crypto/snc.c',
-        'c/sources/wmkc_memory.c',
-        'c/sources/wmkc_misc.c',
-        'c/sources/wmkc_base64.c',
-        'cpp/sources/wmkc_exception.cpp',
-        'cpp/sources/crypto/snc.cpp',
-        'cpp/sources/wmkc_base64.cpp',
-        'cpp/sources/network/wmkc_net.cpp'
-    ])
+    if len(sys.argv) < 2:
+        exit(f'Too few parameters: {RED}{sys.argv[0]}{RESET} {CYAN}[src_file, [parameter]]{RESET}')
 
-    compile_command = f'g++ {inFile} {sources_path} {args} -o {outFile}'
-    run(compile_command)
-    run(outFile)
+    source_file_path = sys.argv[1]
+    source_args      = sys.argv[2:]
+    output_file_path = create_output_name(source_file_path)
+
+    print(f'source_file_path: {source_file_path}')
+    print(f'output_file_path: {output_file_path}')
+    print(f'source_args: {source_args}')
+
+    # cmp = compile(source_file_path)
+    # cmp.add_parameter('-I c')
 
 if __name__ == '__main__':
-    if not path_exists(output_folder):
-        os.mkdir(output_folder)
     main()
