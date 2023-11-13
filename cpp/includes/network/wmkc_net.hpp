@@ -110,66 +110,66 @@ typedef wmkcChar  wmkcNetBufT;  // wmkcNet的缓冲区类型
 #endif /* WMKC_PLATFORM_LINUX */
 #include <wmkc_memory.h>
 
-class wmkcNet_error : public std::exception {
-    private:
-        wmkc_s32 errCode;
-        std::string errFuncName;
-        std::string errMessage;
-    public:
-        wmkcNet_error(wmkc_s32 code, const std::string& funcName, const std::string& message)
-        : errCode(code), errMessage(message), errFuncName(funcName) {}
-        const char* what() const noexcept override {
-            std::string message = errFuncName + "[" + std::to_string(errCode) + "]: " + errMessage;
-            return message.c_str();
-        }
-};
-
-class wmkcNet {
-    private:
-        wmkc_s32 err;
-        double timeout;
-        ADDRINFO hints;
-
-        std::string localSocketAddr;
-        std::string remoteSocketAddr;
-
-        void wmkcNet_exception(std::string funcName);
-        std::string getAddr(wmkcVoid *pAddr);
-        wmkc_u16 getPort(wmkc_u16 port);
-    public:
-        wmkcNetSockT sockfd;
-        wmkc_s32 family;
-        wmkc_s32 type;
-        wmkc_s32 proto;
-        wmkc_s32 transmissionLength; // 单次传输长度
-        wmkcNet(wmkc_s32 _family, wmkc_s32 _type, wmkc_s32 _proto, wmkcNetSockT _fd = EOF)
-        : family(_family), type(_type), proto(_proto), hints()
-        {
-            if(_fd == EOF) {
-                this->sockfd = socket(this->family, this->type, this->proto);
-                if(this->sockfd == EOF) {
-                    this->wmkcNet_exception("wmkcNet::wmkcNet");
-                }
-            } else {
-                this->sockfd = _fd;
+namespace wmkcNet {
+    class wmkcNet_exception : public std::exception {
+        private:
+            wmkc_s32 errCode;
+            std::string errFuncName;
+            std::string errMessage;
+        public:
+            wmkcNet_exception(wmkc_s32 code, const std::string& funcName, const std::string& message)
+            : errCode(code), errMessage(message), errFuncName(funcName) {}
+            const char* what() const noexcept override {
+                std::string message = errFuncName + "[" + std::to_string(errCode) + "]: " + errMessage;
+                return message.c_str();
             }
-        }
-        ~wmkcNet();
-        ADDRINFO *getAddrInfo(std::string addr, std::string serviceName);
-        void settimeout(double _time);
-        void connect(std::string addr, wmkc_u16 port);
-        void bind(std::string addr, wmkc_u16 port);
-        void listen(wmkc_s32 backlog);
-        wmkcNet *accept();
-        void send(wmkcNetBufT *buf, wmkc_s32 len, wmkc_s32 flag = 0);
-        void sendall(wmkcNetBufT *buf, wmkc_s32 len, wmkc_s32 flag = 0);
-        void send(std::string content, wmkc_s32 flag = 0);
-        void sendall(std::string content, wmkc_s32 flag = 0);
-        void recv(wmkcNetBufT *buf, wmkc_s32 len, wmkc_s32 flag = 0);
-        std::string recv(wmkc_s32 len, wmkc_s32 flag = 0);
-        void shutdown(wmkc_s32 how);
-        void close();
+    };
+
+    class Socket {
+        private:
+            wmkc_s32 err;
+            double timeout;
+            ADDRINFO hints;
+
+            std::string localSocketAddr;
+            std::string remoteSocketAddr;
+
+            void Socket_exception(std::string funcName);
+            std::string getAddr(wmkcVoid *pAddr);
+            wmkc_u16 getPort(wmkc_u16 port);
+        public:
+            wmkcNetSockT fd;
+            wmkc_s32 family;
+            wmkc_s32 type;
+            wmkc_s32 proto;
+            wmkc_s32 transmissionLength; // 单次传输长度
+            Socket(wmkc_s32 _family, wmkc_s32 _type, wmkc_s32 _proto, wmkcNetSockT _fd = EOF)
+            : family(_family), type(_type), proto(_proto), hints()
+            {
+                if(_fd == EOF) {
+                    this->fd = socket(this->family, this->type, this->proto);
+                    if(this->fd == EOF) {
+                        this->Socket_exception("Socket::Socket");
+                    }
+                } else {
+                    this->fd = _fd;
+                }
+            }
+            ~Socket();
+            ADDRINFO *getAddrInfo(std::string addr, std::string serviceName);
+            void settimeout(double _time);
+            void connect(std::string addr, wmkc_u16 port);
+            void bind(std::string addr, wmkc_u16 port);
+            void listen(wmkc_s32 backlog);
+            wmkcNet::Socket *accept();
+            void send(wmkcNetBufT *buf, wmkc_s32 len, wmkc_s32 flag = 0);
+            void sendall(wmkcNetBufT *buf, wmkc_s32 len, wmkc_s32 flag = 0);
+            void send(std::string content, wmkc_s32 flag = 0);
+            void sendall(std::string content, wmkc_s32 flag = 0);
+            void recv(wmkcNetBufT *buf, wmkc_s32 len, wmkc_s32 flag = 0);
+            std::string recv(wmkc_s32 len, wmkc_s32 flag = 0);
+            void shutdown(wmkc_s32 how);
+            void close();
+    };
 };
-
-
 

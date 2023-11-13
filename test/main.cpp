@@ -7,7 +7,12 @@
 #include <c/includes/wmkc_misc.h>
 
 #define TARGET_ADDR "passport.bilibili.com"
-#define TARGET_PORT 80
+#define TARGET_PORT 443
+#define HEADERS ("GET /qrcode/getLoginUrl HTTP/1.1\r\nHost:" TARGET_ADDR "\r\n"\
+    "User-Agent:Mozilla/5.0 (X11; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/116.0\r\n\r\n")
+
+using namespace std;
+using namespace wmkcNet;
 
 int main(int argc, char **argv)
 {
@@ -15,28 +20,19 @@ int main(int argc, char **argv)
     WSADATA ws;
     WSAStartup(MAKEWORD(2,2), &ws);
 #endif
-
-    wmkcSSL *ssl = new wmkcSSL();
-    wmkcSSL_Socket sslSockfd;
-    std::string sendbuf = (
-        "GET /qrcode/getLoginUrl HTTP/1.1\r\n"
-        "Host: passport.bilibili.com\r\n"
-        "Accept: */*\r\n"
-        "Connection: close\r\n"
-        "User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/116.0\r\n"
-        "\r\n"
-    );
+    wmkcSSL_Context *context = new wmkcSSL_Context(TLS_method());
+    wmkcSSL_Socket sockfd = context->wrap_socket(new wmkcNet::Socket(AF_INET, SOCK_STREAM, IPPROTO_TCP), TARGET_ADDR);
     wmkcChar recvbuf[4096];
 
-    sslSockfd = ssl->wrap_socket(new wmkcNet(AF_INET, SOCK_STREAM, IPPROTO_TCP), "passport.bilibili.com");
-    sslSockfd.sockfd->connect("passport.bilibili.com", 443);
-    SSL_connect(sslSockfd.ssl);
+    sockfd._fd->connect(TARGET_ADDR, TARGET_PORT);
+    SSL_connect(sockfd.ssl);
 
-    SSL_write(sslSockfd.ssl, sendbuf.c_str(), sendbuf.size());
-    SSL_read(sslSockfd.ssl, recvbuf, sizeof(recvbuf));
+    SSL_write(sockfd.ssl, HEADERS, strlen(HEADERS));
+    SSL_read(sockfd.ssl, recvbuf, 4096);
+    sockfd._fd->close();
 
-    std::cout << recvbuf << std::endl;
-
+    cout << recvbuf << endl;
+    delete context;
 #ifdef WMKC_PLATFORM_WINOS
     WSACleanup();
 #endif
