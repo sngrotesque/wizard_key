@@ -1,0 +1,9 @@
+{
+    "code": 0,
+    "status": true,
+    "ts": 1700155973,
+    "data": {
+        "url": "https://passport.bilibili.com/qrcode/h5/login?oauthKey=33c155c56b6a95bcc8d779875e1fa3cc",
+        "oauthKey": "33c155c56b6a95bcc8d779875e1fa3cc"
+    }
+}
