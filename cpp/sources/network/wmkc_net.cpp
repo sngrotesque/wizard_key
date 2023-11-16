@@ -127,7 +127,7 @@ void wmkcNet::Socket_exception(std::string funcName)
                 case EAI_SOCKTYPE:
                     msg = "The ai_socktype member of the pHints parameter is not supported."; break;
                 default:
-                    msg = "Unexpected error."; break;
+                    msg = "wmkcNet::Socket_exception: Unexpected error."; break;
             }
     }
     throw std::runtime_error(std::string(funcName) + "[" + std::to_string(err) + "]: " + msg);
@@ -152,7 +152,7 @@ std::string wmkcNet::Socket::getAddr(wmkcVoid *pAddr)
 {
     char tmp_addr[INET6_ADDRSTRLEN];
     if(!inet_ntop(this->family, pAddr, tmp_addr, INET6_ADDRSTRLEN)) {
-        wmkcNet::Socket_exception("wmkcNet::getAddr");
+        wmkcNet::Socket_exception("wmkcNet::Socket::getAddr");
     }
     return std::string(tmp_addr);
 }
@@ -184,7 +184,7 @@ void wmkcNet::Socket::settimeout(double _val)
 
     if(setsockopt(this->fd, SOL_SOCKET, SO_SNDTIMEO, optval, sizeof(_timeout)) ||
         setsockopt(this->fd, SOL_SOCKET, SO_RCVTIMEO, optval, sizeof(_timeout))) {
-        wmkcNet::Socket_exception("wmkcNet::settimeout");
+        wmkcNet::Socket_exception("wmkcNet::Socket::settimeout");
     }
 }
 
@@ -194,7 +194,7 @@ void wmkcNet::Socket::connect(std::string addr, wmkc_u16 port)
         addr, std::to_string(port));
     this->err = ::connect(this->fd, sockAddrResult->ai_addr, sockAddrResult->ai_addrlen);
     if(this->err == WMKC_NET_ERROR) {
-        wmkcNet::Socket_exception("wmkcNet::connect");
+        wmkcNet::Socket_exception("wmkcNet::Socket::connect");
     }
     freeaddrinfo(sockAddrResult);
 
@@ -209,7 +209,7 @@ void wmkcNet::Socket::bind(std::string addr, wmkc_u16 port)
         addr, std::to_string(port));
     this->err = ::bind(this->fd, sockAddrResult->ai_addr, sockAddrResult->ai_addrlen);
     if(this->err == WMKC_NET_ERROR) {
-        wmkcNet::Socket_exception("wmkcNet::bind");
+        wmkcNet::Socket_exception("wmkcNet::Socket::bind");
     }
     freeaddrinfo(sockAddrResult);
 
@@ -220,7 +220,7 @@ void wmkcNet::Socket::listen(wmkc_s32 backlog)
 {
     this->err = ::listen(this->fd, backlog);
     if(this->err == WMKC_NET_ERROR) {
-        wmkcNet::Socket_exception("wmkcNet::listen");
+        wmkcNet::Socket_exception("wmkcNet::Socket::listen");
     }
 }
 
@@ -230,7 +230,7 @@ wmkcNet::Socket wmkcNet::Socket::accept()
     socklen_t client_addr_len = sizeof(client_addr);
     wmkcNetSockT client_sockfd = ::accept(this->fd, &client_addr, &client_addr_len);
     if(client_sockfd == WMKC_NET_ERROR) {
-        wmkcNet::Socket_exception("wmkcNet::accept");
+        wmkcNet::Socket_exception("wmkcNet::Socket::accept");
     }
     return wmkcNet::Socket(this->family, this->type, this->proto, client_sockfd);
 }
@@ -239,7 +239,7 @@ void wmkcNet::Socket::send(wmkcNetBufT *buf, wmkc_s32 len, wmkc_s32 flag)
 {
     this->transmissionLength = ::send(this->fd, buf, len, flag);
     if(this->transmissionLength == WMKC_NET_ERROR) {
-        wmkcNet::Socket_exception("wmkcNet::send");
+        wmkcNet::Socket_exception("wmkcNet::Socket::send");
     }
 }
 
@@ -249,7 +249,7 @@ void wmkcNet::Socket::sendall(wmkcNetBufT *buf, wmkc_s32 len, wmkc_s32 flag)
         this->transmissionLength = ::send(this->fd, buf, len, flag);
 
         if(this->transmissionLength == WMKC_NET_ERROR) {
-            wmkcNet::Socket_exception("wmkcNet::sendall");
+            wmkcNet::Socket_exception("wmkcNet::Socket::sendall");
         }
         len -= this->transmissionLength;
         buf += this->transmissionLength;
@@ -260,7 +260,7 @@ void wmkcNet::Socket::send(std::string content, wmkc_s32 flag)
 {
     this->transmissionLength = ::send(this->fd, (wmkcNetBufT *)content.c_str(), content.size(), flag);
     if(this->transmissionLength == WMKC_NET_ERROR) {
-        wmkcNet::Socket_exception("wmkcNet::send");
+        wmkcNet::Socket_exception("wmkcNet::Socket::send");
     }
 }
 
@@ -286,7 +286,7 @@ void wmkcNet::Socket::recv(wmkcNetBufT *buf, wmkc_s32 len, wmkc_s32 flag)
 {
     this->transmissionLength = ::recv(this->fd, buf, len, flag);
     if(this->transmissionLength == WMKC_NET_ERROR) {
-        wmkcNet::Socket_exception("wmkcNet::recv");
+        wmkcNet::Socket_exception("wmkcNet::Socket::recv");
     }
 }
 
@@ -294,13 +294,13 @@ std::string wmkcNet::Socket::recv(wmkc_s32 len, wmkc_s32 flag)
 {
     wmkcNetBufT *_tmp = wmkcNull;
     if(!wmkcMem_new(wmkcNetBufT *, _tmp, len)) {
-        throw wmkcNet::wmkcNet_exception(wmkcErr_ErrMemory, "wmkcNet::recv",
+        throw wmkcNet::wmkcNet_exception(wmkcErr_ErrMemory, "wmkcNet::Socket::recv",
             "Failed to allocate memory for _tmp.");
     }
 
     this->transmissionLength = ::recv(this->fd, _tmp, len, flag);
     if(this->transmissionLength == WMKC_NET_ERROR) {
-        wmkcNet::Socket_exception("wmkcNet::recv");
+        wmkcNet::Socket_exception("wmkcNet::Socket::recv");
     }
     std::string content((wmkcChar *)_tmp, this->transmissionLength);
     wmkcMem_free(_tmp);
@@ -312,7 +312,7 @@ void wmkcNet::Socket::shutdown(wmkc_s32 how)
 {
     this->err = ::shutdown(this->fd, how);
     if(this->err == WMKC_NET_ERROR) {
-        wmkcNet::Socket_exception("wmkcNet::shutdown");
+        wmkcNet::Socket_exception("wmkcNet::Socket::shutdown");
     }
 }
 
@@ -324,7 +324,7 @@ void wmkcNet::Socket::close()
     this->err = ::close(this->fd);
 #   endif
     if(this->err == WMKC_NET_ERROR) {
-        wmkcNet::Socket_exception("wmkcNet::close");
+        wmkcNet::Socket_exception("wmkcNet::Socket::close");
     }
     this->fdIsClose = true;
 }

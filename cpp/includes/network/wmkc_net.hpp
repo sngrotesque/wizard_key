@@ -154,7 +154,7 @@ namespace wmkcNet {
                 if(_fd == WMKC_NET_ERROR) {
                     this->fd = socket(this->family, this->type, this->proto);
                     if(this->fd == WMKC_NET_ERROR) {
-                        wmkcNet::Socket_exception("Socket::Socket");
+                        wmkcNet::Socket_exception("wmkcNet::Socket::Socket");
                     }
                 } else {
                     this->fd = _fd;

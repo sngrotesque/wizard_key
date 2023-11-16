@@ -1,3 +1,6 @@
+/**
+ * 此库出现了未知的错误，无法修复，后续将重构这整个SSL库
+*/
 #include <wmkc_conf.hpp>
 
 #if WMKC_SUPPORT
@@ -15,13 +18,13 @@
 namespace wmkcNet {
     class wmkcSSL_Socket {
         public:
-            wmkcNet::Socket _fd;
+            wmkcNet::Socket *_fd;
             SSL *ssl;
 
-            wmkcSSL_Socket(wmkcNet::Socket _sock, SSL *_ssl)
+            wmkcSSL_Socket(wmkcNet::Socket *_sock, SSL *_ssl)
             : _fd(_sock), ssl(_ssl)
             {
-
+                std::cout << "Instantiation Class wmkcNet::wmkcSSL_Socket" << std::endl;
             }
 
             void settimeout(double _time);
@@ -92,7 +95,7 @@ namespace wmkcNet {
             }
 
             // 去你妈C++，去你妈的OpenSSL，操你妈
-            wmkcSSL_Socket wrap_socket(wmkcNet::Socket sock, std::string server_hostname = "");
+            wmkcSSL_Socket wrap_socket(wmkcNet::Socket *sock, std::string server_hostname = "");
     };
 };
 
