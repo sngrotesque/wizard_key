@@ -93,16 +93,17 @@ def main():
     cmp.add_parameter('-I cpp/includes')
     cmp.add_parameter('-I cpp/sources')
 
-    cmp.add_parameter('c/sources/crypto/snc.c')
-    cmp.add_parameter('c/sources/wmkc_base64.c')
+    # cmp.add_parameter('c/sources/crypto/snc.c')
+    # cmp.add_parameter('c/sources/wmkc_base64.c')
     cmp.add_parameter('c/sources/wmkc_memory.c')
-    cmp.add_parameter('cpp/sources/crypto/snc.cpp')
+    # cmp.add_parameter('cpp/sources/crypto/snc.cpp')
+    # cmp.add_parameter('cpp/sources/wmkc_base64.cpp')
+
     cmp.add_parameter('cpp/sources/network/wmkc_net.cpp')
     cmp.add_parameter('cpp/sources/network/wmkc_ssl.cpp')
     cmp.add_parameter('cpp/sources/wmkc_exception.cpp')
-    cmp.add_parameter('cpp/sources/wmkc_base64.cpp')
 
-    cmp.add_parameter('library/qrcode/qrcode.cpp')
+    # cmp.add_parameter('library/qrcode/qrcode.cpp')
 
     cmp.build()
     cmp.run()

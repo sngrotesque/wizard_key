@@ -38,21 +38,49 @@ void https_test(std::string server_hostname, const uint16_t port, const std::str
     delete sockfd;
 }
 
-int main(int argc, char **argv)
+void http_test(std::string server_hostname, const uint16_t port, const std::string headers)
 {
+    wmkcNet::Socket *sockfd = wmkcNull;
+
+    sockfd->connect(server_hostname, port);
+    sockfd->sendall(headers);
+
+    cout << sockfd->recv(4096) << endl;
+
+    sockfd->shutdown(2);
+    sockfd->close();
+
+    delete sockfd;
+}
+
+void net_service_test(void (*func)())
+{
+#   ifdef WMKC_PLATFORM_WINOS
     WSADATA ws;
     WSAStartup(MAKEWORD(2,2), &ws);
+#   endif
 
-    string addr = "passport.bilibili.com";
-    string headers = (
-        "GET /qrcode/getLoginUrl HTTP/1.1\r\n"
-        "Host: " + addr + "\r\n"
-        "Accept: */*\r\n"
-        "Connection: close\r\n"
-        "User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/116.0\r\n\r\n");
+    func();
 
-    https_test(addr, 443, headers);
-
+#   ifdef WMKC_PLATFORM_WINOS
     WSACleanup();
+#   endif
+}
+
+void wmkcNet_Socket_test()
+{
+    wmkcNet::Socket *sockfd = new wmkcNet::Socket(AF_INET6, SOCK_STREAM, IPPROTO_TCP);
+
+    sockfd->connect("www.bilibili.com", 80);
+    sockfd->send("GET / HTTP/1.1\r\nHost: www.bilibili.com\r\nUser-Agent: Android\r\n\r\n");
+    cout << sockfd->recv(4096) << endl;
+    sockfd->close();
+
+    delete sockfd;
+}
+
+int main(int argc, char **argv)
+{
+    net_service_test(wmkcNet_Socket_test);
     return 0;
 }

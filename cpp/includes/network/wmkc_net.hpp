@@ -114,9 +114,6 @@ typedef wmkcChar       wmkcNetBufT;  // wmkcNet的缓冲区类型
 #include <wmkc_memory.h>
 
 namespace wmkcNet {
-    ADDRINFO *getAddrInfo(wmkc_s32 family, wmkc_s32 type, wmkc_s32 proto, std::string addr, std::string serviceName);
-    void Socket_exception(std::string funcName);
-
     class wmkcNet_exception : public std::exception {
         private:
             wmkc_s32 errCode;
@@ -131,49 +128,49 @@ namespace wmkcNet {
             }
     };
 
+    // wmkcNet的IP端点
+    typedef struct {
+        std::string addr;
+        wmkc_u16 port;
+    } IPEndPoint;
+
+    ADDRINFO *getAddrInfo(wmkc_s32 family, wmkc_s32 type, wmkc_s32 proto, std::string addr, std::string serviceName);
+
+    void Socket_exception(std::string funcName);
+    std::string networkAddr2stringAddr(wmkc_s32 family, const wmkcVoid *pAddr);
+    uint16_t networkPort2numberPort(const wmkc_u16 port);
+    IPEndPoint getNetworkInfo(wmkcNetSockT sockfd, wmkc_s32 family);
+    IPEndPoint getNetworkInfo(wmkc_s32 family, wmkcVoid *pAddr);
+
     class Socket {
         private:
             wmkc_s32 err;
-            double timeout;
-            wmkcBool fdIsClose;
-
-            std::string localSocketAddr;
-            std::string remoteSocketAddr;
-
-            std::string getAddr(wmkcVoid *pAddr);
-            wmkc_u16 getPort(wmkc_u16 port);
         public:
-            wmkcNetSockT fd;
-            wmkc_s32 family;
-            wmkc_s32 type;
-            wmkc_s32 proto;
+            double timeout; // 超时时间
+            wmkcNetSockT fd; // 套接字文件描述符
+            wmkc_s32 family; // 套接字网络家族
+            wmkc_s32 type;   // 套接字类型
+            wmkc_s32 proto;  // 套接字协议
             wmkc_s32 transmissionLength; // 单次传输长度
-            Socket(wmkc_s32 _family, wmkc_s32 _type, wmkc_s32 _proto, wmkcNetSockT _fd = EOF)
-            : family(_family), type(_type), proto(_proto)
-            {
-                if(_fd == WMKC_NET_ERROR) {
-                    this->fd = socket(this->family, this->type, this->proto);
-                    if(this->fd == WMKC_NET_ERROR) {
-                        wmkcNet::Socket_exception("wmkcNet::Socket::Socket");
-                    }
-                } else {
-                    this->fd = _fd;
-                }
-                this->fdIsClose = false;
-            }
+
+            wmkcNet::IPEndPoint lAddr; // 套接字绑定的本地IP端点
+            wmkcNet::IPEndPoint rAddr; // 套接字绑定的远程IP端点
+
+            Socket(wmkc_s32 _family, wmkc_s32 _type, wmkc_s32 _proto, wmkcNetSockT _fd = EOF);
             ~Socket();
+
             void settimeout(double _time);
-            void connect(std::string addr, wmkc_u16 port);
-            void bind(std::string addr, wmkc_u16 port);
-            void listen(wmkc_s32 backlog);
+            void connect(const std::string addr, const wmkc_u16 port);
+            void bind(const std::string addr, const wmkc_u16 port);
+            void listen(const wmkc_s32 backlog);
             wmkcNet::Socket accept();
-            void send(wmkcNetBufT *buf, wmkc_s32 len, wmkc_s32 flag = 0);
-            void sendall(wmkcNetBufT *buf, wmkc_s32 len, wmkc_s32 flag = 0);
-            void send(std::string content, wmkc_s32 flag = 0);
-            void sendall(std::string content, wmkc_s32 flag = 0);
-            void recv(wmkcNetBufT *buf, wmkc_s32 len, wmkc_s32 flag = 0);
-            std::string recv(wmkc_s32 len, wmkc_s32 flag = 0);
-            void shutdown(wmkc_s32 how);
+            void send(const wmkcNetBufT *buf, const wmkc_s32 len, const wmkc_s32 flag = 0);
+            void sendall(const wmkcNetBufT *buf, const wmkc_s32 len, const wmkc_s32 flag = 0);
+            void send(const std::string content, const wmkc_s32 flag = 0);
+            void sendall(const std::string content, const wmkc_s32 flag = 0);
+            void recv(wmkcNetBufT *buf, const wmkc_s32 len, const wmkc_s32 flag = 0);
+            std::string recv(const wmkc_s32 len, const wmkc_s32 flag = 0);
+            void shutdown(const wmkc_s32 how);
             void close();
     };
 };

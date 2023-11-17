@@ -33,5 +33,6 @@ namespace use_network {
 
 int main(int argc, char **argv)
 {
+    use_qrcode::qrcode_generator("hello, world");
     return 0;
 }

@@ -148,25 +148,87 @@ ADDRINFO *wmkcNet::getAddrInfo(wmkc_s32 family, wmkc_s32 type, wmkc_s32 proto, s
     return sockAddrRes;
 }
 
-std::string wmkcNet::Socket::getAddr(wmkcVoid *pAddr)
+std::string wmkcNet::networkAddr2stringAddr(wmkc_s32 family, const wmkcVoid *pAddr)
 {
     char tmp_addr[INET6_ADDRSTRLEN];
-    if(!inet_ntop(this->family, pAddr, tmp_addr, INET6_ADDRSTRLEN)) {
-        wmkcNet::Socket_exception("wmkcNet::Socket::getAddr");
+    if(!inet_ntop(family, pAddr, tmp_addr, INET6_ADDRSTRLEN)) {
+        wmkcNet::Socket_exception("wmkcNet::networkAddr2stringAddr");
     }
     return std::string(tmp_addr);
 }
 
-wmkc_u16 wmkcNet::Socket::getPort(wmkc_u16 port)
+wmkc_u16 wmkcNet::networkPort2numberPort(const wmkc_u16 port)
 {
     return ntohs(port);
 }
 
+wmkcNet::IPEndPoint wmkcNet::getNetworkInfo(wmkcNetSockT sockfd, wmkc_s32 family)
+{
+    SOCKADDR_IN *ipv4 = wmkcNull;
+    SOCKADDR_IN6 *ipv6 = wmkcNull;
+    SOCKADDR basicSockAddr = {0};
+    socklen_t basicSockAddr_len = sizeof(basicSockAddr);
+    wmkcNet::IPEndPoint addr_info;
+
+    if(getsockname(sockfd, &basicSockAddr, &basicSockAddr_len) == WMKC_NET_ERROR) {
+        wmkcNet::Socket_exception("wmkcNet::getNetworkInfo");
+    }
+
+    switch(family) {
+        case AF_INET:
+            ipv4 = (SOCKADDR_IN *)&basicSockAddr;
+            addr_info.addr = wmkcNet::networkAddr2stringAddr(family, &ipv4->sin_addr);
+            addr_info.port = wmkcNet::networkPort2numberPort(ipv4->sin_port);
+            break;
+        case AF_INET6:
+            ipv6 = (SOCKADDR_IN6 *)&basicSockAddr;
+            addr_info.addr = wmkcNet::networkAddr2stringAddr(family, &ipv6->sin6_addr);
+            addr_info.port = wmkcNet::networkPort2numberPort(ipv6->sin6_port);
+            break;
+    }
+
+    return addr_info;
+}
+
+wmkcNet::IPEndPoint wmkcNet::getNetworkInfo(wmkc_s32 family, wmkcVoid *pAddr)
+{
+    SOCKADDR_IN *ipv4 = wmkcNull;
+    SOCKADDR_IN6 *ipv6 = wmkcNull;
+    wmkcNet::IPEndPoint addr_info;
+    
+    switch(family) {
+        case AF_INET:
+            ipv4 = (SOCKADDR_IN *)pAddr;
+            addr_info.addr = wmkcNet::networkAddr2stringAddr(family, &ipv4->sin_addr);
+            addr_info.port = wmkcNet::networkPort2numberPort(ipv4->sin_port);
+            break;
+        case AF_INET6:
+            ipv6 = (SOCKADDR_IN6 *)pAddr;
+            addr_info.addr = wmkcNet::networkAddr2stringAddr(family, &ipv6->sin6_addr);
+            addr_info.port = wmkcNet::networkPort2numberPort(ipv6->sin6_port);
+            break;
+    }
+
+    return addr_info;
+}
+
+//****************************************************************************************************//
+wmkcNet::Socket::Socket(wmkc_s32 _family, wmkc_s32 _type, wmkc_s32 _proto, wmkcNetSockT _fd)
+: err(), timeout(), fd(), family(_family), type(_type), proto(_proto), transmissionLength(), lAddr(), rAddr()
+{
+    if(_fd == WMKC_NET_ERROR) {
+        this->fd = socket(this->family, this->type, this->proto);
+        if(this->fd == WMKC_NET_ERROR) {
+            wmkcNet::Socket_exception("wmkcNet::Socket::Socket");
+        }
+    } else {
+        this->fd = _fd;
+    }
+}
+
 wmkcNet::Socket::~Socket()
 {
-    if(!this->fdIsClose) {
-        this->close();
-    }
+
 }
 
 void wmkcNet::Socket::settimeout(double _val)
@@ -188,22 +250,22 @@ void wmkcNet::Socket::settimeout(double _val)
     }
 }
 
-void wmkcNet::Socket::connect(std::string addr, wmkc_u16 port)
+void wmkcNet::Socket::connect(const std::string addr, const wmkc_u16 port)
 {
     ADDRINFO *sockAddrResult = wmkcNet::getAddrInfo(this->family, this->type, this->proto,
         addr, std::to_string(port));
+
     this->err = ::connect(this->fd, sockAddrResult->ai_addr, sockAddrResult->ai_addrlen);
     if(this->err == WMKC_NET_ERROR) {
         wmkcNet::Socket_exception("wmkcNet::Socket::connect");
     }
-    freeaddrinfo(sockAddrResult);
 
-    // getsockname(this->fd, )
-    this->remoteSocketAddr = addr + ":" + std::to_string(port);
-    this->localSocketAddr = ""; // 在覆盖之前应检查此项是否为空
+    this->rAddr = wmkcNet::getNetworkInfo(this->family, sockAddrResult->ai_addr);
+    this->lAddr = wmkcNet::getNetworkInfo(this->fd, this->family);
+    freeaddrinfo(sockAddrResult);
 }
 
-void wmkcNet::Socket::bind(std::string addr, wmkc_u16 port)
+void wmkcNet::Socket::bind(const std::string addr, const wmkc_u16 port)
 {
     ADDRINFO *sockAddrResult = wmkcNet::getAddrInfo(this->family, this->type, this->proto,
         addr, std::to_string(port));
@@ -211,12 +273,11 @@ void wmkcNet::Socket::bind(std::string addr, wmkc_u16 port)
     if(this->err == WMKC_NET_ERROR) {
         wmkcNet::Socket_exception("wmkcNet::Socket::bind");
     }
+    this->lAddr = wmkcNet::getNetworkInfo(this->family, sockAddrResult->ai_addr);
     freeaddrinfo(sockAddrResult);
-
-    this->localSocketAddr = addr + ":" + std::to_string(port);
 }
 
-void wmkcNet::Socket::listen(wmkc_s32 backlog)
+void wmkcNet::Socket::listen(const wmkc_s32 backlog)
 {
     this->err = ::listen(this->fd, backlog);
     if(this->err == WMKC_NET_ERROR) {
@@ -235,7 +296,7 @@ wmkcNet::Socket wmkcNet::Socket::accept()
     return wmkcNet::Socket(this->family, this->type, this->proto, client_sockfd);
 }
 
-void wmkcNet::Socket::send(wmkcNetBufT *buf, wmkc_s32 len, wmkc_s32 flag)
+void wmkcNet::Socket::send(const wmkcNetBufT *buf, const wmkc_s32 len, const wmkc_s32 flag)
 {
     this->transmissionLength = ::send(this->fd, buf, len, flag);
     if(this->transmissionLength == WMKC_NET_ERROR) {
@@ -243,20 +304,21 @@ void wmkcNet::Socket::send(wmkcNetBufT *buf, wmkc_s32 len, wmkc_s32 flag)
     }
 }
 
-void wmkcNet::Socket::sendall(wmkcNetBufT *buf, wmkc_s32 len, wmkc_s32 flag)
+void wmkcNet::Socket::sendall(const wmkcNetBufT *buf, const wmkc_s32 len, const wmkc_s32 flag)
 {
-    while(len) {
-        this->transmissionLength = ::send(this->fd, buf, len, flag);
+    wmkc_s32 leftover_length = len;
+    while(leftover_length) {
+        this->transmissionLength = ::send(this->fd, buf, leftover_length, flag);
 
         if(this->transmissionLength == WMKC_NET_ERROR) {
             wmkcNet::Socket_exception("wmkcNet::Socket::sendall");
         }
-        len -= this->transmissionLength;
+        leftover_length -= this->transmissionLength;
         buf += this->transmissionLength;
     }
 }
 
-void wmkcNet::Socket::send(std::string content, wmkc_s32 flag)
+void wmkcNet::Socket::send(const std::string content, const wmkc_s32 flag)
 {
     this->transmissionLength = ::send(this->fd, (wmkcNetBufT *)content.c_str(), content.size(), flag);
     if(this->transmissionLength == WMKC_NET_ERROR) {
@@ -264,7 +326,7 @@ void wmkcNet::Socket::send(std::string content, wmkc_s32 flag)
     }
 }
 
-void wmkcNet::Socket::sendall(std::string content, wmkc_s32 flag)
+void wmkcNet::Socket::sendall(const std::string content, const wmkc_s32 flag)
 {
     char *offset_ptr = (char *)content.c_str();
     uint32_t size = (socklen_t)content.size();
@@ -282,7 +344,7 @@ void wmkcNet::Socket::sendall(std::string content, wmkc_s32 flag)
     }
 }
 
-void wmkcNet::Socket::recv(wmkcNetBufT *buf, wmkc_s32 len, wmkc_s32 flag)
+void wmkcNet::Socket::recv(wmkcNetBufT *buf, const wmkc_s32 len, const wmkc_s32 flag)
 {
     this->transmissionLength = ::recv(this->fd, buf, len, flag);
     if(this->transmissionLength == WMKC_NET_ERROR) {
@@ -290,7 +352,7 @@ void wmkcNet::Socket::recv(wmkcNetBufT *buf, wmkc_s32 len, wmkc_s32 flag)
     }
 }
 
-std::string wmkcNet::Socket::recv(wmkc_s32 len, wmkc_s32 flag)
+std::string wmkcNet::Socket::recv(const wmkc_s32 len, const wmkc_s32 flag)
 {
     wmkcNetBufT *_tmp = wmkcNull;
     if(!wmkcMem_new(wmkcNetBufT *, _tmp, len)) {
@@ -308,7 +370,7 @@ std::string wmkcNet::Socket::recv(wmkc_s32 len, wmkc_s32 flag)
     return content;
 }
 
-void wmkcNet::Socket::shutdown(wmkc_s32 how)
+void wmkcNet::Socket::shutdown(const wmkc_s32 how)
 {
     this->err = ::shutdown(this->fd, how);
     if(this->err == WMKC_NET_ERROR) {
@@ -326,5 +388,4 @@ void wmkcNet::Socket::close()
     if(this->err == WMKC_NET_ERROR) {
         wmkcNet::Socket_exception("wmkcNet::Socket::close");
     }
-    this->fdIsClose = true;
 }
