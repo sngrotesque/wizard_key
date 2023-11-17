@@ -1,10 +1,1 @@
-{
-    "code": 0,
-    "status": true,
-    "ts": 1700263352,
-    "data": {
-        "url": "https://passport.biligame.com/crossDomain?DedeUserID=27958784&DedeUserID__ckMd5=dddd316fba301ee6&Expires=15551000&SESSDATA=36248be0%2C1715815352%2C5a3d9%2Ab1&bili_jct=36252b37276fac8974c626d41572d3eb&gourl=http%3A%2F%2Fwww.bilibili.com",
-        "refresh_token": "569d2107e042b9d10eb8887db351f4b1",
-        "timestamp": 1700263352493
-    }
-}
+{}
