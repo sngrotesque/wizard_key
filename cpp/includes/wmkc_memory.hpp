@@ -1,8 +1,8 @@
-#include <wmkc_conf.h>
+#include <wmkc_conf.hpp>
 
 #if WMKC_SUPPORT
-#ifndef WMKC_MEMORY
-#define WMKC_MEMORY
+#ifndef WMKC_CPP_MEMORY
+#define WMKC_CPP_MEMORY
 
 #ifdef WMKC_PLATFORM_WINOS
 #   include <Windows.h>
@@ -32,5 +32,5 @@
 WMKC_PUBLIC(wmkcVoid) wmkcMem_secure WMKC_OPEN_API
 WMKC_OF((wmkcVoid *buf, wmkcSize size));
 
-#endif /* WMKC_MEMORY */
+#endif /* WMKC_CPP_MEMORY */
 #endif /* WMKC_SUPPORT */

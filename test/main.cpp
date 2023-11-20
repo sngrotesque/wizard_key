@@ -84,24 +84,13 @@ class net_test {
         }
 };
 
+#include <cpp/includes/wmkc_base64.hpp>
+
 int main(int argc, char **argv)
 {
-    net_test *net = new net_test();
+    wmkcBase64 base64;
 
-    string headers = \
-        "POST /qrcode/getLoginInfo HTTP/1.1\r\n"
-        "Host: passport.bilibili.com\r\n"
-        "Accept: text/html;q=0.9, application/json;q=0.8, */*\r\n"
-        "Connection: close\r\n"
-        "Content-Type: application/x-www-form-urlencoded\r\n"
-        "Content-Length: 41\r\n"
-        "DNT: 1\r\n"
-        "User-Agent: " + defaultUserAgent + "\r\n"
-        "\r\n"
-        "oauthKey=e6d9679f1fd8acb6ea88b53a27fb2d2b";
+    cout << base64.decode("U04tR3JvdGVzcXVl") << endl;
 
-    net->https_test("passport.bilibili.com", 443, headers);
-
-    delete net;
     return 0;
 }

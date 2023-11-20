@@ -40,13 +40,6 @@
 #   warning "This library may not support the computer you are using."
 #endif // #if defined(__linux)
 
-// 定义版本号
-#define WMKC_VERSION     "v6.4.0-dev"
-#define WMKC_VER_HEX      0x640
-#define WMKC_VER_MAJOR    6
-#define WMKC_VER_MINOR    4
-#define WMKC_VER_REVISION 0
-
 // 定义一些一般类型
 #ifndef WMKC_TYPE_DEFINED
 #define WMKC_TYPE_DEFINED

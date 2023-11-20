@@ -6,15 +6,15 @@
                 "${workspaceFolder}",
                 "${workspaceFolder}/c/**",
                 "${workspaceFolder}/cpp/**",
-                "C:/Users/Administrator/Desktop/______________________________kaifa/MSYS2/",
-                "C:/Users/Administrator/Desktop/______________________________kaifa/MSYS2/mingw64/include/**"
+                "C:/Users/Administrator/Desktop/devep/MSYS2/",
+                "C:/Users/Administrator/Desktop/devep/MSYS2/mingw64/include/**"
             ],
             "defines": [
                 "_DEBUG",
                 "UNICODE",
                 "_UNICODE"
             ],
-            "compilerPath": "C:/Users/Administrator/Desktop/______________________________kaifa/MSYS2/mingw64/bin/gcc.exe",
+            "compilerPath": "C:/Users/Administrator/Desktop/devep/MSYS2/mingw64/bin/gcc.exe",
             "intelliSenseMode": "windows-gcc-x64",
             "cStandard": "c17",
             "cppStandard": "c++20",

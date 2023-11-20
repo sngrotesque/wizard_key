@@ -102,8 +102,8 @@ WMKC_PUBLIC(wmkcVoid) wmkcTime_sleep WMKC_OPEN_API
 WMKC_OF((double _time))
 {
 #if defined(WMKC_PLATFORM_WINOS)
-    Sleep(_time * 1000L);
+    Sleep(_time * 1000);
 #elif defined(WMKC_PLATFORM_LINUX)
-    sleep(_time);
+    usleep(_time * 1000000);
 #endif
 }

@@ -1,4 +1,8 @@
 #include <wmkc_conf.hpp>
+
+#if WMKC_SUPPORT
+#ifndef WMKC_CPP_NET
+#define WMKC_CPP_NET
 #include <wmkc_exception.hpp>
 #include <math.h>
 
@@ -175,3 +179,5 @@ namespace wmkcNet {
     };
 };
 
+#endif /* WMKC_CPP_NET */
+#endif /* WMKC_SUPPORT */

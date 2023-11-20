@@ -58,7 +58,8 @@
 			"cinttypes": "cpp",
 			"typeinfo": "cpp",
 			"cstring": "cpp",
-			"sstream": "cpp"
+			"sstream": "cpp",
+			"wmkc_crypto.h": "c"
 		}
 	}
 }
