@@ -17,16 +17,31 @@ static const wmkcByte iv[32] = {
     0x1a, 0x39, 0xd9, 0x58, 0xf1, 0x50, 0x62, 0x17, 0x7c, 0x15, 0xe6, 0x19, 0x9e, 0x08, 0xe6, 0xa8,
     0x71, 0x23, 0x99, 0x17, 0xe1, 0xdb, 0x7b, 0xcf, 0x3a, 0xf1, 0xe4, 0x29, 0xf2, 0x58, 0x6e, 0x00};
 
+void snc_test_constChar(wmkcSNC snc, wmkcByte *buf, wmkcSize size)
+{
+    snc.encrypt(buf, size, SNC_XcryptMode::CFB);
+    wmkcMisc::PRINT(buf, size, 16, 1, 0);
+}
+
+void snc_test_stdString(wmkcSNC snc, wmkcByte *buf, wmkcSize size)
+{
+    string src((wmkcChar *)buf, size);
+
+    string dst = snc.encrypt(src, SNC_XcryptMode::CFB);
+    wmkcByte *p = (wmkcByte *)dst.c_str();
+    wmkcMisc::PRINT(p, dst.size(), 16, 1, 0);
+}
+
 int main()
 {
-    wmkcSNC snc(key, iv);
-    wmkcChar _tmp[33] = {"hello,world....................."};
-    wmkcByte *buf = (wmkcByte *)_tmp;
-    wmkcSize size = strlen(_tmp);
+    wmkcSNC snc(key, iv, SNC_keyMode::SNC_768, 128);
 
-    snc.encrypt(buf, size, SNC_XcryptMode::CFB);
+    wmkcChar data[256] = {"hello,world"};
+    wmkcSize size = strlen(data);
 
-    wmkcMisc::PRINT(buf, size, 16, 1, 0);
+    snc_test_constChar(snc, (wmkcByte *)data, size);
+
+    snc_test_stdString(snc, (wmkcByte *)data, size);
 
     return 0;
 }

@@ -24,7 +24,8 @@ int main()
     wmkcSNC_new(&snc, SNC_256);
     wmkcSNC_init(snc, key, iv);
 
-    wmkcSNC_cfb_encrypt(snc, buf, size, 256);
+    wmkcSNC_cfb_encrypt(snc, buf, size, 128);
+    wmkcSNC_cfb_encrypt(snc, buf, size, 128);
 
     wmkcMisc_PRINT(buf, size, 16, 1, 0);
 

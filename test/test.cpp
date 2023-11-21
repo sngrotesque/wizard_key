@@ -1,6 +1,8 @@
 #include <network/wmkc_net.hpp>
 #include <network/wmkc_ssl.hpp>
 
+#include <crypto/snc.hpp>
+
 #include <wmkc_binascii.hpp>
 #include <wmkc_base64.hpp>
 #include <wmkc_random.hpp>
@@ -23,5 +25,6 @@ wmkcVoid timer(wmkcVoid (*func)())
 int main(int argc, char **argv)
 {
     
+
     return 0;
 }
