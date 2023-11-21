@@ -434,6 +434,7 @@ wmkcVoid wmkcCrypto::wmkcSNC::cfb_decrypt(wmkcByte *content, wmkcSize size, wmkc
 }
 
 wmkcCrypto::wmkcSNC::wmkcSNC(const wmkcByte *keyBuf, const wmkcByte *ivBuf, SNC_keyMode mode, wmkc_u32 segment_size)
+: segmentSize(segment_size)
 {
     if(!keyBuf || !ivBuf) {
         wmkcErr_exception(wmkcErr_ErrNULL, "wmkcCrypto::wmkcSNC::wmkcSNC", "keyBuf or ivBuf is NULL.");

@@ -24,7 +24,7 @@ int main()
     wmkcByte *buf = (wmkcByte *)_tmp;
     wmkcSize size = strlen(_tmp);
 
-    snc.encrypt(buf, size, SNC_XcryptMode::ECB);
+    snc.encrypt(buf, size, SNC_XcryptMode::CFB);
 
     wmkcMisc::PRINT(buf, size, 16, 1, 0);
 
