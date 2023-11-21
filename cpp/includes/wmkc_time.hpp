@@ -11,6 +11,7 @@
 #include <Windows.h>
 #elif defined(WMKC_PLATFORM_LINUX)
 #include <sys/time.h>
+#include <unistd.h>
 #endif
 
 class wmkcTime {
