@@ -29,8 +29,7 @@
  * @param size 这是一个长度，代表数据的字节长度。
  * @return 无
  */
-WMKC_PUBLIC(wmkcVoid) wmkcMem_secure WMKC_OPEN_API
-WMKC_OF((wmkcVoid *buf, wmkcSize size));
+wmkcVoid wmkcMem_secure(wmkcVoid *buf, wmkcSize size);
 
 #endif /* WMKC_CPP_MEMORY */
 #endif /* WMKC_SUPPORT */

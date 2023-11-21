@@ -2,7 +2,6 @@
 #define WMKC // Wizard Magic Key Cyber（网络巫师的魔法钥匙）
 
 #include <stdio.h>    // 标准输入输出库
-#include <errno.h>    // 错误处理库
 #include <string.h>   // 标准字符串库
 #include <stdlib.h>   // 标准库
 #include <stdint.h>   // 标准数字类型库
@@ -50,11 +49,7 @@
 #define WMKC_PUBLIC(type)         type        // 动态函数（公共函数）
 #define WMKC_OF(args)             args        // 函数取消调用消耗
 
-#if __cplusplus
-#   define wmkcNull               nullptr     // 空指针
-#else
-#   define wmkcNull               NULL        // 空指针
-#endif
+#define wmkcNull                  NULL        // 空指针
 #define wmkcFast                  register    // 寄存器类型
 typedef char                      wmkcChar;   // 字符类型
 typedef uint8_t                   wmkcByte;   // 字节类型

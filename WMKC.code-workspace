@@ -59,7 +59,12 @@
 			"typeinfo": "cpp",
 			"cstring": "cpp",
 			"sstream": "cpp",
-			"wmkc_crypto.h": "c"
+			"wmkc_crypto.h": "c",
+			"csignal": "cpp",
+			"signal.h": "c",
+			"cstdbool": "cpp",
+			"stdbool.h": "c",
+			"inttypes.h": "c"
 		}
 	}
 }

@@ -115,7 +115,7 @@ typedef wmkcChar       wmkcNetBufT;  // wmkcNet的缓冲区类型
 #define WMKC_NET_ERROR SOCKET_ERROR // 定义错误代码
 #endif /* WMKC_PLATFORM_LINUX */
 
-#include <wmkc_memory.h>
+#include <wmkc_memory.hpp>
 
 namespace wmkcNet {
     class wmkcNet_exception : public std::exception {

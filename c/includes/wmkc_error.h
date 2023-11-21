@@ -3,6 +3,7 @@
 #if WMKC_SUPPORT
 #ifndef WMKC_ERROR
 #define WMKC_ERROR
+#include <errno.h>    // 错误处理库
 
 typedef struct {
     wmkcCSTR message; // 错误消息
