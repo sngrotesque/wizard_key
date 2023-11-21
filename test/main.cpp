@@ -1,6 +1,8 @@
 // #include <cpp/includes/network/wmkc_net.hpp>
 #include <cpp/includes/network/wmkc_ssl.hpp>
 
+#include <wmkc_misc.hpp>
+
 using namespace std;
 static const std::string defaultUserAgent = "Mozilla/5.0 (X11; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/114.0";
 
@@ -47,7 +49,8 @@ class net_test {
             SSL_write(ssl, headers.c_str(), headers.size());
             SSL_read(ssl, recvbuf, sizeof(recvbuf));
 
-            cout << recvbuf << endl;
+            // cout << recvbuf << endl;
+            wmkcMisc::PRINT_RAW((wmkcByte *)recvbuf, sizeof(recvbuf), 1);
 
             SSL_shutdown(ssl);
             SSL_CTX_free(ssl_ctx);
@@ -84,13 +87,19 @@ class net_test {
         }
 };
 
-#include <cpp/includes/wmkc_base64.hpp>
-
 int main(int argc, char **argv)
 {
-    wmkcBase64 base64;
+    net_test *net = new net_test();
+    string headers = (
+        "GET /img-original/img/2023/11/19/16/31/22/113515308_p0.jpg HTTP/1.1\r\n"
+        "Host: i.pximg.net\r\n"
+        "Accept: image/jpeg;q=1.0, image/png;q=0.9, */*\r\n"
+        "Connection: close\r\n"
+        "User-Agent: " + defaultUserAgent + "\r\n"
+        "\r\n");
 
-    cout << base64.decode("U04tR3JvdGVzcXVl") << endl;
+    net->https_test("i.pximg.net", 443, headers);
 
+    delete net;
     return 0;
 }
