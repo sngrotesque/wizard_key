@@ -1,4 +1,5 @@
 #include <network/wmkc_net.hpp>
+#include <network/wmkc_ssl.hpp>
 
 #include <wmkc_binascii.hpp>
 #include <wmkc_base64.hpp>
