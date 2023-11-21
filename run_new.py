@@ -104,6 +104,7 @@ def main():
     cmp.add_parameter('cpp/sources/wmkc_random.cpp')
     cmp.add_parameter('cpp/sources/wmkc_basic.cpp')
     cmp.add_parameter('cpp/sources/wmkc_misc.cpp')
+    cmp.add_parameter('cpp/sources/wmkc_binascii.cpp')
 
     # cmp.add_parameter('c/sources/wmkc_misc.c')
 

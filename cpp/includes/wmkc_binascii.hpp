@@ -14,6 +14,5 @@ class wmkcBinascii {
         std::string a2b_hex(std::string content);
 };
 
-
 #endif /* WMKC_BINASCII */
 #endif /* WMKC_SUPPORT */

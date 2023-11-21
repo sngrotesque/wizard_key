@@ -19,7 +19,7 @@ WMKC_OF((wmkc_u32 *width, wmkc_u32 *height))
     }
 
     *width = GetSystemMetrics(SM_CXSCREEN);
-    *height =  GetSystemMetrics(SM_CYSCREEN);
+    *height = GetSystemMetrics(SM_CYSCREEN);
 
     if(!(*width) || !(*height)) {
         wmkcErr_return(error, wmkcErr_ErrSysFunc, "wmkcWinapi_getScreenWidthHeight",
