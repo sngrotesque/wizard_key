@@ -1,5 +1,5 @@
-// #include <cpp/includes/network/wmkc_net.hpp>
-#include <cpp/includes/network/wmkc_ssl.hpp>
+// #include <network/wmkc_net.hpp>
+#include <network/wmkc_ssl.hpp>
 
 #include <wmkc_misc.hpp>
 
@@ -90,15 +90,17 @@ class net_test {
 int main(int argc, char **argv)
 {
     net_test *net = new net_test();
+    string addr = "www.bilibili.com";
+    string path = "/";
     string headers = (
-        "GET /img-original/img/2023/11/19/16/31/22/113515308_p0.jpg HTTP/1.1\r\n"
-        "Host: i.pximg.net\r\n"
-        "Accept: image/jpeg;q=1.0, image/png;q=0.9, */*\r\n"
+        "GET " + path + " HTTP/1.1\r\n"
+        "Host: " + addr + "\r\n"
+        "Accept: image/jpeg;q=0.8, image/png;q=0.8, text/html;q=0.7, */*\r\n"
         "Connection: close\r\n"
         "User-Agent: " + defaultUserAgent + "\r\n"
         "\r\n");
 
-    net->https_test("i.pximg.net", 443, headers);
+    net->https_test(addr, 443, headers);
 
     delete net;
     return 0;

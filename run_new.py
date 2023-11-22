@@ -8,7 +8,7 @@ path_join = os.path.join
 path_exists = os.path.exists
 output_folder = '_compiled'
 matchingStatement = r'\.[cpp]+'
-output_color = False
+output_color = True
 
 if output_color:
     RED   = '\x1b[91m'
@@ -85,11 +85,11 @@ def main():
 
     cmp = compile(sys.argv[1], sys.argv[2:])
 
-    cmp.add_parameter('-I .')
-    cmp.add_parameter('-I c')
-    cmp.add_parameter('-I cpp')
-    cmp.add_parameter('-I c/includes')
-    cmp.add_parameter('-I c/sources')
+    # cmp.add_parameter('-I .')
+    # cmp.add_parameter('-I c')
+    # cmp.add_parameter('-I cpp')
+    # cmp.add_parameter('-I c/includes')
+    # cmp.add_parameter('-I c/sources')
     cmp.add_parameter('-I cpp/includes')
     cmp.add_parameter('-I cpp/sources')
 

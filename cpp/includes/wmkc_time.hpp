@@ -1,4 +1,4 @@
-#include <wmkc_conf.h>
+#include <wmkc_conf.hpp>
 
 #if WMKC_SUPPORT
 #ifndef WMKC_CPP_TIME

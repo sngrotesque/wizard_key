@@ -3,7 +3,7 @@
 #if WMKC_SUPPORT
 #ifndef WMKC_CPP_MISC
 #define WMKC_CPP_MISC
-#include <wmkc_color.h>
+#include <wmkc_color.hpp>
 
 namespace wmkcMisc {
     wmkcVoid PRINT(wmkcByte *data, wmkcSize len, wmkcSize num, wmkcBool newline, wmkcBool tableChar);
