@@ -1,0 +1,32 @@
+{
+    "configurations": [
+        {
+            "name": "gcc-x64",
+            "includePath": [
+                "${workspaceFolder}",
+                "${workspaceFolder}/c/**",
+                "${workspaceFolder}/cpp/**",
+                "C:/Users/Administrator/Desktop/develop/MSYS2/",
+                "C:/Users/Administrator/Desktop/develop/MSYS2/mingw64/include/**"
+            ],
+            "defines": [
+                "_DEBUG",
+                "UNICODE",
+                "_UNICODE"
+            ],
+
+            "compilerPath": "C:/Users/Administrator/Desktop/develop/MSYS2/mingw64/bin/gcc.exe",
+            "intelliSenseMode": "windows-gcc-x64",
+
+            "cStandard": "c17",
+            "cppStandard": "c++20",
+
+            "compilerArgs": [
+                "-Wall",
+                "-Wextra",
+                "-Wpedantic"
+            ]
+        }
+    ],
+    "version": 4
+}
