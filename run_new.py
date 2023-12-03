@@ -121,9 +121,9 @@ def main():
 
     # cmp.add_parameter('library/qrcode/qrcode.cpp')
 
-    # cmp.add_parameter('cpp/sources/network/wmkc_net_exception.cpp')
-    # cmp.add_parameter('cpp/sources/network/wmkc_ssl.cpp')
-    # cmp.add_parameter('cpp/sources/network/wmkc_net.cpp')
+    cmp.add_parameter('cpp/sources/network/wmkc_net_exception.cpp')
+    cmp.add_parameter('cpp/sources/network/wmkc_ssl.cpp')
+    cmp.add_parameter('cpp/sources/network/wmkc_net.cpp')
     cmp.add_parameter('cpp/sources/crypto/snc.cpp')
     cmp.add_parameter('cpp/sources/wmkc_exception.cpp')
     cmp.add_parameter('cpp/sources/wmkc_memory.cpp')

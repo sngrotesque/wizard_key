@@ -12,21 +12,25 @@
 #include <openssl/sslerr.h>
 #include <openssl/crypto.h>
 
+#define WMKC_SSL_STRICT
+
 namespace wmkcNet {
     class wmkcSSL_Socket {
         public:
-            wmkcSSL_Socket()
-            {
+            SSL *ssl;
+            wmkcNet::Socket fd;
 
-            }
+            wmkcSSL_Socket(SSL *_ssl, wmkcNet::Socket _fd);
     };
 
     class wmkcSSL_Context {
         public:
-            wmkcSSL_Context()
-            {
-                
-            }
+            SSL_CTX *ssl_ctx;
+            SSL *ssl;
+
+            wmkcSSL_Context(const SSL_METHOD *method);
+            ~wmkcSSL_Context();
+            wmkcNet::wmkcSSL_Socket wrap_socket(wmkcNet::Socket fd, std::string server_hostname = "");
     };
 }
 
