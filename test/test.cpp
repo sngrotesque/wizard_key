@@ -30,10 +30,10 @@ int main()
     WSAStartup(MAKEWORD(2,2), &ws);
 #   endif
 
-    std::string target_host = "passport.bilibili.com";
+    std::string target_host = "www.pixiv.net";
     wmkc_u16 target_port = 443;
     std::string sendbuf = (
-        "GET /qrcode/getLoginUrl HTTP/1.1\r\n"
+        "GET / HTTP/1.1\r\n"
         "Host: " + target_host + "\r\n"
         "Accept: */*\r\n"
         "Connection: close\r\n"
