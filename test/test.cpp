@@ -11,6 +11,7 @@
 
 using namespace std;
 using namespace wmkcNet;
+using namespace wmkcCrypto;
 
 void timer(void (*func)())
 {
@@ -23,7 +24,7 @@ void timer(void (*func)())
     cout << "time used: " << (stop-start) << endl;
 }
 
-int main()
+void net_test()
 {
 #   ifdef WMKC_PLATFORM_WINOS
     WSADATA ws;
@@ -57,5 +58,40 @@ int main()
 #   ifdef WMKC_PLATFORM_WINOS
     WSACleanup();
 #   endif
+}
+
+void snc_test()
+{
+    wmkcSNC *snc = wmkcNull;
+    wmkcRandom random;
+    wmkcTime time;
+    wmkcByte key[96];
+    wmkcByte iv[32];
+
+    wmkc_u32 length = 256 * (1024 * 1024);
+    wmkcByte *content = new wmkcByte[length];
+
+    double start_time, stop_time;
+
+    random.urandom(key, sizeof(key));
+    random.urandom(iv, sizeof(iv));
+
+    snc = new wmkcSNC(key, iv, SNC_keyMode::SNC_768);
+
+    cout << "Start timing." << endl;
+    start_time = time.time();
+    snc->encrypt(content, length);
+    stop_time = time.time();
+    cout << "End timing." << endl;
+
+    printf("time used: %.4lf\n", stop_time-start_time);
+
+    delete content;
+    delete snc;
+}
+
+int main()
+{
+    snc_test();
     return 0;
 }
