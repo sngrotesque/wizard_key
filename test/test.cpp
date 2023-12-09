@@ -6,6 +6,7 @@
 #include <wmkc_binascii.hpp>
 #include <wmkc_base64.hpp>
 #include <wmkc_random.hpp>
+#include <wmkc_hash.hpp>
 #include <wmkc_misc.hpp>
 #include <wmkc_time.hpp>
 
@@ -92,6 +93,9 @@ void snc_test()
 
 int main()
 {
-    snc_test();
+    
+
+
+
     return 0;
 }
