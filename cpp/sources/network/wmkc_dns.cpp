@@ -30,11 +30,14 @@ std::string create_dns_qurty(std::string hostname)
     return query;
 }
 
-std::string wmkcDNS(std::string hostname)
+std::string wmkcNet::wmkcDNS(std::string hostname)
 {
     wmkcNet::Socket sockfd(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
     std::string query = create_dns_qurty(hostname);
 
+
+
+    return query;
 }
 
 

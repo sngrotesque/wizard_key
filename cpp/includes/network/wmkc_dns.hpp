@@ -7,7 +7,9 @@
 #include <vector>
 #include <sstream>
 
-std::string wmkcDNS(std::string hostname);
+namespace wmkcNet {
+    std::string wmkcDNS(std::string hostname);
+}
 
 #endif
 #endif

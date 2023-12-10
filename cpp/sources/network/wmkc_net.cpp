@@ -60,7 +60,7 @@ wmkcNet::IPEndPoint wmkcNet::getNetworkInfo(wmkcNetSockT sockfd, wmkc_s32 family
     return addr_info;
 }
 
-wmkcNet::IPEndPoint wmkcNet::getNetworkInfo(wmkc_s32 family, wmkcVoid *pAddr)
+wmkcNet::IPEndPoint wmkcNet::getNetworkInfo(wmkc_s32 family, SOCKADDR *pAddr)
 {
     SOCKADDR_IN *ipv4 = wmkcNull;
     SOCKADDR_IN6 *ipv6 = wmkcNull;
@@ -192,27 +192,35 @@ void wmkcNet::Socket::sendall(const std::string content, const wmkc_s32 flag)
     }
 }
 
-void wmkcNet::Socket::sendto(const std::string content, const wmkc_s32 flag)
-{
-
-}
-
 std::string wmkcNet::Socket::recv(const wmkc_s32 len, const wmkc_s32 flag)
 {
-    wmkcNetBufT *_tmp = wmkcNull;
-    if(!wmkcMem_new(wmkcNetBufT *, _tmp, len)) {
+    wmkcNetBufT *buffer = new wmkcNetBufT[len];
+    if(!buffer) {
         wmkcErr_exception(wmkcErr_ErrMemory, "wmkcNet::Socket::recv",
-            "Failed to allocate memory for _tmp.");
+            "Failed to allocate memory for buffer.");
     }
 
-    this->transmissionLength = ::recv(this->fd, _tmp, len, flag);
-    if(this->transmissionLength == WMKC_NET_ERROR) {
+    if((this->transmissionLength = ::recv(this->fd, buffer, len, flag)) == WMKC_NET_ERROR) {
         wmkcNet::Socket_exception("wmkcNet::Socket::recv");
     }
-    std::string content((wmkcChar *)_tmp, this->transmissionLength);
-    wmkcMem_free(_tmp);
+    std::string content((wmkcChar *)buffer, this->transmissionLength);
+    delete[] buffer;
 
     return content;
+}
+
+/*
+下面两个函数实现起来的话可能会改变这整个类的数据成员
+需要斟酌着实现
+*/
+void wmkcNet::Socket::sendto(const std::string content, wmkcNet::IPEndPoint target, const wmkc_s32 flag)
+{
+    
+}
+
+std::string wmkcNet::Socket::recvfrom(const wmkc_s32 len, wmkcNet::IPEndPoint target, const wmkc_s32 flag)
+{
+    
 }
 
 void wmkcNet::Socket::shutdown(const wmkc_s32 how)

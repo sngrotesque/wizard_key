@@ -42,6 +42,7 @@ namespace wmkcNet {
             std::string addr;
             wmkc_u16 port;
             IPEndPoint(std::string addr, wmkc_u16 port);
+            IPEndPoint() {};
     };
 
     ADDRINFO *getAddrInfo(wmkc_s32 family, wmkc_s32 type, wmkc_s32 proto, std::string addr, std::string serviceName);
@@ -49,7 +50,7 @@ namespace wmkcNet {
     std::string networkAddr2stringAddr(wmkc_s32 family, const wmkcVoid *pAddr);
     uint16_t networkPort2numberPort(const wmkc_u16 port);
     IPEndPoint getNetworkInfo(wmkcNetSockT sockfd, wmkc_s32 family);
-    IPEndPoint getNetworkInfo(wmkc_s32 family, wmkcVoid *pAddr);
+    IPEndPoint getNetworkInfo(wmkc_s32 family, SOCKADDR *pAddr);
 
     class Socket {
         private:
@@ -75,8 +76,9 @@ namespace wmkcNet {
             wmkcNet::Socket accept();
             void send(const std::string content, const wmkc_s32 flag = 0);
             void sendall(const std::string content, const wmkc_s32 flag = 0);
-            void sendto(const std::string content, const wmkc_s32 flag = 0);
+            void sendto(const std::string content, wmkcNet::IPEndPoint target, const wmkc_s32 flag = 0);
             std::string recv(const wmkc_s32 len, const wmkc_s32 flag = 0);
+            std::string recvfrom(const wmkc_s32 len, wmkcNet::IPEndPoint target, const wmkc_s32 flag = 0);
             void shutdown(const wmkc_s32 how);
             void close();
     };

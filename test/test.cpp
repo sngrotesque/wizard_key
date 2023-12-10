@@ -26,42 +26,6 @@ void timer(void (*func)())
     cout << "time used: " << (stop-start) << endl;
 }
 
-void net_test()
-{
-#   ifdef WMKC_PLATFORM_WINOS
-    WSADATA ws;
-    WSAStartup(MAKEWORD(2,2), &ws);
-#   endif
-
-    std::string target_host = "www.pixiv.net";
-    wmkc_u16 target_port = 443;
-    std::string sendbuf = (
-        "GET / HTTP/1.1\r\n"
-        "Host: " + target_host + "\r\n"
-        "Accept: */*\r\n"
-        "Connection: close\r\n"
-        "User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/114.0\r\n\r\n");
-    wmkcChar recvbuf[4096] = {0};
-
-    wmkcSSL_Context *ssl = new wmkcSSL_Context(TLS_method());
-    wmkcSSL_Socket ssl_socket = ssl->wrap_socket(Socket(AF_INET, SOCK_STREAM, IPPROTO_TCP), target_host);
-
-    ssl_socket.fd.connect(target_host, target_port);
-    SSL_connect(ssl_socket.ssl);
-
-    SSL_write(ssl_socket.ssl, sendbuf.c_str(), sendbuf.size());
-    SSL_read(ssl_socket.ssl, recvbuf, sizeof(recvbuf));
-
-    cout << recvbuf << endl;
-
-    ssl_socket.fd.close();
-
-    delete ssl;
-#   ifdef WMKC_PLATFORM_WINOS
-    WSACleanup();
-#   endif
-}
-
 void snc_test()
 {
     wmkcSNC *snc = wmkcNull;
@@ -92,9 +56,37 @@ void snc_test()
     delete snc;
 }
 
+void net_test()
+{
+#   ifdef WMKC_PLATFORM_WINOS
+    WSADATA ws;
+    WSAStartup(MAKEWORD(2,2), &ws);
+#   endif
+
+    char send_buffer[40] = {"\x04\xd2\x01\x00\x00\x01\x00\x00\x00\x00\x00\x00\x08\x70\x61\x73\x73\x70\x6f\x72\x74\x08\x62\x69\x6c\x69\x62\x69\x6c\x69\x03\x63\x6f\x6d\x00\x00\x01\x00\x01"};
+    int send_buffer_size = 39;
+    char recv_buffer[512];
+    int err, recv_length;
+    SOCKET sockfd = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
+    ADDRINFO *result = getAddrInfo(AF_INET, SOCK_DGRAM, IPPROTO_UDP, "223.5.5.5", "53");
+    err = sendto(sockfd, send_buffer, send_buffer_size, 0, result->ai_addr, result->ai_addrlen);
+    if(err == SOCKET_ERROR) {
+        wmkcNet::Socket_exception("net_test");
+    }
+    recv_length = recvfrom(sockfd, recv_buffer, sizeof(recv_buffer), 0, result->ai_addr, (int *)&result->ai_addrlen);
+    if(recv_length == SOCKET_ERROR) {
+        wmkcNet::Socket_exception("net_test");
+    }
+    wmkcMisc::PRINT((wmkcByte *)recv_buffer, recv_length, 16, 1, 0);
+    closesocket(sockfd);
+
+#   ifdef WMKC_PLATFORM_WINOS
+    WSACleanup();
+#   endif
+}
+
 int main()
 {
-    
-
+    net_test();
     return 0;
 }
