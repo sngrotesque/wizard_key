@@ -1,14 +1,5 @@
 import socket
 
-def dns_lookup(domain_name, dns_server):
-    sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    sock.settimeout(5)
-    query = create_dns_query(domain_name)
-    sock.sendto(query, (dns_server, 53))
-    response, server_address = sock.recvfrom(4096)
-    sock.close()
-    return response
-
 def create_dns_query(domain_name):
     query = b''
     query += b'\x04\xd2' # generate random ID
@@ -28,6 +19,15 @@ def create_dns_query(domain_name):
     query += b'\x00\x01' # add question class to query
     
     return query
+
+def dns_lookup(domain_name, dns_server):
+    sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    sock.settimeout(5)
+    query = create_dns_query(domain_name)
+    sock.sendto(query, (dns_server, 53))
+    response, server_address = sock.recvfrom(4096)
+    sock.close()
+    return response
 
 response = dns_lookup('www.pixiv.net', '192.168.1.1')
 response = response[-4:]

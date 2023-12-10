@@ -37,10 +37,12 @@ typedef wmkcChar       wmkcNetBufT;  // wmkcNet的缓冲区类型
 
 namespace wmkcNet {
     // wmkcNet的IP端点
-    typedef struct {
-        std::string addr;
-        wmkc_u16 port;
-    } IPEndPoint;
+    class IPEndPoint {
+        public:
+            std::string addr;
+            wmkc_u16 port;
+            IPEndPoint(std::string addr, wmkc_u16 port);
+    };
 
     ADDRINFO *getAddrInfo(wmkc_s32 family, wmkc_s32 type, wmkc_s32 proto, std::string addr, std::string serviceName);
 
@@ -71,11 +73,9 @@ namespace wmkcNet {
             void bind(const std::string addr, const wmkc_u16 port);
             void listen(const wmkc_s32 backlog);
             wmkcNet::Socket accept();
-            void send(const wmkcNetBufT *buf, const wmkc_s32 len, const wmkc_s32 flag = 0);
-            void sendall(const wmkcNetBufT *buf, const wmkc_s32 len, const wmkc_s32 flag = 0);
             void send(const std::string content, const wmkc_s32 flag = 0);
             void sendall(const std::string content, const wmkc_s32 flag = 0);
-            void recv(wmkcNetBufT *buf, const wmkc_s32 len, const wmkc_s32 flag = 0);
+            void sendto(const std::string content, const wmkc_s32 flag = 0);
             std::string recv(const wmkc_s32 len, const wmkc_s32 flag = 0);
             void shutdown(const wmkc_s32 how);
             void close();

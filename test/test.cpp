@@ -1,5 +1,6 @@
 #include <network/wmkc_net.hpp>
 #include <network/wmkc_ssl.hpp>
+#include <network/wmkc_dns.hpp>
 
 #include <crypto/snc.hpp>
 
@@ -94,8 +95,6 @@ void snc_test()
 int main()
 {
     
-
-
 
     return 0;
 }

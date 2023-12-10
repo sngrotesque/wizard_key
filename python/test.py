@@ -1,8 +1,10 @@
 import socket
 
-IPEndPoint = ('240e:930:c200:209::35', 80)
+dns_query = b'\x04\xd2\x01\x00\x00\x01\x00\x00\x00\x00\x00\x00\x08\x70\x61\x73\x73\x70\x6f\x72\x74\x08\x62\x69\x6c\x69\x62\x69\x6c\x69\x03\x63\x6f\x6d\x00\x00\x01\x00\x01'
 
-sockfd = socket.socket(socket.AF_INET6, socket.SOCK_STREAM, socket.IPPROTO_TCP)
-sockfd.connect(IPEndPoint)
-print(sockfd)
-sockfd.close()
+fd = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
+fd.settimeout(15)
+fd.sendto(dns_query, ('223.5.5.5', 53))
+res = fd.recvfrom(4096)
+fd.close()
+print(res)

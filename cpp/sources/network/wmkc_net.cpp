@@ -1,5 +1,8 @@
 #include <network/wmkc_net.hpp>
 
+wmkcNet::IPEndPoint::IPEndPoint(std::string addr, wmkc_u16 port)
+: addr(addr), port(port) {}
+
 ADDRINFO *wmkcNet::getAddrInfo(wmkc_s32 family, wmkc_s32 type, wmkc_s32 proto, std::string addr, std::string serviceName)
 {
     ADDRINFO hints = {0};
@@ -163,28 +166,6 @@ wmkcNet::Socket wmkcNet::Socket::accept()
     return wmkcNet::Socket(this->family, this->type, this->proto, client_sockfd);
 }
 
-void wmkcNet::Socket::send(const wmkcNetBufT *buf, const wmkc_s32 len, const wmkc_s32 flag)
-{
-    this->transmissionLength = ::send(this->fd, buf, len, flag);
-    if(this->transmissionLength == WMKC_NET_ERROR) {
-        wmkcNet::Socket_exception("wmkcNet::Socket::send");
-    }
-}
-
-void wmkcNet::Socket::sendall(const wmkcNetBufT *buf, const wmkc_s32 len, const wmkc_s32 flag)
-{
-    wmkc_s32 leftover_length = len;
-    while(leftover_length) {
-        this->transmissionLength = ::send(this->fd, buf, leftover_length, flag);
-
-        if(this->transmissionLength == WMKC_NET_ERROR) {
-            wmkcNet::Socket_exception("wmkcNet::Socket::sendall");
-        }
-        leftover_length -= this->transmissionLength;
-        buf += this->transmissionLength;
-    }
-}
-
 void wmkcNet::Socket::send(const std::string content, const wmkc_s32 flag)
 {
     this->transmissionLength = ::send(this->fd, (wmkcNetBufT *)content.c_str(), content.size(), flag);
@@ -211,12 +192,9 @@ void wmkcNet::Socket::sendall(const std::string content, const wmkc_s32 flag)
     }
 }
 
-void wmkcNet::Socket::recv(wmkcNetBufT *buf, const wmkc_s32 len, const wmkc_s32 flag)
+void wmkcNet::Socket::sendto(const std::string content, const wmkc_s32 flag)
 {
-    this->transmissionLength = ::recv(this->fd, buf, len, flag);
-    if(this->transmissionLength == WMKC_NET_ERROR) {
-        wmkcNet::Socket_exception("wmkcNet::Socket::recv");
-    }
+
 }
 
 std::string wmkcNet::Socket::recv(const wmkc_s32 len, const wmkc_s32 flag)
