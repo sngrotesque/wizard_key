@@ -41,7 +41,7 @@ namespace wmkcNet {
         public:
             std::string addr;
             wmkc_u16 port;
-            IPEndPoint(std::string addr, wmkc_u16 port);
+            IPEndPoint(std::string addr, wmkc_u16 port): addr(addr), port(port) {}
             IPEndPoint() {};
     };
 
@@ -53,8 +53,6 @@ namespace wmkcNet {
     IPEndPoint getNetworkInfo(wmkc_s32 family, SOCKADDR *pAddr);
 
     class Socket {
-        private:
-            wmkc_s32 err;
         public:
             double timeout; // 超时时间
             wmkcNetSockT fd; // 套接字文件描述符
@@ -78,7 +76,7 @@ namespace wmkcNet {
             void sendall(const std::string content, const wmkc_s32 flag = 0);
             void sendto(const std::string content, wmkcNet::IPEndPoint target, const wmkc_s32 flag = 0);
             std::string recv(const wmkc_s32 len, const wmkc_s32 flag = 0);
-            std::string recvfrom(const wmkc_s32 len, wmkcNet::IPEndPoint target, const wmkc_s32 flag = 0);
+            std::string recvfrom(const wmkc_s32 len, SOCKADDR *from = wmkcNull, socklen_t *fromlen = wmkcNull, const wmkc_s32 flag = 0);
             void shutdown(const wmkc_s32 how);
             void close();
     };

@@ -8,7 +8,7 @@
 #include <sstream>
 
 namespace wmkcNet {
-    std::string wmkcDNS(std::string hostname);
+    std::string wmkcDNS(std::string hostname, std::string dnsServer);
 }
 
 #endif

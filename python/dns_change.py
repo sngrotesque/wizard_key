@@ -29,7 +29,7 @@ def dns_lookup(domain_name, dns_server):
     sock.close()
     return response
 
-response = dns_lookup('www.pixiv.net', '192.168.1.1')
+response = dns_lookup('12312313232114r5t645754ergx.com', '223.5.5.5')
 response = response[-4:]
 
 print(f'{response[0]}.{response[1]}.{response[2]}.{response[3]}')
