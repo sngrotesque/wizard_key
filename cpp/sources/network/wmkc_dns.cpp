@@ -30,6 +30,8 @@ std::string create_dns_qurty(std::string hostname)
     return query;
 }
 
+// 此函数需要优化，目前只是返回收到的数据的完整内容。
+// 需要针对DNS响应包进行修改
 std::string wmkcNet::wmkcDNS(std::string hostname, std::string dnsServer)
 {
     wmkcNet::Socket sockfd(AF_INET, SOCK_DGRAM, IPPROTO_UDP);

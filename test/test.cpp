@@ -6,7 +6,10 @@
 
 #include <wmkc_binascii.hpp>
 #include <wmkc_base64.hpp>
+
 #include <wmkc_random.hpp>
+#include <wmkc_struct.hpp>
+
 #include <wmkc_hash.hpp>
 #include <wmkc_misc.hpp>
 #include <wmkc_time.hpp>
@@ -79,9 +82,16 @@ void net_test()
 #   endif
 }
 
+void vector_test(vector<int> args)
+{
+    for(const auto &i : args) {
+        cout << "args[i]: " << i << endl;
+    }
+}
+
 int main()
 {
-    wmkcNet::wmkcDNS("passport.bilibili.com", "223.5.5.5");
+    vector_test({1,2,3,4,5,6,7,8,9});
 
     return 0;
 }
