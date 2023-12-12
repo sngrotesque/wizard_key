@@ -65,7 +65,7 @@ void net_test()
 
     const char *sendbuf = ("\x04\xd2\x01\x00\x00\x01\x00\x00\x00\x00\x00\x00\x08\x70\x61\x73\x73"
         "\x70\x6f\x72\x74\x08\x62\x69\x6c\x69\x62\x69\x6c\x69\x03\x63\x6f\x6d\x00\x00\x01\x00\x01");
-    const int sendbuf_size = 74;
+    const int sendbuf_size = 39;
 
     wmkcNet::Socket fd(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
     fd.sendto(std::string(sendbuf, sendbuf_size), IPEndPoint("dns.alidns.com", 53));
@@ -81,16 +81,7 @@ void net_test()
 
 int main()
 {
-    vector<string> tokens;
-
-    tokens.push_back("www.baidu.com");
-    tokens.push_back("passport.bilibili.com");
-    tokens.push_back("microsoft.com");
-    tokens.push_back("github.com");
-
-    for(const auto &token : tokens) {
-        cout << "token: " << token << endl;
-    }
+    wmkcNet::wmkcDNS("passport.bilibili.com", "223.5.5.5");
 
     return 0;
 }

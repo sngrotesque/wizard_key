@@ -2,11 +2,12 @@
 
 std::string wmkcStruct::pack(std::string format, ...)
 {
-    
+    const wmkcChar *format_content = format.c_str();
+    const wmkcSize format_length = format.size();
 }
 
-wmkcSize wmkcStruct::unpack(std::string format, ...)
+std::vector<wmkcSize> wmkcStruct::unpack(std::string format, ...)
 {
-    
+
 }
 
