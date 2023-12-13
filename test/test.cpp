@@ -14,6 +14,8 @@
 #include <wmkc_misc.hpp>
 #include <wmkc_time.hpp>
 
+#include <map>
+
 using namespace std;
 using namespace wmkcNet;
 using namespace wmkcCrypto;
@@ -89,9 +91,17 @@ void vector_test(vector<int> args)
     }
 }
 
+void map_test(map<string, string> args)
+{
+    for(const auto &i : args) {
+        cout << i.first << ":" << i.second << endl;
+    }
+}
+
 int main()
 {
-    vector_test({1,2,3,4,5,6,7,8,9});
+    // vector_test({1,2,3,4,5,6,7,8,9});
+    map_test({{"name","sngrotesque"}, {"cookie","aisjd1358789"}});
 
     return 0;
 }
