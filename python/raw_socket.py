@@ -1,6 +1,8 @@
+import threading
 import struct
 import socket
 import random
+import sys
 
 def create_radnom_ipv4_addr():
     return '.'.join([f'{random.randint(0x00, 0xff)}' for _ in range(4)])
@@ -23,7 +25,7 @@ def send_syn(source_addr :str = None, source_port :int = None, target_addr :str 
         0x06,    # 协议，TCP协议为6
         0x0000,  # 校验和，一般为0，由操作系统自动计算
         socket.inet_aton(source_addr), # 源IP地址，使用inet_aton函数将点分十进制转换为二进制
-        socket.inet_aton(target_addr)    # 目的IP地址，使用inet_aton函数将点分十进制转换为二进制
+        socket.inet_aton(target_addr)  # 目的IP地址，使用inet_aton函数将点分十进制转换为二进制
     )
 
     # TCP头部
@@ -41,17 +43,12 @@ def send_syn(source_addr :str = None, source_port :int = None, target_addr :str 
     )
 
     # 数据部分
-    data = b''  # 数据部分为空
+    # data = b'' # 数据部分为空
     # 数据包
-    packet = ip_header + tcp_header + data
-
-    print(packet)
+    packet = ip_header + tcp_header
 
     raw_socket = socket.socket(socket.AF_INET, socket.SOCK_RAW, socket.IPPROTO_RAW)
     raw_socket.setsockopt(socket.IPPROTO_IP, socket.IP_HDRINCL, 1)
-
     raw_socket.sendto(packet, (target_addr, target_port))
-
     raw_socket.close()
 
-send_syn(target_addr='223.5.5.5', target_port=80)
