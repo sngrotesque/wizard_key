@@ -14,43 +14,35 @@
 #include <wmkc_misc.hpp>
 #include <wmkc_time.hpp>
 
-#include <map>
-
 using namespace std;
 using namespace wmkcNet;
 using namespace wmkcCrypto;
 
-void timer(void (*func)())
+void va_test(string format, ...)
 {
-    wmkcTime time;
+    va_list va;
 
-    double start = time.time();
-    func();
-    double stop = time.time();
+    va_start(va, format);
 
-    cout << "time used: " << (stop-start) << endl;
-}
-
-void vector_test(vector<int> args)
-{
-    for(const auto &i : args) {
-        cout << "args[i]: " << i << endl;
+    for(const auto &i : format) {
+        if(i == 'I') {
+            printf("32bit value: %d\n", va_arg(va, int));
+        } else if(i == 'H') {
+            printf("16bit value: %d\n", va_arg(va, int));
+        }
     }
-}
 
-void map_test(map<string, string> args)
-{
-    for(const auto &i : args) {
-        cout << i.first << ":" << i.second << endl;
-    }
 }
 
 int main()
 {
     wmkcStruct Struct;
 
-    Struct.pack(">IIIII", {1,2,3,4,5});
-
+    try {
+        Struct.pack(">BIIIH2", {0x45, 5, 4, 5, 12345, 0x3135});
+    } catch(exception &e) {
+        cout << e.what() << endl;
+    }
 
     return 0;
 }
