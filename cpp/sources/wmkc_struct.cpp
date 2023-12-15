@@ -16,27 +16,13 @@ static const wmkcByte wmkcStruct_format_symbol[7] = {
     'd', // double
 };
 
-std::string wmkcStruct::pack(std::string format, ...)
+std::string wmkcStruct::pack(std::string format, std::vector<wmkcSize> args)
 {
-    if(format.empty()) {
-        return std::string();
-    }
-
-    const wmkcChar *format_content = format.c_str();
-    const wmkcSize format_length = format.size();
-    wmkcBool littleEndian;
-    wmkcSize index;
-    std::string result;
-
-    const wmkcByte *p = std::find(wmkcStruct_byteOrder, wmkcStruct_byteOrder + sizeof(wmkcStruct_byteOrder), *format_content);
     
-    // for(index = 0; index < format_length; ++index) {
-    // }
 
-    return result;
 }
 
-std::vector<wmkcSize> wmkcStruct::unpack(std::string format, ...)
+std::vector<wmkcSize> wmkcStruct::unpack(std::string format, std::string args)
 {
     std::vector<wmkcSize> result;
 
