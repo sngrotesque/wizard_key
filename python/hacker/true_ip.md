@@ -2,6 +2,7 @@
 
 ### Date: 2023/12/15 19:46 5, 1. [原神](https://ys.mihoyo.com/)
 > [Censys](https://search.censys.io/search?resource=hosts&sort=RELEVANCE&per_page=25&virtual_hosts=EXCLUDE&q=ys.mihoyo.com)
+
 | IP Address      | Port and Service                                                                                    | Location/CN   |
 | :---            | :---                                                                                                | :---          |
 | 43.138.20.79    | 21/FTP, 22/SSH, 80/HTTP, 888/HTTP, 3306/MYSQL, 8000/HTTP, 9999/HTTP                                 | Beijing/CN    |
