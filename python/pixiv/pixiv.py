@@ -121,11 +121,8 @@ class pixiv:
 
     # 获取指定作者主页中所有的作品ID
     def getArtworksIllusts(self, artistID :Union[str, int]):
-        url = f'https://www.pixiv.net/ajax/user/{artistID}/profile/all?lang=zh'
-
-        res = self.http_get(url).json()['body']['illusts']
-
-        return [*res.keys()]
+        return [*self.http_get(f'https://www.pixiv.net/ajax/user/{artistID}/profile/all'
+            f'?lang=zh').json()['body']['illusts'].keys()]
 
     # 获取指定作品ID中的所有图像的链接
     def getIllustsImagesLink(self, artworkID :Union[str, int]):
