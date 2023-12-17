@@ -40,7 +40,7 @@ class login:
         else:
             print(f'错误！你未成功登陆哔哩哔哩。你的Cookie为：{cookie}')
 
-        print(res)
+        return res
 
 if __name__ == '__main__':
     bili = login(qrcode_show_timeout = 5)
