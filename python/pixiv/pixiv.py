@@ -72,33 +72,35 @@ class pixiv:
         out.release()
 
     # 将Zip压缩包里面的图像转为视频
-    def zipProcess(self, link :str, fileSavePath :str, content :Union[ZipFile, bytes], folder :str):
-        fwrite(fileSavePath, content)
+    def zipToMp4(self, link :str, fileSavePath :str, content :Union[ZipFile, bytes], folder :str):
+        fwrite(fileSavePath, content, mode = 'wb')
 
         with ZipFile(fileSavePath, 'r') as ctx:
             zip_filename_list = ctx.namelist()
-            jpgToMp4TempSavePath = f'temp_{fileSavePath}'
+            jpgToMp4TempSavePath = f'{fileSavePath}_Temp'
+
+            print(f'82 line: {jpgToMp4TempSavePath = }')
 
             if not os.path.exists(jpgToMp4TempSavePath):
                 os.makedirs(jpgToMp4TempSavePath)
 
             ctx.extractall(jpgToMp4TempSavePath)
 
-        jpgPath = [f'{jpgToMp4TempSavePath}/{fn}' for fn in zip_filename_list]
+        jpgPath = [os.path.join(jpgToMp4TempSavePath, fn) for fn in zip_filename_list]
         gifFileName = self.createFileName(link).replace('zip', 'mp4')
 
-        self.jpgToMp4(jpgPath, f'{folder}/{gifFileName}')
+        self.jpgToMp4(jpgPath, os.path.join(folder, gifFileName))
 
         for fn in jpgPath:
             os.remove(fn)
 
         os.remove(fileSavePath)
-        os.rmdir(jpgToMp4TempSavePath)
+        os.removedirs(jpgToMp4TempSavePath)
 
     # 获取指定页码中所有作者ID
     def getArtistList(self, page :int, offset :int) -> List[str]:
         res = self.http_get(f'https://www.pixiv.net/ajax/user/{self.myself_id}/following'
-            f'?offset={page*offset}&limit={offset}&rest=show').json()
+            f'?offset={page * offset}&limit={offset}&rest=show').json()
 
         if not res['body']['users']:
             return False
@@ -148,11 +150,7 @@ class pixiv:
         if not os.path.exists(savePath):
             os.makedirs(savePath)
 
-        # 生成文件名
-        fn = self.createFileName(url)
-
-        # 设定文件的保存路径
-        fileSavePath = os.path.join(savePath, fn)
+        fileSavePath = os.path.join(savePath, self.createFileName(url))
 
         # 如果路径已存在，则不重复保存
         if os.path.exists(fileSavePath) or os.path.exists(fileSavePath.replace('zip', 'mp4')):
@@ -163,7 +161,8 @@ class pixiv:
 
         if response.headers['Content-Type'] == 'application/zip':
             if zipToMp4:
-                self.zipProcess(url, fileSavePath, response.content, savePath)
+                print(f'将zip转为mp4')
+                self.zipToMp4(url, fileSavePath, response.content, savePath)
             else:
                 fwrite(fileSavePath, response.content, mode = 'wb')
         else:
@@ -174,14 +173,13 @@ class pixiv:
 myself_id = 38279179
 artist_id = 58131017
 artwork_id = 114304146
-save_path = 'pixiv_save'
+save_path = 'Y:/pixiv_save/artwork_id_70250134/'
 cookie_path = './pixiv_cookie.txt'
 links = [
     'https://i.pximg.net/img-zip-ugoira/img/2018/08/17/22/06/00/70250134_ugoira1920x1080.zip'
 ]
 
-
-
 px = pixiv(38279179, cookies_path = cookie_path)
 for x in links:
-    px.download(x, save_path)
+    res = px.download(x, save_path, zipToMp4 = True)
+    print(res)

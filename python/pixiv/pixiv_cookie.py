@@ -34,4 +34,4 @@ def xcrypt_cookie(cookie_path :str, password :bytes, salt :bytes, encrypt :bool)
     with open(cookie_path, 'wb') as f:
         f.write(cookie)
 
-xcrypt_cookie('./pixiv_cookie.txt', 'sngrotesque', '蛋炒鸡丁小饭团', 0)
+xcrypt_cookie('./pixiv_cookie.txt', '', '', 0)
