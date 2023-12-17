@@ -170,13 +170,10 @@ class pixiv:
 myself_id = 38279179
 artist_id = 58131017
 artwork_id = 114304146
-save_path = 'Y:/pixiv_save/artwork_id_70250134/'
+save_path = 'pixiv_save'
 cookie_path = './pixiv_cookie.txt'
 links = [
     'https://i.pximg.net/img-zip-ugoira/img/2018/08/17/22/06/00/70250134_ugoira1920x1080.zip'
 ]
 
-px = pixiv(38279179, cookies_path = cookie_path)
-for x in links:
-    res = px.download(x, save_path, zipToMp4 = True)
-    print(res)
+px = pixiv(myself_id, cookies_path = cookie_path)
