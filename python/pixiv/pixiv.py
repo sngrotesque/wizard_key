@@ -1,7 +1,7 @@
-from typing import Union, List
+from typing import Union, List, Callable
 from zipfile import ZipFile
+import threading
 import requests
-import random
 import json
 import cv2
 import re
@@ -29,17 +29,22 @@ class pixiv:
     不信的话你可以在getArtistList方法中检测每一页的作者数量然后和Pixiv官网的那一页的数量作对比。
     '''
     def __init__(self, myID :Union[str, int],
-                cookies_path :str = 'cookie.txt',
+                cookies_path :str = None,
+                cookies_data :str = None,
                 proxies :str = 'http://localhost:1080',
-                maxNumberThreads :int = 8
-                ):
+                save_path :str = '.',
+                maxNumberThreads :int = 8):
         self.maxNumberThreads = maxNumberThreads
-
-        self.cookies = fread(cookies_path)
-        self.proxies = {'http': proxies, 'https': proxies}
-
         self.myself_id = myID
+        self.save_path = save_path
 
+        if cookies_path:
+            self.cookies = fread(cookies_path)
+        elif cookies_data:
+            self.cookies = cookies_data
+        else:
+            raise RuntimeError('缺少Cookie，无法进行爬取。')
+        self.proxies = {'http': proxies, 'https': proxies}
         self.headers = {
             'Cookie': self.cookies,
             'Accapt-Language': 'zh-CN, zh;q=0.9, en;q=0.8, en-GB;q=0.7, en-US;q=0.6',
@@ -47,6 +52,15 @@ class pixiv:
             'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/116.0'
         }
 
+    def threads(self, func :Callable, url_list :List[str]):
+        th_list = [threading.Thread(target = func, args = (thId, url_list)) for thId in range(self.maxNumberThreads)]
+
+        for th in th_list:
+            th.start()
+
+        for th in th_list:
+            th.join()
+    
     def http_get(self, url :str):
         return requests.get(url, headers = self.headers, proxies = self.proxies)
 
@@ -119,47 +133,48 @@ class pixiv:
             results += result
         return results
 
-    # 获取指定作者主页中所有的作品ID
-    def getArtworksIllusts(self, artistID :Union[str, int]):
-        return [*self.http_get(f'https://www.pixiv.net/ajax/user/{artistID}/profile/all'
+    # 多线程获取指定作者的所有作品中的所有图像的链接
+    # 这个方法如果改为单线程，那么速度堪忧并且没法兼容多线程下载图像
+    def getIllustsImagesLink(self, artistID :Union[str, int]):
+        artworks = [*self.http_get(f'https://www.pixiv.net/ajax/user/{artistID}/profile/all'
             f'?lang=zh').json()['body']['illusts'].keys()]
 
-    # 获取指定作品ID中的所有图像的链接
-    def getIllustsImagesLink(self, artworkID :Union[str, int]):
-        dynamicImageUrl = f'https://www.pixiv.net/ajax/illust/{artworkID}/ugoira_meta?lang=zh'
-        staticImageUrl = f'https://www.pixiv.net/ajax/illust/{artworkID}/pages?lang=zh'
+        self.links = []
+        def get_images(thID :int, artworks :List[str]):
+            for pid in range(thID, len(artworks), self.maxNumberThreads):
+                print(f'Thread[{thID:02x}] obtains the image link in PID[{artworks[pid]}].')
+                dynamicImageUrl = f'https://www.pixiv.net/ajax/illust/{artworks[pid]}/ugoira_meta?lang=zh'
+                staticImageUrl = f'https://www.pixiv.net/ajax/illust/{artworks[pid]}/pages?lang=zh'
 
-        dynamicImage_result = self.http_get(dynamicImageUrl).json()
-        statucImage_result = self.http_get(staticImageUrl).json()
+                dynamicImage_result = self.http_get(dynamicImageUrl).json()
+                statucImage_result = self.http_get(staticImageUrl).json()
 
-        links = []
-        if not dynamicImage_result['error']:
-            links.append(dynamicImage_result['body']['originalSrc'])
-        else:
-            for index in statucImage_result['body']:
-                links.append(index['urls']['original'])
+                if not dynamicImage_result['error']:
+                    self.links.append(dynamicImage_result['body']['originalSrc'])
+                else:
+                    for index in statucImage_result['body']:
+                        self.links.append(index['urls']['original'])
 
-        return links
+        self.threads(get_images, artworks)
+
+        return self.links
 
     # 下载单个作品
-    def download(self, url :str, savePath :str = '.', zipToMp4 :bool = False):
-        # 如果用户指定的保存目录不存在的话就递归创建
-        if not os.path.exists(savePath):
-            os.makedirs(savePath)
+    def download(self, url :str, zipToMp4 :bool = False):
+        if not os.path.exists(self.save_path):
+            os.makedirs(self.save_path)
 
-        fileSavePath = os.path.join(savePath, self.createFileName(url))
+        fileSavePath = os.path.join(self.save_path, self.createFileName(url))
 
-        # 如果路径已存在，则不重复保存
         if os.path.exists(fileSavePath) or os.path.exists(fileSavePath.replace('zip', 'mp4')):
             return False
 
-        # 获取内容
         response = self.http_get(url)
 
         if response.headers['Content-Type'] == 'application/zip':
             if zipToMp4:
                 print(f'将zip转为mp4')
-                self.zipToMp4(url, fileSavePath, response.content, savePath)
+                self.zipToMp4(url, fileSavePath, response.content, self.save_path)
             else:
                 fwrite(fileSavePath, response.content, mode = 'wb')
         else:
@@ -167,13 +182,17 @@ class pixiv:
 
         return True
 
+    # 多线程下载指定作者的所有作品
+    def multiThreadedDownload(self, artistID :Union[str, int]):
+        def _download(thID :int, links :List[str]):
+            for index in range(thID, len(links), self.maxNumberThreads):
+                print(f'thread[{thID:02x}] download \'{links[index]}\'')
+                self.download(links[index], zipToMp4 = True)
+        self.threads(_download, self.getIllustsImagesLink(artistID))
+
 myself_id = 38279179
 artist_id = 58131017
-artwork_id = 114304146
-save_path = 'pixiv_save'
-cookie_path = './pixiv_cookie.txt'
-links = [
-    'https://i.pximg.net/img-zip-ugoira/img/2018/08/17/22/06/00/70250134_ugoira1920x1080.zip'
-]
+cookies_data = ''
 
-px = pixiv(myself_id, cookies_path = cookie_path)
+px = pixiv(myself_id, cookies_data = cookies_data, save_path = 'pixiv_save')
+data = px.multiThreadedDownload(artist_id)
