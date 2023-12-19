@@ -68,8 +68,9 @@ std::string wmkcStruct::pack(std::string format, std::vector<wmkcSize> args)
         }
     }
 
-
-
+    ///////////////////////////////////////////////////
+    // 啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊不想写了好累啊
+    ///////////////////////////////////////////////////
 
     std::cout << "everything ok." << std::endl;
 
