@@ -31,15 +31,23 @@ void va_test(string format, ...)
             printf("16bit value: %d\n", va_arg(va, int));
         }
     }
-
 }
 
 int main()
 {
     wmkcStruct Struct;
 
+    string format = ">HHI";
+    vector<wmkcSize> args = {
+        0x1234, // ID
+        0x0134, // Length
+        0x00000003  // test
+    };
+
     try {
-        Struct.pack(">BIIIH2", {0x45, 5, 4, 5, 12345, 0x3135});
+        string res = Struct.pack(format, args);
+        printf("Struct.orderSymbol: %d\n", Struct.orderSymbol);
+        wmkcMisc::PRINT_RAW((wmkcByte *)(res.c_str()), res.size(), true);
     } catch(exception &e) {
         cout << e.what() << endl;
     }

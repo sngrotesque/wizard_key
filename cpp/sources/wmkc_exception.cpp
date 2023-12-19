@@ -8,5 +8,5 @@ void wmkcErr_exception(wmkcErr_obj err)
 
 void wmkcErr_exception(wmkcSSize errCode, std::string funcName, std::string errMessage)
 {
-    throw std::string(funcName + "[" + std::to_string(errCode) + "]: " + errMessage);
+    throw std::runtime_error(std::string(funcName + "[" + std::to_string(errCode) + "]: " + errMessage));
 }
