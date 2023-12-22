@@ -93,8 +93,6 @@ class pixiv:
             zip_filename_list = ctx.namelist()
             jpgToMp4TempSavePath = f'{fileSavePath}_Temp'
 
-            print(f'82 line: {jpgToMp4TempSavePath = }')
-
             if not os.path.exists(jpgToMp4TempSavePath):
                 os.makedirs(jpgToMp4TempSavePath)
 
@@ -195,4 +193,7 @@ artist_id = 58131017
 cookies_data = ''
 
 px = pixiv(myself_id, cookies_data = cookies_data, save_path = 'pixiv_save')
-data = px.multiThreadedDownload(artist_id)
+# data = px.multiThreadedDownload(artist_id)
+res = px.getTotalArtistList()
+
+print(res)
