@@ -50,19 +50,18 @@
 
 #define WMKC_FEA_BLOCKLEN 16
 
-typedef wmkcByte state[WMKC_FEA_NB][WMKC_FEA_NK];
-
 namespace wmkcCrypto {
+    enum class FEA_XcryptMode {
+        ECB, CBC, CTR, CFB
+    };
+
     class wmkcFEA {
         private:
-
-        public:
-            // private BEGIN
             wmkcByte key[WMKC_FEA_BLOCKLEN << 1];
             wmkcByte iv[WMKC_FEA_BLOCKLEN];
             wmkcByte nonce[WMKC_FEA_BLOCKLEN >> 1];
             wmkcByte roundKey[512]; // len(key) * WMKC_FEA_NR
-            wmkc_s32 segmentSize;
+            wmkc_u32 segmentSize;
 
             wmkcVoid subBytes(wmkcByte *block);
             wmkcVoid shiftBits(wmkcByte *block);
@@ -75,12 +74,12 @@ namespace wmkcCrypto {
 
             wmkcVoid cipher(wmkcByte *p, wmkcByte *roundKey);
             wmkcVoid invCipher(wmkcByte *p, wmkcByte *roundKey);
-            // private END
 
-            wmkcFEA();
+        public:
+            wmkcFEA(const wmkcByte *key, const wmkcByte *iv, const wmkc_u32 segmentSize = 128);
             ~wmkcFEA();
-            void encrypt(wmkcByte *content, wmkcSize size);
-            void decrypt(wmkcByte *content, wmkcSize size);
+            void encrypt(wmkcByte *content, wmkcSize size, FEA_XcryptMode mode);
+            void decrypt(wmkcByte *content, wmkcSize size, FEA_XcryptMode mode);
     };
 }
 
