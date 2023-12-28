@@ -109,6 +109,9 @@ def main():
     if len(sys.argv) < 2:
         exit(f'Too few parameters: {RED}{sys.argv[0]}{RESET} {COLOR}[src_file, [parameter]]{RESET}')
 
+    if sys.platform == 'win32':
+        os.environ['PATH'] += (';' + 'library')
+
     cmp = compile(sys.argv[1], sys.argv[2:])
 
     # cmp.add_parameter('-I .')
@@ -121,6 +124,11 @@ def main():
 
     # cmp.add_parameter('library/qrcode/qrcode.cpp')
 
+    # 通用包含代码
+    # cmp.add_parameter('cpp/sources/wmkc_exception.cpp')
+    # cmp.add_parameter('cpp/sources/wmkc_memory.cpp')
+    # cmp.add_parameter('cpp/sources/wmkc_misc.cpp')
+
     # cmp.add_parameter('cpp/sources/network/wmkc_net_exception.cpp')
     # cmp.add_parameter('cpp/sources/network/wmkc_ssl.cpp')
     # cmp.add_parameter('cpp/sources/network/wmkc_net.cpp')
@@ -130,19 +138,10 @@ def main():
     # cmp.add_parameter('cpp/sources/crypto/snc.cpp')
     cmp.add_parameter('cpp/sources/crypto/fea.cpp')
 
-    cmp.add_parameter('cpp/sources/wmkc_exception.cpp')
-    cmp.add_parameter('cpp/sources/wmkc_memory.cpp')
     # cmp.add_parameter('cpp/sources/wmkc_random.cpp')
     # cmp.add_parameter('cpp/sources/wmkc_struct.cpp')
     # cmp.add_parameter('cpp/sources/wmkc_basic.cpp')
-    cmp.add_parameter('cpp/sources/wmkc_misc.cpp')
     # cmp.add_parameter('cpp/sources/wmkc_time.cpp')
-
-    # cmp.add_parameter('c/sources/crypto/snc.c')
-    # cmp.add_parameter('c/sources/wmkc_random.c')
-    # cmp.add_parameter('c/sources/wmkc_basic.c')
-    # cmp.add_parameter('c/sources/wmkc_memory.c')
-    # cmp.add_parameter('c/sources/wmkc_misc.c')
 
     cmp.build()
     cmp.run()

@@ -80,6 +80,19 @@ wmkcVoid wmkcCrypto::wmkcFEA::invShiftBits(wmkcByte *block)
     }
 }
 
+wmkcVoid wmkcCrypto::wmkcFEA::shiftRows(wmkcByte *block)
+{
+    /*
+    * b0 ba 8f e4 c4 7c c3 7d
+    * ac 18 29 15 d8 ab cd a7
+    */
+}
+
+wmkcVoid wmkcCrypto::wmkcFEA::invShiftRows(wmkcByte *block)
+{
+    
+}
+
 wmkcVoid wmkcCrypto::wmkcFEA::keyExtension(wmkcByte *key, wmkcByte *iv)
 {
     wmkcByte keyBuffer[sizeof(this->key)];
