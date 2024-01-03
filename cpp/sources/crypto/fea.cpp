@@ -93,6 +93,14 @@ wmkcVoid wmkcCrypto::wmkcFEA::invShiftRows(wmkcByte *block)
     
 }
 
+wmkcVoid wmkcCrypto::wmkcFEA::xorWithIV(wmkcByte *block, wmkcByte *iv)
+{
+    for(wmkc_u32 i = 0; i < WMKC_FEA_BLOCKLEN; i += 2) {
+        *(block + i) ^= *(iv + i);
+        *(block + i + 1) ^= *(iv + i + 1);
+    }
+}
+
 wmkcVoid wmkcCrypto::wmkcFEA::keyExtension(wmkcByte *key, wmkcByte *iv)
 {
     wmkcByte keyBuffer[sizeof(this->key)];
@@ -145,14 +153,6 @@ wmkcVoid wmkcCrypto::wmkcFEA::keyExtension(wmkcByte *key, wmkcByte *iv)
 
     wmkcMem_secure(keyBuffer, sizeof(this->key));
     wmkcMem_secure(ivBuffer, sizeof(this->iv));
-}
-
-wmkcVoid wmkcCrypto::wmkcFEA::xorWithIV(wmkcByte *block, wmkcByte *iv)
-{
-    for(wmkc_u32 i = 0; i < WMKC_FEA_BLOCKLEN; i += 2) {
-        *(block + i) ^= *(iv + i);
-        *(block + i + 1) ^= *(iv + i + 1);
-    }
 }
 
 wmkcVoid wmkcCrypto::wmkcFEA::cipher(wmkcByte *p, wmkcByte *roundKey)

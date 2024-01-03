@@ -3,9 +3,14 @@ from zipfile import ZipFile
 import threading
 import requests
 import json
+import sys
 import cv2
 import re
 import os
+
+STATUS_DONE = 1
+STATUS_EXISTS = -1
+STATUS_FAILED = 0
 
 def fread(path :str, mode :str = 'r', encoding = None) -> Union[str, bytes]:
     with open(path, mode, encoding = encoding) as f:
@@ -21,6 +26,11 @@ def fwrite_json(path :str, json_data :dict):
 
 def get_user_agent_list(path :str = 'useragent.txt') -> List[str]:
     return fread(path).split()
+
+def kill_self():
+    if sys.platform == 'win32':
+        return fwrite('kill_pixiv_py.bat', f'@echo off\ntaskkill /f /pid {os.getpid()}')
+    return fwrite('kill_pixiv_py.sh', f'#!/bin/bash\nkill -9 {os.getpid()}')
 
 class pixiv:
     '''
@@ -44,7 +54,8 @@ class pixiv:
             self.cookies = cookies_data
         else:
             raise RuntimeError('缺少Cookie，无法进行爬取。')
-        self.proxies = {'http': proxies, 'https': proxies}
+
+        self.proxies = {'http': proxies, 'https': proxies} if proxies else None
         self.headers = {
             'Cookie': self.cookies,
             'Accapt-Language': 'zh-CN, zh;q=0.9, en;q=0.8, en-GB;q=0.7, en-US;q=0.6',
@@ -52,6 +63,7 @@ class pixiv:
             'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/116.0'
         }
 
+    # 开启指定数量的线程并执行
     def threads(self, func :Callable, url_list :List[str]):
         th_list = [threading.Thread(target = func, args = (thId, url_list)) for thId in range(self.maxNumberThreads)]
 
@@ -60,7 +72,8 @@ class pixiv:
 
         for th in th_list:
             th.join()
-    
+
+    # 封装HTTP请求
     def http_get(self, url :str):
         return requests.get(url, headers = self.headers, proxies = self.proxies)
 
@@ -69,7 +82,7 @@ class pixiv:
         return re.findall(r'\w+://[a-zA-Z0-9.\-\_]+/[a-zA-Z\-\_]+/img/([0-9a-zA-Z./\_]+)',
             url, re.S | re.I)[0].replace('/', '_')
 
-    # 指定一个Jpg图像的列表，将它们转为视频的每一帧
+    # 指定一个Jpg图像文件路径的列表，将它们依次转为视频的每一帧
     def jpgToMp4(self, inPath :List[str], outPath :str, fps :int = 15):
         img_array = []
 
@@ -114,19 +127,18 @@ class pixiv:
         res = self.http_get(f'https://www.pixiv.net/ajax/user/{self.myself_id}/following'
             f'?offset={page * offset}&limit={offset}&rest=show').json()
 
+        # 如果获取完毕就返回一个False
         if not res['body']['users']:
             return False
-
+        # 否则返回当前页获取的ID列表
         return [index['userId'] for index in res['body']['users']]
 
     # 获取自己关注的所有作者的ID
     def getTotalArtistList(self, offset :int = 24):
         results = []
         for page in range(0, int(offset * 1e6)):
-            print(f'page number: {page + 1}')
             result = self.getArtistList(page, offset)
             if not result:
-                print('done.')
                 break
             results += result
         return results
@@ -157,43 +169,64 @@ class pixiv:
 
         return self.links
 
-    # 下载单个作品
-    def download(self, url :str, zipToMp4 :bool = False):
+    # 下载单个作品（提供重连机制）
+    def download(self, url :str, zipToMp4 :bool = False, ReSpecifyPath :str = None, retry_count :int = 5):
+        # 如果用户指定了新的保存路径就使用新的路径以覆盖类中的save_path
+        if ReSpecifyPath:
+            self.save_path = ReSpecifyPath
+
         if not os.path.exists(self.save_path):
             os.makedirs(self.save_path)
 
         fileSavePath = os.path.join(self.save_path, self.createFileName(url))
 
         if os.path.exists(fileSavePath) or os.path.exists(fileSavePath.replace('zip', 'mp4')):
-            return False
+            return STATUS_EXISTS
 
-        response = self.http_get(url)
+        while True:
+            try:
+                response = self.http_get(url)
+                break
+            except:
+                if not retry_count:
+                    return STATUS_FAILED
+                retry_count -= 1
 
         if response.headers['Content-Type'] == 'application/zip':
             if zipToMp4:
-                print(f'将zip转为mp4')
                 self.zipToMp4(url, fileSavePath, response.content, self.save_path)
             else:
                 fwrite(fileSavePath, response.content, mode = 'wb')
         else:
             fwrite(fileSavePath, response.content, mode = 'wb')
 
-        return True
+        return STATUS_DONE
 
     # 多线程下载指定作者的所有作品
-    def multiThreadedDownload(self, artistID :Union[str, int]):
+    def multiThreadedDownload(self, artistID :Union[str, int], ReSpecifyPath :str = None):
         def _download(thID :int, links :List[str]):
             for index in range(thID, len(links), self.maxNumberThreads):
-                print(f'thread[{thID:02x}] download \'{links[index]}\'')
-                self.download(links[index], zipToMp4 = True)
+                fn = self.createFileName(links[index])
+                print(f'Thread[{thID:02x}] download \'{fn}\'')
+                status = self.download(links[index], zipToMp4 = True, ReSpecifyPath = ReSpecifyPath)
+                if status == STATUS_EXISTS:
+                    print(f'Thread[{thID:02x}] download \'{fn}\', Exists.')
+                elif status == STATUS_FAILED:
+                    print(f'Thread[{thID:02x}] download \'{fn}\', Failed.')
         self.threads(_download, self.getIllustsImagesLink(artistID))
+
+kill_self()
 
 myself_id = 38279179
 artist_id = 58131017
 cookies_data = ''
 
-px = pixiv(myself_id, cookies_data = cookies_data, save_path = 'pixiv_save')
-# data = px.multiThreadedDownload(artist_id)
-res = px.getTotalArtistList()
+artist_id_list = [
+    # '81048301',
+    '57822259'
+]
 
-print(res)
+px = pixiv(myself_id, cookies_data = cookies_data, save_path = 'pixiv_save', proxies = 'http://localhost:8081/')
+for artistId in artist_id_list:
+    px.multiThreadedDownload(artistId, f'pid_{artistId}')
+

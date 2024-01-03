@@ -72,8 +72,8 @@ namespace wmkcCrypto {
             wmkcVoid shiftRows(wmkcByte *block);
             wmkcVoid invShiftRows(wmkcByte *block);
 
-            wmkcVoid keyExtension(wmkcByte *key, wmkcByte *iv);
             wmkcVoid xorWithIV(wmkcByte *block, wmkcByte *iv);
+            wmkcVoid keyExtension(wmkcByte *key, wmkcByte *iv);
 
             wmkcVoid cipher(wmkcByte *p, wmkcByte *roundKey);
             wmkcVoid invCipher(wmkcByte *p, wmkcByte *roundKey);
