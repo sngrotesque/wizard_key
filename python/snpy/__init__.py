@@ -23,9 +23,6 @@ from .wmkc_net import (
     SOL_SOCKET, SO_REUSEADDR,
     wmkcNet, wmkcNet_writeChunk, wmkcNet_readChunk
 )
-from .wmkc_bili import (
-    wmkcBili
-)
 from .wmkc_qrcode import (
     wmkcQrcode,
     QRCODE_ERROR_L, QRCODE_ERROR_M, QRCODE_ERROR_Q, QRCODE_ERROR_H
@@ -43,9 +40,6 @@ from .wmkc_twitter import (
 )
 from .wmkc_music import (
     wmkcMusic
-)
-from .wmkc_time import (
-    wmkcTime
 )
 from .wmkc_png import (
     wmkcPng
