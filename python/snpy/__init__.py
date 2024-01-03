@@ -3,7 +3,7 @@ from .wmkc_crypto import (
     wmkcCrypto_newKey,
     wmkcCrypto_newSalt,
     wmkcCrypto_rsaNewkeys,
-    wmkcCrypto_sha256,
+    wmkcCrypto_hashlib,
     wmkcCrypto_padding,
     wmkcCrypto_randomPadding,
     wmkcCrypto_pubKeyToBytes,
@@ -21,7 +21,7 @@ from .wmkc_password import (
 from .wmkc_net import (
     AF_INET, AF_INET6, SOCK_STREAM, SOCK_DGRAM,
     SOL_SOCKET, SO_REUSEADDR,
-    wmkcNet, wmkcNet_writeChunk, wmkcNet_readChunk
+    wmkcNet_writeChunk, wmkcNet_readChunk
 )
 from .wmkc_qrcode import (
     wmkcQrcode,

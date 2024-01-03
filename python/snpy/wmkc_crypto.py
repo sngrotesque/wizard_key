@@ -2,6 +2,7 @@ from Crypto.Random import get_random_bytes
 from Crypto.Util.Padding import pad
 from Crypto.Protocol.KDF import PBKDF2
 from Crypto.Cipher import AES
+from typing import Callable, Union
 import binascii
 import hashlib
 import base64
@@ -19,14 +20,20 @@ EAX = (1 << AES.MODE_EAX)
 GCM = (1 << AES.MODE_GCM)
 OCB = (1 << AES.MODE_OCB)
 
-def wmkcCrypto_sha256(content :object = None, path :str = None):
-    hash_object = hashlib.sha256()
-    if path:
+def wmkcCrypto_hashlib(method :Callable, data :bytes = None, path :str = None) -> Union[str, None]:
+    if data:
+        method.update(data)
+    elif path:
         with open(path, 'rb') as f:
-            hash_object.update(f.read())
+            while True:
+                tmp = f.read(16777216)
+                if not tmp:
+                    break
+                method.update(tmp)
     else:
-        hash_object.update(content)
-    return hash_object.hexdigest()
+        return None
+
+    return method.hexdigest()
 
 def wmkcCrypto_rsaNewkeys(nbits :int):
     return rsa.newkeys(nbits)

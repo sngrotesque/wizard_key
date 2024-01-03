@@ -1,7 +1,8 @@
-from .wmkc_crypto import wmkcCrypto_sha256
+from .wmkc_crypto import wmkcCrypto_hashlib
 from os import walk, remove, stat
 from os.path import exists, join
 from typing import Union
+import hashlib
 
 def wmkcFile_fread(path :str, mode :str = 'rb', encoding = None) -> Union[str, bytes]:
     with open(path, mode, encoding = encoding) as f:
@@ -9,7 +10,7 @@ def wmkcFile_fread(path :str, mode :str = 'rb', encoding = None) -> Union[str, b
 
 def wmkcFile_fwrite(path :str, content :bytes, mode :str = 'wb', encoding = None):
     with open(path, mode, encoding = encoding) as f:
-        f.write(content)
+        return f.write(content)
 
 def wmkcFile_deleteDuplicate(target_path :str):
     pathList = []
@@ -17,7 +18,7 @@ def wmkcFile_deleteDuplicate(target_path :str):
     for dirpath, _, filenames in walk(target_path):
         for filename in filenames:
             _fn = join(dirpath, filename)
-            pathList.append([_fn, wmkcCrypto_sha256(None, _fn), stat(_fn).st_size])
+            pathList.append([_fn, wmkcCrypto_hashlib(hashlib.sha256(), path = _fn), stat(_fn).st_size])
 
     for x in range(len(pathList)):
         print(f'第{x+1}个循环。')
