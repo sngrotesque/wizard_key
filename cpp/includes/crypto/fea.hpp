@@ -57,6 +57,7 @@ namespace wmkcCrypto {
 
     class wmkcFEA {
         private:
+        public:
             wmkcByte key[WMKC_FEA_BLOCKLEN << 1];
             wmkcByte iv[WMKC_FEA_BLOCKLEN];
             wmkcByte nonce[WMKC_FEA_BLOCKLEN >> 1];
@@ -76,9 +77,21 @@ namespace wmkcCrypto {
             wmkcVoid keyExtension(wmkcByte *key, wmkcByte *iv);
 
             wmkcVoid cipher(wmkcByte *p, wmkcByte *roundKey);
-            wmkcVoid invCipher(wmkcByte *p, wmkcByte *roundKey);
+            wmkcVoid invCipher(wmkcByte *c, wmkcByte *roundKey);
 
-        public:
+            wmkcVoid ecb_encrypt(wmkcByte *p);
+            wmkcVoid ecb_decrypt(wmkcByte *c);
+
+            wmkcVoid cbc_encrypt(wmkcByte *p, wmkcSize n);
+            wmkcVoid cbc_decrypt(wmkcByte *c, wmkcSize n);
+
+            wmkcVoid ctr_xcrypt(wmkcByte *d, wmkcSize n);
+
+            wmkcVoid cbc_encrypt(wmkcByte *p, wmkcSize n, wmkc_u32 segmentSize);
+            wmkcVoid cbc_decrypt(wmkcByte *c, wmkcSize n, wmkc_u32 segmentSize);
+
+            //////////////////////////////////////////////////////////////////
+
             wmkcFEA(const wmkcByte *key, const wmkcByte *iv, const wmkc_u32 segmentSize = 128);
             ~wmkcFEA();
             void encrypt(wmkcByte *content, wmkcSize size, FEA_XcryptMode mode);

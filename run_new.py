@@ -134,14 +134,14 @@ def main():
     # cmp.add_parameter('cpp/sources/network/wmkc_net.cpp')
     # cmp.add_parameter('cpp/sources/network/wmkc_dns.cpp')
 
-    # cmp.add_parameter('cpp/sources/crypto/crypto.cpp')
+    cmp.add_parameter('cpp/sources/crypto/crypto.cpp')
     # cmp.add_parameter('cpp/sources/crypto/snc.cpp')
     cmp.add_parameter('cpp/sources/crypto/fea.cpp')
 
-    # cmp.add_parameter('cpp/sources/wmkc_random.cpp')
+    cmp.add_parameter('cpp/sources/wmkc_random.cpp')
     # cmp.add_parameter('cpp/sources/wmkc_struct.cpp')
-    # cmp.add_parameter('cpp/sources/wmkc_basic.cpp')
-    # cmp.add_parameter('cpp/sources/wmkc_time.cpp')
+    cmp.add_parameter('cpp/sources/wmkc_basic.cpp')
+    cmp.add_parameter('cpp/sources/wmkc_time.cpp')
 
     cmp.build()
     cmp.run()

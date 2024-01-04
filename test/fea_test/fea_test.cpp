@@ -1,4 +1,5 @@
 #include <crypto/fea.hpp>
+#include <crypto/crypto.hpp>
 
 // #include <wmkc_random.hpp>
 // #include <wmkc_time.hpp>
@@ -8,6 +9,18 @@
 using namespace wmkcCrypto;
 using namespace wmkcMisc;
 using namespace std;
+
+void create_sbox_rsbox()
+{
+    wmkcByte sbox[256], rsbox[256];
+
+    generate_sbox(sbox);
+    generate_rsbox(rsbox, sbox);
+
+    PRINT_BOX(sbox, 256, 16, 1);
+
+    PRINT_BOX(rsbox, 256, 16, 1);
+}
 
 void fea_test(wmkcChar *plaintext)
 {
@@ -26,15 +39,21 @@ void fea_test(wmkcChar *plaintext)
     cout << "Iv:\n"; PRINT(iv, 16, 16, false, true);
     cout << "Plaintext:\n"; PRINT(data, 16, 16, false, true);
 
-    fea.encrypt(data, 16, FEA_XcryptMode::ECB);
+    fea.ecb_encrypt(data);
 
     cout << "Ciphertext:\n"; PRINT(data, 16, 16, false, true);
+
+    fea.ecb_decrypt(data);
+
+    cout << "Plaintext:\n"; PRINT(data, 16, 16, false, true);
 }
 
 int main()
 {
     wmkcChar p[256] = {"Hello, world!!!!"};
     fea_test(p);
+
+    // create_sbox_rsbox();
 
     return 0;
 }
