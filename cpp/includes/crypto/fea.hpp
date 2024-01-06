@@ -35,7 +35,6 @@
 (2) 快速掌握左移＜＜、右移＞＞位运算及使用技巧 - 知乎. https://zhuanlan.zhihu.com/p/390085789.
 (3) verilog移位操作符_百度文库. https://wenku.baidu.com/view/01915d7e51d380eb6294dd88d0d233d4b04e3f36.html.
 */
-
 #include <wmkc_conf.hpp>
 
 #if WMKC_SUPPORT
@@ -46,7 +45,7 @@
 
 #define WMKC_FEA_NB 4
 #define WMKC_FEA_NK 4
-#define WMKC_FEA_NR 16
+#define WMKC_FEA_NR 3
 
 #define WMKC_FEA_BLOCKLEN 16
 
@@ -57,13 +56,6 @@ namespace wmkcCrypto {
 
     class wmkcFEA {
         private:
-        public:
-            wmkcByte key[WMKC_FEA_BLOCKLEN << 1];
-            wmkcByte iv[WMKC_FEA_BLOCKLEN];
-            wmkcByte nonce[WMKC_FEA_BLOCKLEN >> 1];
-            wmkcByte roundKey[512]; // len(key) * WMKC_FEA_NR
-            wmkc_u32 segmentSize;
-
             wmkcVoid subBytes(wmkcByte *block);
             wmkcVoid shiftBits(wmkcByte *block);
 
@@ -78,6 +70,13 @@ namespace wmkcCrypto {
 
             wmkcVoid cipher(wmkcByte *p, wmkcByte *roundKey);
             wmkcVoid invCipher(wmkcByte *c, wmkcByte *roundKey);
+
+        public:
+            wmkcByte key[WMKC_FEA_BLOCKLEN << 1];
+            wmkcByte iv[WMKC_FEA_BLOCKLEN];
+            wmkcByte nonce[WMKC_FEA_BLOCKLEN >> 1];
+            wmkcByte roundKey[sizeof(key) * WMKC_FEA_NR]; // len(key) * WMKC_FEA_NR
+            wmkc_u32 segmentSize;
 
             wmkcVoid ecb_encrypt(wmkcByte *p);
             wmkcVoid ecb_decrypt(wmkcByte *c);

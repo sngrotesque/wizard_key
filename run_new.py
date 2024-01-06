@@ -125,9 +125,9 @@ def main():
     # cmp.add_parameter('library/qrcode/qrcode.cpp')
 
     # 通用包含代码
-    # cmp.add_parameter('cpp/sources/wmkc_exception.cpp')
-    # cmp.add_parameter('cpp/sources/wmkc_memory.cpp')
-    # cmp.add_parameter('cpp/sources/wmkc_misc.cpp')
+    cmp.add_parameter('cpp/sources/wmkc_exception.cpp')
+    cmp.add_parameter('cpp/sources/wmkc_memory.cpp')
+    cmp.add_parameter('cpp/sources/wmkc_misc.cpp')
 
     # cmp.add_parameter('cpp/sources/network/wmkc_net_exception.cpp')
     # cmp.add_parameter('cpp/sources/network/wmkc_ssl.cpp')

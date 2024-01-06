@@ -11,10 +11,6 @@
 #include <cstdbool>  // 标准布尔值库
 #include <cinttypes> // 用于在跨平台打印同样的数据类型
 
-#if __cplusplus > 199711L
-#define register
-#endif
-
 // 判断是否是64位系统，不是的话，不进行支持。
 #if defined(_WIN64) || (__SIZEOF_SIZE_T__ == 8) || defined(__x86_64__) || defined(__LP64__)
 //  如果是Linux或Windows操作系统，那么支持。否则不支持。
@@ -44,7 +40,6 @@
 #ifndef WMKC_TYPE_DEFINED
 #define WMKC_TYPE_DEFINED
 #define wmkcNull                  nullptr     // 空指针
-#define wmkcFast                  register    // 寄存器类型
 typedef char                      wmkcChar;   // 字符类型
 typedef uint8_t                   wmkcByte;   // 字节类型
 typedef int64_t                   wmkcSSize;  // 长整数类型

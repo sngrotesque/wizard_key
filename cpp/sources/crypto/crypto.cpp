@@ -2,8 +2,8 @@
 
 wmkcVoid wmkcCrypto::generate_sbox(wmkcByte *sbox)
 {
-    wmkcFast wmkc_u32 round, x;
-    wmkcFast wmkcByte swap;
+    wmkc_u32 round, x;
+    wmkcByte swap;
     wmkcByte array[2];
     wmkcRandom random;
 

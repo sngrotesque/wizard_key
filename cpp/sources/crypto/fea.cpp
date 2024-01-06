@@ -82,17 +82,44 @@ wmkcVoid wmkcCrypto::wmkcFEA::invShiftBits(wmkcByte *block)
 
 wmkcVoid wmkcCrypto::wmkcFEA::shiftRows(wmkcByte *block)
 {
-    /*
-    * b0 ba 8f e4 c4 7c c3 7d
-    * ac 18 29 15 d8 ab cd a7
-    */
-    wmkcFast wmkcByte tmp[8];
-    memcpy(tmp, block, sizeof(tmp));
+    wmkcByte swap_array[8], swap;
+
+    memcpy(swap_array, block, 8);
+    memcpy(block, block + 8, 8);
+    memcpy(block + 8, swap_array, 8);
+
+    swap = (*(block + 8) ^ *(block + 9) ^ *(block + 10) ^ *(block + 11) ^
+        *(block + 12) ^ *(block + 13) ^ *(block + 14) ^ *(block + 15));
+
+    block[0] ^= swap;
+    block[1] ^= swap;
+    block[2] ^= swap;
+    block[3] ^= swap;
+    block[4] ^= swap;
+    block[5] ^= swap;
+    block[6] ^= swap;
+    block[7] ^= swap;
 }
 
 wmkcVoid wmkcCrypto::wmkcFEA::invShiftRows(wmkcByte *block)
 {
-    
+    wmkcByte swap_array[8], swap;
+
+    swap = (*(block + 8) ^ *(block + 9) ^ *(block + 10) ^ *(block + 11) ^
+        *(block + 12) ^ *(block + 13) ^ *(block + 14) ^ *(block + 15));
+
+    block[0] ^= swap;
+    block[1] ^= swap;
+    block[2] ^= swap;
+    block[3] ^= swap;
+    block[4] ^= swap;
+    block[5] ^= swap;
+    block[6] ^= swap;
+    block[7] ^= swap;
+
+    memcpy(swap_array, block, 8);
+    memcpy(block, block + 8, 8);
+    memcpy(block + 8, swap_array, 8);
 }
 
 wmkcVoid wmkcCrypto::wmkcFEA::xorWithIV(wmkcByte *block, wmkcByte *iv)
@@ -199,17 +226,33 @@ wmkcVoid wmkcCrypto::wmkcFEA::ecb_decrypt(wmkcByte *c)
 
 wmkcVoid wmkcCrypto::wmkcFEA::cbc_encrypt(wmkcByte *p, wmkcSize n)
 {
+    wmkcByte roundIv[WMKC_FEA_BLOCKLEN];
 
+    memcpy(roundIv, this->iv, WMKC_FEA_BLOCKLEN);
+    for(wmkc_u32 i = 0; i < n; i += WMKC_FEA_BLOCKLEN) {
+        this->xorWithIV(p + i, roundIv);
+        this->cipher(p + i, this->roundKey);
+        memcpy(roundIv, p + i, WMKC_FEA_BLOCKLEN);
+    }
 }
 
 wmkcVoid wmkcCrypto::wmkcFEA::cbc_decrypt(wmkcByte *c, wmkcSize n)
 {
+    wmkcByte roundIv[WMKC_FEA_BLOCKLEN];
+    wmkcByte roundBuffer[WMKC_FEA_BLOCKLEN];
 
+    memcpy(roundIv, this->iv, WMKC_FEA_BLOCKLEN);
+    for(wmkc_u32 i = 0; i < n; i += WMKC_FEA_BLOCKLEN) {
+        memcpy(roundBuffer, c + i, WMKC_FEA_BLOCKLEN);
+        this->invCipher(c + i, this->roundKey);
+        this->xorWithIV(c + i, roundIv);
+        memcpy(roundIv, roundBuffer, WMKC_FEA_BLOCKLEN);
+    }
 }
 
 wmkcVoid wmkcCrypto::wmkcFEA::ctr_xcrypt(wmkcByte *d, wmkcSize n)
 {
-
+    
 }
 
 wmkcVoid wmkcCrypto::wmkcFEA::cbc_encrypt(wmkcByte *p, wmkcSize n, wmkc_u32 segmentSize)
