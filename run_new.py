@@ -142,6 +142,7 @@ def main():
     # cmp.add_parameter('cpp/sources/wmkc_struct.cpp')
     cmp.add_parameter('cpp/sources/wmkc_basic.cpp')
     cmp.add_parameter('cpp/sources/wmkc_time.cpp')
+    cmp.add_parameter('cpp/sources/wmkc_pad.cpp')
 
     cmp.build()
     cmp.run()

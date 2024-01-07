@@ -45,7 +45,7 @@
 
 #define WMKC_FEA_NB 4
 #define WMKC_FEA_NK 4
-#define WMKC_FEA_NR 3
+#define WMKC_FEA_NR 4
 
 #define WMKC_FEA_BLOCKLEN 16
 
