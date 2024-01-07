@@ -1,6 +1,7 @@
 #include <crypto/fea.hpp>
 #include <crypto/crypto.hpp>
 
+#include <wmkc_base64.hpp>
 #include <wmkc_random.hpp>
 #include <wmkc_time.hpp>
 
@@ -35,20 +36,23 @@ void create_sbox_rsbox()
 void fea_test()
 {
     wmkcFEA fea(key, iv);
-    wmkcChar text[] = {
+    wmkcChar text[2048] = {
         "GET / HTTP/1.1\r\n"
-        "Host: www.a.com\r\n"
-        // "Acceot: */*\r\n"
-        "User-Agent: PC\r\n"
+        "Host: passport.bilibili.com\r\n"
+        "Acceot: */*\r\n"
+        "Accept-Type: text/html\r\n"
+        "User-Agent: Android\r\n"
         "\r\n"};
     wmkcByte *buffer = (wmkcByte *)text;
     wmkcSize bufferSize = strlen(text);
 
     wmkcPad::pad(buffer, &bufferSize, WMKC_FEA_BLOCKLEN, false);
-    cout << "Plaintext:\n"; PRINT(buffer, bufferSize, 16, (bufferSize % 16), 1);
+    // cout << "Plaintext:\n"; PRINT(buffer, bufferSize, 16, (bufferSize % 16), 1);
 
     fea.cbc_encrypt(buffer, bufferSize);
-    cout << "Ciphertext:\n"; PRINT(buffer, bufferSize, 16, (bufferSize % 16), 1);
+    // cout << "Ciphertext:\n"; PRINT(buffer, bufferSize, 16, (bufferSize % 16), 1);
+
+    cout << "Ciphertext Base64: " << wmkcBase64().encode(string((char *)buffer, bufferSize)) << "\n";
 
     fea.cbc_decrypt(buffer, bufferSize);
     wmkcPad::unpad(buffer, &bufferSize);

@@ -138,6 +138,7 @@ def main():
     # cmp.add_parameter('cpp/sources/crypto/snc.cpp')
     cmp.add_parameter('cpp/sources/crypto/fea.cpp')
 
+    cmp.add_parameter('cpp/sources/wmkc_base64.cpp')
     cmp.add_parameter('cpp/sources/wmkc_random.cpp')
     # cmp.add_parameter('cpp/sources/wmkc_struct.cpp')
     cmp.add_parameter('cpp/sources/wmkc_basic.cpp')
