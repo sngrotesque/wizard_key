@@ -56,11 +56,29 @@ void fea_test()
 
     fea.cbc_decrypt(buffer, bufferSize);
     wmkcPad::unpad(buffer, &bufferSize);
-    cout << "Plaintext:\n"; PRINT(buffer, bufferSize, 16, (bufferSize % 16), 1);
+    cout << "Plaintext:\n"; PRINT(buffer, bufferSize, 32, (bufferSize % 16), 1);
+}
+
+void fea_speed_test()
+{
+    wmkcFEA fea(key, iv);
+    wmkcSize length = 16777216;
+    wmkcByte *buffer = new wmkcByte[length];
+
+    wmkcTime time;
+
+    double start = time.time();
+    fea.cbc_encrypt(buffer, length);
+    double stop = time.time();
+
+    printf("time used: %.4lf\n", stop-start);
+
+    delete[] buffer;
 }
 
 int main()
 {
-    fea_test();
+    // fea_test();
+    fea_speed_test();
     return 0;
 }
