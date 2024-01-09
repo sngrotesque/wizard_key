@@ -145,7 +145,12 @@ def main():
     cmp.add_parameter('cpp/sources/wmkc_time.cpp')
     cmp.add_parameter('cpp/sources/wmkc_pad.cpp')
 
+    start = time.time()
     cmp.build()
+    stop = time.time()
+
+    print(f'构建所用时间：{stop-start:.2f}秒。')
+
     cmp.run()
 
 if __name__ == '__main__':
