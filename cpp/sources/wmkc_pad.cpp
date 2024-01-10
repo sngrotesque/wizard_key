@@ -7,7 +7,6 @@ wmkcVoid wmkcPad::pad(wmkcByte *src, wmkcSize *size, wmkc_u32 blockSize, wmkcBoo
     }
     wmkc_u32 padLen;
     wmkcSize totalLen;
-    wmkcSize index;
     wmkcRandom random;
 
     padLen = (blockSize - *size % blockSize);

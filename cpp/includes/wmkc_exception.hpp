@@ -32,5 +32,28 @@ typedef struct {
 void wmkcErr_exception(wmkcErr_obj err);
 void wmkcErr_exception(wmkcSSize errCode, std::string funcName, std::string errMessage);
 
+/*
+Visual Studio 版本	MSVC 编译器版本	_MSC_VER 值
+Visual Studio 2022	14.3	1930
+Visual Studio 2019	14.2	1920
+Visual Studio 2017	14.1	1910
+Visual Studio 2015	14.0	1900
+Visual Studio 2013	12.0	1800
+Visual Studio 2012	11.0	1700
+Visual Studio 2010	10.0	1600
+Visual Studio 2008	9.0	    1500
+Visual Studio 2005	8.0	    1400
+Visual Studio 2003	7.1     1310
+Visual Studio 2002	7.0	    1300
+Visual C++    6.0	6.0	    1200
+*/
+#if (_MSC_VER >= 1930)
+#include <string>
+namespace std {
+    template <typename T>
+    std::string to_string(T value);
+};
+#endif
+
 #endif /* WMKC_CPP_EXCEPTION */
 #endif /* WMKC_SUPPORT */
