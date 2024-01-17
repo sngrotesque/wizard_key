@@ -47,10 +47,10 @@ void fea_test()
     wmkcSize bufferSize = strlen(text);
 
     wmkcPad::pad(buffer, &bufferSize, WMKC_FEA_BLOCKLEN, false);
-    // cout << "Plaintext:\n"; PRINT(buffer, bufferSize, 16, (bufferSize % 16), 1);
+    cout << "Plaintext:\n"; PRINT(buffer, bufferSize, 16, (bufferSize % 16), 1);
 
     fea.cbc_encrypt(buffer, bufferSize);
-    // cout << "Ciphertext:\n"; PRINT(buffer, bufferSize, 16, (bufferSize % 16), 1);
+    cout << "Ciphertext:\n"; PRINT(buffer, bufferSize, 16, (bufferSize % 16), 1);
 
     cout << "Ciphertext Base64: " << wmkcBase64().encode(string((char *)buffer, bufferSize)) << "\n";
 
@@ -78,7 +78,7 @@ void fea_speed_test()
 
 int main()
 {
-    // fea_test();
-    fea_speed_test();
+    fea_test();
+    // fea_speed_test();
     return 0;
 }

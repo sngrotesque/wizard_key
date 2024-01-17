@@ -5,12 +5,6 @@
 #define WMKC_CPP_EXCEPTION
 #include <errno.h>    // 错误处理库
 
-typedef struct {
-    wmkcCSTR message; // 错误消息
-    wmkcCSTR func;    // 发送错误的函数的名称
-    wmkcSSize code;   // 错误代码
-} wmkcErr_obj;
-
 #define wmkcErr_OK 0 // 表示一切正常，不需要注意任何错误。
 
 #define wmkcErr_Err64           -1LL // 一般的错误，用于表示64位的错误代码。
@@ -29,25 +23,24 @@ typedef struct {
 #define wmkcErr_ThreadJoin   49LL // 此值表示线程阻塞出现错误
 #define wmkcErr_ThreadStart  50LL // 此指表示线程启动出现错误
 
-void wmkcErr_exception(wmkcErr_obj err);
 void wmkcErr_exception(wmkcSSize errCode, std::string funcName, std::string errMessage);
 
 /*
-Visual Studio 版本	MSVC 编译器版本	_MSC_VER 值
-Visual Studio 2022	14.3	1930
-Visual Studio 2019	14.2	1920
-Visual Studio 2017	14.1	1910
-Visual Studio 2015	14.0	1900
-Visual Studio 2013	12.0	1800
-Visual Studio 2012	11.0	1700
-Visual Studio 2010	10.0	1600
-Visual Studio 2008	9.0	    1500
-Visual Studio 2005	8.0	    1400
-Visual Studio 2003	7.1     1310
-Visual Studio 2002	7.0	    1300
-Visual C++    6.0	6.0	    1200
+* VS版本     MSVC版本 _MSC_VER值
+* VS 2022    14.3     1930
+* VS 2019    14.2     1920
+* VS 2017    14.1     1910
+* VS 2015    14.0     1900
+* VS 2013    12.0     1800
+* VS 2012    11.0     1700
+* VS 2010    10.0     1600
+* VS 2008    9.0      1500
+* VS 2005    8.0      1400
+* VS 2003    7.1      1310
+* VS 2002    7.0      1300
+* VC++6.0    6.0      1200
 */
-#if (_MSC_VER >= 1930)
+#if defined(WMKC_PLATFORM_WINOS) && (_MSC_VER >= 1930)
 #include <string>
 namespace std {
     template <typename T>

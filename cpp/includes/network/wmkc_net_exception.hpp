@@ -6,6 +6,7 @@
 
 #if defined(WMKC_PLATFORM_LINUX)
 #include <errno.h>
+#include <netdb.h>
 #elif defined(WMKC_PLATFORM_WINOS)
 #include <WS2tcpip.h>
 #endif
