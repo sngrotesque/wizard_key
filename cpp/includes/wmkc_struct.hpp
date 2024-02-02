@@ -1,5 +1,6 @@
 #include <wmkc_conf.hpp>
 
+// 请确保先用最简单的方式实现这个库，后续再来优化性能。
 #if WMKC_SUPPORT
 #ifndef WMKC_CPP_STRUCT
 #define WMKC_CPP_STRUCT
