@@ -5,6 +5,11 @@ using namespace std;
 
 int main(int argc, char **argv)
 {
+#	ifdef WMKC_PLATFORM_WINOS
+	WSADATA ws;
+	WSAStartup(MAKEWORD(2, 2), &ws);
+#	endif
+
 	Socket fd(AF_INET, SOCK_STREAM, IPPROTO_TCP);
 
 	fd.connect("www.baidu.com", 80);
@@ -12,5 +17,8 @@ int main(int argc, char **argv)
 
 	cout << fd.recv(4096) << endl;
 
+#	ifdef WMKC_PLATFORM_WINOS
+	WSACleanup();
+#	endif
 	return 0;
 }
