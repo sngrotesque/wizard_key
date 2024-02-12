@@ -29,8 +29,8 @@ def des_test(p :bytes):
     des_ctx = DES.new(key = random_data['64_bit'], mode = DES3.MODE_CTR, nonce = random_data['32_bit'])
     return des_ctx.encrypt(p)
 
-def speed_test(func :Callable):
-    p = get_random_bytes(256 * 1024**2)
+def speed_test(func :Callable, p_length :int = 16):
+    p = get_random_bytes(p_length * 1024**2)
 
     print('Start timing.')
     start_time = time.time()
@@ -46,5 +46,5 @@ def speed_test(func :Callable):
     print(f'time used: {result_time:.4f}')
     print(f'result[0]: {res[0]:02x}')
 
-speed_test(des_test)
+speed_test(aes_test, 16)
 
