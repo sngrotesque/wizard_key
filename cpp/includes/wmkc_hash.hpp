@@ -9,26 +9,11 @@
 #include <openssl/evp.h>
 
 class wmkcHash {
-    public: class base_hash {
-        public: base_hash(const EVP_MD *_md);
-        public: virtual void update(wmkcByte *content, wmkcSize size);
-        public: virtual void update(std::string content);
-    };
-
     private: EVP_MD_CTX *md_ctx;
     private: const EVP_MD *md;
 
-    public: std::string digest;
-    public: std::string hexdigest;
-
-    public: class sha256 :public base_hash {
-        sha256(const EVP_MD *md)
-        : base_hash(md)
-        {
-            
-        }
-    };
-
+    public: wmkcByte digest[64 + 1]; // SHA-512
+    public: wmkcByte hexdigest[(64 << 1) + 1];
 };
 
 #endif

@@ -5,7 +5,7 @@
 #define WMKC_CPP_NET
 #include <network/wmkc_net_exception.hpp>
 #include <wmkc_exception.hpp>
-#include <math.h>
+#include <cmath>
 
 #if defined(WMKC_PLATFORM_LINUX)
 #include <netdb.h>

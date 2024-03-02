@@ -21,18 +21,6 @@ static const wmkcByte iv[16] = {
     0x61, 0x90, 0xa9, 0x28, 0xa4, 0x11, 0x1c, 0x0b, 0x22, 0xf8, 0x66, 0xcd, 0xfc, 0x2b, 0xcd, 0xc1
 };
 
-void create_sbox_rsbox()
-{
-    wmkcByte sbox[256], rsbox[256];
-
-    generate_sbox(sbox);
-    generate_rsbox(rsbox, sbox);
-
-    PRINT_BOX(sbox, 256, 16, 1);
-
-    PRINT_BOX(rsbox, 256, 16, 1);
-}
-
 void fea_test()
 {
     wmkcFEA fea(key, iv);

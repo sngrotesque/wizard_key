@@ -46,6 +46,7 @@ wmkcVoid wmkcWinapi::setCursorPos(wmkc_u32 x, wmkc_u32 y)
     }
 }
 
-/***
- *  还未写完。setDesktopWallpaper与opacityStartMenu成员函数并未编写
-*/
+wmkcVoid wmkcWinapi::setDesktopWallpaper(std::string path)
+{
+    
+}

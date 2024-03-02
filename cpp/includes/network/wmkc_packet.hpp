@@ -6,7 +6,7 @@
 * 3. packet crc32:  4 Bytes (seq + length).
 * 4. packet data:   [packet length] Bytes.
 * 5. packet sha256: 32 Bytes.
-* 6. packet end:    8 Bytes. [53 4e 45 03 4e 04 45 05]
+* 6. packet end:    8 Bytes. [53 4e 45 02 4e 01 44 00]
 */
 #include <wmkc_conf.hpp>
 
@@ -19,14 +19,15 @@
 #include <wmkc_hash.hpp>
 
 #include <zlib.h>
+#include <lzma.h>
 
-#define WMKC_PACKET_END "\x53\x4e\x45\x03\x4e\x04\x45\x05"
+#define WMKC_PACKET_END "\x53\x4e\x45\x02\x4e\x01\x44\x00"
 #define WMKC_PACKET_END_LEN 8
 
 namespace wmkcNet {
     class wmkcPacket {
         private:
-            wmkcNet::Sockfd fd;
+            wmkcNet::Socket fd;
 
             // order: [Seq>Length>CRC>Data>Digest>End]
             wmkcByte digest[32]; // SHA-256 Digest

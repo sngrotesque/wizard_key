@@ -1,22 +1,23 @@
-#include <network/wmkc_net.hpp>
-#include <network/wmkc_ssl.hpp>
-#include <network/wmkc_dns.hpp>
+// #include <network/wmkc_net.hpp>
+// #include <network/wmkc_ssl.hpp>
+// #include <network/wmkc_dns.hpp>
 
-#include <crypto/snc.hpp>
+// #include <crypto/snc.hpp>
 
-#include <wmkc_binascii.hpp>
-#include <wmkc_base64.hpp>
+// #include <wmkc_binascii.hpp>
+// #include <wmkc_base64.hpp>
 
-#include <wmkc_random.hpp>
+// #include <wmkc_random.hpp>
 #include <wmkc_struct.hpp>
 
-#include <wmkc_hash.hpp>
+// #include <wmkc_hash.hpp>
 #include <wmkc_misc.hpp>
-#include <wmkc_time.hpp>
+// #include <wmkc_time.hpp>
+
+#include <lzma.h>
+#include <lzmalib.h>
 
 using namespace std;
-using namespace wmkcNet;
-using namespace wmkcCrypto;
 
 void va_test(string format, ...)
 {
@@ -33,7 +34,7 @@ void va_test(string format, ...)
     }
 }
 
-int main()
+void struct_test()
 {
     wmkcStruct Struct;
 
@@ -51,6 +52,11 @@ int main()
     } catch(exception &e) {
         cout << e.what() << endl;
     }
+}
+
+int main()
+{
+    
 
     return 0;
 }

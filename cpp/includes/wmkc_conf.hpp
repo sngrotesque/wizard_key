@@ -4,6 +4,7 @@
 #include <iostream>
 #include <stdexcept>
 
+#include <cstdarg>   // 标准参数库
 #include <cstring>   // 标准字符串库
 #include <cstdlib>   // 标准库
 #include <cstdint>   // 标准数字类型库

@@ -86,8 +86,8 @@ namespace wmkcCrypto {
 
             wmkcVoid ctr_xcrypt(wmkcByte *d, wmkcSize n);
 
-            wmkcVoid cbc_encrypt(wmkcByte *p, wmkcSize n, wmkc_u32 segmentSize);
-            wmkcVoid cbc_decrypt(wmkcByte *c, wmkcSize n, wmkc_u32 segmentSize);
+            wmkcVoid cfb_encrypt(wmkcByte *p, wmkcSize n, wmkc_u32 segmentSize);
+            wmkcVoid cfb_decrypt(wmkcByte *c, wmkcSize n, wmkc_u32 segmentSize);
 
             //////////////////////////////////////////////////////////////////
 
