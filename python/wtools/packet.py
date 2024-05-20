@@ -24,11 +24,10 @@
 '''
 目前对于这些实现，请考虑WebSockets或者MQTT协议。
 '''
-from .crypto import zlib_crc32
-
 import socket
 import struct
 import time
+import zlib
 
 class packet:
     def __init__(self, proto_ver :int = 0x00000000, session_id :int = 0x00000000):
@@ -53,7 +52,7 @@ class packet:
             data_len,         # the length of compressed data
             time.time(),      # current timestamp
             data)             # compressed data
-        packet += struct.pack('!I', zlib_crc32(packet))
+        packet += struct.pack('!I', zlib.crc32(packet))
 
         fd.sendall(packet)
 
@@ -74,7 +73,7 @@ class packet:
             timer,            # current timestamp
             data)             # data
 
-        if zlib_crc32(tmp) != crc:
+        if zlib.crc32(tmp) != crc:
             raise RuntimeError(f'The obtained package has a different CRC than the original package.')
 
         return proto_ver, session_id, seq, size, timer, data, crc

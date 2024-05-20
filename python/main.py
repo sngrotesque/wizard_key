@@ -1,18 +1,27 @@
-from PIL import Image
-import binascii
-import random
-import struct
-import time
+import wtools
 import os
 
-import wtools
+def attack_fcipher(ciphertext_path :str):
+    with open(ciphertext_path, 'rb') as f:
+        encrypted_content = f.read()
 
-# def create_random_key_iv(key_len, iv_len):
-#     a = '!#$%&()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[]^_`abcdefghijklmnopqrstuvwxyz{|}~'
-#     return ''.join(random.sample(a, key_len)), ''.join(random.sample(a, iv_len))
+    salt_digest       = encrypted_content[:32]
+    salt              = encrypted_content[32:48]
+    ciphertext_digest = encrypted_content[48:80]
+    ciphertext        = encrypted_content[80:-32]
+    ciphertextDigest_width_password_digest = encrypted_content[-32:]
 
-# def hexToBytesAndPrint(data :str):
-#     return binascii.a2b_hex(''.join(data.strip().split()))
+    ciphertext        = os.urandom(256)
+    ciphertext_digest = wtools.get_digest(ciphertext)
 
+    with open(ciphertext_path, 'wb') as f:
+        f.write(wtools.fcipher.join_bytes(salt_digest, salt, ciphertext_digest, ciphertext,
+                ciphertextDigest_width_password_digest))
 
+def main(path :str, original_file_name :str):
+    ctx = wtools.fcipher(b'sngrotesque')
+    ctx.encrypt(f'{path}/{original_file_name}', f'{path}/cipher')
+    ctx.decrypt(f'{path}/cipher', f'{path}/plain')
+
+main('C:/Users/sn/Desktop/收纳/fcipher', 'original.mp3')
 

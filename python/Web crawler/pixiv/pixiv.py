@@ -3,7 +3,6 @@ from zipfile import ZipFile
 import threading
 import requests
 import json
-import sys
 import cv2
 import re
 import os
@@ -24,14 +23,6 @@ def fwrite(path :str, content :Union[str, bytes], mode :str = 'w', encoding = No
 def fwrite_json(path :str, json_data :dict):
     fwrite(path, json.dumps(json_data, ensure_ascii = False))
 
-def get_user_agent_list(path :str = 'useragent.txt') -> List[str]:
-    return fread(path).split()
-
-def kill_self():
-    if sys.platform == 'win32':
-        return fwrite('kill_pixiv_py.bat', f'@echo off\ntaskkill /f /pid {os.getpid()}')
-    return fwrite('kill_pixiv_py.sh', f'#!/bin/bash\nkill -9 {os.getpid()}')
-
 class pixiv:
     '''
     这里需要着重声明一个事情，如果你在调用getTotalArtistList方法后发现得到的数量少于Pixiv官网的数量。
@@ -41,8 +32,8 @@ class pixiv:
     def __init__(self, myID :Union[str, int],
                 cookies_path :str = None,
                 cookies_data :str = None,
-                proxies :str = 'http://localhost:1080',
-                save_path :str = '.',
+                save_path    :str = '.',
+                proxies      :str = 'http://localhost:1080',
                 maxNumberThreads :int = 8):
         self.maxNumberThreads = maxNumberThreads
         self.myself_id = myID
@@ -214,8 +205,6 @@ class pixiv:
                 elif status == STATUS_FAILED:
                     print(f'Thread[{thID:02x}] download \'{fn}\', Failed.')
         self.threads(_download, self.getIllustsImagesLink(artistID))
-
-kill_self()
 
 myself_id = 38279179
 cookies_data = ''

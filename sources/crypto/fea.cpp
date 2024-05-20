@@ -263,7 +263,7 @@ wmkc::crypto::fea::fea(const wByte *key, const wByte *iv, const wU32 segmentSize
 : key(), iv(), nonce(), roundKey(), segmentSize(segmentSize)
 {
     if(!key || !iv) {
-        wmkc::exception(wmkcErr_ErrNULL, "wmkc::crypto::fea::wmkcFEA",
+        wmkc::exception(wmkcErr_ErrNULL, "wmkc::crypto::fea::fea",
                                         "key or iv is NULL.");
     }
 

@@ -1,6 +1,5 @@
 import zlib
 import struct
-import os
 
 class png:
     def __init__(self, width :int, height :int):
