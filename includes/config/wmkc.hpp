@@ -7,24 +7,15 @@
 // #else
 // #   define WMKC_SUPPORT false
 // #   warning "This library may not support the computer you are using."
-// #endif // #if defined(_WIN64) || (__SIZEOF_SIZE_T__ == 8) || defined(__x86_64__) || defined(__LP64__)
-
-#include <cstdarg>   // 标准参数库
-#include <cstring>   // 标准字符串库
-#include <cstdlib>   // 标准库
-#include <cstdint>   // 标准数字类型库
-#include <cstdbool>  // 标准布尔值库
-#include <cinttypes> // 用于在跨平台打印同样的数据类型
-
-#include <string>
+// #endif
 
 //  如果是Linux或Windows操作系统，那么支持。否则不支持。
 #if defined(__linux)
 #   if __BYTE_ORDER__
 #       if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
-#           define WMKC_LE_DIAN true // 小端序
+#           define WMKC_LE_ENDIAN true // 小端序
 #       elif __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
-#           define WMKC_LE_DIAN false // 大端序
+#           define WMKC_LE_ENDIAN false // 大端序
 #       else
 #           error "Endian judgment error."
 #       endif
@@ -36,11 +27,22 @@
 #elif defined(_WIN32) || defined(_WIN64)
 #   define WMKC_PLATFORM_WINOS
 #   define WMKC_SUPPORT true
-#   define WMKC_LE_DIAN true // 小端序
+#   define WMKC_LE_ENDIAN true // 小端序，由于绝大多数（几乎所有）的Windows系统都是小端序，所以此处直接忽略特殊情况。
 #else
 #   define WMKC_SUPPORT false
 #   warning "This library may not support the computer you are using."
 #endif // #if defined(__linux)
+
+#include <cstdarg>   // 标准参数库
+#include <cstring>   // 标准字符串库
+#include <cstdlib>   // 标准库
+#include <cstdint>   // 标准数字类型库
+#if defined(WMKC_PLATFORM_WINOS) && !defined(_MSC_VER)
+#include <cstdbool>  // 标准布尔值库
+#endif
+#include <cinttypes> // 用于在跨平台打印同样的数据类型
+
+#include <string>
 
 // WMKC库类型定义
 #ifndef WMKC_TYPE_DEFINED

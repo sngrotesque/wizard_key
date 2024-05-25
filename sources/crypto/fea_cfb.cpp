@@ -1,9 +1,9 @@
 #include <crypto/fea.hpp>
 
-wVoid wmkc::crypto::fea::cfb_encrypt(wByte *p, wSize n, wU32 segmentSize)
+wVoid wmkc::crypto::FEA::cfb_encrypt(wByte *p, wSize n, wU32 segmentSize)
 {
     if(segmentSize & 7) {
-        wmkc::exception(wmkcErr_Err, "wmkc::crypto::fea::cfb_encrypt",
+        throw wmkc::Exception(wmkcErr_Err, "wmkc::crypto::FEA::cfb_encrypt",
                                     "The segment size is not a multiple of 8.");
     }
 
@@ -23,10 +23,10 @@ wVoid wmkc::crypto::fea::cfb_encrypt(wByte *p, wSize n, wU32 segmentSize)
     }
 }
 
-wVoid wmkc::crypto::fea::cfb_decrypt(wByte *c, wSize n, wU32 segmentSize)
+wVoid wmkc::crypto::FEA::cfb_decrypt(wByte *c, wSize n, wU32 segmentSize)
 {
     if(segmentSize & 7) {
-        wmkc::exception(wmkcErr_Err, "wmkc::crypto::fea::cfb_encrypt",
+        throw wmkc::Exception(wmkcErr_Err, "wmkc::crypto::FEA::cfb_encrypt",
                                     "The segment size is not a multiple of 8.");
     }
 

@@ -17,12 +17,12 @@ static const wByte _B64DT[123] = {
     29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48,
     49, 50, 51};
 
-wSize wmkc::base64::encode_size(wSize size)
+wSize wmkc::Base64::encode_size(wSize size)
 {
     return (size % 3) ? ((size / 3 + 1) * 4) : (size / 3 * 4);
 }
 
-wSize wmkc::base64::decode_size(std::string content)
+wSize wmkc::Base64::decode_size(std::string content)
 {
     const wChar *data = content.c_str();
     wSize data_length = content.size();
@@ -34,7 +34,7 @@ wSize wmkc::base64::decode_size(std::string content)
     return tmp_decode_size;
 }
 
-std::string wmkc::base64::encode(std::string content)
+std::string wmkc::Base64::encode(std::string content)
 {
     if(content.empty()) {
         return std::string();
@@ -46,7 +46,7 @@ std::string wmkc::base64::encode(std::string content)
     wByte *src = (wByte *)content.c_str();
     wByte *dst = new wByte[dstSize];
     if(!dst) {
-        wmkc::exception(wmkcErr_ErrMemory, "wmkc::base64::encode",
+        throw wmkc::Exception(wmkcErr_ErrMemory, "wmkc::Base64::encode",
                                         "Failed to allocate memory for dst.");
     }
 
@@ -67,7 +67,7 @@ std::string wmkc::base64::encode(std::string content)
     return result;
 }
 
-std::string wmkc::base64::decode(std::string content)
+std::string wmkc::Base64::decode(std::string content)
 {
     if(content.empty()) {
         return std::string();
@@ -75,7 +75,7 @@ std::string wmkc::base64::decode(std::string content)
     wSize dst_i, src_i;
     wSize srcSize = content.size();
     if(srcSize & 3) {
-        wmkc::exception(wmkcErr_Err, "wmkc::base64::decode",
+        throw wmkc::Exception(wmkcErr_Err, "wmkc::Base64::decode",
                                         "The length of the src is incorrect.");
     }
     wSize dstSize = this->decode_size(content);
@@ -83,7 +83,7 @@ std::string wmkc::base64::decode(std::string content)
     wByte *src = (wByte *)content.c_str();
     wByte *dst = new wByte[dstSize];
     if(!dst) {
-        wmkc::exception(wmkcErr_ErrMemory, "wmkc::base64::decode",
+        throw wmkc::Exception(wmkcErr_ErrMemory, "wmkc::Base64::decode",
                                         "Failed to allocate memory for dst.");
     }
 

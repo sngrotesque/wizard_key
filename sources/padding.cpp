@@ -3,7 +3,7 @@
 wVoid wmkc::pad(wByte *src, wSize &size, wU32 blockSize, wBool randVal)
 {
     if(!src) {
-        wmkc::exception(wmkcErr_ErrNULL, "wmkc::pad", "src is NULL.");
+        throw wmkc::Exception(wmkcErr_ErrNULL, "wmkc::pad", "src is NULL.");
     }
     wU32 padLen;
     wSize totalLen;
@@ -25,7 +25,7 @@ wVoid wmkc::pad(wByte *src, wSize &size, wU32 blockSize, wBool randVal)
 wVoid wmkc::unpad(wByte *src, wSize &size)
 {
     if(!src) {
-        wmkc::exception(wmkcErr_ErrNULL, "wmkc::pad", "src is NULL.");
+        throw wmkc::Exception(wmkcErr_ErrNULL, "wmkc::pad", "src is NULL.");
     }
     wSize padLen;
     wSize index;
@@ -41,7 +41,7 @@ wVoid wmkc::unpad(wByte *src, wSize &size)
 wByte *wmkc::pkcs7_pad(const wByte *src, wSize &size, wU32 blockSize)
 {
     if(!src) {
-        wmkc::exception(wmkcErr_ErrNULL, "wmkc::pkcs7_pad", "src is NULL.");
+        throw wmkc::Exception(wmkcErr_ErrNULL, "wmkc::pkcs7_pad", "src is NULL.");
     }
     wU32 padLen;
     wSize totalLen;
@@ -61,7 +61,7 @@ wByte *wmkc::pkcs7_pad(const wByte *src, wSize &size, wU32 blockSize)
 wByte *wmkc::pkcs7_unpad(const wByte *src, wSize &size)
 {
     if(!src) {
-        wmkc::exception(wmkcErr_ErrNULL, "wmkc::pkcs7_unpad", "src is NULL.");
+        throw wmkc::Exception(wmkcErr_ErrNULL, "wmkc::pkcs7_unpad", "src is NULL.");
     }
     wU32 padLen = src[size - 1];
     wSize unpaddedLen = size - padLen;

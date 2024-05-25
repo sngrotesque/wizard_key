@@ -1,6 +1,10 @@
 # Wizard Magic Key Cyber
 > `Wizard Magic Key Cyber` by SN-Grotesque
 
+此库已在以下环境下测试通过：
+1. Ubuntu/Debian系Linux操作系统 - GCC套件
+2. Windows 10操作系统 - MinGW64 - Visual Studio (2019~2022)
+
 ### Author(s):
  - [SN-Grotesque](https://github.com/sngrotesque)
  - [R7](https://github.com/r7z7)
@@ -31,6 +35,12 @@
 > 修改了版本后需要更改的文件  
 > upload.py  
 > READMKE.md
+
+#### v7.1.0
+1.  重写了wmkc::Exception（抛弃原先的函数调用std::runtime_error的形式），将其作为一个完整的异常类使用，继承于std::exception。
+2.  增加了对于wmkc::crypto::fea::ctr_xcrypt的更多支持，现在请使用counter类来构建一个计数器。
+3.  将所有类的名称使用大驼峰命名法，跟随编码规范。
+4.  ~~更新了[终端字体颜色库](includes/config/color.hpp)对于C++的支持，抛弃了原先的C语法。~~
 
 #### v7.0.0
 1.  所有C++代码重新组织代码结构，将所有功能列入wmkc命名空间，并将原有的类更名。  

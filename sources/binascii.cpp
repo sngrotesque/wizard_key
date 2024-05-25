@@ -18,17 +18,17 @@ static const wByte hexTable[256] = {
     0x1f, 0x1f, 0x1f, 0x1f, 0x1f, 0x1f, 0x1f, 0x1f, 0x1f, 0x1f, 0x1f, 0x1f, 0x1f, 0x1f, 0x1f, 0x1f,
     0x1f, 0x1f, 0x1f, 0x1f, 0x1f, 0x1f, 0x1f, 0x1f, 0x1f, 0x1f, 0x1f, 0x1f, 0x1f, 0x1f, 0x1f, 0x1f};
 
-wByte wmkc::binascii::toTop(wByte c)
+wByte wmkc::Binascii::toTop(wByte c)
 {
     return ((c >> 4) < 0xa) ? ((c >> 4) + 0x30) : ((c >> 4) + 0x57);
 }
 
-wByte wmkc::binascii::toBot(wByte c)
+wByte wmkc::Binascii::toBot(wByte c)
 {
     return ((c & 0xf) < 0xa) ? ((c & 0xf) + 0x30) : ((c & 0xf) + 0x57);
 }
 
-std::string wmkc::binascii::b2a_hex(std::string content)
+std::string wmkc::Binascii::b2a_hex(std::string content)
 {
     if(content.empty()) {
         return std::string();
@@ -39,7 +39,7 @@ std::string wmkc::binascii::b2a_hex(std::string content)
 
     wByte *dst = new wByte[srcSize << 1];
     if(!dst) {
-        wmkc::exception(wmkcErr_ErrMemory, "wmkc::binascii::b2a_hex",
+        throw wmkc::Exception(wmkcErr_ErrMemory, "wmkc::Binascii::b2a_hex",
             "Failed to allocate memory for dst.");
     }
 
@@ -53,7 +53,7 @@ std::string wmkc::binascii::b2a_hex(std::string content)
     return result;
 }
 
-std::string wmkc::binascii::a2b_hex(std::string content)
+std::string wmkc::Binascii::a2b_hex(std::string content)
 {
     if(content.empty()) {
         return std::string();
@@ -66,12 +66,12 @@ std::string wmkc::binascii::a2b_hex(std::string content)
     wByte *dst = nullptr;
 
     if(srcSize & 1) {
-        wmkc::exception(wmkcErr_Err, "wmkc::binascii::a2b_hex",
+        throw wmkc::Exception(wmkcErr_Err, "wmkc::Binascii::a2b_hex",
             "Wrong type, should not be an odd length.");
     }
 
     if(!(dst = new wByte[srcSize >> 1])) {
-        wmkc::exception(wmkcErr_ErrMemory, "wmkc::binascii::a2b_hex",
+        throw wmkc::Exception(wmkcErr_ErrMemory, "wmkc::Binascii::a2b_hex",
             "Failed to allocate memory for dst.");
     }
 
@@ -80,7 +80,7 @@ std::string wmkc::binascii::a2b_hex(std::string content)
         bot = hexTable[src[srcIndex + 1]];
         if((top == 0x1f) || (bot == 0x1f)) {
             delete[] dst;
-            wmkc::exception(wmkcErr_Err, "wmkc::binascii_a2b_hex",
+            throw wmkc::Exception(wmkcErr_Err, "wmkc::binascii_a2b_hex",
                 "Wrong type, characters must be from 0 to f.");
         }
         dst[dstIndex] = (top << 4) + bot;

@@ -17,12 +17,12 @@
 
 namespace wmkc {
     namespace net {
-        class packet {
+        class Packet {
             private:
                 net::Socket fd;
 
             public:
-                packet(net::Socket current_fd);
+                Packet(net::Socket current_fd);
                 wVoid send(std::string content);
                 std::string recv();
         };

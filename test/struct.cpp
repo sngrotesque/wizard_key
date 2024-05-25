@@ -22,7 +22,7 @@ using namespace std;
 
 string struct_pack_test(wU32 seq, string content)
 {
-    wmkc::structure Struct;
+    wmkc::Struct Struct;
     std::string results;
 
     try {
@@ -39,14 +39,14 @@ string struct_pack_test(wU32 seq, string content)
 void fea_test()
 {
     std::string res = struct_pack_test(0x00000001, "GET / HTTP/1.1\r\nHost: www.baidu.com\r\nAccept: */*\r\nConnection: keep-alive\r\nUser-Agent: Android\r\n\r\n");
-    wmkc::crypto::fea fea((wByte *)"abcdef0123456789abcdef0123456789", (wByte *)"abcdef0123456789");
+    wmkc::crypto::FEA fea((wByte *)"abcdef0123456789abcdef0123456789", (wByte *)"abcdef0123456789");
     wSize length = res.size();
     wByte *buffer = new wByte[length];
 
     memcpy(buffer, res.c_str(), length);
 
     fea.encrypt(buffer, length, wmkc::crypto::xcryptMode::CTR);
-    wmkc::misc::PRINT(buffer, length, 32, 1, 0);
+    wmkc::misc::PRINT_HEX(buffer, length, 32, 1, 0);
 
     delete[] buffer;
 }

@@ -36,15 +36,25 @@
 #   if (WMKC_ERR_EXCEPTION_TO_STRING == false)
 #      pragma comment(lib, "msvcprt")
 #   else
+#include <sstream>
 namespace std {
     template <typename T>
-    std::string to_string(T value);
+    std::string std::to_string(T value) {
+        std::ostringstream os;
+        os << value;
+        return os.str();
+    }
 };
 #   endif
 #endif
 
 namespace wmkc {
-    void exception(wS32 errCode, std::string funcName, std::string errMessage);
+    class Exception : public std::exception {
+        public:
+            std::string output_message;
+            Exception(wS32 code, std::string function, std::string message);
+            const char *what() const noexcept override;
+    };
 }
 
 #endif /* WMKC_CPP_EXCEPTION */

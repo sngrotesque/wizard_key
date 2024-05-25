@@ -145,5 +145,5 @@ void wmkc::net::exception(std::string funcName)
                     CASE_ERR("unknown error");
             }
     }
-    wmkc::exception(err, funcName, msg);
+    throw wmkc::Exception(err, funcName, msg);
 }

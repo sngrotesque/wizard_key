@@ -22,24 +22,22 @@
 
 namespace wmkc {
     namespace net {
-        class ssl_socket
-        {
+        class SSL_Socket {
         public:
             SSL *ssl;
             net::Socket fd;
 
-            ssl_socket(SSL *_ssl, net::Socket _fd);
+            SSL_Socket(SSL *_ssl, wmkc::net::Socket _fd);
         };
 
-        class ssl_context
-        {
+        class SSL_Context {
         public:
             SSL_CTX *ssl_ctx;
             SSL *ssl;
 
-            ssl_context(const SSL_METHOD *method);
-            ~ssl_context();
-            net::ssl_socket wrap_socket(net::Socket fd, std::string server_hostname = "");
+            SSL_Context(const SSL_METHOD *method);
+            ~SSL_Context();
+            net::SSL_Socket wrap_socket(net::Socket fd, std::string server_hostname = "");
         };
     }  // namespace net
 }  // namespace wmkc

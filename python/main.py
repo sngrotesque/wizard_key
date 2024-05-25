@@ -1,4 +1,7 @@
+from typing import Callable
 import wtools
+import time
+import sys
 import os
 
 def attack_fcipher(ciphertext_path :str):
@@ -18,10 +21,53 @@ def attack_fcipher(ciphertext_path :str):
         f.write(wtools.fcipher.join_bytes(salt_digest, salt, ciphertext_digest, ciphertext,
                 ciphertextDigest_width_password_digest))
 
-def main(path :str, original_file_name :str):
-    ctx = wtools.fcipher(b'sngrotesque')
-    ctx.encrypt(f'{path}/{original_file_name}', f'{path}/cipher')
-    ctx.decrypt(f'{path}/cipher', f'{path}/plain')
+def fcipher_xcrypt():
+    if len(sys.argv) < 5:
+        exit(f'usage: python {sys.argv[0]} [Password] [input_path] [output_path] [e]ncrypt/[d]ncrypt')
+    
+    password = sys.argv[1]
+    input_path = sys.argv[2]
+    output_path = sys.argv[3]
+    xcrypt_mode = sys.argv[4].lower()
+    
+    if input_path == output_path:
+        print(f'input_path == output_path, are you sure?')
+        choice = input('[y/N]').lower()
+        if (choice == '') or (choice == 'n') or (choice == 'no'):
+            exit('exit.')
+        elif (choice == 'y') or (choice == 'yes'):
+            print('continue.')
+        else:
+            exit('error input.')
+    
+    ctx = wtools.fcipher(password.encode())
+    
+    if xcrypt_mode == 'e':
+        ctx.encrypt(input_path, output_path)
+    elif xcrypt_mode == 'd':
+        ctx.decrypt(input_path, output_path)
+    else:
+        exit(f'unknown xcrypt_mode.')
 
-main('C:/Users/sn/Desktop/收纳/fcipher', 'original.mp3')
+from Crypto.Cipher import AES
+from Crypto.Util import Counter
+
+def aes_speed_test(key: bytes, iv: bytes):
+    buffer = bytes(256 * 1024**2)
+    ctr = Counter.new(AES.block_size - (len(iv) * 8), prefix=iv, initial_value=0)
+    aes = AES.new(key, AES.MODE_CTR, counter=ctr)
+
+    timer_result = 0
+    for count in range(10):
+        print(f'Count: {count + 1}')
+        timer_start = time.time()
+        encrypted_content = aes.encrypt(buffer)
+        timer_stop = time.time()
+        timer_result += (timer_stop - timer_start)
+
+    print(encrypted_content[0])
+    print(f'10 time used: {timer_result/10:.4f}')
+
+if __name__ == '__main__':
+    aes_speed_test(b'00000000000000000000000000000000', b'00000')
 

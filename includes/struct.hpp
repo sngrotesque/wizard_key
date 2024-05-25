@@ -59,9 +59,9 @@
 
 namespace wmkc {
     enum class endianness {NO, LE, BE};
-    class structure {
+    class Struct {
         public:
-            structure() {}
+            Struct() {}
 
             std::string pack(std::string format, ...);
 

@@ -1,11 +1,5 @@
 #include <struct.hpp>
 
-wBool check()
-{
-    int n = 1;
-    return (*((char*)&n)==1)?(true):(false);
-}
-
 wVoid swap_byte(wChar *array, wU32 l, wU32 r)
 {
     wChar swap;
@@ -67,9 +61,9 @@ std::string single_pack(wChar format,
     return results;
 }
 
-std::string wmkc::structure::pack(std::string format, ...)
+std::string wmkc::Struct::pack(std::string format, ...)
 {
-    wmkc::endianness current = (check())?(wmkc::endianness::LE):(wmkc::endianness::BE);
+    wmkc::endianness current = (WMKC_LE_ENDIAN)?(wmkc::endianness::LE):(wmkc::endianness::BE);
     wmkc::endianness specify = wmkc::endianness::NO;
     std::string results;
 
@@ -123,7 +117,7 @@ std::string wmkc::structure::pack(std::string format, ...)
                                         (double)va_arg(va, double)));
                 break;
             default:
-                wmkc::exception(wmkcErr_Err, "wmkc::structure::pack",
+                throw wmkc::Exception(wmkcErr_Err, "wmkc::Struct::pack",
                                             "bad char in struct format");
         }
     }
@@ -133,7 +127,7 @@ std::string wmkc::structure::pack(std::string format, ...)
     return results;
 }
 
-std::vector<std::any> wmkc::structure::unpack(std::string format, std::string buffer)
+std::vector<std::any> wmkc::Struct::unpack(std::string format, std::string buffer)
 {
     std::vector<std::any> results;
 

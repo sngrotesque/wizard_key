@@ -12,14 +12,17 @@ static wVoid nonce_add(wByte *counter)
     }
 }
 
-wVoid wmkc::crypto::fea::ctr_xcrypt(wByte *d, wSize n)
+wVoid wmkc::crypto::FEA::ctr_xcrypt(wByte *d, wSize n)
 {
+    if ((this->nonce.nonce == nullptr) || (!this->nonce.size)) {
+        throw wmkc::Exception(wmkcErr_ErrNULL,
+            "wmkc::crypto::FEA::ctr_xcrypt", "nonce is null.");
+    }
     wSize i, ks_i;
-    wByte counter[WMKC_FEA_BL];
-    wByte ks[WMKC_FEA_BL] = {0};
+    wByte ks[WMKC_FEA_BL]{};
+    wByte counter[WMKC_FEA_BL]{};
 
-    wmkc::memory_zero(counter, WMKC_FEA_BL);
-    memcpy(counter, this->iv, WMKC_FEA_BL - 1); // 确保得到的Nonce足够长
+    memcpy(counter, this->nonce.nonce, this->nonce.size);
 
     for(i = 0, ks_i = WMKC_FEA_BL; i < n; ++i, ++ks_i) {
         if(ks_i == WMKC_FEA_BL) {

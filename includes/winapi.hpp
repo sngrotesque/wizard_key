@@ -7,7 +7,7 @@
 #include <Windows.h>
 
 namespace wmkc {
-    class winapi {
+    class Winapi {
         public:
             struct widthHeight {
                 wU32 width;

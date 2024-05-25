@@ -9,12 +9,11 @@
 #define BASE64_PAD '='
 
 namespace wmkc {
-    class base64 {
+    class Base64 {
         private:
             wSize encode_size(wSize size);
             wSize decode_size(std::string content);
         public:
-            /*  */
             std::string encode(std::string content);
             std::string decode(std::string content);
     };

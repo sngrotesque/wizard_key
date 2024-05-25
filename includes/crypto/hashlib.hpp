@@ -9,7 +9,7 @@
 #include <openssl/evp.h>
 
 namespace wmkc {
-    class hashlib {
+    class Hashlib {
         private:
             EVP_MD_CTX *md_ctx;
             const EVP_MD *md;

@@ -7,7 +7,7 @@
 
 namespace wmkc {
     namespace misc {
-        wVoid PRINT(const wByte *data, wSize len, wSize num, wBool newline,
+        wVoid PRINT_HEX(const wByte *data, wSize len, wSize num, wBool newline,
                                                             wBool tableChar);
         wVoid PRINT_N(const wByte *arr, wSize size, wBool newline);
         wVoid PRINT_BOX(const wByte *box, wSize size, wSize num, wBool newline);

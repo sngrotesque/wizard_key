@@ -23,7 +23,7 @@ const wByte *iv  = (wByte *)"_wnMsGmwfV=Q13]l";
 
 wByte *xcrypt(wByte *buffer, wSize length, wmkc::crypto::xcryptMode xcrypt_mode, wBool encryption)
 {
-    wmkc::crypto::fea fea(key, iv);
+    wmkc::crypto::FEA fea(key, iv);
     wByte *result = nullptr;
 
     if(encryption) {
@@ -65,9 +65,9 @@ wVoid file_xcrypt(string srcPath, string dstPath, wmkc::crypto::xcryptMode xcryp
     dst_fp.close();
 }
 
-wVoid fea_speed_test(wU32 length = (1<<24))
+wVoid fea_speed_test(wU32 length = 16 * (1024 * 1024))
 {
-    wmkc::crypto::fea fea(key,iv);
+    wmkc::crypto::FEA fea(key,iv);
     wmkc::Time timer;
     double start, stop;
 

@@ -1,6 +1,6 @@
 #include <misc.hpp>
 
-wVoid wmkc::misc::PRINT(const wByte *data, wSize len, wSize num, wBool newline,
+wVoid wmkc::misc::PRINT_HEX(const wByte *data, wSize len, wSize num, wBool newline,
                                                                 wBool tableChar)
 {
     for(wSize x = 0; x < len; ++x) {

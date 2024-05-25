@@ -207,7 +207,7 @@ std::string wmkc::net::Socket::recv(const wS32 len, const wS32 flag)
 {
     wChar *buffer = new wChar[len];
     if(!buffer) {
-        wmkc::exception(wmkcErr_ErrMemory, "wmkc::net::Socket::recv",
+        throw wmkc::Exception(wmkcErr_ErrMemory, "wmkc::net::Socket::recv",
             "Failed to allocate memory for buffer.");
     }
 
@@ -244,7 +244,7 @@ std::string wmkc::net::Socket::recvfrom(const wS32 len, SOCKADDR *from,
 {
     wChar *buffer = new wChar[len];
     if(!buffer) {
-        wmkc::exception(wmkcErr_ErrMemory, "wmkc::net::Socket::recvfrom",
+        throw wmkc::Exception(wmkcErr_ErrMemory, "wmkc::net::Socket::recvfrom",
             "Failed to allocate memory for buffer.");
     }
 

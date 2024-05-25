@@ -13,9 +13,9 @@
 #endif
 
 namespace wmkc {
-    class random {
+    class Random {
         public:
-            random();
+            Random();
             wVoid seed();
             wSize rand();
             wSize randint(wSize min, wSize max);

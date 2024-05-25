@@ -6,7 +6,7 @@
 #include <config/exception.hpp>
 
 namespace wmkc {
-    class binascii {
+    class Binascii {
         private:
             wByte toTop(wByte c);
             wByte toBot(wByte c);
