@@ -227,12 +227,11 @@ wVoid wmkc::crypto::FEA::keyExtension(const wByte *key, const wByte *iv)
         }
 
         for(index = 0; index < sizeof(this->key); ++index) {
-            keyBuffer[index] ^= \
-                ivBuffer[0] ^ ivBuffer[2]  ^ ivBuffer[4]  ^ ivBuffer[6] ^
-                ivBuffer[8] ^ ivBuffer[10] ^ ivBuffer[12] ^ ivBuffer[14];
-            keyBuffer[index] ^= \
-                ivBuffer[1] ^ ivBuffer[3]  ^ ivBuffer[5]  ^ ivBuffer[7] ^
-                ivBuffer[9] ^ ivBuffer[11] ^ ivBuffer[13] ^ ivBuffer[15];
+            keyBuffer[index] ^= 
+                ivBuffer[0]  ^ ivBuffer[1]  ^ ivBuffer[2]  ^ ivBuffer[3]  ^
+                ivBuffer[4]  ^ ivBuffer[5]  ^ ivBuffer[6]  ^ ivBuffer[7]  ^
+                ivBuffer[8]  ^ ivBuffer[9]  ^ ivBuffer[10] ^ ivBuffer[11] ^
+                ivBuffer[12] ^ ivBuffer[13] ^ ivBuffer[14] ^ ivBuffer[15];
             keyBuffer[index] ^= (ivBuffer[index & 15] + index);
         }
 

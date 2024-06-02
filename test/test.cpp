@@ -2,6 +2,7 @@
 #include <crypto/fea.hpp>
 #include <base64.hpp>
 #include <random.hpp>
+#include <hexdump.hpp>
 #include <padding.hpp>
 #include <struct.hpp>
 #include <misc.hpp>
@@ -25,11 +26,14 @@ using namespace std;
 
 #include <base64.cpp>
 #include <random.cpp>
+#include <hexdump.cpp>
 #include <padding.cpp>
 #include <struct.cpp>
 #include <misc.cpp>
 #include <time.cpp>
 // Source path: End
+
+using namespace wmkc::crypto;
 
 // Usage: python run.py test\test.cpp -O3 -lws2_32 -lssl -lcrypto
 namespace wmkc {
@@ -52,23 +56,41 @@ namespace wmkc {
 
 void test()
 {
-    const wByte *key = (wByte *)"00000000000000000000000000000000";
-    const wByte *iv  = (wByte *)"abcdefghijklmopq";
-    wmkc::crypto::Nonce_CTX nonce("abcdef");
-    wmkc::crypto::FEA ctx(key, iv, nonce);
+    wmkc::crypto::xcryptMode mode;
+    wmkc::crypto::FEA fea;
+    wmkc::Random random;
+    wByte key[32], iv[16];
 
-    char data[2048] = {"我是你爹，傻逼。\n"};
+    string password = "sngrotesque-ROOT0.";
+    string nonce    = "/~n10*DF)4=^";
+    string salt     = "\x71\x67\x39\x33\x2e\x50\x56\x15\xec\xcf\xf1\xb9\xfd\xb9\xc4\xb6";
+
+    wmkc::test::derivedKey(password, salt, key, iv);
+    fea = wmkc::crypto::FEA(key, iv, nonce);
+    mode = wmkc::crypto::xcryptMode::CTR;
+
+    char data[2048] = {"我草你妈，傻逼队友，你打你妈呢！日你妈！能不能让我赢一把啊！！？？？？？？"};
     wByte *buffer = (wByte *)data;
-    size_t length = strlen(data);
+    wSize length = strlen(data);
 
-    ctx.encrypt(buffer, length, wmkc::crypto::xcryptMode::CTR);
+    // wmkc::pad(buffer, length, WMKC_FEA_BL, false);
 
-    wmkc::misc::PRINT_HEX(buffer, length, 32, 1, 0);
+    printf("Plaintext:\n"); wmkc::misc::PRINT_HEX(buffer, length, 32, length%32, true);
+
+    if(mode == wmkc::crypto::xcryptMode::ECB) {
+        for(wU32 i = 0; i < length; i += WMKC_FEA_BL) {
+            fea.encrypt(buffer + i, WMKC_FEA_BL, mode);
+        }
+    } else {
+        fea.encrypt(buffer, length, mode);
+    }
+
+    printf("Ciphertext:\n"); wmkc::misc::PRINT_HEX(buffer, length, 32, length%32, true);
 }
 
 int main(int argc, char **argv)
 {
-    test();
+    
 
     return 0;
 }

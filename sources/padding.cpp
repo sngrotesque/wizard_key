@@ -7,7 +7,7 @@ wVoid wmkc::pad(wByte *src, wSize &size, wU32 blockSize, wBool randVal)
     }
     wU32 padLen;
     wSize totalLen;
-    wmkc::random random;
+    wmkc::Random random;
 
     padLen = (blockSize - size % blockSize);
     totalLen = padLen + size;

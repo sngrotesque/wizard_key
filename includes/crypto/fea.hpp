@@ -19,6 +19,8 @@ namespace wmkc {
             public:
                 wByte nonce[WMKC_FEA_BL];
                 wU32 size;
+                Nonce_CTX() {}
+
                 Nonce_CTX(wByte *nonce, const wU32 size)
                 : nonce(), size(size)
                 {
@@ -39,6 +41,8 @@ namespace wmkc {
         * 
         * 与AES算法不同，此算法，需要IV与Key共同作用生成加/解密所需的密钥，所以，即使是使用CTR模式，也请加上IV，并确保IV的
         * 长度等于$(WMKC_FEA_BL)。
+        * 
+        * 当然，你在使用CTR模式的情况下，自然也可以不加入Nonce，同样可以正常加/解密，但是吧，密文的安全性，由你自己保证。
         */
         class FEA {
             private:
@@ -72,13 +76,14 @@ namespace wmkc {
             public:
                 wByte key[WMKC_FEA_BL << 1];
                 wByte iv[WMKC_FEA_BL];
-                wByte roundKey[sizeof(key) * WMKC_FEA_NR]; // len(key) * WMKC_FEA_NR
+                wByte roundKey[sizeof(key) * WMKC_FEA_NR];
 
                 Nonce_CTX nonce;
                 wU32 segmentSize;
 
                 //////////////////////////////////////////////////////////////////
 
+                FEA() {}
                 FEA(const wByte *key, const wByte *iv, Nonce_CTX nonce = {nullptr, 0}, const wU32 segmentSize = 128);
                 ~FEA();
                 void encrypt(wByte *content, wSize size, xcryptMode mode);

@@ -12,7 +12,7 @@ int main(int argc, char **argv)
     WSAStartup(MAKEWORD(2,2), &ws);
 #   endif
 
-    ftp_send("F:/fix_btrfs.txt", "223.5.5.5", 53);
+    ftp_send("/home/sn/Desktop/main.py", "223.5.5.5", 80);
 
 #   ifdef WMKC_PLATFORM_WINOS
     WSACleanup();
