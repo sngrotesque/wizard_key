@@ -45,7 +45,7 @@ def listen(addr :str, port :int = 9971):
     print(f'Client connected: {caddr[0]}:{caddr[1]}')
     pkt = wtools.packet()
     res = pkt.recv(cfd)
-    print(res)
+    print(f'session id: {res[0]}, time: {res[1]:.4f}, seq: {res[2]}, data: {res[3]}.')
     
     cfd.close()
     fd.close()
