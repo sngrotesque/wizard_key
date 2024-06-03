@@ -50,11 +50,28 @@ def fcipher_xcrypt():
     else:
         exit(f'unknown xcrypt_mode.')
 
-def listen():
-    pass
+def listen(addr :str, port :int = 9971):
+    fd = socket.socket()
+    fd.bind((addr, port))
+    fd.listen(5)
+    cfd, caddr = fd.accept()
+    
+    print(f'Client connected: {caddr[0]}:{caddr[1]}')
+    pkt = wtools.packet()
+    res = pkt.recv(cfd)
+    print(res)
+    
+    cfd.close()
+    fd.close()
 
-def client():
-    pass
+def client(addr :str, port :int = 9971):
+    fd = socket.socket()
+    fd.connect((addr, port))
+    
+    pkt = wtools.packet()
+    pkt.send(fd, b'wtools.packet test!')
+    
+    fd.close()
 
 if __name__ == '__main__':
-    pass
+    client()

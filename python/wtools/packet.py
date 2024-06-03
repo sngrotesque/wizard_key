@@ -1,4 +1,5 @@
 # 对于包的设计，请看network_packet.md文件。
+from typing import Tuple
 import socket
 import struct
 import time
@@ -18,7 +19,7 @@ class packet:
     def __init__(self, session_id :int = 0):
         self.session_id = session_id
 
-    def recv_all(self, fd :socket.socket, length :int):
+    def __recv_all(self, fd :socket.socket, length :int):
         data = b''
         while length:
             temp   =  fd.recv(min(length, 4096))
@@ -40,7 +41,7 @@ class packet:
         packetAll = self.join_bytes(meta, meta_crc, content, content_crc)
         fd.sendall(packetAll)
 
-    def recv(self, fd :socket.socket):
+    def recv(self, fd :socket.socket) -> Tuple[int, float, int, bytes]:
         tmp_meta = fd.recv(8 + 8 + 4)
         tmp_meta_crc = fd.recv(4)
         
@@ -50,11 +51,11 @@ class packet:
         session_id, timer, sequence = struct.unpack('!QdI', tmp_meta)
 
         length = struct.unpack('!I', fd.recv(4))[0]
-        content = self.recv_all(fd, length)
+        content = self.__recv_all(fd, length)
         content_crc = fd.recv(4)
 
         if zlib.crc32(self.join_bytes(content, length)) != \
                                 struct.unpack('!I', content_crc)[0]:
             raise ValueError('The CRC32 verification of data content failed.')
 
-        return session_id, timer, sequence, 
+        return session_id, timer, sequence, content
