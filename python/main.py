@@ -36,6 +36,7 @@ def fcipher_xcrypt():
 def listen(addr :str, port :int = 9971):
     fd = socket.socket()
     print(f'bind to: {addr}:{port}')
+    fd.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     fd.bind((addr, port))
     fd.listen(5)
     print('Waiting for thr client to connect...')
