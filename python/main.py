@@ -52,8 +52,10 @@ def fcipher_xcrypt():
 
 def listen(addr :str, port :int = 9971):
     fd = socket.socket()
+    print(f'bind to: {addr}:{port}')
     fd.bind((addr, port))
     fd.listen(5)
+    print('Waiting for thr client to connect...')
     cfd, caddr = fd.accept()
     
     print(f'Client connected: {caddr[0]}:{caddr[1]}')
@@ -74,4 +76,4 @@ def client(addr :str, port :int = 9971):
     fd.close()
 
 if __name__ == '__main__':
-    client()
+    listen('0.0.0.0')
