@@ -18,7 +18,7 @@ class packet:
     def __init__(self, session_id :int = 0):
         self.session_id = session_id
 
-    def __recv(self, fd :socket.socket, length :int):
+    def recv_all(self, fd :socket.socket, length :int):
         data = b''
         while length:
             temp   =  fd.recv(min(length, 4096))
@@ -45,13 +45,16 @@ class packet:
         tmp_meta_crc = fd.recv(4)
         
         if zlib.crc32(tmp_meta) != struct.unpack('!I', tmp_meta_crc)[0]:
-            raise ValueError('Meta info CRC32 error.')
+            raise ValueError('The CRC32 validation of metadata failed.')
         
-        self.session_id, timer, sequence = struct.unpack('!QdI', tmp_meta)
+        session_id, timer, sequence = struct.unpack('!QdI', tmp_meta)
 
-        tmp_content_length = struct.unpack('!I', fd.recv(4))[0]
-        tmp_content = self.__recv(fd, tmp_content_length)
-        tmp_content_crc = fd.recv(4)
+        length = struct.unpack('!I', fd.recv(4))[0]
+        content = self.recv_all(fd, length)
+        content_crc = fd.recv(4)
 
+        if zlib.crc32(self.join_bytes(content, length)) != \
+                                struct.unpack('!I', content_crc)[0]:
+            raise ValueError('The CRC32 verification of data content failed.')
 
-
+        return session_id, timer, sequence, 
