@@ -54,7 +54,7 @@ class packet:
         content = self.__recv_all(fd, struct.unpack('!I', length)[0])
         content_crc = fd.recv(4)
 
-        if zlib.crc32(self.join_bytes(content, length)) != \
+        if zlib.crc32(self.join_bytes(length, content)) != \
                                 struct.unpack('!I', content_crc)[0]:
             raise ValueError('The CRC32 verification of data content failed.')
 
