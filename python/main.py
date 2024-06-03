@@ -1,5 +1,6 @@
 from typing import Callable
 import wtools
+import socket
 import time
 import sys
 import os
@@ -49,25 +50,15 @@ def fcipher_xcrypt():
     else:
         exit(f'unknown xcrypt_mode.')
 
-from Crypto.Cipher import AES
-from Crypto.Util import Counter
+def main():
+    fd = socket.socket()
+    pkt = wtools.packet()
 
-def aes_speed_test(key: bytes, iv: bytes):
-    buffer = bytes(256 * 1024**2)
-    ctr = Counter.new(AES.block_size - (len(iv) * 8), prefix=iv, initial_value=0)
-    aes = AES.new(key, AES.MODE_CTR, counter=ctr)
+    fd.connect(('47.243.162.23', 80))
 
-    timer_result = 0
-    for count in range(10):
-        print(f'Count: {count + 1}')
-        timer_start = time.time()
-        encrypted_content = aes.encrypt(buffer)
-        timer_stop = time.time()
-        timer_result += (timer_stop - timer_start)
+    pkt.send(fd, b'hello, world')
 
-    print(encrypted_content[0])
-    print(f'10 time used: {timer_result/10:.4f}')
+    fd.close()
 
 if __name__ == '__main__':
-    aes_speed_test(b'00000000000000000000000000000000', b'00000')
-
+    main()
