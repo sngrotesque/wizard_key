@@ -50,8 +50,8 @@ class packet:
         
         session_id, timer, sequence = struct.unpack('!QdI', tmp_meta)
 
-        length = struct.unpack('!I', fd.recv(4))[0]
-        content = self.__recv_all(fd, length)
+        length = fd.recv(4)
+        content = self.__recv_all(fd, struct.unpack('!I', length)[0])
         content_crc = fd.recv(4)
 
         if zlib.crc32(self.join_bytes(content, length)) != \
