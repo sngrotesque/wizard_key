@@ -59,5 +59,10 @@ def client(addr :str, port :int = 9971):
     
     fd.close()
 
+def pixiv_test():
+    pix = wtools.pixiv(38279179, cookies = 'E:/pixiv_cookie.txt', save_path = 'F:/Pitchers/Pixiv/NewTest', proxies = 'http://localhost:8081')
+    res = pix.getTotalArtistList()
+    print(res)
+
 if __name__ == '__main__':
-    client('192.168.0.102')
+    pixiv_test()

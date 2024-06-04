@@ -7,10 +7,4 @@ from .packet import packet
 
 from .image import imgToTextImage
 
-def fread(path :str, open_mode :str = 'rb', encoding :str = None):
-        with open(path, open_mode, encoding = encoding) as f_obj:
-            return f_obj.read()
-
-def fwrite(path :str, open_mode :str = 'wb', content :bytes = None, encoding :str = None):
-    with open(path, open_mode, encoding = encoding) as f_obj:
-        return f_obj.write(content)
+from .pixiv import pixiv
