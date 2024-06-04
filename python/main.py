@@ -5,6 +5,8 @@ import time
 import sys
 import os
 
+import wtools.utils
+
 def fcipher_xcrypt():
     if len(sys.argv) < 5:
         exit(f'usage: python {sys.argv[0]} [Password] [input_path] [output_path] [e]ncrypt/[d]ncrypt')
@@ -47,15 +49,24 @@ def listen(addr :str, port :int = 9971):
     res = pkt.recv(cfd)
     print(f'session id: {res[0]}, time: {res[1]:.4f}, seq: {res[2]}, data: {res[3]}.')
     
+    pkt.send(cfd, b'done.')
+    
     cfd.close()
     fd.close()
 
-def client(addr :str, port :int = 9971):
+def client(addr :str, port :int = 9971, path :str = None):
     fd = socket.socket()
     fd.connect((addr, port))
     
     pkt = wtools.packet()
-    pkt.send(fd, b'wtools.packet test!')
+
+    if path:
+        data = wtools.utils.fread(path)
+        pkt.send(fd, data)
+    else:
+        pkt.send(fd, b'wtools.packet test!')
+
+    print(pkt.recv(fd))
     
     fd.close()
 
@@ -65,4 +76,4 @@ def pixiv_test():
     print(res)
 
 if __name__ == '__main__':
-    pixiv_test()
+    client('192.168.0.103', path='w:/data.bin')
