@@ -29,4 +29,4 @@ def listen(addr :str, port :int, path :str):
     listen_fd.close()
 
 if __name__ == '__main__':
-    listen('0.0.0.0', 9981, 'test_file')
+    listen('0.0.0.0', 9981, 'test_file.mp4')
