@@ -6,8 +6,8 @@
                 "${workspaceFolder}",
                 "${workspaceFolder}/includes",
                 "${workspaceFolder}/sources",
-                "C:/Users/Administrator/Desktop/develop/MSYS2/",
-                "C:/Users/Administrator/Desktop/develop/MSYS2/mingw64/include/**"
+                "E:/MSYS2/",
+                "E:/MSYS2/mingw64/include/**"
             ],
             "defines": [
                 "_DEBUG",
@@ -15,7 +15,7 @@
                 "_UNICODE"
             ],
 
-            "compilerPath": "C:/Users/Administrator/Desktop/develop/MSYS2/mingw64/bin/gcc.exe",
+            "compilerPath": "E://MSYS2/mingw64/bin/gcc.exe",
             "intelliSenseMode": "windows-gcc-x64",
 
             "cStandard": "c17",

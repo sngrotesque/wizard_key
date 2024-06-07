@@ -88,9 +88,24 @@ void test()
     printf("Ciphertext:\n"); wmkc::misc::PRINT_HEX(buffer, length, 32, length%32, true);
 }
 
+void speed_test()
+{
+    wSize length = 67108864;
+    wByte *buffer = new wByte[length];
+
+    FEA fea((wByte *)"0123456789abcdef0123456789abcdef", (wByte *)"0123456789abcdef");
+
+    double start = wmkc::Time().time();
+    fea.encrypt(buffer, length, xcryptMode::CBC);
+    double stop = wmkc::Time().time();
+
+    printf("%.4lf\n", stop-start);
+    delete[] buffer;
+}
+
 int main(int argc, char **argv)
 {
-    test();
+    speed_test();
 
     return 0;
 }
