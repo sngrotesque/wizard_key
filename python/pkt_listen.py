@@ -14,7 +14,8 @@ def listen(addr :str, port :int, path :str):
     pkt = wtools.packet()
 
     print('recv...')
-    file_data = pkt.recv(client_fd)
+    content = pkt.recv(client_fd)
+    file_data = content[3]
     print('recv done.')
 
     print('send.')
