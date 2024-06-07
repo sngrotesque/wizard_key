@@ -13,10 +13,14 @@ def listen(addr :str, port :int, path :str):
     print(f'client connected: [{client_addr[0]}:{client_addr[1]}]')
     pkt = wtools.packet()
 
+    print('recv...')
     file_data = pkt.recv(client_fd)
+    print('recv done.')
 
+    print('send.')
     pkt.send(client_fd, b'done.')
 
+    print(f'save to {path}')
     with open(path, 'wb') as f:
         f.write(file_data)
 

@@ -11,8 +11,11 @@ def client(addr :str, port :int, path :str):
     client_fd.connect((addr, port))
 
     pkt = wtools.packet()
+    print('send...')
     pkt.send(client_fd, file_data)
+    print('send done.')
 
+    print('recv...')
     print(pkt.recv(client_fd))
 
     client_fd.close()
