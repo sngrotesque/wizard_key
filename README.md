@@ -41,6 +41,7 @@
 2.  增加了对于wmkc::crypto::fea::ctr_xcrypt的更多支持，现在请使用counter类来构建一个计数器。
 3.  将所有类的名称使用大驼峰命名法，跟随编码规范。
 4.  ~~更新了[终端字体颜色库](includes/config/color.hpp)对于C++的支持，抛弃了原先的C语法。~~
+5.  将Python代码移动到了[WMKC_for_Python](https://github.com/sngrotesque/WMKC_Python)仓库，如果要使用，请去对应仓库查看，谢谢。
 
 等待添加的功能
 - 为socket库增加简易版的setsockopt与getsockopt方法
