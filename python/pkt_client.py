@@ -3,6 +3,7 @@ import socket
 
 def client(addr :str, port :int, path :str):
     client_fd = socket.socket()
+    client_fd.setsockopt(socket.SOL_SOCKET, socket.SO_SNDBUF, 65536)
 
     with open(path, 'rb') as f:
         file_data = f.read()

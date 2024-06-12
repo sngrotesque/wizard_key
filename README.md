@@ -42,6 +42,9 @@
 3.  将所有类的名称使用大驼峰命名法，跟随编码规范。
 4.  ~~更新了[终端字体颜色库](includes/config/color.hpp)对于C++的支持，抛弃了原先的C语法。~~
 
+等待添加的功能
+- 为socket库增加简易版的setsockopt与getsockopt方法
+
 #### v7.0.0
 1.  所有C++代码重新组织代码结构，将所有功能列入wmkc命名空间，并将原有的类更名。  
     例如：wmkcBase64变为`wmkc::base64`，其中的方法encode变为`wmkc::base64().encode()`

@@ -4,6 +4,7 @@ import socket
 def listen(addr :str, port :int, path :str):
     listen_fd = socket.socket()
     listen_fd.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+    listen_fd.setsockopt(socket.SOL_SOCKET, socket.SO_RCVBUF, 65536)
     listen_fd.bind((addr, port))
     listen_fd.listen(5)
     

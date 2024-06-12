@@ -1,6 +1,8 @@
 from typing import Callable
 import wtools
+import random
 import socket
+import struct
 import time
 import sys
 import os
@@ -35,45 +37,34 @@ def fcipher_xcrypt():
     else:
         exit(f'unknown xcrypt_mode.')
 
-def listen(addr :str, port :int = 9971):
+def create_trueRandom_number(min :int, max :int):
+    array_size = random.choice([1, 2, 4, 8])
+    random_bytearray = os.urandom(array_size)
+
+    random_number = -1
+    if array_size == 1:
+        random_number = struct.unpack('>B', random_bytearray)[0]
+    elif array_size == 2:
+        random_number = struct.unpack('>H', random_bytearray)[0]
+    elif array_size == 4:
+        random_number = struct.unpack('>I', random_bytearray)[0]
+    elif array_size == 8:
+        random_number = struct.unpack('>Q', random_bytearray)[0]
+
+    return random_number % (max - min + 1) + min
+
+def client(path :str):
     fd = socket.socket()
-    print(f'bind to: {addr}:{port}')
-    fd.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-    fd.bind((addr, port))
-    fd.listen(5)
-    print('Waiting for thr client to connect...')
-    cfd, caddr = fd.accept()
-    
-    print(f'Client connected: {caddr[0]}:{caddr[1]}')
-    pkt = wtools.packet()
-    res = pkt.recv(cfd)
-    print(f'session id: {res[0]}, time: {res[1]:.4f}, seq: {res[2]}, data: {res[3]}.')
-    
-    pkt.send(cfd, b'done.')
-    
-    cfd.close()
+    fd.connect(('127.0.0.1', 80))
+    data = wtools.utils.fread(path)
+
+    fd.send(struct.pack('<I', len(data)))
+    fd.sendall(data)
+    print(fd.recv(5))
+
     fd.close()
 
-def client(addr :str, port :int = 9971, path :str = None):
-    fd = socket.socket()
-    fd.connect((addr, port))
-    
-    pkt = wtools.packet()
+data = os.urandom(int(256.71*1024**2))
+wtools.utils.fwrite('test_file', data = data)
 
-    if path:
-        data = wtools.utils.fread(path)
-        pkt.send(fd, data)
-    else:
-        pkt.send(fd, b'wtools.packet test!')
-
-    print(pkt.recv(fd))
-    
-    fd.close()
-
-def pixiv_test():
-    pix = wtools.pixiv(38279179, cookies = 'E:/pixiv_cookie.txt', save_path = 'F:/Pitchers/Pixiv/NewTest', proxies = 'http://localhost:8081')
-    res = pix.getTotalArtistList()
-    print(res)
-
-if __name__ == '__main__':
-    client('192.168.0.103', path='w:/data.bin')
+client('test_file')
