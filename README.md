@@ -21,7 +21,6 @@
 1.  此库支持64位操作系统（Windows，Linux），并支持MingW64与MSVC（Visual Studio 2019+）与支持C++14标准的GCC套件。
 2.  对于`MingW64`与`GCC套件`的使用，可以直接调用根目录的[run.py](run.py)代码来执行（功能基本上等同于make）。  
     而对于`Visual Studio`，需要自行将库编译为dll文件或者在主程序代码文件中包含`*.cpp`文件。
-3.  在`python`目录下是一些我编写的Python代码，主要为一些爬虫库。
 
 ### 开发文档
  -  开发标准：
@@ -45,7 +44,7 @@
 6.  添加了[ChaCha20](https://github.com/marcizhu/ChaCha20)加密算法的实现，如果你要使用其他实现，请自行调用（如OpenSSL库提供的ChaCha20）。
 
 等待添加的功能
-- 为socket库增加简易版的setsockopt与getsockopt方法
+- 为socket库增加简易版的setsockopt与getsockopt方法，以及待完善的Socket库和SSL库。
 
 #### v7.0.0
 1.  所有C++代码重新组织代码结构，将所有功能列入wmkc命名空间，并将原有的类更名。  
