@@ -17,7 +17,16 @@
  - [Zlib](https://github.com/madler/zlib)
  - [iconv](https://www.gnu.org/software/libiconv/)
 
-### 关于此库的使用
+### 关于（About）
+0.  Q：为什么想开发这个库？  
+    A：因为我在未来会制作一个属于自己的即时通讯软件，想以这个库为基础进行开发。  
+    Q：为什么使用C++？  
+    A：其实最开始使用的是C，但是后来因为一些功能的实现难度，我最终考虑使用了C++，至于为什么不是C#或者Java以及Python，那是因为出于性能考虑。  
+    Q：有些功能，目前市面上一些库已经包含了，为什么要自主开发一个类似的？  
+    A：人嘛，有时候总是想要有一些自己能掌握的东西，自己决定更新进度，同时也可以学习这些功能的底层实现原理。
+1.  此库拥有多套加密算法，其中包含了FEA（Fast encryption algorithm），由[SN-Grotesque](https://github.com/sngrotesque)自制研发的一款分组对称加密算法。
+
+### 使用（Usage）
 1.  此库支持64位操作系统（Windows，Linux），并支持MingW64与MSVC（Visual Studio 2019+）与支持C++14标准的GCC套件。
 2.  对于`MingW64`与`GCC套件`的使用，可以直接调用根目录的[run.py](run.py)代码来执行（功能基本上等同于make）。  
     而对于`Visual Studio`，需要自行将库编译为dll文件或者在主程序代码文件中包含`*.cpp`文件。
