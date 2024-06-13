@@ -1,5 +1,6 @@
 #include <network/socket.hpp>
 #include <crypto/fea.hpp>
+#include <crypto/chacha20.hpp>
 #include <base64.hpp>
 #include <random.hpp>
 #include <hexdump.hpp>
@@ -23,6 +24,7 @@ using namespace std;
 #include <crypto/fea_cbc.cpp>
 #include <crypto/fea_ctr.cpp>
 #include <crypto/fea_cfb.cpp>
+#include "crypto/chacha20.cpp"
 
 #include <base64.cpp>
 #include <random.cpp>
@@ -103,9 +105,26 @@ void speed_test()
     delete[] buffer;
 }
 
+void chacha20_test()
+{
+    wByte *key = (wByte *)"ahu1t9yasf97t1935guashiudas15./-";
+    wByte *nonce = (wByte *)"j0f18y9GH2kd";
+    uint32_t count = 1;
+
+    ChaCha20 ctx(key, nonce, count);
+    ctx.init();
+
+    char tmp[2048] = {"hello, world.\n"};
+    uint8_t *buffer = (uint8_t *)tmp;
+    size_t length = strlen(tmp);
+
+    ctx.xcrypt(buffer, length);
+    wmkc::misc::PRINT_HEX(buffer, length, 32, length%32, true);
+}
+
 int main(int argc, char **argv)
 {
-    speed_test();
+    chacha20_test();
 
     return 0;
 }
