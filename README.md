@@ -42,6 +42,7 @@
 3.  将所有类的名称使用大驼峰命名法，跟随编码规范。
 4.  ~~更新了[终端字体颜色库](includes/config/color.hpp)对于C++的支持，抛弃了原先的C语法。~~
 5.  将Python代码移动到了[WMKC_for_Python](https://github.com/sngrotesque/WMKC_Python)仓库，如果要使用，请去对应仓库查看，谢谢。
+6.  添加了[ChaCha20](https://github.com/marcizhu/ChaCha20)加密算法的实现，如果你要使用其他实现，请自行调用（如OpenSSL库提供的ChaCha20）。
 
 等待添加的功能
 - 为socket库增加简易版的setsockopt与getsockopt方法

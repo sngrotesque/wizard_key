@@ -1,4 +1,3 @@
-// Referer: https://github.com/marcizhu/ChaCha20
 #include <config/wmkc.hpp>
 
 #if WMKC_SUPPORT
