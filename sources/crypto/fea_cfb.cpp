@@ -1,6 +1,6 @@
 #include <crypto/fea.hpp>
 
-wVoid wmkc::crypto::FEA::cfb_encrypt(wByte *p, wSize n, wU32 segmentSize)
+void wmkc::crypto::FEA::cfb_encrypt(wByte *p, wSize n, wU32 segmentSize)
 {
     if(segmentSize & 7) {
         throw wmkc::Exception(wmkcErr_Err, "wmkc::crypto::FEA::cfb_encrypt",
@@ -23,7 +23,7 @@ wVoid wmkc::crypto::FEA::cfb_encrypt(wByte *p, wSize n, wU32 segmentSize)
     }
 }
 
-wVoid wmkc::crypto::FEA::cfb_decrypt(wByte *c, wSize n, wU32 segmentSize)
+void wmkc::crypto::FEA::cfb_decrypt(wByte *c, wSize n, wU32 segmentSize)
 {
     if(segmentSize & 7) {
         throw wmkc::Exception(wmkcErr_Err, "wmkc::crypto::FEA::cfb_encrypt",

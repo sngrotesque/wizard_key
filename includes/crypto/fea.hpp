@@ -46,32 +46,32 @@ namespace wmkc {
         */
         class FEA {
             private:
-                wVoid subBytes(wByte *block);
-                wVoid shiftBits(wByte *block);
+                void subBytes(wByte *block);
+                void shiftBits(wByte *block);
 
-                wVoid invSubBytes(wByte *block);
-                wVoid invShiftBits(wByte *block);
+                void invSubBytes(wByte *block);
+                void invShiftBits(wByte *block);
 
-                wVoid shiftRows(wByte *block);
-                wVoid invShiftRows(wByte *block);
+                void shiftRows(wByte *block);
+                void invShiftRows(wByte *block);
 
-                wVoid xorWithIV(wByte *block, wByte *iv);
+                void xorWithIV(wByte *block, wByte *iv);
 
-                wVoid cipher(wByte *p, wByte *roundKey);
-                wVoid invCipher(wByte *c, wByte *roundKey);
+                void cipher(wByte *p, wByte *roundKey);
+                void invCipher(wByte *c, wByte *roundKey);
 
-                wVoid keyExtension(const wByte *key, const wByte *iv);
+                void keyExtension(const wByte *key, const wByte *iv);
 
-                wVoid ecb_encrypt(wByte *p);
-                wVoid ecb_decrypt(wByte *c);
+                void ecb_encrypt(wByte *p);
+                void ecb_decrypt(wByte *c);
 
-                wVoid cbc_encrypt(wByte *p, wSize n);
-                wVoid cbc_decrypt(wByte *c, wSize n);
+                void cbc_encrypt(wByte *p, wSize n);
+                void cbc_decrypt(wByte *c, wSize n);
 
-                wVoid ctr_xcrypt(wByte *d, wSize n);
+                void ctr_xcrypt(wByte *d, wSize n);
 
-                wVoid cfb_encrypt(wByte *p, wSize n, wU32 segmentSize);
-                wVoid cfb_decrypt(wByte *c, wSize n, wU32 segmentSize);
+                void cfb_encrypt(wByte *p, wSize n, wU32 segmentSize);
+                void cfb_decrypt(wByte *c, wSize n, wU32 segmentSize);
 
             public:
                 wByte key[WMKC_FEA_BL << 1];

@@ -17,7 +17,7 @@ namespace wmkc {
     * @param randVal 是否使用随机数填充
     * @return 无
     */
-    wVoid pad(wByte *src, wSize &size, wU32 blockSize, wBool randVal);
+    void pad(wByte *src, wSize &size, wU32 blockSize, wBool randVal);
 
     /**
     * @brief wmkcPad提供的默认清除填充方法
@@ -27,7 +27,7 @@ namespace wmkc {
     * @param size 传入时作为源内容长度，函数调用结束后作为清除填充后的长度
     * @return 无
     */
-    wVoid unpad(wByte *src, wSize &size);
+    void unpad(wByte *src, wSize &size);
 
     /**
     * @brief PKCS7填充

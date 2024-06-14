@@ -15,7 +15,7 @@ ADDRINFO *wmkc::net::getAddrInfo(wS32 family, wS32 type, wS32 proto,
     return sockAddrRes;
 }
 
-std::string wmkc::net::networkAddr2stringAddr(wS32 family, const wVoid *pAddr)
+std::string wmkc::net::networkAddr2stringAddr(wS32 family, const void *pAddr)
 {
     char tmp_addr[INET6_ADDRSTRLEN];
     if(!inet_ntop(family, pAddr, tmp_addr, INET6_ADDRSTRLEN)) {
@@ -103,6 +103,22 @@ wmkc::net::Socket::~Socket()
     // this->close();
 }
 
+void wmkc::net::Socket::setsockopt(int level, int optName, SocketOption &opt)
+{
+    if(::setsockopt(this->fd, level, optName, (char *)opt.val, opt.val_len) \
+                                                        == WMKC_NET_ERROR) {
+        wmkc::net::exception("wmkc::net::Socket::setsockopt");
+    }
+}
+
+void wmkc::net::Socket::getsockopt(int level, int optName, SocketOption &opt)
+{
+    if(::getsockopt(this->fd, level, optName, (char *)opt.val, &opt.val_len) \
+                                                        == WMKC_NET_ERROR) {
+        wmkc::net::exception("wmkc::net::Socket::getsockopt");
+    }
+}
+
 void wmkc::net::Socket::settimeout(double _val)
 {
     this->timeout = _val;
@@ -113,10 +129,10 @@ void wmkc::net::Socket::settimeout(double _val)
     double fracpart = modf(this->timeout, &intpart);
     struct timeval _timeout = {.tv_sec=(long)intpart, .tv_usec=(long)(fracpart * 1e6)};
 #   endif
-    wChar *optval = (wChar *)&_timeout;
+    char *optval = (char *)&_timeout;
 
-    if(setsockopt(this->fd, SOL_SOCKET, SO_SNDTIMEO, optval, sizeof(_timeout)) ||
-        setsockopt(this->fd, SOL_SOCKET, SO_RCVTIMEO, optval, sizeof(_timeout))) {
+    if(::setsockopt(this->fd, SOL_SOCKET, SO_SNDTIMEO, optval, sizeof(_timeout)) ||
+        ::setsockopt(this->fd, SOL_SOCKET, SO_RCVTIMEO, optval, sizeof(_timeout))) {
         wmkc::net::exception("wmkc::net::Socket::settimeout");
     }
 }
@@ -172,7 +188,7 @@ wmkc::net::Socket wmkc::net::Socket::accept()
 
 void wmkc::net::Socket::send(const std::string content, const wS32 flag)
 {
-    this->transmissionLength = ::send(this->fd, (wChar *)content.c_str(),
+    this->transmissionLength = ::send(this->fd, (char *)content.c_str(),
                                                     content.size(), flag);
 
     if(this->transmissionLength == WMKC_NET_ERROR) {
@@ -182,7 +198,7 @@ void wmkc::net::Socket::send(const std::string content, const wS32 flag)
 
 void wmkc::net::Socket::sendall(const std::string content, const wS32 flag)
 {
-    wChar *offset_ptr = (wChar *)content.c_str();
+    char *offset_ptr = (char *)content.c_str();
     wU32 size = (socklen_t)content.size();
     wU32 retry_count = 5;
 
@@ -205,7 +221,7 @@ void wmkc::net::Socket::sendall(const std::string content, const wS32 flag)
 
 std::string wmkc::net::Socket::recv(const wS32 len, const wS32 flag)
 {
-    wChar *buffer = new wChar[len];
+    char *buffer = new char[len];
     if(!buffer) {
         throw wmkc::Exception(wmkcErr_ErrMemory, "wmkc::net::Socket::recv",
             "Failed to allocate memory for buffer.");
@@ -217,7 +233,7 @@ std::string wmkc::net::Socket::recv(const wS32 len, const wS32 flag)
         wmkc::net::exception("wmkc::net::Socket::recv");
     }
 
-    std::string content((wChar *)buffer, this->transmissionLength);
+    std::string content((char *)buffer, this->transmissionLength);
 
     delete[] buffer;
     return content;
@@ -242,7 +258,7 @@ void wmkc::net::Socket::sendto(const std::string content, wmkc::net::IPEndPoint 
 std::string wmkc::net::Socket::recvfrom(const wS32 len, SOCKADDR *from,
                                         socklen_t *fromlen, const wS32 flag)
 {
-    wChar *buffer = new wChar[len];
+    char *buffer = new char[len];
     if(!buffer) {
         throw wmkc::Exception(wmkcErr_ErrMemory, "wmkc::net::Socket::recvfrom",
             "Failed to allocate memory for buffer.");
@@ -254,7 +270,7 @@ std::string wmkc::net::Socket::recvfrom(const wS32 len, SOCKADDR *from,
         exception("wmkc::net::Socket::recvfrom");
     }
 
-    std::string content((wChar *)buffer, this->transmissionLength);
+    std::string content((char *)buffer, this->transmissionLength);
 
     delete[] buffer;
     return content;

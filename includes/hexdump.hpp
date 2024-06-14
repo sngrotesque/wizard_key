@@ -8,8 +8,8 @@
 
 namespace wmkc {
     template <typename T>
-    wVoid hexdump(T file_path);
-    wVoid hexdump(wByte *data, wSize length);
+    void hexdump(T file_path);
+    void hexdump(wByte *data, wSize length);
 }
 
 #endif /* WMKC_CPP_BASE */

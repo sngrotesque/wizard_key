@@ -53,7 +53,7 @@
 6.  添加了[ChaCha20](https://github.com/marcizhu/ChaCha20)加密算法的实现，如果你要使用其他实现，请自行调用（如OpenSSL库提供的ChaCha20）。
 
 等待添加的功能
-- 为socket库增加简易版的setsockopt与getsockopt方法，以及待完善的Socket库和SSL库。
+- 为socket库增加简易版的setsockopt与getsockopt方法，以及待完善的Socket库和SSL库。（将逐步完成Socket库）
 
 #### v7.0.0
 1.  所有C++代码重新组织代码结构，将所有功能列入wmkc命名空间，并将原有的类更名。  

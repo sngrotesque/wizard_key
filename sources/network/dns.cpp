@@ -19,7 +19,7 @@ std::string create_dns_qurty(std::string hostname)
         tokens.push_back(token);
     }
     for(const auto &label : tokens) {
-        wChar _tmp[2] = {(wChar)(label.size() & 0xff), 0x00};
+        char _tmp[2] = {(char)(label.size() & 0xff), 0x00};
         query.append(_tmp, 1);
         query.append(label);
     }

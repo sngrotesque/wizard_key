@@ -15,10 +15,10 @@ namespace wmkc {
             };
             struct widthHeight getScreenResolution();
             struct widthHeight getCursorPos();
-            std::string getUserName(wChar format = 'A');
-            wVoid setCursorPos(wU32 x, wU32 y);
-            wVoid setDesktopWallpaper(std::string path);
-            wVoid opacityStartMenu(BYTE alpha);
+            std::string getUserName(char format = 'A');
+            void setCursorPos(wU32 x, wU32 y);
+            void setDesktopWallpaper(std::string path);
+            void opacityStartMenu(BYTE alpha);
     };
 }
 

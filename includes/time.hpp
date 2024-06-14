@@ -20,7 +20,7 @@ namespace wmkc {
             Time() {}
 
             std::string getNowTime(std::string timeFormat = "%a, %m/%d %Y %H:%M:%S");
-            wVoid sleep(double _t);
+            void sleep(double _t);
             double time();
     };
 }

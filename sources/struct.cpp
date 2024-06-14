@@ -1,14 +1,14 @@
 #include <struct.hpp>
 
-wVoid swap_byte(wChar *array, wU32 l, wU32 r)
+void swap_byte(char *array, wU32 l, wU32 r)
 {
-    wChar swap;
+    char swap;
     swap = *(array + l);
     *(array + l) = *(array + r);
     *(array + r) = swap;
 }
 
-wVoid change_endian(wChar *array, wU32 size)
+void change_endian(char *array, wU32 size)
 {
     switch(size) {
         case 2:
@@ -30,7 +30,7 @@ wVoid change_endian(wChar *array, wU32 size)
 template <typename T>
 std::string get_bytes_result(T n, wU32 size, wBool change)
 {
-    wChar buffer[sizeof(T)] = {0};
+    char buffer[sizeof(T)] = {0};
     memcpy(buffer, &n, sizeof(T));
     if(change) {
         change_endian(buffer, sizeof(T));
@@ -39,7 +39,7 @@ std::string get_bytes_result(T n, wU32 size, wBool change)
 }
 
 template <typename T>
-std::string single_pack(wChar format,
+std::string single_pack(char format,
                         wmkc::endianness current, wmkc::endianness specify, T arg)
 {
     wBool change = ((specify!=wmkc::endianness::NO)&&(current!=specify))?(true):(false);

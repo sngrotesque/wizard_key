@@ -2,7 +2,7 @@
 
 std::string wmkc::Time::getNowTime(std::string timeFormat)
 {
-    wChar resultString[66] = {0};
+    char resultString[66] = {0};
     time_t tm_val;
 
     ::time(&tm_val);
@@ -18,7 +18,7 @@ std::string wmkc::Time::getNowTime(std::string timeFormat)
     return std::string(resultString);
 }
 
-wVoid wmkc::Time::sleep(double _t)
+void wmkc::Time::sleep(double _t)
 {
 #   if defined(WMKC_PLATFORM_WINOS)
     Sleep(_t * 1e3);

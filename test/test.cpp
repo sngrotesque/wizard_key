@@ -40,7 +40,7 @@ using namespace wmkc::crypto;
 // Usage: python run.py test\test.cpp -O3 -lws2_32 -lssl -lcrypto
 namespace wmkc {
     namespace test {
-        wVoid derivedKey(const string passwd, const string salt, wByte *key, wByte *iv, wS32 key_len = 32, wS32 iv_len = 16)
+        void derivedKey(const string passwd, const string salt, wByte *key, wByte *iv, wS32 key_len = 32, wS32 iv_len = 16)
         {
             const wS32 length = key_len + iv_len;
             wByte *content = new wByte[length];
@@ -92,13 +92,13 @@ void test()
 
 void speed_test()
 {
-    wSize length = 67108864;
+    wSize length = 268435456;
     wByte *buffer = new wByte[length];
 
     FEA fea((wByte *)"0123456789abcdef0123456789abcdef", (wByte *)"0123456789abcdef");
 
     double start = wmkc::Time().time();
-    fea.encrypt(buffer, length, xcryptMode::CBC);
+    fea.encrypt(buffer, length, xcryptMode::CTR);
     double stop = wmkc::Time().time();
 
     printf("%.4lf\n", stop-start);
@@ -114,17 +114,28 @@ void chacha20_test()
     ChaCha20 ctx(key, nonce, count);
     ctx.init();
 
-    char tmp[2048] = {"hello, world.\n"};
-    uint8_t *buffer = (uint8_t *)tmp;
-    size_t length = strlen(tmp);
+    size_t length = 256 * (1024 * 1024);
+    printf("Create data (length: %llu bytes.)\n", length);
+    uint8_t *buffer = new wByte[length];
 
+    wmkc::Time timer;
+    double start;
+    double stop;
+    printf("start time\n");
+    start = timer.time();
     ctx.xcrypt(buffer, length);
-    wmkc::misc::PRINT_HEX(buffer, length, 32, length%32, true);
+    stop = timer.time();
+    printf("stop time\n");
+
+    printf("time used: %.4lf\n", stop-start);
+    printf("buffer[0]: %02x\n", buffer[0]);
+
+    delete[] buffer;
 }
 
 int main(int argc, char **argv)
 {
-    chacha20_test();
+    
 
     return 0;
 }

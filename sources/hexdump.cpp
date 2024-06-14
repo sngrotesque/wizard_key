@@ -16,7 +16,7 @@
  * @param size 这是一个长度，为buf指针指向的内容的长度（一般不超过32字节）。
  * @return 无
 */
-wVoid _hexdump(wSize offset, wByte *buf, wU32 size)
+void _hexdump(wSize offset, wByte *buf, wU32 size)
 {
     wU32 i;
     printf("%012" PRIx64 " | ", offset);
@@ -34,7 +34,7 @@ wVoid _hexdump(wSize offset, wByte *buf, wU32 size)
 }
 
 template <typename T>
-wVoid wmkc::hexdump(T file_path)
+void wmkc::hexdump(T file_path)
 {
     std::fstream f(file_path, std::ios::in | std::ios::binary);
 
@@ -54,7 +54,7 @@ wVoid wmkc::hexdump(T file_path)
     f.close();
 }
 
-wVoid wmkc::hexdump(wByte *data, wSize length)
+void wmkc::hexdump(wByte *data, wSize length)
 {
     wByte buffer[WMKC_HD_BL];
     wSize leftover = length % WMKC_HD_BL;

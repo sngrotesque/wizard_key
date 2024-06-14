@@ -10,7 +10,7 @@ wmkc::Random::Random()
     this->seed();
 }
 
-wVoid wmkc::Random::seed()
+void wmkc::Random::seed()
 {
     wmkc::Time timer;
     srand((unsigned)(timer.time() * 1.e6));
@@ -41,7 +41,7 @@ wSize wmkc::Random::randint(wSize min, wSize max)
     return this->rand() % (max - min + 1) + min;
 }
 
-wVoid wmkc::Random::urandom(wByte *buf, wSize size)
+void wmkc::Random::urandom(wByte *buf, wSize size)
 {
     if(!buf || !size) {
         throw wmkc::Exception(wmkcErr_ErrNULL, "wmkc::Random::urandom",
@@ -87,7 +87,7 @@ std::string wmkc::Random::urandom(wU32 size)
         throw;
     }
 
-    std::string result((wChar *)buf, size);
+    std::string result((char *)buf, size);
     delete[] buf;
     return result;
 }

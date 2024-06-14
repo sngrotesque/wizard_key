@@ -24,7 +24,7 @@ wSize wmkc::Base64::encode_size(wSize size)
 
 wSize wmkc::Base64::decode_size(std::string content)
 {
-    const wChar *data = content.c_str();
+    const char *data = content.c_str();
     wSize data_length = content.size();
     wSize tmp_decode_size = data_length / 4 * 3;
 
@@ -62,7 +62,7 @@ std::string wmkc::Base64::encode(std::string content)
         case 2: dst[dst_i - 1] = BASE64_PAD;
     }
 
-    std::string result((wChar *)dst, dstSize);
+    std::string result((char *)dst, dstSize);
     delete[] dst;
     return result;
 }
@@ -93,7 +93,7 @@ std::string wmkc::Base64::decode(std::string content)
         dst[dst_i+2] = (_B64DT[src[src_i+2]] << 6) |   _B64DT[src[src_i+3]];
     }
 
-    std::string result((wChar *)dst, dstSize);
+    std::string result((char *)dst, dstSize);
     delete[] dst;
     return result;
 }

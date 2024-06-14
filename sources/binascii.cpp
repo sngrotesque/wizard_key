@@ -48,7 +48,7 @@ std::string wmkc::Binascii::b2a_hex(std::string content)
         dst[(i << 1) + 1] = this->toBot(src[i]);
     }
 
-    std::string result((wChar *)dst, srcSize << 1);
+    std::string result((char *)dst, srcSize << 1);
     delete[] dst;
     return result;
 }
@@ -86,7 +86,7 @@ std::string wmkc::Binascii::a2b_hex(std::string content)
         dst[dstIndex] = (top << 4) + bot;
     }
 
-    std::string result((wChar *)dst, srcSize >> 1);
+    std::string result((char *)dst, srcSize >> 1);
     delete[] dst;
     return result;
 }

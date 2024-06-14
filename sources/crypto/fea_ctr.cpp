@@ -1,6 +1,6 @@
 #include <crypto/fea.hpp>
 
-static wVoid nonce_add(wByte *counter)
+static void nonce_add(wByte *counter)
 {
     for(wS32 ctr_i = (WMKC_FEA_BL - 1); ctr_i >= 0; --ctr_i) {
         if(*(counter + ctr_i) == 0xff) {
@@ -12,7 +12,7 @@ static wVoid nonce_add(wByte *counter)
     }
 }
 
-wVoid wmkc::crypto::FEA::ctr_xcrypt(wByte *d, wSize n)
+void wmkc::crypto::FEA::ctr_xcrypt(wByte *d, wSize n)
 {
     wSize i, ks_i;
     wByte ks[WMKC_FEA_BL]{};

@@ -23,10 +23,10 @@ struct wmkc::Winapi::widthHeight wmkc::Winapi::getCursorPos()
     point.height = _point_tmp.y;
 }
 
-std::string wmkc::Winapi::getUserName(wChar format = 'A')
+std::string wmkc::Winapi::getUserName(char format = 'A')
 {
     if(format == 'A') {
-        wChar tmp_buffer[512] = {0};
+        char tmp_buffer[512] = {0};
         DWORD tmp_buffer_size = sizeof(tmp_buffer);
         GetUserNameA(tmp_buffer, &tmp_buffer_size);
         return std::string(tmp_buffer);
@@ -34,11 +34,11 @@ std::string wmkc::Winapi::getUserName(wChar format = 'A')
         WCHAR tmp_buffer[512] = {0};
         DWORD tmp_buffer_size = sizeof(tmp_buffer) >> 1;
         GetUserNameW(tmp_buffer, &tmp_buffer_size);
-        return std::string((wChar *)tmp_buffer, tmp_buffer_size);
+        return std::string((char *)tmp_buffer, tmp_buffer_size);
     }
 }
 
-wVoid wmkc::Winapi::setCursorPos(wU32 x, wU32 y)
+void wmkc::Winapi::setCursorPos(wU32 x, wU32 y)
 {
     if(!SetCursorPos(x, y)) {
         throw wmkc::Exception(wmkcErr_ErrSysFunc, "wmkc::Winapi::setCursorPos",
@@ -75,12 +75,12 @@ wVoid wmkc::Winapi::setCursorPos(wU32 x, wU32 y)
 //     return true;
 // }
 
-wVoid wmkc::Winapi::setDesktopWallpaper(std::string path)
+void wmkc::Winapi::setDesktopWallpaper(std::string path)
 {
     
 }
 
-wVoid wmkc::Winapi::opacityStartMenu(BYTE alpha)
+void wmkc::Winapi::opacityStartMenu(BYTE alpha)
 {
     
 }

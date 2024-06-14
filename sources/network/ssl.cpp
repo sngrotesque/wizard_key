@@ -1,9 +1,9 @@
 #include <network/ssl.hpp>
 
-wVoid wmkcSSL_exception(std::string funcName)
+void wmkcSSL_exception(std::string funcName)
 {
     wU32 err_code;
-    wChar err_msg[256];
+    char err_msg[256];
     err_code = ERR_get_error();
     ERR_error_string(err_code, err_msg);
     throw wmkc::Exception(err_code, funcName, err_msg);

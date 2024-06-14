@@ -47,11 +47,9 @@
 // WMKC库类型定义
 #ifndef WMKC_TYPE_DEFINED
 #define WMKC_TYPE_DEFINED
-typedef char                      wChar;   // 字符类型
 typedef uint8_t                   wByte;   // 字节类型
 typedef int64_t                   wSSize;  // 长整数类型
 typedef size_t                    wSize;   // 长度类型
-typedef void                      wVoid;   // 空类型
 typedef bool                      wBool;   // 布尔类型
 typedef int16_t                   wS16;    // 宽字节类型
 typedef int16_t                   wI16;

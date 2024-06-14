@@ -6,7 +6,7 @@ wmkc::net::Packet::Packet(wmkc::net::Socket current_fd)
     
 }
 
-wVoid wmkc::net::Packet::send(std::string content)
+void wmkc::net::Packet::send(std::string content)
 {
     
 }

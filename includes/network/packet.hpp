@@ -23,7 +23,7 @@ namespace wmkc {
 
             public:
                 Packet(net::Socket current_fd);
-                wVoid send(std::string content);
+                void send(std::string content);
                 std::string recv();
         };
     };

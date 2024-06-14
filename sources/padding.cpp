@@ -1,6 +1,6 @@
 #include <padding.hpp>
 
-wVoid wmkc::pad(wByte *src, wSize &size, wU32 blockSize, wBool randVal)
+void wmkc::pad(wByte *src, wSize &size, wU32 blockSize, wBool randVal)
 {
     if(!src) {
         throw wmkc::Exception(wmkcErr_ErrNULL, "wmkc::pad", "src is NULL.");
@@ -22,7 +22,7 @@ wVoid wmkc::pad(wByte *src, wSize &size, wU32 blockSize, wBool randVal)
     src[(size = totalLen) - 1] = padLen & 0xff;
 }
 
-wVoid wmkc::unpad(wByte *src, wSize &size)
+void wmkc::unpad(wByte *src, wSize &size)
 {
     if(!src) {
         throw wmkc::Exception(wmkcErr_ErrNULL, "wmkc::pad", "src is NULL.");

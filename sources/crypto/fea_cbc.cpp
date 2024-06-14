@@ -1,6 +1,6 @@
 #include <crypto/fea.hpp>
 
-wVoid wmkc::crypto::FEA::cbc_encrypt(wByte *p, wSize n)
+void wmkc::crypto::FEA::cbc_encrypt(wByte *p, wSize n)
 {
     wByte roundIv[WMKC_FEA_BL];
 
@@ -12,7 +12,7 @@ wVoid wmkc::crypto::FEA::cbc_encrypt(wByte *p, wSize n)
     }
 }
 
-wVoid wmkc::crypto::FEA::cbc_decrypt(wByte *c, wSize n)
+void wmkc::crypto::FEA::cbc_decrypt(wByte *c, wSize n)
 {
     wByte roundIv[WMKC_FEA_BL];
     wByte roundBuffer[WMKC_FEA_BL];

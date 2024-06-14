@@ -17,8 +17,8 @@ namespace wmkc {
             wU32 counter;
         public:
             ChaCha20(wByte *key, wByte *nonce, wU32 counter = 0);
-            wVoid init();
-            wVoid xcrypt(wByte *buffer, wSize length);
+            void init();
+            void xcrypt(wByte *buffer, wSize length);
         };
     }
 }
