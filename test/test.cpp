@@ -133,9 +133,31 @@ void chacha20_test()
     delete[] buffer;
 }
 
+void base64_test()
+{
+    wmkc::Time timer;
+    wmkc::Base64 base64;
+    double start;
+    double stop;
+
+    wSize length = 256 * (1024 * 1024);
+    char *buffer = new char[length];
+    std::string string_buffer(buffer, length);
+
+    start = timer.time();
+    string res = base64.encode(string_buffer);
+    stop = timer.time();
+
+    printf("time used: %.4lf.\n", stop-start);
+
+    cout << res[0] << endl;
+
+    delete[] buffer;
+}
+
 int main(int argc, char **argv)
 {
-    
+    base64_test();
 
     return 0;
 }

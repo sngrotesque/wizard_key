@@ -19,7 +19,7 @@ This document is about where I am looking for references. Basically, these libra
 > The reason for creating this class is simply because I think Binascii in Python is very useful.  
 > In terms of performance, I have optimized such methods to the extreme, and in terms of functionality, they are very convenient and easy to use.
 
- - [binascii for Python](https://docs.python.org/zh-cn/3/library/binascii.html)
+ - Inspired by [Python's Binascii module](https://docs.python.org/zh-cn/3/library/binascii.html)
 
 ---
 
@@ -41,7 +41,7 @@ This document is about where I am looking for references. Basically, these libra
 
 ### [wmkc::Struct](includes/struct.hpp)
 > The reason for creating this class is because I think the Struct module in Python is very useful and can be conveniently used for network data transmission, so I implemented it myself.
- - [struct by Python](https://docs.python.org/zh-cn/3/library/struct.html)
+ - Inspired by [Python's struct module](https://docs.python.org/zh-cn/3/library/struct.html)
 
 ---
 
@@ -82,6 +82,7 @@ This document is about where I am looking for references. Basically, these libra
  - [getaddrinfo](https://man7.org/linux/man-pages/man3/getaddrinfo.3.html)
  - [getsockname](https://man7.org/linux/man-pages/man2/getsockname.2.html)
  - [inet_ntop](https://man7.org/linux/man-pages/man3/inet_ntop.3.html)
+ - [select](https://man7.org/linux/man-pages/man2/select.2.html)
 ##### 2. Windows
  - [socket](https://learn.microsoft.com/en-us/windows/win32/api/winsock2/nf-winsock2-socket)
  - [connect](https://learn.microsoft.com/en-us/windows/win32/api/winsock2/nf-winsock2-connect)
@@ -99,3 +100,4 @@ This document is about where I am looking for references. Basically, these libra
  - [getaddrinfo](https://learn.microsoft.com/en-us/windows/win32/api/ws2tcpip/nf-ws2tcpip-getaddrinfo)
  - [getsockname](https://learn.microsoft.com/en-us/windows/win32/api/winsock2/nf-winsock2-getsockname)
  - [inet_ntop](https://learn.microsoft.com/en-us/windows/win32/api/ws2tcpip/nf-ws2tcpip-inet_ntop)
+ - [select](https://learn.microsoft.com/zh-cn/windows/win32/api/winsock2/nf-winsock2-select)
