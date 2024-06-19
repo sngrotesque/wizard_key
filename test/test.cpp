@@ -137,22 +137,19 @@ void base64_test()
 {
     wmkc::Time timer;
     wmkc::Base64 base64;
-    double start;
-    double stop;
+    
+    string src{
+        "R0VUIC9xcmNvZGUvZ2V0TG9naW5VcmwgSFRUUC8xLjENCkhvc3Q6IHBhc3Nwb3J0"
+        "LmJpbGliaWxpLmNvbQ0KQWNjZXB0OiBhcHBsaWNhdGlvbi9qc29uDQpBY2NlcHQt"
+        "TGFuZ3VhZ2U6IHpoLUNOLHpoO3E9MC45LGVuO3E9MC44LGVuLUdCO3E9MC43LGVu"
+        "LVVTO3E9MC42DQpVc2VyLUFnZW50OiBNb3ppbGxhLzUuMCAoV2luZG93cyBOVCAx"
+        "MC4wOyBXaW42NDsgeDY0KSBBcHBsZVdlYktpdC81MzcuMzYgKEtIVE1MLCBsaWtl"
+        "IEdlY2tvKSBDaHJvbWUvMTI1LjAuMC4wIFNhZmFyaS81MzcuMzYgRWRnLzEyNS4w"
+        "LjAuMA0KDQo="};
+    string dst{base64.decode(src)};
 
-    wSize length = 256 * (1024 * 1024);
-    char *buffer = new char[length];
-    std::string string_buffer(buffer, length);
+    cout << dst << endl;
 
-    start = timer.time();
-    string res = base64.encode(string_buffer);
-    stop = timer.time();
-
-    printf("time used: %.4lf.\n", stop-start);
-
-    cout << res[0] << endl;
-
-    delete[] buffer;
 }
 
 int main(int argc, char **argv)

@@ -33,6 +33,25 @@
 #   warning "This library may not support the computer you are using."
 #endif // #if defined(__linux)
 
+#ifndef LIBWMKC_API
+#  ifdef WMKC_EXPORTS
+#    ifdef _WIN32
+#      define LIBWMKC_API     __declspec(dllexport)
+#    elif defined(__ELF__)
+#      define LIBWMKC_API     __attribute__((visibility("protected")))
+#    else
+#      define LIBWMKC_API     __attribute__((visibility("default")))
+#    endif
+#  else
+#    ifdef _WIN32
+#      define LIBWMKC_API     __declspec(dllimport)
+#    else
+#      define LIBWMKC_API     __attribute__((visibility("default")))
+#    endif
+#  endif
+#endif
+
+
 #include <cstdarg>   // 标准参数库
 #include <cstring>   // 标准字符串库
 #include <cstdlib>   // 标准库

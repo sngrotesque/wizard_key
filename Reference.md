@@ -4,6 +4,10 @@ This document is about where I am looking for references. Basically, these libra
 
 ----
 
+### [Library](includes/config/wmkc.hpp)
+ - [__declspec(dllimport)](https://learn.microsoft.com/zh-cn/cpp/build/importing-into-an-application-using-declspec-dllimport?view=msvc-170)
+ - [__declspec(dllexport)](https://learn.microsoft.com/zh-cn/cpp/build/exporting-from-a-dll-using-declspec-dllexport?view=msvc-170)
+
 ### [wmkc::Exception](includes/config/exception.hpp)
 ### [wmkc::net::Exception](includes/network/exception.hpp)
 
@@ -27,6 +31,7 @@ This document is about where I am looking for references. Basically, these libra
 
  - [Base64 wiki](https://en.wikipedia.org/wiki/Base64)
  - [Base64 for Python](https://docs.python.org/3/library/base64.html)
+ - [RFC 4648 - The Base16, Base32, and Base64 Data Encodings](https://datatracker.ietf.org/doc/html/rfc4648)
 
 ---
 

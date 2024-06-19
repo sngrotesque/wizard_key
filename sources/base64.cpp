@@ -44,7 +44,7 @@ std::string wmkc::Base64::encode(std::string content)
     wSize dstSize = this->encode_size(srcSize);
 
     wByte *src = (wByte *)content.c_str();
-    wByte *dst = new wByte[dstSize];
+    wByte *dst = new (std::nothrow) wByte[dstSize];
     if(!dst) {
         throw wmkc::Exception(wmkcErr_ErrMemory, "wmkc::Base64::encode",
                                         "Failed to allocate memory for dst.");
@@ -81,15 +81,16 @@ std::string wmkc::Base64::decode(std::string content)
     wSize dstSize = this->decode_size(content);
 
     wByte *src = (wByte *)content.c_str();
-    wByte *dst = new wByte[dstSize];
+    wByte *dst = new (std::nothrow) wByte[dstSize];
+    
     if(!dst) {
         throw wmkc::Exception(wmkcErr_ErrMemory, "wmkc::Base64::decode",
                                         "Failed to allocate memory for dst.");
     }
 
     for(dst_i = src_i = 0; src_i < (srcSize - 2); dst_i += 3, src_i += 4) {
-        dst[dst_i]   = (_B64DT[src[src_i]]   << 2) |  (_B64DT[src[src_i+1]]  >> 4);
-        dst[dst_i+1] = (_B64DT[src[src_i+1]] << 4) | ((_B64DT[src[src_i+2]]) >> 2);
+        dst[dst_i]   = (_B64DT[src[src_i]]   << 2) |  (_B64DT[src[src_i+1]] >> 4);
+        dst[dst_i+1] = (_B64DT[src[src_i+1]] << 4) |  (_B64DT[src[src_i+2]] >> 2);
         dst[dst_i+2] = (_B64DT[src[src_i+2]] << 6) |   _B64DT[src[src_i+3]];
     }
 

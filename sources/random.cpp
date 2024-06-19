@@ -75,7 +75,7 @@ std::string wmkc::Random::urandom(wU32 size)
     if(!size) {
         return std::string();
     }
-    wByte *buf = new wByte[size];
+    wByte *buf = new (std::nothrow) wByte[size];
     if(!buf) {
         throw wmkc::Exception(wmkcErr_ErrMemory, "wmkc::Random::urandom",
             "Failed to allocate memory for buf.");

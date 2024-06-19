@@ -37,7 +37,7 @@ std::string wmkc::Binascii::b2a_hex(std::string content)
     wByte *src = (wByte *)content.c_str();
     wSize srcSize = content.size();
 
-    wByte *dst = new wByte[srcSize << 1];
+    wByte *dst = new (std::nothrow) wByte[srcSize << 1];
     if(!dst) {
         throw wmkc::Exception(wmkcErr_ErrMemory, "wmkc::Binascii::b2a_hex",
             "Failed to allocate memory for dst.");
@@ -70,7 +70,7 @@ std::string wmkc::Binascii::a2b_hex(std::string content)
             "Wrong type, should not be an odd length.");
     }
 
-    if(!(dst = new wByte[srcSize >> 1])) {
+    if(!(dst = new (std::nothrow) wByte[srcSize >> 1])) {
         throw wmkc::Exception(wmkcErr_ErrMemory, "wmkc::Binascii::a2b_hex",
             "Failed to allocate memory for dst.");
     }

@@ -41,7 +41,7 @@ void fea_test()
     std::string res = struct_pack_test(0x00000001, "GET / HTTP/1.1\r\nHost: www.baidu.com\r\nAccept: */*\r\nConnection: keep-alive\r\nUser-Agent: Android\r\n\r\n");
     wmkc::crypto::FEA fea((wByte *)"abcdef0123456789abcdef0123456789", (wByte *)"abcdef0123456789");
     wSize length = res.size();
-    wByte *buffer = new wByte[length];
+    wByte *buffer = new (std::nothrow) wByte[length];
 
     memcpy(buffer, res.c_str(), length);
 
