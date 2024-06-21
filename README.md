@@ -47,9 +47,10 @@
 > [READMKE.md](README.md)
 
 #### v7.2.0
-1.  修复了[Base64解码函数](includes/base64.hpp)在`v7.1.0`版本中的BUG，可以使用，但目前并未完全按照[RFC4648](https://datatracker.ietf.org/doc/html/rfc4648)实现，请等待后续的进一步完善。
+1.  修复了[Base64解码函数](includes/base64.hpp)在`v7.1.0`版本中的BUG，并修复了`v7.1.0`版本中解码函数未针对填充符进行处理的问题，现已经可以使用，但  
+    目前并未完全按照[RFC4648](https://datatracker.ietf.org/doc/html/rfc4648)实现，请等待后续的进一步完善。
 2.  提供了用于[公开库的API调用](includes/config/wmkc.hpp#L36)，现在可以更好的支持编译器导入和导出库函数了。  
-    请在编译时加入宏`WMKC_EXPORTS`，否则很可能将编译失败。
+    **请在编译时加入宏`WMKC_EXPORTS`，否则很可能将编译失败。**
 3.  已修复一些编译器的警告项。
 
 #### v7.1.0
@@ -60,11 +61,12 @@
 5.  将Python代码移动到了[WMKC_for_Python](https://github.com/sngrotesque/WMKC_Python)仓库，如果要使用，请去对应仓库查看，谢谢。
 6.  添加了[ChaCha20](https://github.com/marcizhu/ChaCha20)加密算法的实现，如果你要使用其他实现，请自行调用（如OpenSSL库提供的ChaCha20）。
 7.  **如果使用此库中提供的[Base64](includes/base64.hpp)进行解码操作，有可能会导致内存溢出或内存泄漏甚至更严重的后果，请不要使用！！！**  
-    **为了保险起见，将暂时删除Base64功能。**  
     将重新实现有关Base64编码中的解码函数，目前发现了一个问题，具体描述：  
-    在[base64.cpp 第93行](sources/base64.cpp#L93)与[base64.cpp 第94行](sources/base64.cpp#L94)，将值与解码表进行置换后，值甚至会大于`800`，并且让这个值与`0xff`进行与运算`v & 0xff`后依旧无法得出正确的值。  
+    在[base64.cpp 第93行](sources/base64.cpp#L93)与[base64.cpp 第94行](sources/base64.cpp#L94)，将值与解码表进行置换后，值甚至会大于`800`，并且  
+    让这个值与`0xff`进行与运算`v & 0xff`后依旧无法得出正确的值。  
     这个问题是我在使用Python进行此库的重新实现时发现的，不确定是否为Python的问题，但是此库会进行检查和修复，并重新实现，并且将完全按照规范进行编写。  
-    此Base64算法的最初实现是[CSDN - C语言实现Base64编码/解码](https://blog.csdn.net/qq_26093511/article/details/78836087)，估计就是这个时候就留下了隐患，当初是直接拿这个代码然后对其进行优化和重新编码后得到目前的Base64版本。
+    此Base64算法的最初实现是[CSDN - C语言实现Base64编码/解码](https://blog.csdn.net/qq_26093511/article/details/78836087)，估计就是这个时候就  
+    留下了隐患，当初是直接拿这个代码然后对其进行优化和重新编码后得到目前的Base64版本。
 
 等待添加的功能
 - 为socket库增加简易版的setsockopt与getsockopt方法，以及待完善的Socket库和SSL库。（将逐步完成Socket库）
