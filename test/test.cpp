@@ -1,7 +1,6 @@
 #include <network/socket.hpp>
 #include <crypto/fea.hpp>
 #include <crypto/chacha20.hpp>
-#include <base64.hpp>
 #include <random.hpp>
 #include <hexdump.hpp>
 #include <padding.hpp>
@@ -24,9 +23,8 @@ using namespace std;
 #include <crypto/fea_cbc.cpp>
 #include <crypto/fea_ctr.cpp>
 #include <crypto/fea_cfb.cpp>
-#include "crypto/chacha20.cpp"
+#include <crypto/chacha20.cpp>
 
-#include <base64.cpp>
 #include <random.cpp>
 #include <hexdump.cpp>
 #include <padding.cpp>
@@ -37,7 +35,7 @@ using namespace std;
 
 using namespace wmkc::crypto;
 
-// Usage: python run.py test\test.cpp -O3 -lws2_32 -lssl -lcrypto
+// Usage: python run.py test\test.cpp -O3 -Wall -lws2_32 -lssl -lcrypto -DWMKC_EXPORTS
 namespace wmkc {
     namespace test {
         void derivedKey(const string passwd, const string salt, wByte *key, wByte *iv, wS32 key_len = 32, wS32 iv_len = 16)
@@ -133,28 +131,46 @@ void chacha20_test()
     delete[] buffer;
 }
 
-void base64_test()
+#include <base64.hpp>
+#include <base64.cpp>
+
+void base64_test(std::string _buffer, wBool encoding)
 {
-    wmkc::Time timer;
     wmkc::Base64 base64;
-    
-    string src{
-        "R0VUIC9xcmNvZGUvZ2V0TG9naW5VcmwgSFRUUC8xLjENCkhvc3Q6IHBhc3Nwb3J0"
-        "LmJpbGliaWxpLmNvbQ0KQWNjZXB0OiBhcHBsaWNhdGlvbi9qc29uDQpBY2NlcHQt"
-        "TGFuZ3VhZ2U6IHpoLUNOLHpoO3E9MC45LGVuO3E9MC44LGVuLUdCO3E9MC43LGVu"
-        "LVVTO3E9MC42DQpVc2VyLUFnZW50OiBNb3ppbGxhLzUuMCAoV2luZG93cyBOVCAx"
-        "MC4wOyBXaW42NDsgeDY0KSBBcHBsZVdlYktpdC81MzcuMzYgKEtIVE1MLCBsaWtl"
-        "IEdlY2tvKSBDaHJvbWUvMTI1LjAuMC4wIFNhZmFyaS81MzcuMzYgRWRnLzEyNS4w"
-        "LjAuMA0KDQo="};
-    string dst{base64.decode(src)};
+    std::string result{};
 
-    cout << dst << endl;
+    if(encoding) {
+        result = base64.encode(_buffer);
+    } else {
+        result = base64.decode(_buffer);
+    }
 
+    printf("result: %s\n", result.c_str());
+    printf("length: %llu\n", result.size());
 }
 
 int main(int argc, char **argv)
 {
-    base64_test();
+    try {
+        std::string unencoded{
+            "GET /qrcode/getLoginUrl HTTP/1.1\r\n"
+            "Host: passport.bilibili.com\r\n"
+            "Accept: */*\r\n"
+            "Connection: close\r\n"
+            "User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:128.0) Gecko/20100101 Firefox/128.0\r\n\r\n"};
+        std::string undecoded{
+            "R0VUIC9xcmNvZGUvZ2V0TG9naW5VcmwgSFRUUC8xLjENCkhvc3Q6IHBhc3Nwb3J0"
+            "LmJpbGliaWxpLmNvbQ0KQWNjZXB0OiAqLyoNCkNvbm5lY3Rpb246IGNsb3NlDQpV"
+            "c2VyLUFnZW50OiBNb3ppbGxhLzUuMCAoWDExOyBMaW51eCB4ODZfNjQ7IHJ2OjEy"
+            "OC4wKSBHZWNrby8yMDEwMDEwMSBGaXJlZm94LzEyOC4wDQoNCg=="};
+
+        std::cout << ">--------------- Encoding test ---------------<" << std::endl;
+        base64_test(unencoded, true);
+        std::cout << ">--------------- Decoding test ---------------<" << std::endl;
+        base64_test(undecoded, false);
+    } catch(std::exception &e) {
+        cout << e.what() << endl;
+    }
 
     return 0;
 }

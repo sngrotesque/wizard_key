@@ -7,18 +7,18 @@
 #include <Windows.h>
 
 namespace wmkc {
-    class Winapi {
-        public:
-            struct widthHeight {
-                wU32 width;
-                wU32 height;
-            };
-            struct widthHeight getScreenResolution();
-            struct widthHeight getCursorPos();
-            std::string getUserName(char format = 'A');
-            void setCursorPos(wU32 x, wU32 y);
-            void setDesktopWallpaper(std::string path);
-            void opacityStartMenu(BYTE alpha);
+    class LIBWMKC_API Winapi {
+    public:
+        struct widthHeight {
+            wU32 width;
+            wU32 height;
+        };
+        struct widthHeight getScreenResolution();
+        struct widthHeight getCursorPos();
+        std::string getUserName(char format = 'A');
+        void setCursorPos(wU32 x, wU32 y);
+        void setDesktopWallpaper(std::string path);
+        void opacityStartMenu(BYTE alpha);
     };
 }
 

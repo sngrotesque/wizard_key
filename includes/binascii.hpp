@@ -6,16 +6,15 @@
 #include <config/exception.hpp>
 
 namespace wmkc {
-    class Binascii {
-        private:
-            wByte toTop(wByte c);
-            wByte toBot(wByte c);
-        public:
-            std::string b2a_hex(std::string content);
-            std::string a2b_hex(std::string content);
+    class LIBWMKC_API Binascii {
+    private:
+        wByte toTop(wByte c);
+        wByte toBot(wByte c);
+    public:
+        std::string b2a_hex(std::string content);
+        std::string a2b_hex(std::string content);
     };
 }
-
 
 #endif /* WMKC_BINASCII */
 #endif /* WMKC_SUPPORT */

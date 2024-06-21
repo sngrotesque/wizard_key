@@ -7,11 +7,11 @@
 
 namespace wmkc {
     namespace misc {
-        void PRINT_HEX(const wByte *data, wSize len, wSize num, wBool newline,
-                                                            wBool tableChar);
-        void PRINT_N(const wByte *arr, wSize size, wBool newline);
-        void PRINT_BOX(const wByte *box, wSize size, wSize num, wBool newline);
-        void PRINT_RAW(const wByte *buf, wSize size, wBool newline);
+        LIBWMKC_API void PRINT_HEX(const wByte *data, wSize len, wSize num, wBool newline,
+                                wBool tableChar);
+        LIBWMKC_API void PRINT_N(const wByte *arr, wSize size, wBool newline);
+        LIBWMKC_API void PRINT_BOX(const wByte *box, wSize size, wSize num, wBool newline);
+        LIBWMKC_API void PRINT_RAW(const wByte *buf, wSize size, wBool newline);
     }
 }
 

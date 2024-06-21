@@ -17,7 +17,7 @@ namespace wmkc {
     * @param randVal 是否使用随机数填充
     * @return 无
     */
-    void pad(wByte *src, wSize &size, wU32 blockSize, wBool randVal);
+    LIBWMKC_API void pad(wByte *src, wSize &size, wU32 blockSize, wBool randVal);
 
     /**
     * @brief wmkcPad提供的默认清除填充方法
@@ -27,7 +27,7 @@ namespace wmkc {
     * @param size 传入时作为源内容长度，函数调用结束后作为清除填充后的长度
     * @return 无
     */
-    void unpad(wByte *src, wSize &size);
+    LIBWMKC_API void unpad(wByte *src, wSize &size);
 
     /**
     * @brief PKCS7填充
@@ -38,7 +38,7 @@ namespace wmkc {
     * @param blockSize 填充的块大小
     * @return 一个指向填充后的数据的指针(new [])。
     */
-    wByte *pkcs7_pad(const wByte *src, wSize &size, wU32 blockSize);
+    LIBWMKC_API wByte *pkcs7_pad(const wByte *src, wSize &size, wU32 blockSize);
 
     /**
     * @brief PKCS7填充删除
@@ -48,7 +48,7 @@ namespace wmkc {
     * @param size 传入时作为源内容长度，函数调用结束后作为清除填充后的长度
     * @return 一个指向填充后的数据的指针(new [])。
     */
-    wByte *pkcs7_unpad(const wByte *src, wSize &size);
+    LIBWMKC_API wByte *pkcs7_unpad(const wByte *src, wSize &size);
 }
 
 #endif /* WMKC_CPP_PAD */

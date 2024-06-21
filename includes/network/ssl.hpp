@@ -11,18 +11,16 @@
 #include <openssl/sslerr.h>
 #include <openssl/crypto.h>
 
-#ifdef WMKC_PLATFORM_WINOS
-#if defined(_MSC_VER)
-#pragma comment(lib, "libssl")
-#pragma comment(lib, "libcrypto")
-#endif
+#if defined(WMKC_PLATFORM_WINOS) && defined(_MSC_VER)
+#   pragma comment(lib, "libssl")
+#   pragma comment(lib, "libcrypto")
 #endif
 
 #define WMKC_SSL_STRICT
 
 namespace wmkc {
     namespace net {
-        class SSL_Socket {
+        class LIBWMKC_API SSL_Socket {
         public:
             SSL *ssl;
             net::Socket fd;
@@ -30,7 +28,7 @@ namespace wmkc {
             SSL_Socket(SSL *_ssl, wmkc::net::Socket _fd);
         };
 
-        class SSL_Context {
+        class LIBWMKC_API SSL_Context {
         public:
             SSL_CTX *ssl_ctx;
             SSL *ssl;
@@ -39,8 +37,8 @@ namespace wmkc {
             ~SSL_Context();
             net::SSL_Socket wrap_socket(net::Socket fd, std::string server_hostname = "");
         };
-    }  // namespace net
-}  // namespace wmkc
+    }
+}
 
 #endif /* WMKC_CPP_SSL */
-#endif     /* WMKC_SUPPORT */
+#endif /* WMKC_SUPPORT */

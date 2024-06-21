@@ -17,7 +17,7 @@
 
 namespace wmkc {
     namespace net {
-        class Packet {
+        class LIBWMKC_API Packet {
             private:
                 net::Socket fd;
 

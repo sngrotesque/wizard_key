@@ -27,7 +27,7 @@
 #elif defined(_WIN32) || defined(_WIN64)
 #   define WMKC_PLATFORM_WINOS
 #   define WMKC_SUPPORT true
-#   define WMKC_LE_ENDIAN true // 小端序，由于绝大多数（几乎所有）的Windows系统都是小端序，所以此处直接忽略特殊情况。
+#   define WMKC_LE_ENDIAN true // 小端序，由于绝大多数（几乎所有）的Windows系统都是小端序，所以直接忽略大端序。
 #else
 #   define WMKC_SUPPORT false
 #   warning "This library may not support the computer you are using."
@@ -56,10 +56,12 @@
 #include <cstring>   // 标准字符串库
 #include <cstdlib>   // 标准库
 #include <cstdint>   // 标准数字类型库
-#if defined(WMKC_PLATFORM_WINOS) && !defined(_MSC_VER)
-#include <cstdbool>  // 标准布尔值库
-#endif
 #include <cinttypes> // 用于在跨平台打印同样的数据类型
+
+// 在Visual Studio中，C++已经集成了bool类型，不需要使用此头文件了。
+#ifndef _MSC_VER
+#   include <cstdbool>  // 标准布尔值库
+#endif
 
 #include <string>
 

@@ -14,8 +14,13 @@
 
 namespace wmkc {
     namespace crypto {
-        enum class xcryptMode {ECB, CBC, CTR, CFB};
-        class Nonce_CTX {
+        enum class xcryptMode {
+            ECB,  // Electronic Codebook
+            CBC,  // Cipher block chaining
+            CFB,  // Cipher feedback
+            CTR}; // Counter
+
+        class LIBWMKC_API Nonce_CTX {
             public:
                 wByte nonce[WMKC_FEA_BL];
                 wU32 size;
@@ -44,7 +49,7 @@ namespace wmkc {
         * 
         * 当然，你在使用CTR模式的情况下，自然也可以不加入Nonce，同样可以正常加/解密，但是吧，密文的安全性，由你自己保证。
         */
-        class FEA {
+        class LIBWMKC_API FEA {
             private:
                 void subBytes(wByte *block);
                 void shiftBits(wByte *block);

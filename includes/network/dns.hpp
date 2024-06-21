@@ -12,7 +12,7 @@
 
 namespace wmkc {
     namespace net {
-        std::string DNS(std::string hostname, std::string dnsServer);
+        LIBWMKC_API std::string DNS(std::string hostname, std::string dnsServer);
     }
 }
 

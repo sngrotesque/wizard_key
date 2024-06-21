@@ -1,100 +1,175 @@
 #include <base64.hpp>
 
-// Base64编码表
-static const wByte _B64ET[64] = {
-    65,   66,  67,  68,  69,  70,  71,  72,  73,  74,  75,  76,  77, 78,  79,   80,
-    81,   82,  83,  84,  85,  86,  87,  88,  89,  90,  97,  98,  99, 100, 101, 102,
-    103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118,
-    119, 120, 121, 122,  48,  49,  50,  51,  52,  53,  54,  55,  56,  57,  43,  47};
+#define BASE64PAD '='
 
-// Base64解码表
-static const wByte _B64DT[123] = {
-    0,   0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
-    0,   0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
-    0,   0,  0,  62, 0,  0,  0, 63, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61,  0,  0,
-    0,   0,  0,  0,  0,  0,  1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14,
-    15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25,  0,  0,  0,  0,  0,  0, 26, 27, 28,
-    29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48,
-    49, 50, 51};
+constexpr char b64en_table[65] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+constexpr wByte b64de_table[256] = {
+    255,255,255,255, 255,255,255,255, 255,255,255,255, 255,255,255,255,
+    255,255,255,255, 255,255,255,255, 255,255,255,255, 255,255,255,255,
+    255,255,255,255, 255,255,255,255, 255,255,255, 62, 255,255,255, 63,
+    52 , 53, 54, 55,  56, 57, 58, 59,  60, 61,255,255, 255,  0,255,255,
 
-wSize wmkc::Base64::encode_size(wSize size)
+    255,  0,  1,  2,   3,  4,  5,  6,   7,  8,  9, 10,  11, 12, 13, 14,
+    15 , 16, 17, 18,  19, 20, 21, 22,  23, 24, 25,255, 255,255,255,255,
+    255, 26, 27, 28,  29, 30, 31, 32,  33, 34, 35, 36,  37, 38, 39, 40,
+    41 , 42, 43, 44,  45, 46, 47, 48,  49, 50, 51,255, 255,255,255,255,
+
+    255,255,255,255, 255,255,255,255, 255,255,255,255, 255,255,255,255,
+    255,255,255,255, 255,255,255,255, 255,255,255,255, 255,255,255,255,
+    255,255,255,255, 255,255,255,255, 255,255,255,255, 255,255,255,255,
+    255,255,255,255, 255,255,255,255, 255,255,255,255, 255,255,255,255,
+
+    255,255,255,255, 255,255,255,255, 255,255,255,255, 255,255,255,255,
+    255,255,255,255, 255,255,255,255, 255,255,255,255, 255,255,255,255,
+    255,255,255,255, 255,255,255,255, 255,255,255,255, 255,255,255,255,
+    255,255,255,255, 255,255,255,255, 255,255,255,255, 255,255,255,255};
+
+// Encoding, definition
+#define BASE64_EN_MAP_1(b, i) \
+    b64en_table[b[i] >> 2]
+#define BASE64_EN_MAP_2(b, i) \
+    b64en_table[((b[i] & 0x3) << 4) | (b[i+1] >> 4)]
+#define BASE64_EN_MAP_3(b, i) \
+    b64en_table[((b[i+1] & 0xf) << 2) | (b[i+2] >> 6)]
+#define BASE64_EN_MAP_4(b, i) \
+    b64en_table[b[i+2] & 0x3f]
+
+wSize wmkc::Base64::get_encode_length(wSize length)
 {
-    return (size % 3) ? ((size / 3 + 1) * 4) : (size / 3 * 4);
+    return (length % 3) ? (length / 3 + 1) * 4 : (length / 3 * 4);
 }
 
-wSize wmkc::Base64::decode_size(std::string content)
+char *wmkc::Base64::encode(const wByte *buffer, wSize &length)
 {
-    const char *data = content.c_str();
-    wSize data_length = content.size();
-    wSize tmp_decode_size = data_length / 4 * 3;
-
-    if(data[data_length - 1] == BASE64_PAD) --tmp_decode_size;
-    if(data[data_length - 2] == BASE64_PAD) --tmp_decode_size;
-
-    return tmp_decode_size;
-}
-
-std::string wmkc::Base64::encode(std::string content)
-{
-    if(content.empty()) {
-        return std::string();
+    if(!buffer || !length) {
+        throw wmkc::Exception(wmkcErr_ErrNULL, "wmkc::Base64::encode",
+            "buffer is NULL.");
     }
-    wSize dst_i, src_i;
-    wSize srcSize = content.size();
-    wSize dstSize = this->encode_size(srcSize);
+    wSize src_index{0}, dst_index{0};
+    wSize result_length = this->get_encode_length(length);
 
-    wByte *src = (wByte *)content.c_str();
-    wByte *dst = new (std::nothrow) wByte[dstSize];
-    if(!dst) {
+    char *result = new (std::nothrow) char[result_length + 1];
+    if(!result) {
         throw wmkc::Exception(wmkcErr_ErrMemory, "wmkc::Base64::encode",
-                                        "Failed to allocate memory for dst.");
+            "Failed to allocate memory for result.");
     }
 
-    for(dst_i = src_i = 0; dst_i < (dstSize - 2); src_i += 3, dst_i += 4) {
-        dst[dst_i]   = _B64ET[src[src_i]           >> 2];
-        dst[dst_i+1] = _B64ET[(src[src_i]   & 0x3) << 4 | (src[src_i+1] >> 4)];
-        dst[dst_i+2] = _B64ET[(src[src_i+1] & 0xf) << 2 | (src[src_i+2] >> 6)];
-        dst[dst_i+3] = _B64ET[src[src_i+2]  & 0x3f];
+    for(; dst_index < result_length; src_index += 3, dst_index += 4) {
+        result[dst_index]   = BASE64_EN_MAP_1(buffer, src_index);
+        result[dst_index+1] = BASE64_EN_MAP_2(buffer, src_index);
+        result[dst_index+2] = BASE64_EN_MAP_3(buffer, src_index);
+        result[dst_index+3] = BASE64_EN_MAP_4(buffer, src_index);
     }
 
-    switch(srcSize % 3) {
-        case 1: dst[dst_i - 2] = BASE64_PAD;
-        case 2: dst[dst_i - 1] = BASE64_PAD;
+    // 此处的switch不需要break语句！
+    switch(length % 3) {
+        case 1:
+            result[dst_index - 2] = BASE64PAD;
+        case 2:
+            result[dst_index - 1] = BASE64PAD;
     }
 
-    std::string result((char *)dst, dstSize);
-    delete[] dst;
+    result[result_length] = 0x00;
+    length = result_length;
+
     return result;
 }
 
-std::string wmkc::Base64::decode(std::string content)
+std::string wmkc::Base64::encode(std::string _buffer)
 {
-    if(content.empty()) {
-        return std::string();
+    if(_buffer.empty()) {
+        throw wmkc::Exception(wmkcErr_ErrNULL, "wmkc::Base64::encode",
+            "buffer is NULL.");
     }
-    wSize dst_i, src_i;
-    wSize srcSize = content.size();
-    if(srcSize & 3) {
+
+    wByte *buffer = (wByte *)_buffer.data();
+    wSize length = _buffer.size();
+
+    char *result = this->encode(buffer, length);
+
+    std::string _result{result, length};
+    delete[] result;
+
+    return _result;
+}
+
+// Decoding, definition
+wSize wmkc::Base64::get_decode_length(wSize length)
+{
+    return length / 4 * 3;
+}
+
+wByte *wmkc::Base64::decode(const char *buffer, wSize &length)
+{
+    if(!buffer || !length) {
+        throw wmkc::Exception(wmkcErr_ErrNULL, "wmkc::Base64::decode",
+            "buffer is NULL.");
+    }
+    if(length & 3) {
         throw wmkc::Exception(wmkcErr_Err, "wmkc::Base64::decode",
-                                        "The length of the src is incorrect.");
-    }
-    wSize dstSize = this->decode_size(content);
-
-    wByte *src = (wByte *)content.c_str();
-    wByte *dst = new (std::nothrow) wByte[dstSize];
-    
-    if(!dst) {
-        throw wmkc::Exception(wmkcErr_ErrMemory, "wmkc::Base64::decode",
-                                        "Failed to allocate memory for dst.");
+            "The length of encoded data must be a multiple of 4.");
     }
 
-    for(dst_i = src_i = 0; src_i < (srcSize - 2); dst_i += 3, src_i += 4) {
-        dst[dst_i]   = (_B64DT[src[src_i]]   << 2) |  (_B64DT[src[src_i+1]] >> 4);
-        dst[dst_i+1] = (_B64DT[src[src_i+1]] << 4) |  (_B64DT[src[src_i+2]] >> 2);
-        dst[dst_i+2] = (_B64DT[src[src_i+2]] << 6) |   _B64DT[src[src_i+3]];
+    wSize src_index{0}, dst_index{0};
+    wSize result_length = this->get_decode_length(length);
+    wByte this_ch;
+
+    wByte *result = new (std::nothrow) wByte[result_length + 1];
+    if(!result) {
+        throw wmkc::Exception(wmkcErr_ErrMemory, "wmkc::Base64::encode",
+            "Failed to allocate memory for result.");
     }
 
-    std::string result((char *)dst, dstSize);
-    delete[] dst;
+    for(; src_index < length; ++src_index) {
+        /*  如果要跳过前置填充符，并正常处理余下的数据，那么
+            请使用`continue`，否则使用`break`直接跳出循环。*/
+        if(buffer[src_index] == BASE64PAD) {
+            continue;
+        }
+
+        /*  此处的处理将直接越过非Base64编码表中的字符，正常
+            处理下一个字符。 */
+        this_ch = b64de_table[(wByte)buffer[src_index]];
+        if(this_ch == 255) {
+            continue;
+        }
+
+        switch(src_index & 3) {
+            case 0:
+                result[dst_index] = (this_ch << 2) & 0xff;
+                break;
+            case 1:
+                result[dst_index++] |= (this_ch >> 4) & 0x3;
+                result[dst_index] = (this_ch & 0xf) << 4;
+                break;
+            case 2:
+                result[dst_index++] |= (this_ch >> 2) & 0xf;
+                result[dst_index] = (this_ch & 3) << 6;
+                break;
+            case 3:
+                result[dst_index++] |= this_ch;
+                break;
+        }
+    }
+
+    length = dst_index;
     return result;
+}
+
+std::string wmkc::Base64::decode(std::string _buffer)
+{
+    if(_buffer.empty()) {
+        throw wmkc::Exception(wmkcErr_ErrNULL, "wmkc::Base64::decode",
+            "buffer is NULL.");
+    }
+
+    const char *buffer = _buffer.c_str();
+    wSize length = _buffer.size();
+
+    wByte *result = this->decode(buffer, length);
+
+    std::string _result{(char *)result, length};
+    delete[] result;
+
+    return _result;
 }

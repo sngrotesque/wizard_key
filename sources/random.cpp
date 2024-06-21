@@ -83,7 +83,7 @@ std::string wmkc::Random::urandom(wU32 size)
 
     try {
         this->urandom(buf, size);
-    } catch(std::exception) {
+    } catch(std::exception &e) {
         throw;
     }
 

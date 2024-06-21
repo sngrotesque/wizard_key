@@ -58,14 +58,16 @@
 */
 
 namespace wmkc {
-    enum class endianness {NO, LE, BE};
-    class Struct {
-        public:
-            Struct() {}
+    enum class endianness {
+        NO,
+        LE,
+        BE};
 
-            std::string pack(std::string format, ...);
-
-            std::vector<std::any> unpack(std::string format, std::string buffer);
+    class LIBWMKC_API Struct {
+    public:
+        Struct() {}
+        std::string pack(std::string format, ...);
+        std::vector<std::any> unpack(std::string format, std::string buffer);
     };
 }
 

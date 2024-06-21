@@ -34,7 +34,7 @@ typedef SOCKET         wSocket;           // wmkcNet的socket类型
 
 namespace wmkc {
     namespace net {
-        class IPEndPoint {
+        class LIBWMKC_API IPEndPoint {
         public:
             std::string addr;
             wU16 port;
@@ -42,7 +42,7 @@ namespace wmkc {
             IPEndPoint():addr(),port() {};
         };
 
-        class SocketOption {
+        class LIBWMKC_API SocketOption {
         public:
             const void *val;
             socklen_t val_len;
@@ -61,7 +61,7 @@ namespace wmkc {
         std::string networkAddr2stringAddr(wS32 family, const void *pAddr);
         wU16        networkPort2numberPort(const wU16 port);
 
-        class Socket {
+        class LIBWMKC_API Socket {
         public:
             double timeout; // 超时时间
             wSocket fd; // 套接字文件描述符

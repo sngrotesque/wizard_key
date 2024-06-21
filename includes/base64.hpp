@@ -1,23 +1,24 @@
 #include <config/wmkc.hpp>
 
 #if WMKC_SUPPORT
-#ifndef WMKC_CPP_BASE
-#define WMKC_CPP_BASE
+#ifndef WMKC_BASE64_CPP
+#define WMKC_BASE64_CPP
 #include <config/exception.hpp>
 #include <memory.hpp>
 
-#define BASE64_PAD '='
-
 namespace wmkc {
-    class Base64 {
-        private:
-            wSize encode_size(wSize size);
-            wSize decode_size(std::string content);
-        public:
-            std::string encode(std::string content);
-            std::string decode(std::string content);
+    class LIBWMKC_API Base64 {
+    private:
+        wSize get_encode_length(wSize length);
+        wSize get_decode_length(wSize length);
+    public:
+        char *encode(const wByte *buffer, wSize &length);
+        wByte *decode(const char *buffer, wSize &length);
+
+        std::string encode(std::string buffer);
+        std::string decode(std::string buffer);
     };
 }
 
-#endif /* WMKC_CPP_BASE */
-#endif /* WMKC_SUPPORT */
+#endif
+#endif

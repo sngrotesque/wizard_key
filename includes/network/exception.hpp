@@ -259,7 +259,7 @@
 
 namespace wmkc {
     namespace net {
-        void exception(std::string funcName);
+        LIBWMKC_API void exception(std::string funcName);
     }
 }
 

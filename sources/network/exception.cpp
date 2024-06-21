@@ -135,12 +135,12 @@ void wmkc::net::exception(std::string funcName)
 #               if defined(WMKC_PLATFORM_LINUX)
                 case EAI_ADDRFAMILY:
                 case EAI_NODATA:
-                    goto common_error_code;
+#               endif
+                    CASE_ERR("A temporary failure in name resolution occurred.");
+#               if defined(WMKC_PLATFORM_LINUX)
                 case EAI_SYSTEM:
                     CASE_ERR("Other system error; errno is set to indicate the error.");
 #               endif
-                    common_error_code:
-                    CASE_ERR("A temporary failure in name resolution occurred.");
                 default:
                     CASE_ERR("unknown error");
             }

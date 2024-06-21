@@ -9,8 +9,8 @@
 #endif
 
 namespace wmkc {
-    void memory_zero(void *p, wSize n);
-    void memory_secure(void *p, wSize n);
+    LIBWMKC_API void memory_zero(void *p, wSize n);
+    LIBWMKC_API void memory_secure(void *p, wSize n);
 }
 
 #endif /* WMKC_CPP_MEMORY */

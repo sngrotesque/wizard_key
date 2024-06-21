@@ -13,14 +13,14 @@
 #endif
 
 namespace wmkc {
-    class Random {
-        public:
-            Random();
-            void seed();
-            wSize rand();
-            wSize randint(wSize min, wSize max);
-            void urandom(wByte *buf, wSize size);
-            std::string urandom(wU32 size);
+    class LIBWMKC_API Random {
+    public:
+        Random();
+        void seed();
+        wSize rand();
+        wSize randint(wSize min, wSize max);
+        void urandom(wByte *buf, wSize size);
+        std::string urandom(wU32 size);
     };
 }
 

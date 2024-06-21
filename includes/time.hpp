@@ -15,13 +15,12 @@
 #endif
 
 namespace wmkc {
-    class Time {
-        public:
-            Time() {}
-
-            std::string getNowTime(std::string timeFormat = "%a, %m/%d %Y %H:%M:%S");
-            void sleep(double _t);
-            double time();
+    class LIBWMKC_API Time {
+    public:
+        Time() {}
+        std::string getNowTime(std::string timeFormat = "%a, %m/%d %Y %H:%M:%S");
+        void sleep(double _t);
+        double time();
     };
 }
 

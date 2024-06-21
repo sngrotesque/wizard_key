@@ -7,10 +7,10 @@
 
 namespace wmkc {
     namespace crypto {
-        class ChaCha20 {
+        class LIBWMKC_API ChaCha20 {
         private:
-        typedef wByte _key256[32];
-        typedef wByte _nonce96[12];
+            typedef wByte _key256[32];
+            typedef wByte _nonce96[12];
             wU32 state[16];
             _key256 key;
             _nonce96 nonce;

@@ -56,7 +56,6 @@ void wmkc::hexdump(T file_path)
 
 void wmkc::hexdump(wByte *data, wSize length)
 {
-    wByte buffer[WMKC_HD_BL];
     wSize leftover = length % WMKC_HD_BL;
     wSize total    = length / WMKC_HD_BL;
     wSize offset   = 0;
