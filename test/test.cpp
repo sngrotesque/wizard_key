@@ -102,7 +102,7 @@ void base64_speed_test(wSize length)
     delete[] unencoded;
 
     start = timer.time();
-    unencoded = base64.decode(undecoded, length);
+    unencoded = base64.pyDecode(undecoded, length);
     stop = timer.time();
 
     printf("decoding time: %.4lf\n", stop-start);
@@ -111,27 +111,24 @@ void base64_speed_test(wSize length)
     delete[] undecoded;
 }
 
+char *get_base64_string(const char *buffer, size_t length)
+{
+    std::vector<wByte> result_vector;
+    char *result_char = nullptr;
+
+    for(size_t i = 0; i < length; ++i) {
+        if(b64de_table[buffer[i]] != 255) {
+            result_vector.push_back(buffer[i]);
+        }
+    }
+    
+    result_char = new (std::nothrow) char[result_vector.size()];
+}
+
 int main(int argc, char **argv)
 {
-    wmkc::Base64 base64;
-    const char *base64_encoded = {
-        "c3RhY2tvdmVyZmxvdw=="
-    };
-    wByte *result = nullptr;
-    wSize length = strlen(base64_encoded);
+    
 
-    try {
-        printf("encoded length: %zd\n", length);
-        result = base64.pyDecode(base64_encoded, length);
-
-        // cout << "decoded: " << std::string((char *)result, length) << endl;
-        printf("result: %s\n", result);
-        printf("decoded length: %zd\n", length);
-
-        delete[] result;
-    } catch (std::exception &e) {
-        cout << e.what() << endl;
-    }
     return 0;
 }
 
