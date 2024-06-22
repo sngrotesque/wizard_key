@@ -169,6 +169,32 @@ std::string wmkc::Base64::decode(std::string _buffer)
 }
 
 /*
+* 此函数是迫于无奈才添加的，因为wmkc::Base64::pyDecode无法正确处理含有非base64编码字符的base64字符串。
+* 后续考虑将此函数加入wmkc::Base64::pyDecode以优化处理。
+*/
+char *get_base64_string(const char *in, size_t &length)
+{
+    std::vector<wByte> base64_string;
+
+    for(size_t i = 0; i < length; ++i) {
+        if(b64de_table[(wByte)in[i]] != 255) {
+            base64_string.push_back(in[i]);
+        }
+    }
+
+    wByte *buffer = base64_string.data();
+
+    length = base64_string.size();
+
+    char *result = new (std::nothrow) char[length + 1];
+    result[length] = 0x0;
+
+    memcpy(result, buffer, length);
+
+    return result;
+}
+
+/*
 * The original implementation of this function comes from
 * lines 387 to 522 in [Python](https://www.python.org/downloads/release/python-3124/)
 * code file `Modules/binascii.c`.

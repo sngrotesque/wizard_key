@@ -111,20 +111,25 @@ void base64_speed_test(wSize length)
     delete[] undecoded;
 }
 
-char *get_base64_string(const char *buffer, size_t length)
+char *get_base64_string(const char *in, size_t in_len)
 {
-    std::vector<wByte> result_vector;
+    std::vector<wByte> base64_string;
 
-    for(size_t i = 0; i < length; ++i) {
-        if(b64de_table[buffer[i]] != 255) {
-            result_vector.push_back(buffer[i]);
+    for(size_t i = 0; i < in_len; ++i) {
+        if(b64de_table[(wByte)in[i]] != 255) {
+            base64_string.push_back(in[i]);
         }
     }
-    
-    char *result_char = new (std::nothrow) char[result_vector.size()];
-    memcpy(result_char, result_vector.data(), result_vector.size());
 
-    return result_char;
+    wByte *buffer = base64_string.data();
+    size_t length = base64_string.size();
+
+    char *result = new (std::nothrow) char[length + 1];
+    result[length] = 0x0;
+
+    memcpy(result, buffer, length);
+
+    return result;
 }
 
 int main(int argc, char **argv)
