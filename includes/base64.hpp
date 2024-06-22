@@ -17,6 +17,8 @@ namespace wmkc {
 
         std::string encode(std::string buffer);
         std::string decode(std::string buffer);
+
+        wByte *pyDecode(const char *buffer, wSize &length, wBool strict_mode = false);
     };
 }
 

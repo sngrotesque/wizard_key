@@ -1,6 +1,8 @@
 #include <network/socket.hpp>
 #include <crypto/fea.hpp>
 #include <crypto/chacha20.hpp>
+
+#include <base64.hpp>
 #include <random.hpp>
 #include <hexdump.hpp>
 #include <padding.hpp>
@@ -25,6 +27,7 @@ using namespace std;
 #include <crypto/fea_cfb.cpp>
 #include <crypto/chacha20.cpp>
 
+#include <base64.cpp>
 #include <random.cpp>
 #include <hexdump.cpp>
 #include <padding.cpp>
@@ -35,7 +38,7 @@ using namespace std;
 
 using namespace wmkc::crypto;
 
-// Usage: python run.py test\test.cpp -O3 -Wall -lws2_32 -lssl -lcrypto -DWMKC_EXPORTS
+// Usage: python run.py test\test.cpp -O3 -Wall -lws2_32 -lssl -lcrypto -DWMKC_EXPORTS -Wno-sign-compare
 namespace wmkc {
     namespace test {
         void derivedKey(const string passwd, const string salt, wByte *key, wByte *iv, wS32 key_len = 32, wS32 iv_len = 16)
@@ -54,103 +57,10 @@ namespace wmkc {
     }
 }
 
-void test()
-{
-    wmkc::crypto::xcryptMode mode;
-    wmkc::crypto::FEA fea;
-    wmkc::Random random;
-    wByte key[32], iv[16];
-
-    string password = "sngrotesque-ROOT0.";
-    string nonce    = "/~n10*DF)4=^";
-    string salt     = "\x71\x67\x39\x33\x2e\x50\x56\x15\xec\xcf\xf1\xb9\xfd\xb9\xc4\xb6";
-
-    wmkc::test::derivedKey(password, salt, key, iv);
-    fea = wmkc::crypto::FEA(key, iv, nonce);
-    mode = wmkc::crypto::xcryptMode::CTR;
-
-    char data[2048] = {"我草你妈，傻逼队友，你打你妈呢！日你妈！能不能让我赢一把啊！！？？？？？？"};
-    wByte *buffer = (wByte *)data;
-    wSize length = strlen(data);
-
-    // wmkc::pad(buffer, length, WMKC_FEA_BL, false);
-
-    printf("Plaintext:\n"); wmkc::misc::PRINT_HEX(buffer, length, 32, length%32, true);
-
-    if(mode == wmkc::crypto::xcryptMode::ECB) {
-        for(wU32 i = 0; i < length; i += WMKC_FEA_BL) {
-            fea.encrypt(buffer + i, WMKC_FEA_BL, mode);
-        }
-    } else {
-        fea.encrypt(buffer, length, mode);
-    }
-
-    printf("Ciphertext:\n"); wmkc::misc::PRINT_HEX(buffer, length, 32, length%32, true);
-}
-
-void speed_test()
-{
-    wSize length = 268435456;
-    wByte *buffer = new wByte[length];
-
-    FEA fea((wByte *)"0123456789abcdef0123456789abcdef", (wByte *)"0123456789abcdef");
-
-    double start = wmkc::Time().time();
-    fea.encrypt(buffer, length, xcryptMode::CTR);
-    double stop = wmkc::Time().time();
-
-    printf("%.4lf\n", stop-start);
-    delete[] buffer;
-}
-
-void chacha20_test()
-{
-    wByte *key = (wByte *)"ahu1t9yasf97t1935guashiudas15./-";
-    wByte *nonce = (wByte *)"j0f18y9GH2kd";
-    uint32_t count = 1;
-
-    ChaCha20 ctx(key, nonce, count);
-    ctx.init();
-
-    size_t length = 256 * (1024 * 1024);
-    printf("Create data (length: %llu bytes.)\n", length);
-    uint8_t *buffer = new wByte[length];
-
-    wmkc::Time timer;
-    double start;
-    double stop;
-    printf("start time\n");
-    start = timer.time();
-    ctx.xcrypt(buffer, length);
-    stop = timer.time();
-    printf("stop time\n");
-
-    printf("time used: %.4lf\n", stop-start);
-    printf("buffer[0]: %02x\n", buffer[0]);
-
-    delete[] buffer;
-}
-
-#include <base64.hpp>
-#include <base64.cpp>
-
-void base64_test(std::string _buffer, wBool encoding)
+void base64_impl_test()
 {
     wmkc::Base64 base64;
-    std::string result{};
 
-    if(encoding) {
-        result = base64.encode(_buffer);
-    } else {
-        result = base64.decode(_buffer);
-    }
-
-    printf("result: %s\n", result.c_str());
-    printf("length: %llu\n", result.size());
-}
-
-int main(int argc, char **argv)
-{
     try {
         std::string unencoded{
             "GET /qrcode/getLoginUrl HTTP/1.1\r\n"
@@ -162,15 +72,69 @@ int main(int argc, char **argv)
             "R0VUIC9xcmNvZGUvZ2V0TG9naW5VcmwgSFRUUC8xLjENCkhvc3Q6IHBhc3Nwb3J0"
             "LmJpbGliaWxpLmNvbQ0KQWNjZXB0OiAqLyoNCkNvbm5lY3Rpb246IGNsb3NlDQpV"
             "c2VyLUFnZW50OiBNb3ppbGxhLzUuMCAoWDExOyBMaW51eCB4ODZfNjQ7IHJ2OjEy"
-            "OC4wKSBHZWNrby8yMDEwMDEwMSBGaXJlZm94LzEyOC4wDQoNCg=="};
+            "OC4wKSBHZWNrby8yMDEwMDEwMSBGaXJlZm94LzEyOC4wDQoNCg==sa1C"};
 
-        std::cout << ">--------------- Encoding test ---------------<" << std::endl;
-        base64_test(unencoded, true);
-        std::cout << ">--------------- Decoding test ---------------<" << std::endl;
-        base64_test(undecoded, false);
+        cout << ">--------------- Encoding test ---------------<" << endl;
+        cout << base64.encode(unencoded) << endl;
+        cout << ">--------------- Decoding test ---------------<" << endl;
+        cout << base64.decode(undecoded) << endl;
+
     } catch(std::exception &e) {
         cout << e.what() << endl;
     }
+}
 
+void base64_speed_test(wSize length)
+{
+    wmkc::Base64 base64;
+    wmkc::Time timer;
+    double start;
+    double stop;
+
+    wByte *unencoded = new (std::nothrow) wByte[length];
+    char *undecoded = nullptr;
+
+    start = timer.time();
+    undecoded = base64.encode(unencoded, length);
+    stop = timer.time();
+
+    printf("encoding time: %.4lf\n", stop-start);
+    delete[] unencoded;
+
+    start = timer.time();
+    unencoded = base64.decode(undecoded, length);
+    stop = timer.time();
+
+    printf("decoding time: %.4lf\n", stop-start);
+    delete[] unencoded;
+
+    delete[] undecoded;
+}
+
+int main(int argc, char **argv)
+{
+    wmkc::Base64 base64;
+    const char *base64_encoded = {
+        "c3RhY2tvdmVyZmxvdw=="
+    };
+    wByte *result = nullptr;
+    wSize length = strlen(base64_encoded);
+
+    try {
+        printf("encoded length: %zd\n", length);
+        result = base64.pyDecode(base64_encoded, length);
+
+        // cout << "decoded: " << std::string((char *)result, length) << endl;
+        printf("result: %s\n", result);
+        printf("decoded length: %zd\n", length);
+
+        delete[] result;
+    } catch (std::exception &e) {
+        cout << e.what() << endl;
+    }
     return 0;
 }
+
+
+
+

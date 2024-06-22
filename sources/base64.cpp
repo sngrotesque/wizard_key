@@ -25,15 +25,6 @@ constexpr wByte b64de_table[256] = {
     255,255,255,255, 255,255,255,255, 255,255,255,255, 255,255,255,255};
 
 // Encoding, definition
-#define BASE64_EN_MAP_1(b, i) \
-    b64en_table[b[i] >> 2]
-#define BASE64_EN_MAP_2(b, i) \
-    b64en_table[((b[i] & 0x3) << 4) | (b[i+1] >> 4)]
-#define BASE64_EN_MAP_3(b, i) \
-    b64en_table[((b[i+1] & 0xf) << 2) | (b[i+2] >> 6)]
-#define BASE64_EN_MAP_4(b, i) \
-    b64en_table[b[i+2] & 0x3f]
-
 wSize wmkc::Base64::get_encode_length(wSize length)
 {
     return (length % 3) ? (length / 3 + 1) * 4 : (length / 3 * 4);
@@ -55,10 +46,10 @@ char *wmkc::Base64::encode(const wByte *buffer, wSize &length)
     }
 
     for(; dst_index < result_length; src_index += 3, dst_index += 4) {
-        result[dst_index]   = BASE64_EN_MAP_1(buffer, src_index);
-        result[dst_index+1] = BASE64_EN_MAP_2(buffer, src_index);
-        result[dst_index+2] = BASE64_EN_MAP_3(buffer, src_index);
-        result[dst_index+3] = BASE64_EN_MAP_4(buffer, src_index);
+        result[dst_index]   = b64en_table[buffer[src_index] >> 2];
+        result[dst_index+1] = b64en_table[((buffer[src_index] & 0x3) << 4) | (buffer[src_index+1] >> 4)];
+        result[dst_index+2] = b64en_table[((buffer[src_index+1] & 0xf) << 2) | (buffer[src_index+2] >> 6)];
+        result[dst_index+3] = b64en_table[buffer[src_index+2] & 0x3f];
     }
 
     // 此处的switch不需要break语句！
@@ -109,6 +100,10 @@ wByte *wmkc::Base64::decode(const char *buffer, wSize &length)
         throw wmkc::Exception(wmkcErr_Err, "wmkc::Base64::decode",
             "The length of encoded data must be a multiple of 4.");
     }
+    if(*buffer == BASE64PAD) {
+        throw wmkc::Exception(wmkcErr_Err, "wmkc::Base64::decode",
+            "Leading padding not allowed.");
+    }
 
     wSize src_index{0}, dst_index{0};
     wSize result_length = this->get_decode_length(length);
@@ -121,10 +116,9 @@ wByte *wmkc::Base64::decode(const char *buffer, wSize &length)
     }
 
     for(; src_index < length; ++src_index) {
-        /*  如果要跳过前置填充符，并正常处理余下的数据，那么
-            请使用`continue`，否则使用`break`直接跳出循环。*/
+        /* 此项会默认执行：不允许前导填充+不允许简短填充 */
         if(buffer[src_index] == BASE64PAD) {
-            continue;
+            break;
         }
 
         /*  此处的处理将直接越过非Base64编码表中的字符，正常
@@ -172,4 +166,125 @@ std::string wmkc::Base64::decode(std::string _buffer)
     delete[] result;
 
     return _result;
+}
+
+/*
+* The original implementation of this function comes from
+* lines 387 to 522 in [Python](https://www.python.org/downloads/release/python-3124/)
+* code file `Modules/binascii.c`.
+*/
+wByte *wmkc::Base64::pyDecode(const char *buffer, wSize &length, wBool strict_mode)
+{
+    std::string error_message;
+
+    const wByte *ascii_data = (const wByte *)buffer;
+    wSize ascii_len = length;
+    wBool padding_started = 0;
+
+    wSize bin_len = this->get_decode_length(ascii_len);
+    wByte *bin_data = new (std::nothrow) wByte[bin_len + 1];
+    if(!bin_data) {
+        throw wmkc::Exception(wmkcErr_ErrMemory, "wmkc::Base64::pyDecode",
+            "Failed to allocate memory for bin_data.");
+    }
+    wByte *bin_data_start = bin_data;
+    bin_data[bin_len] = 0x0;
+
+    wByte leftchar = 0; // 定义一个变量来存储上一次迭代中剩余的字符位
+    wU32 quad_pos = 0; // 定义一个变量来跟踪当前处理到Base64编码块中的哪个位置（0到3）
+    wU32 pads = 0; // 定义一个变量来计数填充字符的数量
+
+    if(strict_mode && (ascii_len > 0) && (*ascii_data == BASE64PAD)) {
+        error_message = "Leading padding not allowed.";
+        goto error_end;
+    }
+
+    wSize i;
+    wByte this_ch;
+    for(i = 0; i < ascii_len; ++i) {
+        this_ch = ascii_data[i];
+
+        if(this_ch == BASE64PAD) {
+            padding_started = true;
+            bin_len--;
+
+            if(strict_mode && (!quad_pos)) {
+                error_message = "Excess padding not allowed.";
+                goto error_end;
+            }
+
+            if((quad_pos >= 2) && (quad_pos + (++pads) >= 4)) {
+
+                if(strict_mode && ((i + 1) < ascii_len)) {
+                    error_message = "Excess data after padding.";
+                    goto error_end;
+                }
+
+                goto done;
+            }
+
+            continue;
+        }
+
+        this_ch = b64de_table[this_ch];
+        if(this_ch == 255) {
+            if(strict_mode) {
+                error_message = "Only base64 data is allowed.";
+                goto error_end;
+            }
+            continue;
+        }
+
+        if(strict_mode && padding_started) {
+            error_message = "Discontinuous padding not allowed.";
+            goto error_end;
+        }
+
+        pads = 0;
+
+        switch(quad_pos) {
+        case 0:
+            quad_pos = 1;
+            leftchar = this_ch;
+            break;
+        case 1:
+            quad_pos = 2;
+            *bin_data++ = (leftchar << 2) | (this_ch >> 4);
+            leftchar = this_ch & 0xf;
+            break;
+        case 2:
+            quad_pos = 3;
+            *bin_data++ = (leftchar << 4) | (this_ch >> 2);
+            leftchar = this_ch & 0x3;
+            break;
+        case 3:
+            quad_pos = 0;
+            *bin_data++ = (leftchar << 6) | (this_ch);
+            leftchar = 0;
+            break;
+        }
+    }
+
+    if(quad_pos) {
+        if(quad_pos == 1) {
+            char tmpMsg[128]{};
+            snprintf(tmpMsg, sizeof(tmpMsg),
+                    "Invalid base64-encoded string: "
+                    "number of data characters (%zd) cannot be 1 more "
+                    "than a multiple of 4",
+                    (bin_data - bin_data_start) / 3 * 4 + 1);
+            error_message = tmpMsg;
+            goto error_end;
+        } else {
+            error_message = "Incorrect padding.";
+            goto error_end;
+        }
+        error_end:
+        delete[] bin_data;
+        throw wmkc::Exception(wmkcErr_Err, "wmkc::Base64::pyDecode", error_message);
+    }
+
+done:
+    length = bin_len;
+    return bin_data_start;
 }
