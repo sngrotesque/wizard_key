@@ -114,7 +114,6 @@ void base64_speed_test(wSize length)
 char *get_base64_string(const char *buffer, size_t length)
 {
     std::vector<wByte> result_vector;
-    char *result_char = nullptr;
 
     for(size_t i = 0; i < length; ++i) {
         if(b64de_table[buffer[i]] != 255) {
@@ -122,12 +121,24 @@ char *get_base64_string(const char *buffer, size_t length)
         }
     }
     
-    result_char = new (std::nothrow) char[result_vector.size()];
+    char *result_char = new (std::nothrow) char[result_vector.size()];
+    memcpy(result_char, result_vector.data(), result_vector.size());
+
+    return result_char;
 }
 
 int main(int argc, char **argv)
 {
-    
+    std::vector<std::string> buffer{
+        "c3##RhY2t...vdmV!?y~Zmxvdw==",
+        "c3\nRhY2tvd\nmVyZmxvdw==",
+        "c3Rh$$$$$$$$$$$$$$$$$$$$$Y2tvdmVy###############Zmxvdw=="};
+
+    for(int i = 0; i < buffer.size(); ++i) {
+        char *res = get_base64_string(buffer[i].c_str(), buffer[i].size());
+        printf("%s\n", res);
+        delete[] res;
+    }
 
     return 0;
 }
