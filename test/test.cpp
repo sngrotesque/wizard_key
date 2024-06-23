@@ -41,13 +41,12 @@ using namespace wmkc::crypto;
 // Usage: python run.py test\test.cpp -O3 -Wall -lws2_32 -lssl -lcrypto -DWMKC_EXPORTS -Wno-sign-compare
 namespace wmkc {
     namespace test {
-        void derivedKey(const string passwd, const string salt, wByte *key, wByte *iv, wS32 key_len = 32, wS32 iv_len = 16)
+        void derivedKey(string passwd, string salt, wByte *key, wByte *iv, wS32 key_len = 32, wS32 iv_len = 16)
         {
-            const wS32 length = key_len + iv_len;
-            wByte *content = new wByte[length];
+            wByte *content = new wByte[key_len + iv_len];
 
-            PKCS5_PBKDF2_HMAC(passwd.c_str(), passwd.size(), (wByte *)salt.c_str(),
-                                salt.size(), 10000, EVP_sha256(), length, content);
+            PKCS5_PBKDF2_HMAC(passwd.c_str(), passwd.size(), (wByte *)salt.c_str(), salt.size(),
+                            10000, EVP_sha256(), key_len + iv_len, content);
 
             memcpy(key, content, key_len);
             memcpy(iv, content + key_len, iv_len);
@@ -82,7 +81,22 @@ void Base64_decode_test()
 
 int main(int argc, char **argv)
 {
-    Base64_decode_test();
+    wmkc::Base64 base64;
+
+    // const char *buffer = "\\(UwU)//==";
+    const char *buffer = "UwU//";
+    wSize length = strlen(buffer);
+
+    printf("buffer: %s\n", buffer);
+    printf("length: %zd\n", length);
+
+    try {
+        wByte *result = base64.decode(buffer, length);
+        wmkc::misc::PRINT_PyBytes(result, length, 1);
+        // delete[] result;
+    } catch (exception &e) {
+        cout << e.what() << endl;
+    }
 
     return 0;
 }

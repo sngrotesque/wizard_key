@@ -110,16 +110,17 @@ wByte *wmkc::Base64::decode(const char *buffer, wSize &length)
     const wSize ascii_len = length;
     bool padding_started = 0;
 
-    wSize bin_len = get_decode_length(ascii_len);
+    wSize bin_len = this->get_decode_length(ascii_len);
     wByte *bin_data = new (std::nothrow) wByte[bin_len + 1];
     if(!bin_data) {
-        throw std::runtime_error("Failed to allocate memory for bin_data.");
+        throw wmkc::Exception(wmkcErr_ErrMemory, "wmkc::Base64::decode",
+            "Failed to allocate memory for bin_data.");
     }
     wByte *bin_data_start = bin_data;
 
-    wByte leftchar = 0;
-    wU32 quad_pos = 0;
-    wU32 pads = 0;
+    wByte leftchar = 0; // 定义一个变量来存储上一次迭代中剩余的字符位
+    wU32 quad_pos = 0; // 定义一个变量来跟踪当前处理到Base64编码块中的哪个位置（0到3）
+    wU32 pads = 0; // 定义一个变量来计数填充字符的数量
 
     if(strict_mode && (ascii_len > 0) && (*ascii_data == BASE64PAD)) {
         error_message = "Leading padding not allowed.";
@@ -132,19 +133,28 @@ wByte *wmkc::Base64::decode(const char *buffer, wSize &length)
 
         if(this_ch == BASE64PAD) {
             padding_started = true;
+
             if(strict_mode && (!quad_pos)) {
                 error_message = "Excess padding not allowed.";
                 goto error_end;
             }
+
             if((quad_pos >= 2) && (quad_pos + (++pads) >= 4)) {
+                /**
+                 * pad序列意味着我们不应该解析更多的输入。在这一点上，我们已经解释了来自quad的数据。
+                 * 在严格模式下，如果填充后有多余的数据，则会引发错误。
+                 */
                 if(strict_mode && ((i + 1) < ascii_len)) {
                     error_message = "Excess data after padding.";
                     goto error_end;
                 }
+
                 goto done;
             }
+
             continue;
         }
+
         this_ch = b64de_table[this_ch];
         if(this_ch == 255) {
             if(strict_mode) {
@@ -153,11 +163,14 @@ wByte *wmkc::Base64::decode(const char *buffer, wSize &length)
             }
             continue;
         }
+
         if(strict_mode && padding_started) {
             error_message = "Discontinuous padding not allowed.";
             goto error_end;
         }
+
         pads = 0;
+
         switch(quad_pos) {
         case 0:
             quad_pos = 1;
@@ -195,9 +208,9 @@ wByte *wmkc::Base64::decode(const char *buffer, wSize &length)
             error_message = "Incorrect padding.";
             goto error_end;
         }
-        error_end:
+    error_end:
         delete[] bin_data;
-        throw std::runtime_error(error_message);
+        throw wmkc::Exception(wmkcErr_Err, "wmkc::Base64::decode", error_message);
     }
 
 done:

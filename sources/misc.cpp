@@ -56,7 +56,7 @@ void wmkc::misc::PRINT_BOX(const wByte *box, wSize size, wSize num, wBool newlin
         printf("\n");
 }
 
-void wmkc::misc::PRINT_RAW(const wByte *buf, wSize size, wBool newline)
+void wmkc::misc::PRINT_PyBytes(const wByte *buf, wSize size, wBool newline)
 {
     for(wSize x = 0; x < size; ++x) {
         if(buf[x] >= 0x20 && buf[x] < 0x7f) {

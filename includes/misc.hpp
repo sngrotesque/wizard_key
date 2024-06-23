@@ -11,7 +11,7 @@ namespace wmkc {
                                 wBool tableChar);
         LIBWMKC_API void PRINT_N(const wByte *arr, wSize size, wBool newline);
         LIBWMKC_API void PRINT_BOX(const wByte *box, wSize size, wSize num, wBool newline);
-        LIBWMKC_API void PRINT_RAW(const wByte *buf, wSize size, wBool newline);
+        LIBWMKC_API void PRINT_PyBytes(const wByte *buf, wSize size, wBool newline);
     }
 }
 
