@@ -12,13 +12,12 @@ namespace wmkc {
         wSize get_encode_length(wSize length);
         wSize get_decode_length(wSize length);
     public:
+        wBool strict_mode = false;
         char *encode(const wByte *buffer, wSize &length);
         wByte *decode(const char *buffer, wSize &length);
 
         std::string encode(std::string buffer);
         std::string decode(std::string buffer);
-
-        wByte *pyDecode(const char *buffer, wSize &length, wBool strict_mode = false);
     };
 }
 

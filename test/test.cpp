@@ -57,93 +57,32 @@ namespace wmkc {
     }
 }
 
-void base64_impl_test()
+void Base64_decode_test()
 {
+    vector<string> bufferList{
+        "\n\n==R0VUIC9xcmNvZGUvZ2V0TG9naW5VcmwgSFR\nUUC8xLjENCkhvc3Q6IHBhc3Nwb3J0"
+        "LmJpbGliaWxpLmNvbQ0KQWNjZXB0OiAqLyo\nNCkNvbm5lY3Rpb246IGtlZXAtYWxp"
+        "dmUNCkNvbnRlbnQtVHlwZTogYXBwbGljYXRpb24veC13d3ctZnJvbV91cmxlbmNv\n"
+        "ZGVkDQpDb250ZW50LUxlbmd0aDogMjANClVzZXItQWdlbnQ6IE1v\nemlsbGEvNS4w"
+        "IChYMTE7IExpbnV4IHg4Nl82NDsgcnY6MTI4LjApIEdlY2t\nvLzIwMTAwMTAxIEZp"
+        "cmVmb3gvMTI4LjANCg0Ka2\n\n\nV5OjAxMjM0NTY3ODlhYmNkZWY="};
     wmkc::Base64 base64;
 
+    base64.strict_mode = true;
+
     try {
-        std::string unencoded{
-            "GET /qrcode/getLoginUrl HTTP/1.1\r\n"
-            "Host: passport.bilibili.com\r\n"
-            "Accept: */*\r\n"
-            "Connection: close\r\n"
-            "User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:128.0) Gecko/20100101 Firefox/128.0\r\n\r\n"};
-        std::string undecoded{
-            "R0VUIC9xcmNvZGUvZ2V0TG9naW5VcmwgSFRUUC8xLjENCkhvc3Q6IHBhc3Nwb3J0"
-            "LmJpbGliaWxpLmNvbQ0KQWNjZXB0OiAqLyoNCkNvbm5lY3Rpb246IGNsb3NlDQpV"
-            "c2VyLUFnZW50OiBNb3ppbGxhLzUuMCAoWDExOyBMaW51eCB4ODZfNjQ7IHJ2OjEy"
-            "OC4wKSBHZWNrby8yMDEwMDEwMSBGaXJlZm94LzEyOC4wDQoNCg==sa1C"};
-
-        cout << ">--------------- Encoding test ---------------<" << endl;
-        cout << base64.encode(unencoded) << endl;
-        cout << ">--------------- Decoding test ---------------<" << endl;
-        cout << base64.decode(undecoded) << endl;
-
-    } catch(std::exception &e) {
+        for(string &bufferString : bufferList) {
+            string result = base64.decode(bufferString);
+            cout << result << endl;
+        }
+    } catch (exception &e) {
         cout << e.what() << endl;
     }
 }
 
-void base64_speed_test(wSize length)
-{
-    wmkc::Base64 base64;
-    wmkc::Time timer;
-    double start;
-    double stop;
-
-    wByte *unencoded = new (std::nothrow) wByte[length];
-    char *undecoded = nullptr;
-
-    start = timer.time();
-    undecoded = base64.encode(unencoded, length);
-    stop = timer.time();
-
-    printf("encoding time: %.4lf\n", stop-start);
-    delete[] unencoded;
-
-    start = timer.time();
-    unencoded = base64.pyDecode(undecoded, length);
-    stop = timer.time();
-
-    printf("decoding time: %.4lf\n", stop-start);
-    delete[] unencoded;
-
-    delete[] undecoded;
-}
-
-char *get_base64_string(const char *in, size_t in_len)
-{
-    std::vector<wByte> base64_string;
-
-    for(size_t i = 0; i < in_len; ++i) {
-        if(b64de_table[(wByte)in[i]] != 255) {
-            base64_string.push_back(in[i]);
-        }
-    }
-
-    wByte *buffer = base64_string.data();
-    size_t length = base64_string.size();
-
-    char *result = new (std::nothrow) char[length + 1];
-    result[length] = 0x0;
-
-    memcpy(result, buffer, length);
-
-    return result;
-}
-
 int main(int argc, char **argv)
 {
-    std::vector<std::string> buffer{
-        "c3##RhY2t...vdmV!?y~Zmxvdw==",
-        "c3\nRhY2tvd\nmVyZmxvdw==",
-        "c3Rh$$$$$$$$$$$$$$$$$$$$$Y2tvdmVy###############Zmxvdw=="};
-
-    for(int i = 0; i < buffer.size(); ++i) {
-        char *res = get_base64_string(buffer[i].c_str(), buffer[i].size());
-        printf("%s\n", res);
-        delete[] res;
-    }
+    Base64_decode_test();
 
     return 0;
 }

@@ -90,168 +90,61 @@ wSize wmkc::Base64::get_decode_length(wSize length)
     return length / 4 * 3;
 }
 
-wByte *wmkc::Base64::decode(const char *buffer, wSize &length)
-{
-    if(!buffer || !length) {
-        throw wmkc::Exception(wmkcErr_ErrNULL, "wmkc::Base64::decode",
-            "buffer is NULL.");
-    }
-    if(length & 3) {
-        throw wmkc::Exception(wmkcErr_Err, "wmkc::Base64::decode",
-            "The length of encoded data must be a multiple of 4.");
-    }
-    if(*buffer == BASE64PAD) {
-        throw wmkc::Exception(wmkcErr_Err, "wmkc::Base64::decode",
-            "Leading padding not allowed.");
-    }
-
-    wSize src_index{0}, dst_index{0};
-    wSize result_length = this->get_decode_length(length);
-    wByte this_ch;
-
-    wByte *result = new (std::nothrow) wByte[result_length + 1];
-    if(!result) {
-        throw wmkc::Exception(wmkcErr_ErrMemory, "wmkc::Base64::encode",
-            "Failed to allocate memory for result.");
-    }
-
-    for(; src_index < length; ++src_index) {
-        /* 此项会默认执行：不允许前导填充+不允许简短填充 */
-        if(buffer[src_index] == BASE64PAD) {
-            break;
-        }
-
-        /*  此处的处理将直接越过非Base64编码表中的字符，正常
-            处理下一个字符。 */
-        this_ch = b64de_table[(wByte)buffer[src_index]];
-        if(this_ch == 255) {
-            continue;
-        }
-
-        switch(src_index & 3) {
-            case 0:
-                result[dst_index] = (this_ch << 2) & 0xff;
-                break;
-            case 1:
-                result[dst_index++] |= (this_ch >> 4) & 0x3;
-                result[dst_index] = (this_ch & 0xf) << 4;
-                break;
-            case 2:
-                result[dst_index++] |= (this_ch >> 2) & 0xf;
-                result[dst_index] = (this_ch & 3) << 6;
-                break;
-            case 3:
-                result[dst_index++] |= this_ch;
-                break;
-        }
-    }
-
-    length = dst_index;
-    return result;
-}
-
-std::string wmkc::Base64::decode(std::string _buffer)
-{
-    if(_buffer.empty()) {
-        throw wmkc::Exception(wmkcErr_ErrNULL, "wmkc::Base64::decode",
-            "buffer is NULL.");
-    }
-
-    const char *buffer = _buffer.c_str();
-    wSize length = _buffer.size();
-
-    wByte *result = this->decode(buffer, length);
-
-    std::string _result{(char *)result, length};
-    delete[] result;
-
-    return _result;
-}
-
-/*
-* 此函数是迫于无奈才添加的，因为wmkc::Base64::pyDecode无法正确处理含有非base64编码字符的base64字符串。
-* 后续考虑将此函数加入wmkc::Base64::pyDecode以优化处理。
-*/
-char *get_base64_string(const char *in, size_t &length)
-{
-    std::vector<wByte> base64_string;
-
-    for(size_t i = 0; i < length; ++i) {
-        if(b64de_table[(wByte)in[i]] != 255) {
-            base64_string.push_back(in[i]);
-        }
-    }
-
-    wByte *buffer = base64_string.data();
-
-    length = base64_string.size();
-
-    char *result = new (std::nothrow) char[length + 1];
-    result[length] = 0x0;
-
-    memcpy(result, buffer, length);
-
-    return result;
-}
-
 /*
 * The original implementation of this function comes from
 * lines 387 to 522 in [Python](https://www.python.org/downloads/release/python-3124/)
 * code file `Modules/binascii.c`.
+* 
+* 由于原始代码的实现是为了针对Python使用的，其中使用了一些针对Python的调整。
+* 所以这个函数，目前的情况是最优解了，尽管它在Base64编码串被污染的情况下会占用比实际二进制数据更多的内存空间。
+* 如果要优化这个问题，三个方法：
+* 1. 使用malloc和realloc来管理内存，但是这样的话，必须调整所有代码的内存管理方式以达到统一。
+* 2. 在一开始将有效的Base64编码字符从被污染的Base64编码串中提取出来，然后进行解码，这个方法最好使用std::vector。
+* 3. https://stackoverflow.com/a/78655704/21376217
 */
-wByte *wmkc::Base64::pyDecode(const char *buffer, wSize &length, wBool strict_mode)
+wByte *wmkc::Base64::decode(const char *buffer, wSize &length)
 {
     std::string error_message;
 
     const wByte *ascii_data = (const wByte *)buffer;
-    wSize ascii_len = length;
-    wBool padding_started = 0;
+    const wSize ascii_len = length;
+    bool padding_started = 0;
 
-    wSize bin_len = this->get_decode_length(ascii_len);
+    wSize bin_len = get_decode_length(ascii_len);
     wByte *bin_data = new (std::nothrow) wByte[bin_len + 1];
     if(!bin_data) {
-        throw wmkc::Exception(wmkcErr_ErrMemory, "wmkc::Base64::pyDecode",
-            "Failed to allocate memory for bin_data.");
+        throw std::runtime_error("Failed to allocate memory for bin_data.");
     }
     wByte *bin_data_start = bin_data;
-    bin_data[bin_len] = 0x0;
 
-    wByte leftchar = 0; // 定义一个变量来存储上一次迭代中剩余的字符位
-    wU32 quad_pos = 0; // 定义一个变量来跟踪当前处理到Base64编码块中的哪个位置（0到3）
-    wU32 pads = 0; // 定义一个变量来计数填充字符的数量
+    wByte leftchar = 0;
+    wU32 quad_pos = 0;
+    wU32 pads = 0;
 
     if(strict_mode && (ascii_len > 0) && (*ascii_data == BASE64PAD)) {
         error_message = "Leading padding not allowed.";
         goto error_end;
     }
 
-    wSize i;
     wByte this_ch;
-    for(i = 0; i < ascii_len; ++i) {
+    for(wSize i = 0; i < ascii_len; ++i) {
         this_ch = ascii_data[i];
 
         if(this_ch == BASE64PAD) {
             padding_started = true;
-            bin_len--;
-
             if(strict_mode && (!quad_pos)) {
                 error_message = "Excess padding not allowed.";
                 goto error_end;
             }
-
             if((quad_pos >= 2) && (quad_pos + (++pads) >= 4)) {
-
                 if(strict_mode && ((i + 1) < ascii_len)) {
                     error_message = "Excess data after padding.";
                     goto error_end;
                 }
-
                 goto done;
             }
-
             continue;
         }
-
         this_ch = b64de_table[this_ch];
         if(this_ch == 255) {
             if(strict_mode) {
@@ -260,14 +153,11 @@ wByte *wmkc::Base64::pyDecode(const char *buffer, wSize &length, wBool strict_mo
             }
             continue;
         }
-
         if(strict_mode && padding_started) {
             error_message = "Discontinuous padding not allowed.";
             goto error_end;
         }
-
         pads = 0;
-
         switch(quad_pos) {
         case 0:
             quad_pos = 1;
@@ -307,10 +197,29 @@ wByte *wmkc::Base64::pyDecode(const char *buffer, wSize &length, wBool strict_mo
         }
         error_end:
         delete[] bin_data;
-        throw wmkc::Exception(wmkcErr_Err, "wmkc::Base64::pyDecode", error_message);
+        throw std::runtime_error(error_message);
     }
 
 done:
-    length = bin_len;
+    length = bin_data - bin_data_start;
+    bin_data_start[length] = 0x0;
     return bin_data_start;
+}
+
+std::string wmkc::Base64::decode(std::string _buffer)
+{
+    if(_buffer.empty()) {
+        throw wmkc::Exception(wmkcErr_ErrNULL, "wmkc::Base64::decode",
+            "buffer is NULL.");
+    }
+
+    const char *buffer = _buffer.c_str();
+    wSize length = _buffer.size();
+
+    wByte *result = this->decode(buffer, length);
+
+    std::string _result{(char *)result, length};
+    delete[] result;
+
+    return _result;
 }
