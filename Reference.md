@@ -55,8 +55,6 @@ This document is about where I am looking for references. Basically, these libra
 
 > In order to implement this encryption algorithm, I have referred to a lot of materials, and the following only shows a very small portion of the main reference materials.
 
- - [Fast encryption algorithm](includes/crypto/fea.hpp)
-
  - [AES encryption algorithm](https://en.wikipedia.org/wiki/Advanced_Encryption_Standard)
  - [Block cipher mode](https://en.wikipedia.org/wiki/Block_cipher_mode_of_operation)
  - [Symmetric key algorithm](https://en.wikipedia.org/wiki/Symmetric-key_algorithm)
