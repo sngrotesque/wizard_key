@@ -24,7 +24,9 @@
     A：其实最开始使用的是C，但是后来因为一些功能的实现难度，我最终考虑使用了C++，至于为什么不是C#或者Java以及Python，那是因为出于[性能](https://goodmanwen.github.io/Programming-Language-Benchmarks-Visualization/)考虑。  
     **Q**：有些功能，目前市面上一些库已经包含了，为什么要自主开发一个类似的？  
     A：人嘛，有时候总是想要有一些自己能掌握的东西，自己决定更新进度，同时也可以学习这些功能的底层实现原理。  
-    其实说白了就是可以自己定义很多市面上的库没有的功能。
+    其实说白了就是可以自己定义很多市面上的库没有的功能。  
+    **Q**：为什么没有`master`这种主分支？
+    A：在功能还没完全成型以及Bug还没排除掉绝大多数的情况下，我并不想污染主分支。
 1.  此库拥有多套加密算法，其中包含了FEA（Fast encryption algorithm），由[SN-Grotesque](https://github.com/sngrotesque)自制研发的一款分组对称加密算法。
 2.  此库还在逐步不断完善中。
 
