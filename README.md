@@ -2,31 +2,35 @@
 > `Wizard Magic Key Cyber` by SN-Grotesque
 
 此库已在以下环境下测试通过：
-1. Ubuntu/Debian系Linux操作系统 - GCC套件
-2. Windows 10操作系统 - MinGW64 - Visual Studio (2019~2022)
+1. `Ubuntu/Debian`系Linux操作系统 - GCC套件
+2. `Windows 10` - MinGW64 (MSYS2) - Visual Studio (2019~2022)
 
 ### Author(s):
  - [SN-Grotesque](https://github.com/sngrotesque)
  - [R7](https://github.com/r7z7)
 
 ### 开放源代码许可（Open Source License）
- - [OpenSSL](https://github.com/openssl/openssl)
- - [libpng](http://libpng.org/pub/png/)
- - [Python](https://www.python.org/)
- - [cJSON](https://github.com/DaveGamble/cJSON/)
- - [Zlib](https://github.com/madler/zlib)
- - [iconv](https://www.gnu.org/software/libiconv/)
+ - [OpenSSL](https://github.com/openssl/openssl) - 使用OpenSSL的各种算法库
+ - [libpng](http://libpng.org/pub/png/) - 未来将使用libpng作为PNG图像的读取和写入操作库
+ - [Python](https://www.python.org/) - 参考并借鉴了Python的C源代码
+ - [cJSON](https://github.com/DaveGamble/cJSON/) - 前期将使用cJSON来读取和写入json数据，后期再考虑是否使用更复杂的库
+ - [Zlib](https://github.com/madler/zlib) - 使用此zlib进行CRC32校验与后续可能的压缩功能
+ - [iconv](https://www.gnu.org/software/libiconv/) - 使用iconv作为编码转换时使用的库，后续考虑自行实现（如果可能）
+
+### 提问与解答（Q&A）
+**Q**：为什么想开发这个库？  
+A：因为我在未来会制作一个属于自己的即时通讯软件，想以这个库为基础进行开发。
+
+**Q**：为什么使用C++？  
+A：其实最开始使用的是C，但是后来因为一些功能的实现难度，我最终考虑使用了C++，至于为什么不是C#或者Java以及Python，那是因为出于[性能](https://goodmanwen.github.io/Programming-Language-Benchmarks-Visualization/)考虑。
+
+**Q**：有些功能，目前市面上一些库已经包含了，为什么要自主开发一个类似的？  
+A：人嘛，有时候总是想要有一些自己能掌握的东西，自己决定更新进度，同时也可以学习这些功能的底层实现原理，其实说白了就是可以自己定义很多市面上的库没有的功能。
+
+**Q**：为什么没有`master`这种主分支？
+A：在功能还没完全成型以及Bug还没排除掉绝大多数的情况下，我并不想污染主分支。
 
 ### 关于（About）
-0.  **Q**：为什么想开发这个库？  
-    A：因为我在未来会制作一个属于自己的即时通讯软件，想以这个库为基础进行开发。  
-    **Q**：为什么使用C++？  
-    A：其实最开始使用的是C，但是后来因为一些功能的实现难度，我最终考虑使用了C++，至于为什么不是C#或者Java以及Python，那是因为出于[性能](https://goodmanwen.github.io/Programming-Language-Benchmarks-Visualization/)考虑。  
-    **Q**：有些功能，目前市面上一些库已经包含了，为什么要自主开发一个类似的？  
-    A：人嘛，有时候总是想要有一些自己能掌握的东西，自己决定更新进度，同时也可以学习这些功能的底层实现原理。  
-    其实说白了就是可以自己定义很多市面上的库没有的功能。  
-    **Q**：为什么没有`master`这种主分支？
-    A：在功能还没完全成型以及Bug还没排除掉绝大多数的情况下，我并不想污染主分支。
 1.  此库拥有多套加密算法，其中包含了FEA（Fast encryption algorithm），由[SN-Grotesque](https://github.com/sngrotesque)自制研发的一款分组对称加密算法。
 2.  此库还在逐步不断完善中。
 
