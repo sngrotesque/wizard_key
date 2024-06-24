@@ -69,8 +69,7 @@ char *wmkc::Base64::encode(const wByte *buffer, wSize &length)
 std::string wmkc::Base64::encode(std::string _buffer)
 {
     if(_buffer.empty()) {
-        throw wmkc::Exception(wmkcErr_ErrNULL, "wmkc::Base64::encode",
-            "buffer is NULL.");
+        return std::string();
     }
 
     wByte *buffer = (wByte *)_buffer.data();
@@ -87,7 +86,7 @@ std::string wmkc::Base64::encode(std::string _buffer)
 // Decoding, definition
 wSize wmkc::Base64::get_decode_length(wSize length)
 {
-    return (length + 3) / 4 * 3;
+    return length / 4 * 3;
 }
 
 /*
@@ -111,8 +110,6 @@ wByte *wmkc::Base64::decode(const char *buffer, wSize &length)
     bool  padding_started   = 0;
 
     wSize  bin_len  = this->get_decode_length(ascii_len);
-    assert(bin_len != 0);
-
     wByte *bin_data = new (std::nothrow) wByte[bin_len + 1];
     if(!bin_data) {
         throw wmkc::Exception(wmkcErr_ErrMemory, "wmkc::Base64::decode",
@@ -212,7 +209,7 @@ wByte *wmkc::Base64::decode(const char *buffer, wSize &length)
         }
     }
 error_end:
-    assert((bin_data != nullptr) && bin_data);
+    assert((bin_data_start != nullptr) && bin_data_start);
     delete[] bin_data_start;
     throw wmkc::Exception(wmkcErr_Err, "wmkc::Base64::decode", error_message);
 
@@ -225,8 +222,7 @@ done:
 std::string wmkc::Base64::decode(std::string _buffer)
 {
     if(_buffer.empty()) {
-        throw wmkc::Exception(wmkcErr_ErrNULL, "wmkc::Base64::decode",
-            "buffer is NULL.");
+        return std::string();
     }
 
     const char *buffer = _buffer.c_str();

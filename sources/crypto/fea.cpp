@@ -258,8 +258,8 @@ void wmkc::crypto::FEA::keyExtension(const wByte *key, const wByte *iv)
 }
 //////////////////////////////////////////////////////////
 
-wmkc::crypto::FEA::FEA(const wByte *key, const wByte *iv, Nonce_CTX nonce, const wU32 segmentSize)
-: key(), iv(), roundKey(), nonce(nonce), segmentSize(segmentSize)
+wmkc::crypto::FEA::FEA(const wByte *key, const wByte *iv, wmkc::crypto::Counter counter, const wU32 segmentSize)
+: counter(counter), segmentSize(segmentSize), key(), iv(), roundKey()
 {
     if(!key || !iv) {
         throw wmkc::Exception(wmkcErr_ErrNULL, "wmkc::crypto::FEA::fea",
