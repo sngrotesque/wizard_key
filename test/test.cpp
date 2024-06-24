@@ -3,6 +3,7 @@
 #include <crypto/chacha20.hpp>
 
 #include <base64.hpp>
+#include <binascii.hpp>
 #include <random.hpp>
 #include <hexdump.hpp>
 #include <padding.hpp>
@@ -28,6 +29,7 @@ using namespace std;
 #include <crypto/chacha20.cpp>
 
 #include <base64.cpp>
+#include <binascii.cpp>
 #include <random.cpp>
 #include <hexdump.cpp>
 #include <padding.cpp>
@@ -35,8 +37,6 @@ using namespace std;
 #include <misc.cpp>
 #include <time.cpp>
 // Source path: End
-
-using namespace wmkc::crypto;
 
 // Usage: python run.py test\test.cpp -O3 -Wall -lws2_32 -lssl -lcrypto -DWMKC_EXPORTS -Wno-sign-compare
 namespace wmkc {
@@ -58,33 +58,11 @@ namespace wmkc {
 
 void Base64_decode_test()
 {
-    vector<string> bufferList{
-        "\n\n==R0VUIC9xcmNvZGUvZ2V0TG9naW5VcmwgSFR\nUUC8xLjENCkhvc3Q6IHBhc3Nwb3J0"
-        "LmJpbGliaWxpLmNvbQ0KQWNjZXB0OiAqLyo\nNCkNvbm5lY3Rpb246IGtlZXAtYWxp"
-        "dmUNCkNvbnRlbnQtVHlwZTogYXBwbGljYXRpb24veC13d3ctZnJvbV91cmxlbmNv\n"
-        "ZGVkDQpDb250ZW50LUxlbmd0aDogMjANClVzZXItQWdlbnQ6IE1v\nemlsbGEvNS4w"
-        "IChYMTE7IExpbnV4IHg4Nl82NDsgcnY6MTI4LjApIEdlY2t\nvLzIwMTAwMTAxIEZp"
-        "cmVmb3gvMTI4LjANCg0Ka2\n\n\nV5OjAxMjM0NTY3ODlhYmNkZWY="};
     wmkc::Base64 base64;
 
-    base64.strict_mode = true;
-
-    try {
-        for(string &bufferString : bufferList) {
-            string result = base64.decode(bufferString);
-            cout << result << endl;
-        }
-    } catch (exception &e) {
-        cout << e.what() << endl;
-    }
-}
-
-int main(int argc, char **argv)
-{
-    wmkc::Base64 base64;
-
-    // const char *buffer = "\\(UwU)//==";
     const char *buffer = "UwU//";
+    // const char *buffer = "wu////";
+    // const char *buffer = "ac=";
     wSize length = strlen(buffer);
 
     printf("buffer: %s\n", buffer);
@@ -92,11 +70,28 @@ int main(int argc, char **argv)
 
     try {
         wByte *result = base64.decode(buffer, length);
+        printf("result: %s\n", result);
+        printf("length: %zd\n", length);
         wmkc::misc::PRINT_PyBytes(result, length, 1);
-        // delete[] result;
+        delete[] result;
     } catch (exception &e) {
         cout << e.what() << endl;
     }
+}
+
+void binascii_test()
+{
+    wmkc::Binascii binascii;
+
+    string result;
+    cout << (result = binascii.b2a_hex("GET / HTTP/1.1\r\nHost: passport.bilibili.com\r\nUser-Agent: android\r\n\r\n")) << endl;
+
+    cout << binascii.a2b_hex(result) << endl;
+}
+
+int main(int argc, char **argv)
+{
+    Base64_decode_test();
 
     return 0;
 }

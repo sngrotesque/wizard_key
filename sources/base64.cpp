@@ -87,7 +87,7 @@ std::string wmkc::Base64::encode(std::string _buffer)
 // Decoding, definition
 wSize wmkc::Base64::get_decode_length(wSize length)
 {
-    return length / 4 * 3;
+    return (length + 3) / 4 * 3;
 }
 
 /*
@@ -107,10 +107,12 @@ wByte *wmkc::Base64::decode(const char *buffer, wSize &length)
     std::string error_message;
 
     const wByte *ascii_data = (const wByte *)buffer;
-    const wSize ascii_len = length;
-    bool padding_started = 0;
+    const wSize  ascii_len  = length;
+    bool  padding_started   = 0;
 
-    wSize bin_len = this->get_decode_length(ascii_len);
+    wSize  bin_len  = this->get_decode_length(ascii_len);
+    assert(bin_len != 0);
+
     wByte *bin_data = new (std::nothrow) wByte[bin_len + 1];
     if(!bin_data) {
         throw wmkc::Exception(wmkcErr_ErrMemory, "wmkc::Base64::decode",
@@ -119,15 +121,15 @@ wByte *wmkc::Base64::decode(const char *buffer, wSize &length)
     wByte *bin_data_start = bin_data;
 
     wByte leftchar = 0; // 定义一个变量来存储上一次迭代中剩余的字符位
-    wU32 quad_pos = 0; // 定义一个变量来跟踪当前处理到Base64编码块中的哪个位置（0到3）
-    wU32 pads = 0; // 定义一个变量来计数填充字符的数量
+    wU32  quad_pos = 0; // 定义一个变量来跟踪当前处理到Base64编码块中的哪个位置（0到3）
+    wU32  pads     = 0; // 定义一个变量来计数填充字符的数量
+    wByte this_ch;      // 用于储存单个传入的已编码字符
 
     if(strict_mode && (ascii_len > 0) && (*ascii_data == BASE64PAD)) {
         error_message = "Leading padding not allowed.";
         goto error_end;
     }
 
-    wByte this_ch;
     for(wSize i = 0; i < ascii_len; ++i) {
         this_ch = ascii_data[i];
 
@@ -208,10 +210,11 @@ wByte *wmkc::Base64::decode(const char *buffer, wSize &length)
             error_message = "Incorrect padding.";
             goto error_end;
         }
-    error_end:
-        delete[] bin_data;
-        throw wmkc::Exception(wmkcErr_Err, "wmkc::Base64::decode", error_message);
     }
+error_end:
+    assert((bin_data != nullptr) && bin_data);
+    delete[] bin_data_start;
+    throw wmkc::Exception(wmkcErr_Err, "wmkc::Base64::decode", error_message);
 
 done:
     length = bin_data - bin_data_start;
