@@ -69,7 +69,7 @@ void fea_binascii_base64_test()
 
     wmkc::crypto::FEA fea;
     wmkc::crypto::Counter counter;
-    wmkc::crypto::xcryptMode mode{wmkc::crypto::xcryptMode::CFB};
+    wmkc::crypto::xcryptMode mode{wmkc::crypto::xcryptMode::CTR};
 
     char password[32]{};
     char salt[32]{};
