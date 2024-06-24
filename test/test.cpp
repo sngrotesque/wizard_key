@@ -69,7 +69,7 @@ void fea_binascii_base64_test()
 
     wmkc::crypto::FEA fea;
     wmkc::crypto::Counter counter;
-    wmkc::crypto::xcryptMode mode{wmkc::crypto::xcryptMode::CBC};
+    wmkc::crypto::xcryptMode mode{wmkc::crypto::xcryptMode::CFB};
 
     char password[32]{};
     char salt[32]{};
@@ -114,7 +114,13 @@ void fea_binascii_base64_test()
 
 int main(int argc, char **argv)
 {
-    fea_binascii_base64_test();
+    wmkc::Base64 base64;
+
+    try {
+        cout << base64.decode("XChVd1UpLw==") << endl;
+    } catch (exception &e) {
+        cout << e.what() << endl;
+    }
 
     return 0;
 }
