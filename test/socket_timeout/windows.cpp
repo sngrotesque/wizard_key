@@ -93,6 +93,7 @@ void Connect(SocketType Socket, std::string remote_addr, uint16_t remote_port, d
             throw_exception("Connect", WSAGetLastError(), "Failed to connecting.");
         }
 
+        // 为什么将这个放在connect域里面？不是很理解。
         mode = false;
         if(ioctlsocket(Socket.fd, FIONBIO, &mode)) {
             throw_exception("Connect", WSAGetLastError(), "Failed to call ioctlsocket[2].");
