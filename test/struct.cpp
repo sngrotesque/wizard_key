@@ -46,7 +46,7 @@ void fea_test()
     memcpy(buffer, res.c_str(), length);
 
     fea.encrypt(buffer, length, wmkc::crypto::xcryptMode::CTR);
-    wmkc::misc::PRINT_HEX(buffer, length, 32, 1, 0);
+    wmkc::misc::print_hex(buffer, length, 32, 1, 0);
 
     delete[] buffer;
 }

@@ -1,6 +1,6 @@
 #include <misc.hpp>
 
-void wmkc::misc::PRINT_HEX(const wByte *data, wSize len, wSize num, bool newline,
+void wmkc::misc::print_hex(const wByte *data, wSize len, wSize num, bool newline,
                                                                 bool tableChar)
 {
     using namespace wmkc::color;
@@ -27,7 +27,7 @@ void wmkc::misc::PRINT_HEX(const wByte *data, wSize len, wSize num, bool newline
     if(newline) printf("\n");
 }
 
-void wmkc::misc::PRINT_N(const wByte *arr, wSize size, bool newline)
+void wmkc::misc::print_number(const wByte *arr, wSize size, bool newline)
 {
     for(wSize i = 0; i < size; ++i) {
         printf("%3d", i[arr]);
@@ -40,7 +40,7 @@ void wmkc::misc::PRINT_N(const wByte *arr, wSize size, bool newline)
     if(newline) printf("\n");
 }
 
-void wmkc::misc::PRINT_BOX(const wByte *box, wSize size, wSize num, bool newline)
+void wmkc::misc::print_box(const wByte *box, wSize size, wSize num, bool newline)
 {
     for(wSize i = 0; i < size; ++i) {
         printf("0x%02x", box[i]);
@@ -58,7 +58,8 @@ void wmkc::misc::PRINT_BOX(const wByte *box, wSize size, wSize num, bool newline
         printf("\n");
 }
 
-void wmkc::misc::PRINT_PyBytes(const wByte *buf, wSize size, bool newline)
+// 实现了一个，Python的Bytes的打印？？？
+void wmkc::misc::print_pybytes(const wByte *buf, wSize size, bool newline)
 {
     for(wSize i = 0; i < size; ++i) {
         if(buf[i] >= 0x20 && buf[i] < 0x7f) {

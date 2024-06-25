@@ -70,7 +70,8 @@ namespace wmkc {
                 wByte roundKey[sizeof(key) * WMKC_FEA_NR];
 
                 FEA() {}
-                FEA(const wByte *key, const wByte *iv, wmkc::crypto::Counter counter, const wU32 segmentSize = 128);
+                // 不是哥们？为什么不为counter添加一个参数默认值？
+                FEA(const wByte *key, const wByte *iv, wmkc::crypto::Counter counter = {}, const wU32 segmentSize = 128);
                 ~FEA();
                 void encrypt(wByte *content, wSize size, xcryptMode mode);
                 void decrypt(wByte *content, wSize size, xcryptMode mode);

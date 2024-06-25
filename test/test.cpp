@@ -100,19 +100,19 @@ namespace wmkc {
             cout << "IV-Base64:  " << base64.encode(string_iv) << endl;
             // 打印计数器
             cout << "Counter:\n";
-            wmkc::misc::PRINT_HEX(counter.counter, 16, 16, false, true);
+            wmkc::misc::print_hex(counter.counter, 16, 16, false, true);
         
             char _tmp[2048] = {"\\(UwU)/"};
             wByte *buffer = (wByte *)_tmp;
             wSize length = strlen(_tmp);
         
             cout << "Plaintext:\n";
-            wmkc::misc::PRINT_HEX(buffer, length, 32, length%32, true);
+            wmkc::misc::print_hex(buffer, length, 32, length%32, true);
         
             fea.encrypt(buffer, length, mode);
         
             cout << "Ciphertext:\n";
-            wmkc::misc::PRINT_HEX(buffer, length, 32, length%32, true);
+            wmkc::misc::print_hex(buffer, length, 32, length%32, true);
         }
 
         void test()
