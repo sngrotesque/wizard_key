@@ -40,6 +40,7 @@ char *wmkc::Binascii::b2a_hex(const wByte *buffer, wSize &length)
         throw wmkc::Exception(wmkcErr_ErrMemory, "wmkc::Binascii::b2a_hex",
             "Failed to allocate memory for result.");
     }
+    *(result + (length << 1)) = 0x00;
 
     for(wSize i = 0; i < length; ++i) {
         *(result + (i << 1))       = this->to_top(*(buffer + i));
@@ -60,12 +61,13 @@ wByte *wmkc::Binascii::a2b_hex(const char *buffer, wSize &length)
         throw wmkc::Exception(wmkcErr_Err, "wmkc::Binascii::a2b_hex",
             "Odd length is not allowed.");
     }
-    wByte *result = new (std::nothrow) wByte[length >> 1];
+    wByte *result = new (std::nothrow) wByte[(length >> 1) + 1];
     if(!result) {
         throw wmkc::Exception(wmkcErr_ErrMemory, "wmkc::Binascii::a2b_hex",
             "Failed to allocate memory for result.");
     }
     wByte *buffer_p = (wByte *)buffer;
+    *(result + (length >> 1)) = 0x00;
 
     wSize bi, ri;
     wS32 top, bot;
@@ -80,6 +82,7 @@ wByte *wmkc::Binascii::a2b_hex(const char *buffer, wSize &length)
         *(result + ri) = (top << 4) + bot;
     }
 
+    length >>= 1;
     return result;
 }
 

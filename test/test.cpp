@@ -158,7 +158,10 @@ int main(int argc, char **argv)
 {
     // wmkc::test::fea_binascii_base64_test();
     // wmkc::test::test();
-    cout << "hello, world" << endl;
+    string result = wmkc::Binascii().a2b_hex("414243");
+
+    wmkc::misc::print_hex((wByte *)result.c_str(), result.size(), 16, true, false);
+
 
     return 0;
 }
