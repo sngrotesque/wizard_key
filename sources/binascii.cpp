@@ -28,65 +28,99 @@ wByte wmkc::Binascii::to_bot(wByte c)
     return ((c & 0xf) < 0xa) ? ((c & 0xf) + 0x30) : ((c & 0xf) + 0x57);
 }
 
-std::string wmkc::Binascii::b2a_hex(std::string content)
+char *wmkc::Binascii::b2a_hex(const wByte *buffer, wSize &length)
 {
-    if(content.empty()) {
-        return std::string();
+    if(!buffer || !length) {
+        throw wmkc::Exception(wmkcErr_ErrNULL, "wmkc::Binascii::b2a_hex",
+            "buffer is NULL.");
     }
-    wSize i;
-    wByte *src = (wByte *)content.c_str();
-    wSize srcSize = content.size();
 
-    wByte *dst = new (std::nothrow) wByte[srcSize << 1];
-    if(!dst) {
+    char *result = new (std::nothrow) char[(length << 1) + 1];
+    if(!result) {
         throw wmkc::Exception(wmkcErr_ErrMemory, "wmkc::Binascii::b2a_hex",
-            "Failed to allocate memory for dst.");
+            "Failed to allocate memory for result.");
     }
 
-    for(i = 0; i < srcSize; ++i) {
-        dst[i << 1]       = this->to_top(src[i]);
-        dst[(i << 1) + 1] = this->to_bot(src[i]);
+    for(wSize i = 0; i < length; ++i) {
+        *(result + (i << 1))       = this->to_top(*(buffer + i));
+        *(result + ((i << 1) + 1)) = this->to_bot(*(buffer + i));
     }
 
-    std::string result((char *)dst, srcSize << 1);
-    delete[] dst;
+    length <<= 1;
     return result;
 }
 
-std::string wmkc::Binascii::a2b_hex(std::string content)
+wByte *wmkc::Binascii::a2b_hex(const char *buffer, wSize &length)
 {
-    if(content.empty()) {
+    if(!buffer || !length) {
+        throw wmkc::Exception(wmkcErr_ErrNULL, "wmkc::Binascii::a2b_hex",
+            "buffer is NULL.");
+    }
+    if(length & 1) {
+        throw wmkc::Exception(wmkcErr_Err, "wmkc::Binascii::a2b_hex",
+            "Odd length is not allowed.");
+    }
+    wByte *result = new (std::nothrow) wByte[length >> 1];
+    if(!result) {
+        throw wmkc::Exception(wmkcErr_ErrMemory, "wmkc::Binascii::a2b_hex",
+            "Failed to allocate memory for result.");
+    }
+    wByte *buffer_p = (wByte *)buffer;
+
+    wSize bi, ri;
+    wS32 top, bot;
+    for(bi = ri = 0; bi < length; bi += 2, ++ri) {
+        top = hexTable[*(buffer_p + bi)];
+        bot = hexTable[*(buffer_p + (bi + 1))];
+        if((top == 31) || (bot == 31)) {
+            delete[] result;
+            throw wmkc::Exception(wmkcErr_Err, "wmkc::Binascii::a2b_hex",
+                "characters must be from 0 to f.");
+        }
+        *(result + ri) = (top << 4) + bot;
+    }
+
+    return result;
+}
+
+std::string wmkc::Binascii::b2a_hex(std::string _buffer)
+{
+    if(_buffer.empty()) {
         return std::string();
     }
-    wSize srcIndex, dstIndex;
-    wS32 top, bot;
+    wByte *buffer = (wByte *)_buffer.data();
+    wSize length = _buffer.size();
+    char *result = nullptr;
 
-    wByte *src = (wByte *)content.c_str();
-    wSize srcSize = content.size();
-    wByte *dst = nullptr;
-
-    if(srcSize & 1) {
-        throw wmkc::Exception(wmkcErr_Err, "wmkc::Binascii::a2b_hex",
-            "Wrong type, should not be an odd length.");
+    try {
+        result = this->b2a_hex(buffer, length);
+    } catch (std::exception &e) {
+        throw;
     }
 
-    if(!(dst = new (std::nothrow) wByte[srcSize >> 1])) {
-        throw wmkc::Exception(wmkcErr_ErrMemory, "wmkc::Binascii::a2b_hex",
-            "Failed to allocate memory for dst.");
+    std::string result_string{result, length};
+    delete[] result;
+
+    return result_string;
+}
+
+std::string wmkc::Binascii::a2b_hex(std::string _buffer)
+{
+    if(_buffer.empty()) {
+        return std::string();
+    }
+    char *buffer = _buffer.data();
+    wSize length = _buffer.size();
+    wByte *result = nullptr;
+
+    try {
+        result = this->a2b_hex(buffer, length);
+    } catch (std::exception &e) {
+        throw;
     }
 
-    for(srcIndex = dstIndex = 0; srcIndex < srcSize; srcIndex += 2, ++dstIndex) {
-        top = hexTable[src[srcIndex]];
-        bot = hexTable[src[srcIndex + 1]];
-        if((top == 31) || (bot == 31)) {
-            delete[] dst;
-            throw wmkc::Exception(wmkcErr_Err, "wmkc::binascii_a2b_hex",
-                "Wrong type, characters must be from 0 to f.");
-        }
-        dst[dstIndex] = (top << 4) + bot;
-    }
+    std::string result_string{(char *)result, length};
+    delete[] result;
 
-    std::string result((char *)dst, srcSize >> 1);
-    delete[] dst;
-    return result;
+    return result_string;
 }

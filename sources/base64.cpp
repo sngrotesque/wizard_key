@@ -74,8 +74,13 @@ std::string wmkc::Base64::encode(std::string _buffer)
 
     wByte *buffer = (wByte *)_buffer.data();
     wSize length = _buffer.size();
+    char *result = nullptr;
 
-    char *result = this->encode(buffer, length);
+    try {
+        result = this->encode(buffer, length);
+    } catch (std::exception &e) {
+        throw;
+    }
 
     std::string _result{result, length};
     delete[] result;
@@ -209,7 +214,6 @@ wByte *wmkc::Base64::decode(const char *buffer, wSize &length)
         }
     }
 error_end:
-    assert((bin_data_start != nullptr) && bin_data_start);
     delete[] bin_data_start;
     throw wmkc::Exception(wmkcErr_Err, "wmkc::Base64::decode", error_message);
 
@@ -227,8 +231,13 @@ std::string wmkc::Base64::decode(std::string _buffer)
 
     const char *buffer = _buffer.c_str();
     wSize length = _buffer.size();
+    wByte *result = nullptr;
 
-    wByte *result = this->decode(buffer, length);
+    try {
+        result = this->decode(buffer, length);
+    } catch (std::exception &e) {
+        throw;
+    }
 
     std::string _result{(char *)result, length};
     delete[] result;

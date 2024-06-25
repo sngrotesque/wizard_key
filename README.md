@@ -89,7 +89,8 @@ A：因为我从未真正使用过`Mac OS`[^macos]，并且也不熟悉它的操
 3.  已修复一些编译器的警告项。
 4.  此版本将着重检查和修复一些可能的隐患。
 5.  完善了[密码库的计数器](includes/crypto/utils.hpp#L9)。
-6.  修复了已知问题，并完善了部分[SSL库](includes/network/ssl.hpp)的功能。
+6.  完善了部分[SSL库](includes/network/ssl.hpp)的功能。
+7.  完善了[Binascii](includes/binascii.hpp)，修复了[Base64](sources/base64.cpp)中的异常捕获隐患。
 
 #### v0.7.1
 1.  重写了wmkc::Exception（抛弃原先的函数调用std::runtime_error的形式），将其作为一个完整的异常类使用，继承于std::exception。

@@ -157,7 +157,8 @@ namespace wmkc {
 int main(int argc, char **argv)
 {
     // wmkc::test::fea_binascii_base64_test();
-    wmkc::test::test();
+    // wmkc::test::test();
+    cout << "hello, world" << endl;
 
     return 0;
 }
