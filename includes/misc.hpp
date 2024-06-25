@@ -7,6 +7,7 @@
 
 namespace wmkc {
     namespace misc {
+        // 为什么这些函数的名称是大写的？？？
         LIBWMKC_API void PRINT_HEX(const wByte *data, wSize len, wSize num, bool newline,
                                 bool tableChar);
         LIBWMKC_API void PRINT_N(const wByte *arr, wSize size, bool newline);
