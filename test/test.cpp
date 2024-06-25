@@ -42,7 +42,10 @@ using namespace std;
 #include <time.cpp>
 // Source path: End
 
-// Usage: python run.py test\test.cpp -O3 -Wall -lws2_32 -lssl -lcrypto -DWMKC_EXPORTS -Wno-sign-compare --std=C++17
+/*
+* Windows Usage: python run.py test\test.cpp -O3 -Wall -lws2_32 -lssl -lcrypto -DWMKC_EXPORTS -Wno-sign-compare --std=c++17
+* Linux   Usage: python run.py test\test.cpp -O3 -Wall -lssl -lcrypto -DWMKC_EXPORTS -Wno-sign-compare --std=c++17
+*/
 namespace wmkc {
     namespace test {
         void derivedKey(string passwd, string salt, wByte *key, wByte *iv,
@@ -153,6 +156,7 @@ namespace wmkc {
 
 int main(int argc, char **argv)
 {
+    // wmkc::test::fea_binascii_base64_test();
     wmkc::test::test();
 
     return 0;

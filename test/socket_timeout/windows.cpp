@@ -6,7 +6,7 @@
 void throw_exception(const char *function, const int code, const char *content)
 {
     char message[128]{};
-    snprintf(message, sizeof(message), "%s[%d]: %s", function, WSAGetLastError(), content);
+    snprintf(message, sizeof(message), "%s[%d]: %s", function, code, content);
     throw std::runtime_error(message);
 }
 
