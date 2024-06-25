@@ -68,6 +68,11 @@ A：因为我从未真正使用过`Mac OS`[^macos]，并且也不熟悉它的操
     由于C++不同于C，很多语法不能完全按照C的语法来实现，针对于嵌套层级这点不强求。
 
 ### 版本更新日志（Change log）
+> 在未来实现爬虫库时要查阅的文档：
+> 1. [Hypertext Transfer Protocol -- HTTP/1.1](https://datatracker.ietf.org/doc/html/rfc2616)
+> 2. [HTTP - Wikipedia](https://en.wikipedia.org/wiki/HTTP)
+> 3. [HTTP resources and specifications - HTTP | MDN](https://developer.mozilla.org/en-US/docs/Web/HTTP/Resources_and_specifications)
+>
 > 修改了版本后需要更改的文件  
 > [upload.py](upload.py)  
 > [READMKE.md](README.md)
@@ -83,7 +88,7 @@ A：因为我从未真正使用过`Mac OS`[^macos]，并且也不熟悉它的操
     请在编译时加入宏**WMKC_EXPORTS**，否则很可能将编译失败。
 3.  已修复一些编译器的警告项。
 4.  此版本将着重检查和修复一些可能的隐患。
-5.  完善[密码库的计数器](includes/crypto/utils.hpp#L9)。
+5.  完善了[密码库的计数器](includes/crypto/utils.hpp#L9)。
 
 #### v0.7.1
 1.  重写了wmkc::Exception（抛弃原先的函数调用std::runtime_error的形式），将其作为一个完整的异常类使用，继承于std::exception。

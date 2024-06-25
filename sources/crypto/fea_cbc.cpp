@@ -6,7 +6,7 @@ void wmkc::crypto::FEA::cbc_encrypt(wByte *p, wSize n)
 
     memcpy(roundIv, this->iv, WMKC_FEA_BL);
     for(wU32 i = 0; i < n; i += WMKC_FEA_BL) {
-        this->xorWithIV(p + i, roundIv);
+        this->xor_with_iv(p + i, roundIv);
         this->cipher(p + i, this->roundKey);
         memcpy(roundIv, p + i, WMKC_FEA_BL);
     }
@@ -20,8 +20,8 @@ void wmkc::crypto::FEA::cbc_decrypt(wByte *c, wSize n)
     memcpy(roundIv, this->iv, WMKC_FEA_BL);
     for(wU32 i = 0; i < n; i += WMKC_FEA_BL) {
         memcpy(roundBuffer, c + i, WMKC_FEA_BL);
-        this->invCipher(c + i, this->roundKey);
-        this->xorWithIV(c + i, roundIv);
+        this->inv_cipher(c + i, this->roundKey);
+        this->xor_with_iv(c + i, roundIv);
         memcpy(roundIv, roundBuffer, WMKC_FEA_BL);
     }
 }

@@ -21,21 +21,28 @@
 namespace wmkc {
     namespace net {
         class LIBWMKC_API SSL_Socket {
-        public:
+        protected:
             SSL *ssl;
             net::Socket fd;
-
+            wS32 transmissionLength; // 单次传输长度
+        public:
+            // SSL_Socket();
             SSL_Socket(SSL *_ssl, wmkc::net::Socket _fd);
+
+            void connect(const std::string addr, const wU16 port);
+            void send(const std::string content);
+            std::string recv(const wS32 length);
         };
 
         class LIBWMKC_API SSL_Context {
-        public:
+        protected:
             SSL_CTX *ssl_ctx;
             SSL *ssl;
-
+        public:
             SSL_Context(const SSL_METHOD *method);
             ~SSL_Context();
             net::SSL_Socket wrap_socket(net::Socket fd, std::string server_hostname = "");
+            void destroy();
         };
     }
 }

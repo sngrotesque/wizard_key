@@ -1,4 +1,5 @@
 #include <network/socket.hpp>
+#include <network/ssl.hpp>
 #include <crypto/fea.hpp>
 #include <crypto/chacha20.hpp>
 #include <crypto/utils.hpp>
@@ -21,6 +22,7 @@ using namespace std;
 // Source path: Begin
 #include <network/socket.cpp>
 #include <network/exception.cpp>
+#include <network/ssl.cpp>
 
 #include <crypto/fea.cpp>
 #include <crypto/fea_ecb.cpp>
@@ -40,7 +42,7 @@ using namespace std;
 #include <time.cpp>
 // Source path: End
 
-// Usage: python run.py test\test.cpp -O3 -Wall -lws2_32 -lssl -lcrypto -DWMKC_EXPORTS -Wno-sign-compare
+// Usage: python run.py test\test.cpp -O3 -Wall -lws2_32 -lssl -lcrypto -DWMKC_EXPORTS -Wno-sign-compare --std=C++17
 namespace wmkc {
     namespace test {
         void derivedKey(string passwd, string salt, wByte *key, wByte *iv,
@@ -112,7 +114,39 @@ namespace wmkc {
 
         void test()
         {
-            printf("%s %s %s", wmkc::color::fore::red, "hello, world.", "\x1b[0m");
+#           ifdef WMKC_PLATFORM_WINOS
+            WSADATA ws;
+            WSAStartup(MAKEWORD(2,2), &ws);
+#           endif
+
+            string remote_addr{"www.bilibili.com"};
+            wU16 remote_port{443};
+            string request_header{
+                "GET / HTTP/1.1\r\n"
+                "Host: www.bilibili.com\r\n"
+                "Accept: */*\r\n"
+                "Connection: close\r\n"
+                "User-Agent: android\r\n\r\n"
+            };
+
+            try {
+                wmkc::net::SSL_Context ssl_ctx{TLS_method()};
+                wmkc::net::SSL_Socket ssl_fd = ssl_ctx.wrap_socket(
+                    wmkc::net::Socket{AF_INET, SOCK_STREAM, IPPROTO_TCP}, remote_addr);
+
+                ssl_fd.connect(remote_addr, remote_port);
+
+                ssl_fd.send(request_header);
+                cout << ssl_fd.recv(4096) << endl;
+
+                ssl_ctx.destroy();
+            } catch (exception &e) {
+                cout << e.what() << endl;
+            }
+
+#           ifdef WMKC_PLATFORM_WINOS
+            WSACleanup();
+#           endif
         }
     }
 }

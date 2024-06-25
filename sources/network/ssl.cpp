@@ -10,9 +10,50 @@ void wmkcSSL_exception(std::string funcName)
 }
 
 wmkc::net::SSL_Socket::SSL_Socket(SSL *_ssl, wmkc::net::Socket _fd)
-: ssl(_ssl), fd(_fd)
+: ssl(_ssl), fd(_fd), transmissionLength()
 {
 
+}
+
+void wmkc::net::SSL_Socket::connect(const std::string addr, const wU16 port)
+{
+    try {
+        this->fd.connect(addr, port);
+        if(SSL_connect(this->ssl) != 1) {
+            wmkcSSL_exception("wmkc::net::SSL_Socket::connect");
+        }
+    } catch (std::exception &e) {
+        throw;
+    }
+}
+
+void wmkc::net::SSL_Socket::send(const std::string content)
+{
+    const char *buffer = content.c_str();
+    wSize length = content.size();
+
+    this->transmissionLength = SSL_write(this->ssl, buffer, length);
+    if(this->transmissionLength <= 0) {
+        wmkcSSL_exception("wmkc::net::SSL_Socket::send");
+    }
+}
+
+std::string wmkc::net::SSL_Socket::recv(const wS32 length)
+{
+    char *buffer = new (std::nothrow) char[length];
+    if(!buffer) {
+        throw wmkc::Exception(wmkcErr_ErrMemory, "wmkc::net::SSL_Socket::recv",
+            "Failed to allocate memory for buffer.");
+    }
+
+    this->transmissionLength = SSL_read(this->ssl, buffer, length);
+    if(this->transmissionLength <= 0) {
+        wmkcSSL_exception("wmkc::net::SSL_Socket::recv");
+    }
+
+    std::string result{buffer, (wSize)this->transmissionLength};
+    delete[] buffer;
+    return result;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -66,8 +107,6 @@ wmkc::net::SSL_Context::SSL_Context(const SSL_METHOD *method)
 
 wmkc::net::SSL_Context::~SSL_Context()
 {
-    SSL_free(this->ssl);
-    SSL_CTX_free(this->ssl_ctx);
 }
 
 wmkc::net::SSL_Socket wmkc::net::SSL_Context::wrap_socket(wmkc::net::Socket fd,
@@ -80,4 +119,10 @@ wmkc::net::SSL_Socket wmkc::net::SSL_Context::wrap_socket(wmkc::net::Socket fd,
         wmkcSSL_exception("wmkc::net::SSL_Context::wrap_socket");
     }
     return wmkc::net::SSL_Socket(this->ssl, fd);
+}
+
+void wmkc::net::SSL_Context::destroy()
+{
+    SSL_free(this->ssl);
+    SSL_CTX_free(this->ssl_ctx);
 }

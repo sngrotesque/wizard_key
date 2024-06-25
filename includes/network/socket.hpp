@@ -54,12 +54,12 @@ namespace wmkc {
 
 namespace wmkc {
     namespace net {
-        ADDRINFO    *getAddrInfo(wS32 family, wS32 type, wS32 proto, std::string addr,
+        ADDRINFO    *get_addr_info(wS32 family, wS32 type, wS32 proto, std::string addr,
                                 std::string serviceName);
-        IPEndPoint  getNetworkInfo(wSocket sockfd, wS32 family);
-        IPEndPoint  getNetworkInfo(wS32 family, SOCKADDR *pAddr);
-        std::string networkAddr2stringAddr(wS32 family, const void *pAddr);
-        wU16        networkPort2numberPort(const wU16 port);
+        IPEndPoint  get_network_info(wSocket sockfd, wS32 family);
+        IPEndPoint  get_network_info(wS32 family, SOCKADDR *pAddr);
+        std::string network_addr_to_string_addr(wS32 family, const void *pAddr);
+        wU16        network_port_to_number_port(const wU16 port);
 
         class LIBWMKC_API Socket {
         public:

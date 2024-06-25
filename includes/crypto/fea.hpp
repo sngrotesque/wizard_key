@@ -37,21 +37,21 @@ namespace wmkc {
                 wmkc::crypto::Counter counter;
                 wU32 segmentSize;
 
-                void subBytes(wByte *block);
-                void shiftBits(wByte *block);
+                void sub_bytes(wByte *block);
+                void shift_bits(wByte *block);
 
-                void invSubBytes(wByte *block);
-                void invShiftBits(wByte *block);
+                void inv_sub_bytes(wByte *block);
+                void inv_shift_bits(wByte *block);
 
-                void shiftRows(wByte *block);
-                void invShiftRows(wByte *block);
+                void shift_rows(wByte *block);
+                void inv_shift_rows(wByte *block);
 
-                void xorWithIV(wByte *block, wByte *iv);
+                void xor_with_iv(wByte *block, wByte *iv);
 
                 void cipher(wByte *p, wByte *roundKey);
-                void invCipher(wByte *c, wByte *roundKey);
+                void inv_cipher(wByte *c, wByte *roundKey);
 
-                void keyExtension(const wByte *key, const wByte *iv);
+                void key_extension(const wByte *key, const wByte *iv);
 
                 void ecb_encrypt(wByte *p);
                 void ecb_decrypt(wByte *c);

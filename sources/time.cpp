@@ -1,6 +1,6 @@
 #include <time.hpp>
 
-std::string wmkc::Time::getNowTime(std::string timeFormat)
+std::string wmkc::Time::get_now_time(std::string timeFormat)
 {
     char resultString[66] = {0};
     time_t tm_val;

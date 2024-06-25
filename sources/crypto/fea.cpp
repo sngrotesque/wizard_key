@@ -48,7 +48,7 @@ static const wByte rsbox[256] = {
 #define WMKC_FEA_SBOX(x)  (sbox[(x)])
 #define WMKC_FEA_RSBOX(x) (rsbox[(x)])
 
-void wmkc::crypto::FEA::subBytes(wByte *block)
+void wmkc::crypto::FEA::sub_bytes(wByte *block)
 {
     for(wU32 i = 0; i < WMKC_FEA_BL; i += 8) {
         *(block + i)     = WMKC_FEA_SBOX(*(block + i));
@@ -62,7 +62,7 @@ void wmkc::crypto::FEA::subBytes(wByte *block)
     }
 }
 
-void wmkc::crypto::FEA::invSubBytes(wByte *block)
+void wmkc::crypto::FEA::inv_sub_bytes(wByte *block)
 {
     for(wU32 i = 0; i < WMKC_FEA_BL; i += 8) {
         *(block + i)     = WMKC_FEA_RSBOX(*(block + i));
@@ -76,7 +76,7 @@ void wmkc::crypto::FEA::invSubBytes(wByte *block)
     }
 }
 
-void wmkc::crypto::FEA::shiftBits(wByte *block)
+void wmkc::crypto::FEA::shift_bits(wByte *block)
 {
     for(wU32 i = 0; i < WMKC_FEA_BL; i += 8) {
         *(block + i)     = WMKC_FEA_SHIFT_BITS_L(*(block + i));
@@ -90,7 +90,7 @@ void wmkc::crypto::FEA::shiftBits(wByte *block)
     }
 }
 
-void wmkc::crypto::FEA::invShiftBits(wByte *block)
+void wmkc::crypto::FEA::inv_shift_bits(wByte *block)
 {
     for(wU32 i = 0; i < WMKC_FEA_BL; i += 8) {
         *(block + i)     = WMKC_FEA_SHIFT_BITS_R(*(block + i));
@@ -104,7 +104,7 @@ void wmkc::crypto::FEA::invShiftBits(wByte *block)
     }
 }
 
-void wmkc::crypto::FEA::shiftRows(wByte *block)
+void wmkc::crypto::FEA::shift_rows(wByte *block)
 {
     wByte swap_array[8], swap;
 
@@ -125,7 +125,7 @@ void wmkc::crypto::FEA::shiftRows(wByte *block)
     *(block + 7) ^= swap;
 }
 
-void wmkc::crypto::FEA::invShiftRows(wByte *block)
+void wmkc::crypto::FEA::inv_shift_rows(wByte *block)
 {
     wByte swap_array[8], swap;
 
@@ -146,7 +146,7 @@ void wmkc::crypto::FEA::invShiftRows(wByte *block)
     memcpy(block + 8, swap_array, 8);
 }
 
-void wmkc::crypto::FEA::xorWithIV(wByte *block, wByte *iv)
+void wmkc::crypto::FEA::xor_with_iv(wByte *block, wByte *iv)
 {
     for(wU32 i = 0; i < WMKC_FEA_BL; i += 8) {
         *(block + i)     ^= *(iv + i);
@@ -165,7 +165,7 @@ void wmkc::crypto::FEA::cipher(wByte *p, wByte *roundKey)
     wU32 r, i;
     wByte *subkey = nullptr;
     for(r = 0; r < WMKC_FEA_NR; ++r) {
-        this->subBytes(p);
+        this->sub_bytes(p);
         subkey = roundKey + (r << 5); // roundKey + r * 32
         for(i = 0; i < (WMKC_FEA_BL << 1); i += 8) {
             *(p + (i       & 15)) ^= *(subkey + i);
@@ -177,18 +177,18 @@ void wmkc::crypto::FEA::cipher(wByte *p, wByte *roundKey)
             *(p + ((i + 6) & 15)) ^= *(subkey + i + 6);
             *(p + ((i + 7) & 15)) ^= *(subkey + i + 7);
         }
-        this->shiftRows(p);
-        this->shiftBits(p);
+        this->shift_rows(p);
+        this->shift_bits(p);
     }
 }
 
-void wmkc::crypto::FEA::invCipher(wByte *c, wByte *roundKey)
+void wmkc::crypto::FEA::inv_cipher(wByte *c, wByte *roundKey)
 {
     wU32 r, i;
     wByte *subkey = nullptr;
     for(r = 0; r < WMKC_FEA_NR; ++r) {
-        this->invShiftBits(c);
-        this->invShiftRows(c);
+        this->inv_shift_bits(c);
+        this->inv_shift_rows(c);
         subkey = roundKey + ((WMKC_FEA_NR - r - 1) << 5); // roundKey + r * 32
         for(i = 0; i < (WMKC_FEA_BL << 1); i += 8) {
             *(c + (i       & 15)) ^= *(subkey + i);
@@ -200,11 +200,11 @@ void wmkc::crypto::FEA::invCipher(wByte *c, wByte *roundKey)
             *(c + ((i + 6) & 15)) ^= *(subkey + (i + 6));
             *(c + ((i + 7) & 15)) ^= *(subkey + (i + 7));
         }
-        this->invSubBytes(c);
+        this->inv_sub_bytes(c);
     }
 }
 
-void wmkc::crypto::FEA::keyExtension(const wByte *key, const wByte *iv)
+void wmkc::crypto::FEA::key_extension(const wByte *key, const wByte *iv)
 {
     wByte keyBuffer[sizeof(this->key)];
     wByte ivBuffer[sizeof(this->iv)];
@@ -216,11 +216,11 @@ void wmkc::crypto::FEA::keyExtension(const wByte *key, const wByte *iv)
     for(rkIndex = 0; rkIndex < sizeof(this->roundKey); rkIndex += sizeof(this->key)) {
         memcpy(this->roundKey + rkIndex, keyBuffer, sizeof(this->key));
 
-        this->subBytes(keyBuffer);
-        this->subBytes(keyBuffer + WMKC_FEA_BL);
+        this->sub_bytes(keyBuffer);
+        this->sub_bytes(keyBuffer + WMKC_FEA_BL);
 
-        this->xorWithIV(keyBuffer, ivBuffer);
-        this->xorWithIV(keyBuffer + WMKC_FEA_BL, ivBuffer);
+        this->xor_with_iv(keyBuffer, ivBuffer);
+        this->xor_with_iv(keyBuffer + WMKC_FEA_BL, ivBuffer);
 
         for(index = 0; index < WMKC_FEA_BL; ++index) {
             ivBuffer[index] ^= (keyBuffer[index] ^ keyBuffer[index + 16]);
@@ -235,8 +235,8 @@ void wmkc::crypto::FEA::keyExtension(const wByte *key, const wByte *iv)
             keyBuffer[index] ^= (ivBuffer[index & 15] + index);
         }
 
-        this->subBytes(ivBuffer);
-        this->shiftBits(ivBuffer);
+        this->sub_bytes(ivBuffer);
+        this->shift_bits(ivBuffer);
 
         for(index = 0; index < sizeof(this->key); ++index) {
             keyBuffer[index] ^= \
@@ -247,10 +247,10 @@ void wmkc::crypto::FEA::keyExtension(const wByte *key, const wByte *iv)
                 ivBuffer[9] ^ ivBuffer[11] ^ ivBuffer[13] ^ ivBuffer[15];
         }
 
-        this->shiftBits(keyBuffer);
-        this->subBytes(keyBuffer);
-        this->shiftBits(keyBuffer + WMKC_FEA_BL);
-        this->subBytes(keyBuffer + WMKC_FEA_BL);
+        this->shift_bits(keyBuffer);
+        this->sub_bytes(keyBuffer);
+        this->shift_bits(keyBuffer + WMKC_FEA_BL);
+        this->sub_bytes(keyBuffer + WMKC_FEA_BL);
     }
 
     wmkc::memory_secure(keyBuffer, sizeof(this->key));
@@ -269,7 +269,7 @@ wmkc::crypto::FEA::FEA(const wByte *key, const wByte *iv, wmkc::crypto::Counter 
     memcpy(this->key, key, sizeof(this->key));
     memcpy(this->iv, iv, sizeof(this->iv));
 
-    this->keyExtension(this->key, this->iv);
+    this->key_extension(this->key, this->iv);
 }
 
 wmkc::crypto::FEA::~FEA()
@@ -296,7 +296,7 @@ void wmkc::crypto::FEA::decrypt(wByte *content, wSize size, xcryptMode mode)
 {
     switch(mode) {
         case xcryptMode::ECB:
-            this->invCipher(content, this->roundKey); break;
+            this->inv_cipher(content, this->roundKey); break;
         case xcryptMode::CBC:
             this->cbc_decrypt(content, size); break;
         case xcryptMode::CTR:

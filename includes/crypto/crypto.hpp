@@ -8,8 +8,8 @@
 
 namespace wmkc {
     namespace crypto {
-        LIBWMKC_API void generateSbox(wByte *sbox);
-        LIBWMKC_API void generateRSbox(wByte *rsbox, wByte *sbox);
+        LIBWMKC_API void generate_sbox(wByte *sbox);
+        LIBWMKC_API void generate_rsbox(wByte *rsbox, wByte *sbox);
     }
 }
 

@@ -18,12 +18,12 @@ static const wByte hexTable[256] = {
     31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31,
     31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31};
 
-wByte wmkc::Binascii::toTop(wByte c)
+wByte wmkc::Binascii::to_top(wByte c)
 {
     return ((c >> 4) < 0xa) ? ((c >> 4) + 0x30) : ((c >> 4) + 0x57);
 }
 
-wByte wmkc::Binascii::toBot(wByte c)
+wByte wmkc::Binascii::to_bot(wByte c)
 {
     return ((c & 0xf) < 0xa) ? ((c & 0xf) + 0x30) : ((c & 0xf) + 0x57);
 }
@@ -44,8 +44,8 @@ std::string wmkc::Binascii::b2a_hex(std::string content)
     }
 
     for(i = 0; i < srcSize; ++i) {
-        dst[i << 1]       = this->toTop(src[i]);
-        dst[(i << 1) + 1] = this->toBot(src[i]);
+        dst[i << 1]       = this->to_top(src[i]);
+        dst[(i << 1) + 1] = this->to_bot(src[i]);
     }
 
     std::string result((char *)dst, srcSize << 1);

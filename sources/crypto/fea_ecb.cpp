@@ -7,5 +7,5 @@ void wmkc::crypto::FEA::ecb_encrypt(wByte *p)
 
 void wmkc::crypto::FEA::ecb_decrypt(wByte *c)
 {
-    this->invCipher(c, this->roundKey);
+    this->inv_cipher(c, this->roundKey);
 }

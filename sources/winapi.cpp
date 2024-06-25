@@ -1,29 +1,29 @@
 #include <winapi.hpp>
 
-struct wmkc::Winapi::widthHeight wmkc::Winapi::getScreenResolution()
+struct wmkc::winapi::widthHeight wmkc::winapi::get_screen_resolution()
 {
-    wmkc::Winapi::widthHeight size;
+    wmkc::winapi::widthHeight size;
     size.width = GetSystemMetrics(SM_CXSCREEN);
     size.height = GetSystemMetrics(SM_CYSCREEN);
     if(!size.width || !size.height) {
-        throw wmkc::Exception(wmkcErr_Err, "wmkc::Winapi::getScreenResolution",
+        throw wmkc::Exception(wmkcErr_Err, "wmkc::winapi::get_screen_resolution",
             "GetSystemMetrics function returned an error code when called.");
     }
 }
 
-struct wmkc::Winapi::widthHeight wmkc::Winapi::getCursorPos()
+struct wmkc::winapi::widthHeight wmkc::winapi::get_cursor_pos()
 {
-    wmkc::Winapi::widthHeight point;
+    wmkc::winapi::widthHeight point;
     POINT _point_tmp = {0};
     if(!GetCursorPos(&_point_tmp)) {
-        throw wmkc::Exception(GetLastError(), "wmkc::Winapi::getCursorPos",
+        throw wmkc::Exception(GetLastError(), "wmkc::winapi::get_cursor_pos",
             "GetCursorPos function returned an error code when called.");
     }
     point.width = _point_tmp.x;
     point.height = _point_tmp.y;
 }
 
-std::string wmkc::Winapi::getUserName(char format = 'A')
+std::string wmkc::winapi::get_username(char format = 'A')
 {
     if(format == 'A') {
         char tmp_buffer[512] = {0};
@@ -38,10 +38,10 @@ std::string wmkc::Winapi::getUserName(char format = 'A')
     }
 }
 
-void wmkc::Winapi::setCursorPos(wU32 x, wU32 y)
+void wmkc::winapi::set_cursor_pos(wU32 x, wU32 y)
 {
     if(!SetCursorPos(x, y)) {
-        throw wmkc::Exception(wmkcErr_ErrSysFunc, "wmkc::Winapi::setCursorPos",
+        throw wmkc::Exception(wmkcErr_ErrSysFunc, "wmkc::winapi::set_cursor_pos",
             "SetCursorPos function returned an error code when called.");
     }
 }
@@ -75,12 +75,12 @@ void wmkc::Winapi::setCursorPos(wU32 x, wU32 y)
 //     return true;
 // }
 
-void wmkc::Winapi::setDesktopWallpaper(std::string path)
+void wmkc::winapi::set_desktop_wallpaper(std::string path)
 {
     
 }
 
-void wmkc::Winapi::opacityStartMenu(BYTE alpha)
+void wmkc::winapi::opacity_startmenu(BYTE alpha)
 {
     
 }
