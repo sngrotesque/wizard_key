@@ -1,22 +1,24 @@
 #include <misc.hpp>
 
-void wmkc::misc::PRINT_HEX(const wByte *data, wSize len, wSize num, wBool newline,
-                                                                wBool tableChar)
+void wmkc::misc::PRINT_HEX(const wByte *data, wSize len, wSize num, bool newline,
+                                                                bool tableChar)
 {
-    for(wSize x = 0; x < len; ++x) {
-        if(tableChar && ((x) % num == 0)) {
+    using namespace wmkc::color;
+
+    for(wSize i = 0; i < len; ++i) {
+        if(tableChar && ((i) % num == 0)) {
             printf("\t");
         }
 
-        if(!data[x]) {
-            printf(WMKC_COLOR_SET(WMKC_COLOR_FORE_LIGHTRED, "%02x"), data[x]);
-        } else if(!(data[x] ^ 0xff)) {
-            printf(WMKC_COLOR_SET(WMKC_COLOR_FORE_LIGHTYELLOW, "%02x"), data[x]);
+        if(!data[i]) {
+            printf("%s""%02x""%s", fore::lightRed, data[i], all::reset);
+        } else if(!(data[i] ^ 0xff)) {
+            printf("%s""%02x""%s", fore::lightYellow, data[i], all::reset);
         } else {
-            printf("%02x", data[x]);
+            printf("%02x", data[i]);
         }
 
-        if((x + 1) % num) {
+        if((i + 1) % num) {
             printf(" ");
         } else {
             printf("\n");
@@ -25,11 +27,11 @@ void wmkc::misc::PRINT_HEX(const wByte *data, wSize len, wSize num, wBool newlin
     if(newline) printf("\n");
 }
 
-void wmkc::misc::PRINT_N(const wByte *arr, wSize size, wBool newline)
+void wmkc::misc::PRINT_N(const wByte *arr, wSize size, bool newline)
 {
-    for(wSize x = 0; x < size; ++x) {
-        printf("%3d", x[arr]);
-        if(!((x + 1) % 32)) {
+    for(wSize i = 0; i < size; ++i) {
+        printf("%3d", i[arr]);
+        if(!((i + 1) % 32)) {
             printf("\n");
         } else {
             printf(", ");
@@ -38,12 +40,12 @@ void wmkc::misc::PRINT_N(const wByte *arr, wSize size, wBool newline)
     if(newline) printf("\n");
 }
 
-void wmkc::misc::PRINT_BOX(const wByte *box, wSize size, wSize num, wBool newline)
+void wmkc::misc::PRINT_BOX(const wByte *box, wSize size, wSize num, bool newline)
 {
-    for(wSize x = 0; x < size; ++x) {
-        printf("0x%02x", box[x]);
-        if((x + 1) != size) {
-            if((x + 1) % num == 0) {
+    for(wSize i = 0; i < size; ++i) {
+        printf("0x%02x", box[i]);
+        if((i + 1) != size) {
+            if((i + 1) % num == 0) {
                 printf(",\n");
             } else {
                 printf(", ");
@@ -56,23 +58,23 @@ void wmkc::misc::PRINT_BOX(const wByte *box, wSize size, wSize num, wBool newlin
         printf("\n");
 }
 
-void wmkc::misc::PRINT_PyBytes(const wByte *buf, wSize size, wBool newline)
+void wmkc::misc::PRINT_PyBytes(const wByte *buf, wSize size, bool newline)
 {
-    for(wSize x = 0; x < size; ++x) {
-        if(buf[x] >= 0x20 && buf[x] < 0x7f) {
-            printf("%c", buf[x]);
-        } else if(buf[x] < 0x20) {
-            if(buf[x] == 0x0a) {
+    for(wSize i = 0; i < size; ++i) {
+        if(buf[i] >= 0x20 && buf[i] < 0x7f) {
+            printf("%c", buf[i]);
+        } else if(buf[i] < 0x20) {
+            if(buf[i] == 0x0a) {
                 printf("\\n");
-            } else if(buf[x] == 0x09) {
+            } else if(buf[i] == 0x09) {
                 printf("\\t");
-            } else if(buf[x] == 0x0d) {
+            } else if(buf[i] == 0x0d) {
                 printf("\\r");
             } else {
-                printf("\\x%02x", buf[x]);
+                printf("\\i%02x", buf[i]);
             }
-        } else if(buf[x] > 0x7e) {
-            printf("\\x%02x", buf[x]);
+        } else if(buf[i] > 0x7e) {
+            printf("\\i%02x", buf[i]);
         } else {
             printf("=");
         }

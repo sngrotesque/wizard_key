@@ -59,68 +59,67 @@ namespace wmkc {
 
             delete[] content;
         }
+
+        void fea_binascii_base64_test()
+        {
+            wmkc::Binascii binascii;
+            wmkc::Base64 base64;
+
+            wmkc::crypto::FEA fea;
+            wmkc::crypto::Counter counter;
+            wmkc::crypto::xcryptMode mode{wmkc::crypto::xcryptMode::CTR};
+
+            char password[32]{};
+            char salt[32]{};
+            wByte key[32]{};
+            wByte iv[16]{};
+
+            cout << "Please enter password: ";
+            cin.getline(password, sizeof(password) - 1);
+        
+            cout << "Please enter salt: ";
+            cin.getline(salt, sizeof(salt) - 1);
+        
+            wmkc::test::derivedKey(password, salt, key, iv);
+        
+            string string_key{string{(char *)key, 32}};
+            string string_iv{string{(char *)iv, 16}};
+        
+            counter = wmkc::crypto::Counter{"hellowoeld.", 0};
+            fea = wmkc::crypto::FEA{key, iv, counter};
+        
+            // 打印key和IV
+            cout << "Key-Hex:    " << binascii.b2a_hex(string_key) << endl;
+            cout << "IV-Hex:     " << binascii.b2a_hex(string_iv) << endl;
+            cout << "Key-Base64: " << base64.encode(string_key) << endl;
+            cout << "IV-Base64:  " << base64.encode(string_iv) << endl;
+            // 打印计数器
+            cout << "Counter:\n";
+            wmkc::misc::PRINT_HEX(counter.counter, 16, 16, false, true);
+        
+            char _tmp[2048] = {"\\(UwU)/"};
+            wByte *buffer = (wByte *)_tmp;
+            wSize length = strlen(_tmp);
+        
+            cout << "Plaintext:\n";
+            wmkc::misc::PRINT_HEX(buffer, length, 32, length%32, true);
+        
+            fea.encrypt(buffer, length, mode);
+        
+            cout << "Ciphertext:\n";
+            wmkc::misc::PRINT_HEX(buffer, length, 32, length%32, true);
+        }
+
+        void test()
+        {
+            printf("%s %s %s", wmkc::color::fore::red, "hello, world.", "\x1b[0m");
+        }
     }
-}
-
-void fea_binascii_base64_test()
-{
-    wmkc::Binascii binascii;
-    wmkc::Base64 base64;
-
-    wmkc::crypto::FEA fea;
-    wmkc::crypto::Counter counter;
-    wmkc::crypto::xcryptMode mode{wmkc::crypto::xcryptMode::CTR};
-
-    char password[32]{};
-    char salt[32]{};
-    wByte key[32]{};
-    wByte iv[16]{};
-
-    cout << "Please enter password: ";
-    cin.getline(password, sizeof(password) - 1);
-
-    cout << "Please enter salt: ";
-    cin.getline(salt, sizeof(salt) - 1);
-
-    wmkc::test::derivedKey(password, salt, key, iv);
-
-    string string_key{string{(char *)key, 32}};
-    string string_iv{string{(char *)iv, 16}};
-
-    counter = wmkc::crypto::Counter{"hellowoeld.", 1};
-    fea = wmkc::crypto::FEA{key, iv, counter};
-
-    // 打印key和IV
-    cout << "Key-Hex:    " << binascii.b2a_hex(string_key) << endl;
-    cout << "IV-Hex:     " << binascii.b2a_hex(string_iv) << endl;
-    cout << "Key-Base64: " << base64.encode(string_key) << endl;
-    cout << "IV-Base64:  " << base64.encode(string_iv) << endl;
-    // 打印计数器
-    cout << "Counter:\n";
-    wmkc::misc::PRINT_HEX(counter.counter, 16, 16, false, true);
-
-    char _tmp[2048] = {"hello, world"};
-    wByte *buffer = (wByte *)_tmp;
-    wSize length = strlen(_tmp);
-
-    cout << "Plaintext:\n";
-    wmkc::misc::PRINT_HEX(buffer, length, 32, length%32, true);
-
-    fea.encrypt(buffer, length, mode);
-
-    cout << "Ciphertext:\n";
-    wmkc::misc::PRINT_HEX(buffer, length, 32, length%32, true);
 }
 
 int main(int argc, char **argv)
 {
-    wmkc::Base64 base64;
-
-    try {
-        cout << base64.decode("XChVd1UpLw==") << endl;
-    } catch (exception &e) {
-        cout << e.what() << endl;
-    }
+    wmkc::test::test();
 
     return 0;
 }

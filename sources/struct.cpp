@@ -28,7 +28,7 @@ void change_endian(char *array, wU32 size)
 }
 
 template <typename T>
-std::string get_bytes_result(T n, wU32 size, wBool change)
+std::string get_bytes_result(T n, wU32 size, bool change)
 {
     char buffer[sizeof(T)] = {0};
     memcpy(buffer, &n, sizeof(T));
@@ -42,7 +42,7 @@ template <typename T>
 std::string single_pack(char format,
                         wmkc::endianness current, wmkc::endianness specify, T arg)
 {
-    wBool change = ((specify!=wmkc::endianness::NO)&&(current!=specify))?(true):(false);
+    bool change = ((specify!=wmkc::endianness::NO)&&(current!=specify))?(true):(false);
     std::string results;
 
     switch(format) {

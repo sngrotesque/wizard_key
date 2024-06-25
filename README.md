@@ -43,15 +43,26 @@ A：因为我从未真正使用过`Mac OS`[^macos]，并且也不熟悉它的操
     而对于`Visual Studio`，需要自行将库编译为dll文件或者在主程序代码文件中包含`*.cpp`文件。  
     未来会使用[CMakeList.txt (Cmake)](https://cmake.org/)来强化编译步骤。
 
-### 开发文档（Developer's guide）
+### 开发规范（Development specifications）
  -  开发标准：
->   C++ standard >= `C++11`，同时尽可能避免使用`C++20`及以上标准的语法和头文件[^no_cpp20]。
+1.  C++ standard >= `C++11`，同时尽可能避免使用`C++20`及以上标准的语法和头文件[^no_cpp20]。
  -  代码风格：
->   每行不超过90个字符，注释请添加在可能会引起困惑或误会的部分。  
->   对于类型的初始化，只使用两种初始化方法，第一种是[int a = 0](https://en.cppreference.com/w/cpp/language/copy_initialization)，第二种是[int a{0};](https://en.cppreference.com/w/cpp/language/list_initialization)。~~其实我不应该加引用的，毕竟这都看不懂还看什么。~~
- -  代码层级：
->   尽可能的少，如果可以，请按照Linux开发标准中建议的最多3层嵌套来编写代码[^linux_coding_style]。  
-由于C++不同于C，很多语法不能完全按照C的语法来实现，针对于嵌套层级这点不强求。
+1.  单行不超过90个英文字符。
+2.  对于类型的初始化，只使用两种初始化方法。  
+    第一种是[int a = 0](https://en.cppreference.com/w/cpp/language/copy_initialization)，第二种是[int a{0};](https://en.cppreference.com/w/cpp/language/list_initialization)。
+3.  仅使用三种命名方式：
+    1. 大驼峰命名法（仅用于命名类）。
+    2. 小驼峰命名法（仅可用于命名变量）。
+    3. 下划线命名法（可用于函数命名和变量命名）。
+4.  所有宏命名以及枚举类型应全部为大写并使用下划线命名法，例如：`WMKC_SUPPORT`，`GAME_DEVELOP`，enum class mode {`CFB, CBC, CTR`}。
+5.  注释请添加在可能会引起困惑或误会的部分（或者如果你需要在文件的起始部分想说明什么东西）。
+    并且只使用三种注释方式：
+    1. 单行注释，仅用于解释某个变量到底是做什么的。
+    2. [Doxygen注释](https://www.doxygen.nl/manual/docblocks.html)用于解释一个比较复杂的函数或类在做什么，以及它的参数代表什么。
+    3. Linux开发规范中定义的[注释形式](https://www.kernel.org/doc/html/latest/translations/zh_CN/process/coding-style.html#id10)。
+6.  尽可能避免对结构体使用`typedef`关键字，如果必须，那么你应该考虑是否将它改为类。
+7.  代码层级应尽可能的少，如果可以，请按照Linux开发标准中建议的最多3层嵌套来编写代码[^linux_coding_style]。  
+    由于C++不同于C，很多语法不能完全按照C的语法来实现，针对于嵌套层级这点不强求。
 
 ### 版本更新日志（Change log）
 > 修改了版本后需要更改的文件  

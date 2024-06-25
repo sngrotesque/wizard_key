@@ -12,7 +12,7 @@ namespace wmkc {
         wSize get_encode_length(wSize length);
         wSize get_decode_length(wSize length);
     public:
-        wBool strict_mode = false;
+        bool strict_mode = false;
         char *encode(const wByte *buffer, wSize &length);
         wByte *decode(const char *buffer, wSize &length);
 
