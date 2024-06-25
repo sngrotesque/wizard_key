@@ -158,10 +158,12 @@ int main(int argc, char **argv)
 {
     // wmkc::test::fea_binascii_base64_test();
     // wmkc::test::test();
-    string result = wmkc::Binascii().a2b_hex("4142430d0a");
 
-    wmkc::misc::print_hex((wByte *)result.c_str(), result.size(), 16, true, false);
-
+    cout << wmkc::Base64().encode(
+        wmkc::Binascii().a2b_hex(
+            "68656c6c6f2c20776f726c642e0a5c28557755292f0d0a"
+        )
+    ) << endl;
 
     return 0;
 }
