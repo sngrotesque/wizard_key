@@ -29,13 +29,11 @@
  * 关于Linux平台（主要为GNU环境，可能不包括Clang）
  * https://gcc.gnu.org/onlinedocs/cpp/Common-Predefined-Macros.html
  */
-// Microsoft Windows
-#if defined(_WIN32) || defined(_WIN64)
+#if defined(_WIN32) || defined(_WIN64) // Microsoft Windows
 #   define WMKC_PLATFORM_WINOS
 #   define WMKC_SUPPORT true
 #   define WMKC_LE_ENDIAN true // 小端序，由于绝大多数（几乎所有）的Windows系统都是小端序，所以直接忽略大端序。
-// Linux
-#elif defined(__linux) || defined(__gnu_linux__) || defined(__linux__)
+#elif defined(__linux) || defined(__gnu_linux__) || defined(__linux__) // Linux
 #   define WMKC_PLATFORM_LINUX
 #   define WMKC_SUPPORT true
 #   if __BYTE_ORDER__
@@ -49,12 +47,11 @@
 #   else
 #       error "Endian judgment error."
 #   endif
-// Android
-#elif defined(__ANDROID__)
+#elif defined(__ANDROID__) // Android
 #   define WMKC_PLATFORM_ANDROID
 #   define WMKC_SUPPORT false
-// Mac OS
-#elif defined(macintosh) || defined(Macintosh) || defined(__APPLE__) || defined(__MACH__)
+#elif defined(macintosh) || defined(Macintosh) || defined(__APPLE__) || \
+    defined(__MACH__) // Mac OS
 #   define WMKC_PLATFORM_MACOS
 #   define WMKC_SUPPORT false
 #endif
@@ -91,15 +88,15 @@
 // 检查是否存在导出宏
 #ifndef LIBWMKC_API
 #  ifdef WMKC_EXPORTS
-#    ifdef _WIN32
+#    ifdef WMKC_PLATFORM_WINOS
 #      define LIBWMKC_API     __declspec(dllexport)
-#    elif defined(__ELF__)
+#    elif defined(__ELF__) || defined(WMKC_PLATFORM_LINUX)
 #      define LIBWMKC_API     __attribute__((visibility("protected")))
 #    else
 #      define LIBWMKC_API     __attribute__((visibility("default")))
 #    endif
 #  else
-#    ifdef _WIN32
+#    ifdef WMKC_PLATFORM_WINOS
 #      define LIBWMKC_API     __declspec(dllimport)
 #    else
 #      define LIBWMKC_API     __attribute__((visibility("default")))

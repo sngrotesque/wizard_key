@@ -67,6 +67,8 @@ A：因为我从未真正使用过`Mac OS`[^macos]，并且也不熟悉它的操
 6.  尽可能避免对结构体使用`typedef`关键字，如果必须，那么你应该考虑是否将它改为类。
 7.  代码层级应尽可能的少，如果可以，请按照Linux开发标准中建议的最多3层嵌套来编写代码[^linux_coding_style]。  
     由于C++不同于C，很多语法不能完全按照C的语法来实现，针对于嵌套层级这点不强求。
+8.  即便此库使用的是C++，你用C的语法来写也是完全没有问题的，不过唯一需要注意的是，目前所有内存指针全部使用`new`来申请内存，在  
+    未发生巨大改动之前，请不要使用`malloc`与`realloc`这类C内存管理函数。需要确保释放内存时的语法一致性。
 
 ### 版本更新日志（Change log）
 > 在未来实现爬虫库时要查阅的文档：
@@ -181,7 +183,7 @@ A：因为我从未真正使用过`Mac OS`[^macos]，并且也不熟悉它的操
 
 [^what_is_posix]: [What is the meaning of "POSIX"?](https://stackoverflow.com/questions/1780599/what-is-the-meaning-of-posix), [POSIX - Wiki](https://en.wikipedia.org/wiki/POSIX)
 
-[^no_cpp20]: 有些Linux系统搭配的GCC套件不完全支持C++20标准，你总不能让人去更换自己熟悉的开发环境吧？
+[^no_cpp20]: 应使用宏`#if __cplusplus >= 202002`来判断是否使用`C++20标准`，如果是就转到`C++20`标准的代码。而不应该直接舍弃`C++20`。
 
 [^linux_coding_style]: [Linux 内核代码风格](https://www.kernel.org/doc/html/latest/translations/zh_CN/process/coding-style.html)
 
