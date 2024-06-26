@@ -156,8 +156,8 @@ namespace wmkc {
 
 int main(int argc, char **argv)
 {
-    // wmkc::test::fea_binascii_base64_test();
-    // wmkc::test::test();
+    wmkc::test::fea_binascii_base64_test();
+    wmkc::test::test();
 
     cout << wmkc::Base64().decode("aGVsbG8sIHdvcmxkLgpcKFV3VSkvDQo=") << endl;
     cout << wmkc::Binascii().a2b_hex("68656c6c6f2c20776f726c642e0a5c28557755292f0d0a") << endl;

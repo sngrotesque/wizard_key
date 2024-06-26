@@ -1,10 +1,6 @@
 # Wizard Magic Key Cyber
 > `Wizard Magic Key Cyber` by SN-Grotesque
 
-此库已在以下环境下测试通过：
-1. `Ubuntu/Debian`系Linux操作系统 - GCC套件
-2. `Windows 10` - MinGW64 (MSYS2) - Visual Studio (2019~2022)
-
 ### Author(s):
  - [SN-Grotesque](https://github.com/sngrotesque)
  - [R7](https://github.com/r7z7)
@@ -39,9 +35,14 @@ A：因为我从未真正使用过`Mac OS`[^macos]，并且也不熟悉它的操
 
 ### 使用（Usage）
 1.  此库仅支持64位操作系统（Windows，Linux），请不要在使用32位操作系统的情况下使用此库，否则可能会出现意想不到的情况。
-2.  对于`MingW64`与`GCC套件`的使用，可以直接调用根目录的[run.py](run.py)代码来执行（功能基本上等同于make）。  
+2.  对于`MingW64`与`GNUC`的使用，可以直接调用根目录的[run.py](run.py)代码来执行（功能基本上等同于make）。  
     而对于`Visual Studio`，需要自行将库编译为dll文件或者在主程序代码文件中包含`*.cpp`文件。  
     未来会使用[CMakeList.txt (Cmake)](https://cmake.org/)来强化编译步骤。
+3.  目前暂未对[Clang](https://clang.llvm.org/)这款编译器做直接测试，请使用Clang作为编译器的开发者自行判断此库在Clang中的可行性。
+
+此库已在以下环境下测试通过：
+1. `Ubuntu/Debian`系 - GNU C
+2. `Windows 10` - MinGW64 (MSYS2) - Visual Studio (2019~2022)
 
 ### 开发规范（Development specifications）
  -  开发标准：
@@ -91,6 +92,7 @@ A：因为我从未真正使用过`Mac OS`[^macos]，并且也不熟悉它的操
 5.  完善了[密码库的计数器](includes/crypto/utils.hpp#L9)。
 6.  完善了部分[SSL库](includes/network/ssl.hpp)的功能。
 7.  完善了[Binascii](includes/binascii.hpp)，修复了[Base64](sources/base64.cpp)中的异常捕获隐患。
+8.  修改并完善了[WMKC库的代码和宏定义](includes/config/wmkc.hpp)，以便未来更好的支持各个平台以及各个编译器。
 
 #### v0.7.1
 1.  重写了wmkc::Exception（抛弃原先的函数调用std::runtime_error的形式），将其作为一个完整的异常类使用，继承于std::exception。

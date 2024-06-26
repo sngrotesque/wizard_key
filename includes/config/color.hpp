@@ -5,8 +5,6 @@
 #ifndef WMKC_COLOR
 #define WMKC_COLOR
 
-#define WMKC_COLOR_SET(color, text) color text WMKC_COLOR_ALL_RESET
-
 namespace wmkc {
     namespace color {
         namespace all {
