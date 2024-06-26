@@ -31,8 +31,8 @@ TIMEVAL create_timeval(double number)
     TIMEVAL tv{};
     double intPart, floatPart;
     floatPart = modf(number, &intPart);
-    tv.tv_sec = (long)intPart;
-    tv.tv_usec = (long)floatPart;
+    tv.tv_sec = static_cast<long>(intPart);
+    tv.tv_usec = static_cast<long>(floatPart);
     return tv;
 }
 
