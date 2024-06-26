@@ -2,7 +2,7 @@
 
 std::string wmkc::Time::get_now_time(std::string timeFormat)
 {
-    char resultString[66] = {0};
+    char resultString[66]{};
     time_t tm_val;
 
     ::time(&tm_val);

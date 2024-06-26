@@ -26,12 +26,12 @@ struct wmkc::winapi::widthHeight wmkc::winapi::get_cursor_pos()
 std::string wmkc::winapi::get_username(char format = 'A')
 {
     if(format == 'A') {
-        char tmp_buffer[512] = {0};
+        char tmp_buffer[512]{0};
         DWORD tmp_buffer_size = sizeof(tmp_buffer);
         GetUserNameA(tmp_buffer, &tmp_buffer_size);
         return std::string(tmp_buffer);
     } else if(format == 'W') {
-        WCHAR tmp_buffer[512] = {0};
+        WCHAR tmp_buffer[512]{0};
         DWORD tmp_buffer_size = sizeof(tmp_buffer) >> 1;
         GetUserNameW(tmp_buffer, &tmp_buffer_size);
         return std::string((char *)tmp_buffer, tmp_buffer_size);

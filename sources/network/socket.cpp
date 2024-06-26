@@ -33,8 +33,8 @@ wmkc::net::IPEndPoint wmkc::net::get_network_info(wSocket sockfd, wS32 family)
 {
     SOCKADDR_IN *ipv4 = nullptr;
     SOCKADDR_IN6 *ipv6 = nullptr;
-    SOCKADDR basicSockAddr = {0};
-    socklen_t basicSockAddr_len = sizeof(basicSockAddr);
+    SOCKADDR basicSockAddr{0};
+    socklen_t basicSockAddr_len{sizeof(basicSockAddr)};
     wmkc::net::IPEndPoint addr_info;
 
     if(getsockname(sockfd, &basicSockAddr, &basicSockAddr_len) == WMKC_NET_ERROR) {
@@ -42,18 +42,18 @@ wmkc::net::IPEndPoint wmkc::net::get_network_info(wSocket sockfd, wS32 family)
     }
 
     switch(family) {
-        case AF_INET:
-            ipv4 = (SOCKADDR_IN *)&basicSockAddr;
-            addr_info.addr = wmkc::net::network_addr_to_string_addr(family,
-                                                            &ipv4->sin_addr);
-            addr_info.port = wmkc::net::network_port_to_number_port(ipv4->sin_port);
-            break;
-        case AF_INET6:
-            ipv6 = (SOCKADDR_IN6 *)&basicSockAddr;
-            addr_info.addr = wmkc::net::network_addr_to_string_addr(family,
-                                                            &ipv6->sin6_addr);
-            addr_info.port = wmkc::net::network_port_to_number_port(ipv6->sin6_port);
-            break;
+    case AF_INET:
+        ipv4 = reinterpret_cast<SOCKADDR_IN *>(&basicSockAddr);
+        addr_info.addr = wmkc::net::network_addr_to_string_addr(family,
+                                                        &ipv4->sin_addr);
+        addr_info.port = wmkc::net::network_port_to_number_port(ipv4->sin_port);
+        break;
+    case AF_INET6:
+        ipv6 = reinterpret_cast<SOCKADDR_IN6 *>(&basicSockAddr);
+        addr_info.addr = wmkc::net::network_addr_to_string_addr(family,
+                                                        &ipv6->sin6_addr);
+        addr_info.port = wmkc::net::network_port_to_number_port(ipv6->sin6_port);
+        break;
     }
 
     return addr_info;
@@ -66,18 +66,18 @@ wmkc::net::IPEndPoint wmkc::net::get_network_info(wS32 family, SOCKADDR *pAddr)
     wmkc::net::IPEndPoint addr_info;
     
     switch(family) {
-        case AF_INET:
-            ipv4 = (SOCKADDR_IN *)pAddr;
-            addr_info.addr = wmkc::net::network_addr_to_string_addr(family,
-                                                            &ipv4->sin_addr);
-            addr_info.port = wmkc::net::network_port_to_number_port(ipv4->sin_port);
-            break;
-        case AF_INET6:
-            ipv6 = (SOCKADDR_IN6 *)pAddr;
-            addr_info.addr = wmkc::net::network_addr_to_string_addr(family,
-                                                            &ipv6->sin6_addr);
-            addr_info.port = wmkc::net::network_port_to_number_port(ipv6->sin6_port);
-            break;
+    case AF_INET:
+        ipv4 = reinterpret_cast<SOCKADDR_IN *>(pAddr);
+        addr_info.addr = wmkc::net::network_addr_to_string_addr(family,
+                                                        &ipv4->sin_addr);
+        addr_info.port = wmkc::net::network_port_to_number_port(ipv4->sin_port);
+        break;
+    case AF_INET6:
+        ipv6 = reinterpret_cast<SOCKADDR_IN6 *>(pAddr);
+        addr_info.addr = wmkc::net::network_addr_to_string_addr(family,
+                                                        &ipv6->sin6_addr);
+        addr_info.port = wmkc::net::network_port_to_number_port(ipv6->sin6_port);
+        break;
     }
 
     return addr_info;
@@ -105,16 +105,16 @@ wmkc::net::Socket::~Socket()
 
 void wmkc::net::Socket::setsockopt(int level, int optName, SocketOption &opt)
 {
-    if(::setsockopt(this->fd, level, optName, (char *)opt.val, opt.val_len) \
-                                                        == WMKC_NET_ERROR) {
+    wS32 err = ::setsockopt(this->fd, level, optName, (char *)opt.val, opt.val_len);
+    if(err == WMKC_NET_ERROR) {
         wmkc::net::exception("wmkc::net::Socket::setsockopt");
     }
 }
 
 void wmkc::net::Socket::getsockopt(int level, int optName, SocketOption &opt)
 {
-    if(::getsockopt(this->fd, level, optName, (char *)opt.val, &opt.val_len) \
-                                                        == WMKC_NET_ERROR) {
+    wS32 err = ::getsockopt(this->fd, level, optName, (char *)opt.val, &opt.val_len);
+    if(err == WMKC_NET_ERROR) {
         wmkc::net::exception("wmkc::net::Socket::getsockopt");
     }
 }
@@ -123,13 +123,16 @@ void wmkc::net::Socket::settimeout(double _val)
 {
     this->timeout = _val;
 #   if defined(WMKC_PLATFORM_WINOS)
-    DWORD _timeout = (DWORD)(this->timeout * 1e3);
+    DWORD _timeout = static_cast<DWORD>(this->timeout * 1e3);
 #   elif defined(WMKC_PLATFORM_LINUX)
     double intpart = 0;
     double fracpart = modf(this->timeout, &intpart);
-    struct timeval _timeout = {.tv_sec=(long)intpart, .tv_usec=(long)(fracpart * 1e6)};
+    struct timeval _timeout = {
+        .tv_sec  = static_cast<time_t>(intpart),
+        .tv_usec = static_cast<time_t>(fracpart * 1e6)
+    };
 #   endif
-    char *optval = (char *)&_timeout;
+    char *optval = reinterpret_cast<char *>(&_timeout);
 
     if(::setsockopt(this->fd, SOL_SOCKET, SO_SNDTIMEO, optval, sizeof(_timeout)) ||
         ::setsockopt(this->fd, SOL_SOCKET, SO_RCVTIMEO, optval, sizeof(_timeout))) {
@@ -149,18 +152,20 @@ void wmkc::net::Socket::connect(const std::string addr, const wU16 port)
 
     this->rAddr = wmkc::net::get_network_info(this->family, sAddrRes->ai_addr);
     this->lAddr = wmkc::net::get_network_info(this->fd, this->family);
+
     freeaddrinfo(sAddrRes);
 }
 
 void wmkc::net::Socket::bind(const std::string addr, const wU16 port)
 {
-    ADDRINFO *sAddrRes = wmkc::net::get_addr_info(this->family, this->type, this->proto,
-                                                addr, std::to_string(port));
+    ADDRINFO *sAddrRes = wmkc::net::get_addr_info(
+        this->family, this->type, this->proto, addr, std::to_string(port));
 
     if(::bind(this->fd, sAddrRes->ai_addr, sAddrRes->ai_addrlen) == WMKC_NET_ERROR) {
         freeaddrinfo(sAddrRes);
         wmkc::net::exception("wmkc::net::Socket::bind");
     }
+
     this->lAddr = wmkc::net::get_network_info(this->family, sAddrRes->ai_addr);
 
     freeaddrinfo(sAddrRes);
@@ -189,7 +194,7 @@ wmkc::net::Socket wmkc::net::Socket::accept()
 void wmkc::net::Socket::send(const std::string content, const wS32 flag)
 {
     this->transmissionLength = ::send(this->fd, (char *)content.c_str(),
-                                                    content.size(), flag);
+                                    content.size(), flag);
 
     if(this->transmissionLength == WMKC_NET_ERROR) {
         wmkc::net::exception("wmkc::net::Socket::send");
@@ -198,9 +203,9 @@ void wmkc::net::Socket::send(const std::string content, const wS32 flag)
 
 void wmkc::net::Socket::sendall(const std::string content, const wS32 flag)
 {
-    char *offset_ptr = (char *)content.c_str();
-    wU32 size = (socklen_t)content.size();
-    wU32 retry_count = 5;
+    const char *offset_ptr = content.c_str();
+    wU32 size = static_cast<wU32>(content.size());
+    wU32 retry_count{5};
 
     while(size) {
         this->transmissionLength = ::send(this->fd, offset_ptr, size, flag);
@@ -233,7 +238,7 @@ std::string wmkc::net::Socket::recv(const wS32 len, const wS32 flag)
         wmkc::net::exception("wmkc::net::Socket::recv");
     }
 
-    std::string content{(char *)buffer, (wSize)this->transmissionLength};
+    std::string content{buffer, static_cast<wSize>(this->transmissionLength)};
 
     delete[] buffer;
     return content;
@@ -270,7 +275,7 @@ std::string wmkc::net::Socket::recvfrom(const wS32 len, SOCKADDR *from,
         exception("wmkc::net::Socket::recvfrom");
     }
 
-    std::string content((char *)buffer, this->transmissionLength);
+    std::string content(buffer, this->transmissionLength);
 
     delete[] buffer;
     return content;

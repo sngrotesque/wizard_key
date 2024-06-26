@@ -151,27 +151,41 @@ namespace wmkc {
             WSACleanup();
 #           endif
         }
+
+        void struct_test()
+        {
+            wmkc::Struct Struct;
+            string res = Struct.pack(">IIId", 1, 2, 3, 3.0);
+
+            wByte *result = (wByte *)res.data();
+            wSize length = res.size();
+
+            wmkc::misc::print_hex(result, length, 32, 1, 0);
+        }
     }
 }
 
 int main(int argc, char **argv)
 {
-    wmkc::test::fea_binascii_base64_test();
-    // Windows执行了此函数之后后续内容不产生输出的原因是命令行的编码问题，切换至UTF-8即可。
-    wmkc::test::test();
+    // wmkc::test::struct_test();
 
-    wmkc::Base64 base64;
-    wmkc::Binascii binascii;
+    const char    *p1 = "12345";
+    const uint8_t *p2 = static_cast<const uint8_t *>(static_cast<const void *>(p1));
 
-    string res1_string = base64.decode("aGVsbG8sIHdvcmxkLgpcKFV3VSkvDQo=");
-    string res2_string = binascii.a2b_hex("68656c6c6f2c20776f726c642e0a5c28557755292f0d0a");
+    const char    *p3 = "12345";
+    const uint8_t *p4 = reinterpret_cast<const uint8_t *>(p3);
 
-    const char *res1 = res1_string.c_str();
-    const char *res2 = res2_string.c_str();
+    const char    *p5 = "12345";
+    const uint8_t *p6 = (const uint8_t *)p5;
 
-    printf("test\n");
-    cout << res1 << endl;
-    cout << res2 << endl;
+    printf("p1 ptr addr: %p\n", p1);
+    printf("p2 ptr addr: %p\n", p2);
+
+    printf("p3 ptr addr: %p\n", p3);
+    printf("p4 ptr addr: %p\n", p4);
+
+    printf("p5 ptr addr: %p\n", p5);
+    printf("p6 ptr addr: %p\n", p6);
 
     return 0;
 }

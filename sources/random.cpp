@@ -1,8 +1,8 @@
 #include <random.hpp>
 
-constexpr wByte BIT_BYTE_SWAP(wByte x)
+constexpr wByte BIT_BYTE_SWAP(wByte i)
 {
-    return ((x & 0xf) << 4) ^ (x >> 4);
+    return ((i & 0xf) << 4) ^ (i >> 4);
 }
 
 wmkc::Random::Random()
@@ -18,21 +18,27 @@ void wmkc::Random::seed()
 
 wSize wmkc::Random::rand()
 {
-    wSize n = 0, num[32];
-    wU32 x, count;
-    for(x = 0; x < 32; ++x) {
-        num[x] = ::rand() ^ (::rand() ^ (::rand() & ::rand()));
-        n = n + (n ^ num[x]);
+    wSize n = 0;
+    wSize num[32]{};
+    wU32 count;
+    wU32 i;
+
+    for(i = 0; i < 32; ++i) {
+        num[i] = ::rand() ^ (::rand() ^ (::rand() & ::rand()));
+        n = n + (n ^ num[i]);
     }
+
     n = n + BIT_BYTE_SWAP(::rand() & 0x0f);
+
     for(count = 0; count < 32; ++count) {
-        for(x = 0; x < 32; ++x) {
-            num[x] = ::rand() ^ (::rand() ^ (::rand() & ::rand()));
+        for(i = 0; i < 32; ++i) {
+            num[i] = ::rand() ^ (::rand() ^ (::rand() & ::rand()));
         }
         n = (n + (n ^ num[count])) ^ count;
         n = (n + ::rand()) ^ BIT_BYTE_SWAP((count + (::rand() ^
                                         (n - num[count]))) & 0xff);
     }
+
     return n;
 }
 
@@ -75,6 +81,7 @@ std::string wmkc::Random::urandom(wU32 size)
     if(!size) {
         return std::string();
     }
+
     wByte *buf = new (std::nothrow) wByte[size];
     if(!buf) {
         throw wmkc::Exception(wmkcErr_ErrMemory, "wmkc::Random::urandom",
@@ -87,7 +94,8 @@ std::string wmkc::Random::urandom(wU32 size)
         throw;
     }
 
-    std::string result((char *)buf, size);
+    std::string result(reinterpret_cast<char *>(buf), size);
     delete[] buf;
+
     return result;
 }

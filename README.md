@@ -47,6 +47,8 @@ A：因为我从未真正使用过`Mac OS`[^macos]，并且也不熟悉它的操
 ### 开发规范（Development specifications）
  -  开发标准：
 1.  C++ standard >= `C++11`，同时尽可能避免使用`C++20`及以上标准的语法和头文件[^no_cpp20]。
+2.  对于`reinterpret_cast`[^reinterpret_cast]关键字的使用，在Windows-MingW64-VisualStudio2022和Linux-GNUC中  
+    测试无问题，相当于C代码中的强制类型转换[^forced_conversion]，目前测试未发现问题，继续使用。
  -  代码风格：
 1.  单行不超过90个英文字符。
 2.  对于类型的初始化，只使用两种初始化方法。  
@@ -69,6 +71,7 @@ A：因为我从未真正使用过`Mac OS`[^macos]，并且也不熟悉它的操
     由于C++不同于C，很多语法不能完全按照C的语法来实现，针对于嵌套层级这点不强求。
 8.  即便此库使用的是C++，你用C的语法来写也是完全没有问题的，不过唯一需要注意的是，目前所有内存指针全部使用`new`来申请内存，在  
     未发生巨大改动之前，请不要使用`malloc`与`realloc`这类C内存管理函数。需要确保释放内存时的语法一致性。
+9.  使用`空格(Space)`作为缩进符！缩进单位：4个空格符。
 
 ### 版本更新日志（Change log）
 > 在未来实现爬虫库时要查阅的文档：
@@ -85,7 +88,7 @@ A：因为我从未真正使用过`Mac OS`[^macos]，并且也不熟悉它的操
     ~~但目前并未完全按照[RFC4648](https://datatracker.ietf.org/doc/html/rfc4648)实现，请等待后续的进一步完善。~~  
     使用Python中的方法来完善了Base64的解码功能，但存在一个处理受污染Base64编码串的小问题。  
     即：最终指针实际使用的内存空间会比解码后应实际占用的内存空间略大（这取决于Base64编码串被污染的程度），将在后续版本中修复此问题。  
-    ~~目前又发现一个问题，一种极为特殊的被污染的Base64编码串[^?base64_encoded]会导致直接的内存泄露或者程序闪退。~~
+    ~~目前又发现一个问题，一种极为特殊的被污染的Base64编码串会导致直接的内存泄露或者程序闪退。~~
     问题解决，问题的根源是`bin_data`指针指向错误，应使用`bin_data_start`指针来释放内存。**妈的终于把心头的一个大石头移开了，我就说这段时间怎么感觉胸闷。**
 2.  提供了用于[公开库的API调用](includes/config/wmkc.hpp#L36)，现在可以更好的支持编译器导入和导出库函数了。  
     请在编译时加入宏**WMKC_EXPORTS**，否则很可能将编译失败。
@@ -95,6 +98,7 @@ A：因为我从未真正使用过`Mac OS`[^macos]，并且也不熟悉它的操
 6.  完善了部分[SSL库](includes/network/ssl.hpp)的功能。
 7.  完善了[Binascii](includes/binascii.hpp)，修复了[Base64](sources/base64.cpp)中的异常捕获隐患。
 8.  修改并完善了[WMKC库的代码和宏定义](includes/config/wmkc.hpp)，以便未来更好的支持各个平台以及各个编译器。
+9.  逐渐将所有以前的C语法改为C++语法。
 
 #### v0.7.1
 1.  重写了wmkc::Exception（抛弃原先的函数调用std::runtime_error的形式），将其作为一个完整的异常类使用，继承于std::exception。
@@ -187,4 +191,6 @@ A：因为我从未真正使用过`Mac OS`[^macos]，并且也不熟悉它的操
 
 [^linux_coding_style]: [Linux 内核代码风格](https://www.kernel.org/doc/html/latest/translations/zh_CN/process/coding-style.html)
 
-[^?base64_encoded]: "UwU//"
+[^reinterpret_cast]: [reinterpret_cast conversion](https://en.cppreference.com/w/cpp/language/reinterpret_cast), [C++标准转换运算符reinterpret_cast - 博客园](https://www.cnblogs.com/ider/archive/2011/07/30/cpp_cast_operator_part3.html), [reinterpret_cast in C++ | Type Casting operators](https://www.geeksforgeeks.org/reinterpret_cast-in-c-type-casting-operators/)
+
+[^forced_conversion]: `const char *p = "1234"; uint8_t *p1 = (uint8_t *)p;`

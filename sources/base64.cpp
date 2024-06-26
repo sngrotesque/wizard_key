@@ -72,7 +72,7 @@ std::string wmkc::Base64::encode(std::string _buffer)
         return std::string();
     }
 
-    wByte *buffer = (wByte *)_buffer.data();
+    wByte *buffer = reinterpret_cast<wByte *>(_buffer.data());
     wSize length = _buffer.size();
     char *result = nullptr;
 
@@ -110,7 +110,7 @@ wByte *wmkc::Base64::decode(const char *buffer, wSize &length)
 {
     std::string error_message;
 
-    const wByte *ascii_data = (const wByte *)buffer;
+    const wByte *ascii_data = reinterpret_cast<const wByte *>(buffer);
     const wSize  ascii_len  = length;
     bool  padding_started   = 0;
 
@@ -239,7 +239,7 @@ std::string wmkc::Base64::decode(std::string _buffer)
         throw;
     }
 
-    std::string _result{(char *)result, length};
+    std::string _result{reinterpret_cast<char *>(result), length};
     delete[] result;
 
     return _result;

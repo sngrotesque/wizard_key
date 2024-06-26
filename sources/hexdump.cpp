@@ -46,7 +46,7 @@ void wmkc::hexdump(T file_path)
     wSize nRead = 0;
 
     while(f.peek() != EOF) {
-        nRead = f.read((char *)buffer, WMKC_HD_BL).gcount();
+        nRead = f.read(reinterpret_cast<char *>(buffer), WMKC_HD_BL).gcount();
         _hexdump(offset, buffer, nRead);
         offset += nRead;
     }

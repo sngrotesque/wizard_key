@@ -66,7 +66,7 @@ wByte *wmkc::Binascii::a2b_hex(const char *buffer, wSize &length)
         throw wmkc::Exception(wmkcErr_ErrMemory, "wmkc::Binascii::a2b_hex",
             "Failed to allocate memory for result.");
     }
-    wByte *buffer_p = (wByte *)buffer;
+    const wByte *buffer_p = reinterpret_cast<const wByte *>(buffer);
     *(result + (length >> 1)) = 0x00;
 
     wSize bi, ri;
@@ -91,7 +91,7 @@ std::string wmkc::Binascii::b2a_hex(std::string _buffer)
     if(_buffer.empty()) {
         return std::string();
     }
-    wByte *buffer = (wByte *)_buffer.data();
+    wByte *buffer = reinterpret_cast<wByte *>(_buffer.data());
     wSize length = _buffer.size();
     char *result = nullptr;
 
@@ -122,7 +122,7 @@ std::string wmkc::Binascii::a2b_hex(std::string _buffer)
         throw;
     }
 
-    std::string result_string{(char *)result, length};
+    std::string result_string{reinterpret_cast<char *>(result), length};
     delete[] result;
 
     return result_string;

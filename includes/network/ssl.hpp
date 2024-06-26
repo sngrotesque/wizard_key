@@ -39,7 +39,7 @@ namespace wmkc {
             SSL_CTX *ssl_ctx;
             SSL *ssl;
         public:
-            SSL_Context(const SSL_METHOD *method);
+            SSL_Context(const SSL_METHOD *method = nullptr);
             ~SSL_Context();
             net::SSL_Socket wrap_socket(net::Socket fd, std::string server_hostname = "");
             void destroy();

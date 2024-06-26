@@ -265,7 +265,6 @@ wmkc::crypto::FEA::FEA(const wByte *key, const wByte *iv, wmkc::crypto::Counter 
         throw wmkc::Exception(wmkcErr_ErrNULL, "wmkc::crypto::FEA::fea",
                                         "key or iv is NULL.");
     }
-
     memcpy(this->key, key, sizeof(this->key));
     memcpy(this->iv, iv, sizeof(this->iv));
 
