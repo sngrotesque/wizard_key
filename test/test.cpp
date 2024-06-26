@@ -157,10 +157,21 @@ namespace wmkc {
 int main(int argc, char **argv)
 {
     wmkc::test::fea_binascii_base64_test();
+    // Windows执行了此函数之后后续内容不产生输出的原因是命令行的编码问题，切换至UTF-8即可。
     wmkc::test::test();
 
-    cout << wmkc::Base64().decode("aGVsbG8sIHdvcmxkLgpcKFV3VSkvDQo=") << endl;
-    cout << wmkc::Binascii().a2b_hex("68656c6c6f2c20776f726c642e0a5c28557755292f0d0a") << endl;
+    wmkc::Base64 base64;
+    wmkc::Binascii binascii;
+
+    string res1_string = base64.decode("aGVsbG8sIHdvcmxkLgpcKFV3VSkvDQo=");
+    string res2_string = binascii.a2b_hex("68656c6c6f2c20776f726c642e0a5c28557755292f0d0a");
+
+    const char *res1 = res1_string.c_str();
+    const char *res2 = res2_string.c_str();
+
+    printf("test\n");
+    cout << res1 << endl;
+    cout << res2 << endl;
 
     return 0;
 }
