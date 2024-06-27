@@ -72,6 +72,7 @@ A：因为我从未真正使用过`Mac OS`[^macos]，并且也不熟悉它的操
 8.  即便此库使用的是C++，你用C的语法来写也是完全没有问题的，不过唯一需要注意的是，目前所有内存指针全部使用`new`来申请内存，在  
     未发生巨大改动之前，请不要使用`malloc`与`realloc`这类C内存管理函数。需要确保释放内存时的语法一致性。
 9.  使用`空格(Space)`作为缩进符！缩进单位：4个空格符。
+10. 对于类型转换[^diff_type_conversion]：对于数字类型（整数和浮点数）使用C风格转换或C++风格转换皆可，其他类型请全部使用C++风格的转换。
 
 ### 版本更新日志（Change log）
 > 在未来实现爬虫库时要查阅的文档：
@@ -194,3 +195,5 @@ A：因为我从未真正使用过`Mac OS`[^macos]，并且也不熟悉它的操
 [^reinterpret_cast]: [reinterpret_cast conversion](https://en.cppreference.com/w/cpp/language/reinterpret_cast), [C++标准转换运算符reinterpret_cast - 博客园](https://www.cnblogs.com/ider/archive/2011/07/30/cpp_cast_operator_part3.html), [reinterpret_cast in C++ | Type Casting operators](https://www.geeksforgeeks.org/reinterpret_cast-in-c-type-casting-operators/)
 
 [^forced_conversion]: `const char *p = "1234"; uint8_t *p1 = (uint8_t *)p;`
+
+[^diff_type_conversion]: [What is the difference between static_cast and reinterpret_cast? [duplicate]](https://stackoverflow.com/questions/6855686/what-is-the-difference-between-static-cast-and-reinterpret-cast), [When should static_cast, dynamic_cast, const_cast, and reinterpret_cast be used?](https://stackoverflow.com/a/332086/21376217), [What is the C equivalent for reinterpret_cast?](https://stackoverflow.com/questions/1382051/what-is-the-c-equivalent-for-reinterpret-cast)

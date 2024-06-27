@@ -91,7 +91,8 @@ std::string wmkc::Base64::encode(std::string _buffer)
 // Decoding, definition
 wSize wmkc::Base64::get_decode_length(wSize length)
 {
-    return length / 4 * 3;
+    // 此处+3的目的是为了不让缓冲区过小
+    return (length + 3) / 4 * 3;
 }
 
 /*

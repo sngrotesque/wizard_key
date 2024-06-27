@@ -151,41 +151,61 @@ namespace wmkc {
             WSACleanup();
 #           endif
         }
-
-        void struct_test()
-        {
-            wmkc::Struct Struct;
-            string res = Struct.pack(">IIId", 1, 2, 3, 3.0);
-
-            wByte *result = (wByte *)res.data();
-            wSize length = res.size();
-
-            wmkc::misc::print_hex(result, length, 32, 1, 0);
-        }
     }
 }
 
+class fcipher {
+private:
+    wmkc::Random random;
+    std::string password;
+    wByte salt[16];
+
+    wByte fea_key[32];
+    wByte fea_iv[16];
+public:
+    fcipher(std::string password)
+    : random(), password(password), salt()
+    {
+
+    }
+
+    template <typename T>
+    void encrypt(T in_path, T out_path)
+    {
+        random.urandom(this->salt, sizeof(this->salt));
+        wmkc::test::derivedKey(this->password, reinterpret_cast<const char *>(salt),
+                            this->fea_key, this->fea_iv);
+        wmkc::crypto::FEA fea(this->fea_key, this->fea_iv, {}, 112);
+
+        fstream f_in(in_path,   ios::in  | ios::binary | ios::ate);
+        fstream f_out(out_path, ios::out | ios::binary);
+        if(!f_in.is_open() || !f_out.is_open()) {
+            throw wmkc::Exception(wmkcErr_Err, "fcipher::encrypt",
+                "Failed to file open.");
+        }
+
+        wSize length = f_in.tellg();
+        wByte *buffer = new (std::nothrow) wByte[length];
+        if(!buffer) {
+            throw wmkc::Exception(wmkcErr_ErrMemory, "fcipher::encrypt",
+                "Failed to allocate memory for buffer.");
+        }
+        f_in.seekg(0);
+        f_in.read(reinterpret_cast<char *>(buffer), length);
+        f_in.close();
+
+        fea.encrypt(buffer, length, wmkc::crypto::xcryptMode::CFB);
+
+        f_out.write(reinterpret_cast<char *>(buffer), length);
+        f_out.close();
+    }
+};
+
 int main(int argc, char **argv)
 {
-    // wmkc::test::struct_test();
+    fcipher fc_ctx("hello. world");
 
-    const char    *p1 = "12345";
-    const uint8_t *p2 = static_cast<const uint8_t *>(static_cast<const void *>(p1));
-
-    const char    *p3 = "12345";
-    const uint8_t *p4 = reinterpret_cast<const uint8_t *>(p3);
-
-    const char    *p5 = "12345";
-    const uint8_t *p6 = (const uint8_t *)p5;
-
-    printf("p1 ptr addr: %p\n", p1);
-    printf("p2 ptr addr: %p\n", p2);
-
-    printf("p3 ptr addr: %p\n", p3);
-    printf("p4 ptr addr: %p\n", p4);
-
-    printf("p5 ptr addr: %p\n", p5);
-    printf("p6 ptr addr: %p\n", p6);
+    fc_ctx.encrypt(L"F:/Pitchers/Pixiv/手动保存/119783167_p0.png", L"./119783167_p0.png.lock");
 
     return 0;
 }
