@@ -1,19 +1,24 @@
-from subprocess import Popen, PIPE, call
+# from subprocess import (
+#     Popen, PIPE, call
+# )
 from git.repo import Repo
-import sys, re, os
+import subprocess
+import sys
+import re
+import os
 
 def RunPopen(cmd :str):
-    p = Popen(cmd, shell=True, stdout=PIPE)
+    p = subprocess.Popen(cmd, shell = True, stdout = subprocess.PIPE)
     return p.stdout.read().decode()
 
 def RunCommand(cmd :str):
-    call(cmd, shell=True)
+    return subprocess.call(cmd, shell = True)
 
 def deleteListData(OriginalList :list, dataContent: str):
     x = 0
     while x < len(OriginalList):
         if OriginalList[x][:3] == dataContent:
-            OriginalList.pop(x);
+            OriginalList.pop(x)
             x -= 1
         x += 1
 
@@ -25,12 +30,13 @@ class git_process:
         self.DefinedVersion    = 'v0.7.2'
         self.DefinedFolderPath = folder_path
 
-        self.path = os.listdir(folder_path)
-        self.path.remove('.git')
-        try:
+        self.compiled_path     = '_compiled'
+        self.path              = os.listdir(folder_path)
+
+        if os.path.exists('.git'):
+            self.path.remove('.git')
+        if os.path.exists(self.compiled_path):
             self.path.remove('_compiled')
-        except ValueError:
-            print(f'_compiled目录不存在。')
         # self.path.remove('upload.py')
 
     def view(self):
@@ -40,7 +46,7 @@ class git_process:
         print(f'>>>> +---------- 现有文件(END)   ----------+')
 
     def versionCheck(self):
-        branch_version = RunPopen('git branch')
+        branch_version        = RunPopen('git branch')
         
         branch_name_0_regular = r'\s+(v[\d.]+\-\w+)'
         branch_name_1_regular = r'\s+(v[\d.]+_\w+)'
