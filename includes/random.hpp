@@ -1,19 +1,19 @@
-#include <config/wmkc.hpp>
+#include <config/wuk.hpp>
 
-#if WMKC_SUPPORT
-#ifndef WMKC_CPP_RANDOM
-#define WMKC_CPP_RANDOM
+#if WUK_SUPPORT
+#ifndef WUK_CPP_RANDOM
+#define WUK_CPP_RANDOM
 #include <config/exception.hpp>
 #include <time.hpp>
 
-#if defined(WMKC_PLATFORM_LINUX)
+#if defined(WUK_PLATFORM_LINUX)
 #   include <sys/random.h>
-#elif defined(WMKC_PLATFORM_WINOS)
+#elif defined(WUK_PLATFORM_WINOS)
 #   include <windows.h>
 #endif
 
-namespace wmkc {
-    class LIBWMKC_API Random {
+namespace wuk {
+    class LIBWUK_API Random {
     public:
         Random();
         void seed();
@@ -24,5 +24,5 @@ namespace wmkc {
     };
 }
 
-#endif /* WMKC_CPP_RANDOM */
-#endif /* WMKC_SUPPORT */
+#endif /* WUK_CPP_RANDOM */
+#endif /* WUK_SUPPORT */

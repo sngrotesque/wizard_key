@@ -1,15 +1,15 @@
-#include <config/wmkc.hpp>
+#include <config/wuk.hpp>
 
-#if WMKC_SUPPORT
-#ifndef WMKC_CPP_HASH
-#define WMKC_CPP_HASH
+#if WUK_SUPPORT
+#ifndef WUK_CPP_HASH
+#define WUK_CPP_HASH
 #include <config/exception.hpp>
 #include <binascii.hpp>
 #include <memory.hpp>
 #include <openssl/evp.h>
 
-namespace wmkc {
-    class LIBWMKC_API Hashlib {
+namespace wuk {
+    class LIBWUK_API Hashlib {
         private:
             EVP_MD_CTX *md_ctx;
             const EVP_MD *md;

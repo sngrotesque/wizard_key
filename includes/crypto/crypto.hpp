@@ -1,15 +1,15 @@
-#include <config/wmkc.hpp>
+#include <config/wuk.hpp>
 
-#if WMKC_SUPPORT
-#ifndef WMKC_CPP_CRYPTO
+#if WUK_SUPPORT
+#ifndef WUK_CPP_CRYPTO
 #include <vector>
 #include <algorithm>
 #include <random>
 
-namespace wmkc {
+namespace wuk {
     namespace crypto {
-        LIBWMKC_API void generate_sbox(wByte *sbox);
-        LIBWMKC_API void generate_rsbox(wByte *rsbox, wByte *sbox);
+        LIBWUK_API void generate_sbox(wByte *sbox);
+        LIBWUK_API void generate_rsbox(wByte *rsbox, wByte *sbox);
     }
 }
 

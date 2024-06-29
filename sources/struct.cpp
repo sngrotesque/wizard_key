@@ -40,9 +40,9 @@ std::string get_bytes_result(T n, wU32 size, bool change)
 
 template <typename T>
 std::string single_pack(char format,
-                        wmkc::endianness current, wmkc::endianness specify, T arg)
+                        wuk::endianness current, wuk::endianness specify, T arg)
 {
-    bool change = ((specify!=wmkc::endianness::NO)&&(current!=specify))?(true):(false);
+    bool change = ((specify!=wuk::endianness::NO)&&(current!=specify))?(true):(false);
     std::string results;
 
     switch(format) {
@@ -61,18 +61,18 @@ std::string single_pack(char format,
     return results;
 }
 
-std::string wmkc::Struct::pack(std::string format, ...)
+std::string wuk::Struct::pack(std::string format, ...)
 {
-    wmkc::endianness current = (WMKC_LE_ENDIAN)?(wmkc::endianness::LE):(wmkc::endianness::BE);
-    wmkc::endianness specify = wmkc::endianness::NO;
+    wuk::endianness current = (WUK_LE_ENDIAN)?(wuk::endianness::LE):(wuk::endianness::BE);
+    wuk::endianness specify = wuk::endianness::NO;
     std::string results;
 
     switch(format[0]) {
         case '>':
         case '!':
-            specify = wmkc::endianness::BE; goto del;
+            specify = wuk::endianness::BE; goto del;
         case '<':
-            specify = wmkc::endianness::LE; goto del;
+            specify = wuk::endianness::LE; goto del;
         case '@':
         case '=':
             del:
@@ -117,7 +117,7 @@ std::string wmkc::Struct::pack(std::string format, ...)
                                         (double)va_arg(va, double)));
                 break;
             default:
-                throw wmkc::Exception(wmkcErr_Err, "wmkc::Struct::pack",
+                throw wuk::Exception(wukErr_Err, "wuk::Struct::pack",
                                             "bad char in struct format");
         }
     }
@@ -127,7 +127,7 @@ std::string wmkc::Struct::pack(std::string format, ...)
     return results;
 }
 
-std::vector<std::any> wmkc::Struct::unpack(std::string format, std::string buffer)
+std::vector<std::any> wuk::Struct::unpack(std::string format, std::string buffer)
 {
     std::vector<std::any> results;
 

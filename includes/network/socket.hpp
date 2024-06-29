@@ -1,12 +1,12 @@
-#include <config/wmkc.hpp>
+#include <config/wuk.hpp>
 
-#if WMKC_SUPPORT
-#ifndef WMKC_CPP_NET
-#define WMKC_CPP_NET
+#if WUK_SUPPORT
+#ifndef WUK_CPP_NET
+#define WUK_CPP_NET
 #include <network/exception.hpp>
 #include <cmath>
 
-#if defined(WMKC_PLATFORM_LINUX)
+#if defined(WUK_PLATFORM_LINUX)
 #   include <netdb.h>
 #   include <unistd.h>
 #   include <sys/time.h>
@@ -15,26 +15,26 @@
 #   include <netinet/in.h>
 #   include <netinet/ip.h>
 #   include <netinet/tcp.h>
-#   define WMKC_NET_ERROR EOF             // 定义错误代码
+#   define WUK_NET_ERROR EOF             // 定义错误代码
 typedef struct sockaddr     SOCKADDR;     // 套接字地址结构
 typedef struct addrinfo     ADDRINFO;     // 域名解析结构
 typedef struct sockaddr_in  SOCKADDR_IN;  // IPv4网络结构
 typedef struct sockaddr_in6 SOCKADDR_IN6; // IPv6网络结构
-typedef wS32   wSocket;                   // wmkcNet的socket类型
-#elif defined(WMKC_PLATFORM_WINOS)
+typedef wS32   wSocket;                   // wukNet的socket类型
+#elif defined(WUK_PLATFORM_WINOS)
 #   include <WS2tcpip.h>
 #   if defined(_MSC_VER)
 #       pragma comment(lib, "WS2_32")
 #   endif
-#   define WMKC_NET_ERROR SOCKET_ERROR    // 定义错误代码
-typedef SOCKET         wSocket;           // wmkcNet的socket类型
-#endif /* WMKC_PLATFORM_LINUX */
+#   define WUK_NET_ERROR SOCKET_ERROR    // 定义错误代码
+typedef SOCKET         wSocket;           // wukNet的socket类型
+#endif /* WUK_PLATFORM_LINUX */
 
 #include <memory.hpp>
 
-namespace wmkc {
+namespace wuk {
     namespace net {
-        class LIBWMKC_API IPEndPoint {
+        class LIBWUK_API IPEndPoint {
         public:
             std::string addr;
             wU16 port;
@@ -42,7 +42,7 @@ namespace wmkc {
             IPEndPoint():addr(),port() {};
         };
 
-        class LIBWMKC_API SocketOption {
+        class LIBWUK_API SocketOption {
         public:
             const void *val;
             socklen_t val_len;
@@ -52,7 +52,7 @@ namespace wmkc {
     }
 }
 
-namespace wmkc {
+namespace wuk {
     namespace net {
         ADDRINFO    *get_addr_info(wS32 family, wS32 type, wS32 proto, std::string addr,
                                 std::string serviceName);
@@ -61,7 +61,7 @@ namespace wmkc {
         std::string network_addr_to_string_addr(wS32 family, const void *pAddr);
         wU16        network_port_to_number_port(const wU16 port);
 
-        class LIBWMKC_API Socket {
+        class LIBWUK_API Socket {
         public:
             double timeout; // 超时时间
             wSocket fd; // 套接字文件描述符
@@ -97,5 +97,5 @@ namespace wmkc {
     };
 }
 
-#endif /* WMKC_CPP_NET */
-#endif /* WMKC_SUPPORT */
+#endif /* WUK_CPP_NET */
+#endif /* WUK_SUPPORT */

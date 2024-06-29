@@ -1,6 +1,6 @@
 #include <crypto/crypto.hpp>
 
-void wmkc::crypto::generate_sbox(wByte *sbox)
+void wuk::crypto::generate_sbox(wByte *sbox)
 {
     for (int i = 0; i < 256; i++) {
         sbox[i] = i;
@@ -12,7 +12,7 @@ void wmkc::crypto::generate_sbox(wByte *sbox)
     }
 }
 
-void wmkc::crypto::generate_rsbox(wByte *rsbox, wByte *sbox)
+void wuk::crypto::generate_rsbox(wByte *rsbox, wByte *sbox)
 {
     for(wU32 x = 0; x < 256; ++x) {
         rsbox[sbox[x]] = x;

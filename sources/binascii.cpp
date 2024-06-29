@@ -18,26 +18,26 @@ static const wByte hexTable[256] = {
     31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31,
     31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31};
 
-wByte wmkc::Binascii::to_top(wByte c)
+wByte wuk::Binascii::to_top(wByte c)
 {
     return ((c >> 4) < 0xa) ? ((c >> 4) + 0x30) : ((c >> 4) + 0x57);
 }
 
-wByte wmkc::Binascii::to_bot(wByte c)
+wByte wuk::Binascii::to_bot(wByte c)
 {
     return ((c & 0xf) < 0xa) ? ((c & 0xf) + 0x30) : ((c & 0xf) + 0x57);
 }
 
-char *wmkc::Binascii::b2a_hex(const wByte *buffer, wSize &length)
+char *wuk::Binascii::b2a_hex(const wByte *buffer, wSize &length)
 {
     if(!buffer || !length) {
-        throw wmkc::Exception(wmkcErr_ErrNULL, "wmkc::Binascii::b2a_hex",
+        throw wuk::Exception(wukErr_ErrNULL, "wuk::Binascii::b2a_hex",
             "buffer is NULL.");
     }
 
     char *result = new (std::nothrow) char[(length << 1) + 1];
     if(!result) {
-        throw wmkc::Exception(wmkcErr_ErrMemory, "wmkc::Binascii::b2a_hex",
+        throw wuk::Exception(wukErr_ErrMemory, "wuk::Binascii::b2a_hex",
             "Failed to allocate memory for result.");
     }
     *(result + (length << 1)) = 0x00;
@@ -51,19 +51,19 @@ char *wmkc::Binascii::b2a_hex(const wByte *buffer, wSize &length)
     return result;
 }
 
-wByte *wmkc::Binascii::a2b_hex(const char *buffer, wSize &length)
+wByte *wuk::Binascii::a2b_hex(const char *buffer, wSize &length)
 {
     if(!buffer || !length) {
-        throw wmkc::Exception(wmkcErr_ErrNULL, "wmkc::Binascii::a2b_hex",
+        throw wuk::Exception(wukErr_ErrNULL, "wuk::Binascii::a2b_hex",
             "buffer is NULL.");
     }
     if(length & 1) {
-        throw wmkc::Exception(wmkcErr_Err, "wmkc::Binascii::a2b_hex",
+        throw wuk::Exception(wukErr_Err, "wuk::Binascii::a2b_hex",
             "Odd length is not allowed.");
     }
     wByte *result = new (std::nothrow) wByte[(length >> 1) + 1];
     if(!result) {
-        throw wmkc::Exception(wmkcErr_ErrMemory, "wmkc::Binascii::a2b_hex",
+        throw wuk::Exception(wukErr_ErrMemory, "wuk::Binascii::a2b_hex",
             "Failed to allocate memory for result.");
     }
     const wByte *buffer_p = reinterpret_cast<const wByte *>(buffer);
@@ -76,7 +76,7 @@ wByte *wmkc::Binascii::a2b_hex(const char *buffer, wSize &length)
         bot = hexTable[*(buffer_p + (bi + 1))];
         if((top == 31) || (bot == 31)) {
             delete[] result;
-            throw wmkc::Exception(wmkcErr_Err, "wmkc::Binascii::a2b_hex",
+            throw wuk::Exception(wukErr_Err, "wuk::Binascii::a2b_hex",
                 "characters must be from 0 to f.");
         }
         *(result + ri) = (top << 4) + bot;
@@ -86,7 +86,7 @@ wByte *wmkc::Binascii::a2b_hex(const char *buffer, wSize &length)
     return result;
 }
 
-std::string wmkc::Binascii::b2a_hex(std::string _buffer)
+std::string wuk::Binascii::b2a_hex(std::string _buffer)
 {
     if(_buffer.empty()) {
         return std::string();
@@ -107,7 +107,7 @@ std::string wmkc::Binascii::b2a_hex(std::string _buffer)
     return result_string;
 }
 
-std::string wmkc::Binascii::a2b_hex(std::string _buffer)
+std::string wuk::Binascii::a2b_hex(std::string _buffer)
 {
     if(_buffer.empty()) {
         return std::string();

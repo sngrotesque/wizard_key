@@ -1,12 +1,12 @@
-#include <config/wmkc.hpp>
+#include <config/wuk.hpp>
 
-#if WMKC_SUPPORT
-#ifndef WMKC_CPP_BINASCII
-#define WMKC_CPP_BINASCII
+#if WUK_SUPPORT
+#ifndef WUK_CPP_BINASCII
+#define WUK_CPP_BINASCII
 #include <config/exception.hpp>
 
-namespace wmkc {
-    class LIBWMKC_API Binascii {
+namespace wuk {
+    class LIBWUK_API Binascii {
     private:
         wByte to_top(wByte c);
         wByte to_bot(wByte c);
@@ -19,5 +19,5 @@ namespace wmkc {
     };
 }
 
-#endif /* WMKC_BINASCII */
-#endif /* WMKC_SUPPORT */
+#endif /* WUK_BINASCII */
+#endif /* WUK_SUPPORT */

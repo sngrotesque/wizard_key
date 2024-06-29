@@ -1,12 +1,12 @@
-#include <config/wmkc.hpp>
+#include <config/wuk.hpp>
 
-#if WMKC_SUPPORT
-#ifndef WMKC_CPP_UTILS
-#define WMKC_CPP_UTILS
+#if WUK_SUPPORT
+#ifndef WUK_CPP_UTILS
+#define WUK_CPP_UTILS
 
-namespace wmkc {
+namespace wuk {
     namespace crypto {
-        class LIBWMKC_API Counter {
+        class LIBWUK_API Counter {
             public:
                 wByte counter[16];
                 Counter();

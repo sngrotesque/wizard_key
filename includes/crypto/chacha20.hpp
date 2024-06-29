@@ -1,13 +1,13 @@
-#include <config/wmkc.hpp>
+#include <config/wuk.hpp>
 
-#if WMKC_SUPPORT
-#ifndef WMKC_CPP_CHACHA20
-#define WMKC_CPP_CHACHA20
+#if WUK_SUPPORT
+#ifndef WUK_CPP_CHACHA20
+#define WUK_CPP_CHACHA20
 #include <assert.h>
 
-namespace wmkc {
+namespace wuk {
     namespace crypto {
-        class LIBWMKC_API ChaCha20 {
+        class LIBWUK_API ChaCha20 {
         private:
             typedef wByte _key256[32];
             typedef wByte _nonce96[12];

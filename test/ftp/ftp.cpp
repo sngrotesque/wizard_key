@@ -15,7 +15,7 @@ void ftp_send(T file_path, std::string addr, wU16 port)
 {
     std::fstream f_obj(file_path, std::ios::binary | std::ios::in);
     if(!f_obj.is_open()) {
-        throw wmkc::Exception(wmkcErr_Err, "ftp_send",
+        throw wuk::Exception(wukErr_Err, "ftp_send",
                             "failed to file open.");
     }
     wByte length_BYTES[8]{};
@@ -30,13 +30,13 @@ void ftp_send(T file_path, std::string addr, wU16 port)
     printf("将数字转为大端序字节串。\n");
     // 将数字转为大端序字节串
     memcpy(length_BYTES, &length, sizeof(length_BYTES));
-    if(WMKC_LE_ENDIAN) {
+    if(WUK_LE_ENDIAN) {
         reverse(length_BYTES, sizeof(length_BYTES));
     }
 
     try {
         printf("创建套接字。\n");
-        wmkc::net::Socket fd(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+        wuk::net::Socket fd(AF_INET, SOCK_STREAM, IPPROTO_TCP);
         printf("与目标主机进行连接。\n");
         fd.connect(addr, port);
 
@@ -48,7 +48,7 @@ void ftp_send(T file_path, std::string addr, wU16 port)
         char buffer[2048];
         wSize tmp_len;
         for(;;) {
-            wmkc::memory_zero(buffer, sizeof(buffer));
+            wuk::memory_zero(buffer, sizeof(buffer));
             tmp_len = f_obj.read(buffer, sizeof(buffer)).gcount();
             if(!tmp_len) {
                 break;
@@ -59,7 +59,7 @@ void ftp_send(T file_path, std::string addr, wU16 port)
         printf("关闭套接字。\n");
         fd.shutdown(2);
         fd.close();
-    } catch(wmkc::Exception &e) {
+    } catch(wuk::Exception &e) {
         f_obj.close();
         printf("Error: %s\n", e.what());
         return;

@@ -4,12 +4,12 @@ This document is about where I am looking for references. Basically, these libra
 
 ----
 
-### [Library](includes/config/wmkc.hpp)
+### [Library](includes/config/wuk.hpp)
  - [__declspec(dllimport)](https://learn.microsoft.com/zh-cn/cpp/build/importing-into-an-application-using-declspec-dllimport?view=msvc-170)
  - [__declspec(dllexport)](https://learn.microsoft.com/zh-cn/cpp/build/exporting-from-a-dll-using-declspec-dllexport?view=msvc-170)
 
-### [wmkc::Exception](includes/config/exception.hpp)
-### [wmkc::net::Exception](includes/network/exception.hpp)
+### [wuk::Exception](includes/config/exception.hpp)
+### [wuk::net::Exception](includes/network/exception.hpp)
 
 ##### 1. Linux
  - [errno](https://man7.org/linux/man-pages/man3/errno.3.html)
@@ -19,7 +19,7 @@ This document is about where I am looking for references. Basically, these libra
 
 ---
 
-### [wmkc::Binascii](includes/binascii.hpp)
+### [wuk::Binascii](includes/binascii.hpp)
 > The reason for creating this class is simply because I think Binascii in Python is very useful.  
 > In terms of performance, I have optimized such methods to the extreme, and in terms of functionality, they are very convenient and easy to use.
 
@@ -27,7 +27,7 @@ This document is about where I am looking for references. Basically, these libra
 
 ---
 
-### [wmkc::Base64](includes/base64.hpp)
+### [wuk::Base64](includes/base64.hpp)
 
  - [Base64 wiki](https://en.wikipedia.org/wiki/Base64)
  - [Base64 for Python](https://docs.python.org/3/library/base64.html)
@@ -35,7 +35,7 @@ This document is about where I am looking for references. Basically, these libra
 
 ---
 
-### [wmkc::padding](includes/padding.hpp)
+### [wuk::padding](includes/padding.hpp)
 
  - [PKCS7](https://en.wikipedia.org/wiki/PKCS_7)
  - [PKCS padding](https://www.ibm.com/docs/en/zos/3.1.0?topic=rules-pkcs-padding-method)
@@ -44,13 +44,13 @@ This document is about where I am looking for references. Basically, these libra
 
 ---
 
-### [wmkc::Struct](includes/struct.hpp)
+### [wuk::Struct](includes/struct.hpp)
 > The reason for creating this class is because I think the Struct module in Python is very useful and can be conveniently used for network data transmission, so I implemented it myself.
  - Inspired by [Python's struct module](https://docs.python.org/zh-cn/3/library/struct.html)
 
 ---
 
-### [wmkc::crypto::FEA](includes/crypto/fea.hpp)
+### [wuk::crypto::FEA](includes/crypto/fea.hpp)
 > This is a block symmetric encryption algorithm implemented by myself, which has been greatly influenced by the [AES encryption algorithm](https://en.wikipedia.org/wiki/Advanced_Encryption_Standard).
 
 > In order to implement this encryption algorithm, I have referred to a lot of materials, and the following only shows a very small portion of the main reference materials.
@@ -67,7 +67,7 @@ This document is about where I am looking for references. Basically, these libra
 
 ---
 
-### [wmkc::net::Socket](includes/network/socket.hpp)
+### [wuk::net::Socket](includes/network/socket.hpp)
 
 ##### 1. Linux
  - [socket](https://man7.org/linux/man-pages/man2/socket.2.html)

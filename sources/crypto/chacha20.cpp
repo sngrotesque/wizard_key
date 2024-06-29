@@ -134,14 +134,14 @@ static void ChaCha20_block_next(const wU32 in[16], wU32 out[16], wByte **keystre
 	}
 }
 
-wmkc::crypto::ChaCha20::ChaCha20(wByte *key, wByte *nonce, wU32 counter)
+wuk::crypto::ChaCha20::ChaCha20(wByte *key, wByte *nonce, wU32 counter)
 : counter(counter)
 {
     memcpy(this->key, key, sizeof(this->key));
     memcpy(this->nonce, nonce, sizeof(this->nonce));
 }
 
-void wmkc::crypto::ChaCha20::init()
+void wuk::crypto::ChaCha20::init()
 {
     this->state[ 0] = pack4((const wByte *)CHACHA20_CONSTANT + 0 * 4);
     this->state[ 1] = pack4((const wByte *)CHACHA20_CONSTANT + 1 * 4);
@@ -161,7 +161,7 @@ void wmkc::crypto::ChaCha20::init()
     this->state[15] = pack4(this->nonce + 2 * 4);
 }
 
-void wmkc::crypto::ChaCha20::xcrypt(wByte *buffer, wSize length)
+void wuk::crypto::ChaCha20::xcrypt(wByte *buffer, wSize length)
 {
     wByte *keystream = nullptr;
     wU32 tmp[16];

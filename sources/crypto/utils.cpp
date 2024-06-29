@@ -1,11 +1,11 @@
 #include <crypto/utils.hpp>
 
-wmkc::crypto::Counter::Counter()
+wuk::crypto::Counter::Counter()
 {
 
 }
 
-wmkc::crypto::Counter::Counter(wByte *nonce, wU32 size, wSize begin)
+wuk::crypto::Counter::Counter(wByte *nonce, wU32 size, wSize begin)
 : counter()
 {
     memcpy(this->counter, nonce, size);
@@ -20,14 +20,14 @@ wmkc::crypto::Counter::Counter(wByte *nonce, wU32 size, wSize begin)
     this->counter[15] |= begin         & 0xff;
 }
 
-wmkc::crypto::Counter::Counter(const char *nonce, wU32 size, wSize begin)
+wuk::crypto::Counter::Counter(const char *nonce, wU32 size, wSize begin)
 // Counter -> Counter(wByte *nonce, wU32 size, wSize begin)
 : Counter((wByte *)nonce, size, begin)
 {
 
 }
 
-wmkc::crypto::Counter::Counter(std::string nonce, wSize begin)
+wuk::crypto::Counter::Counter(std::string nonce, wSize begin)
 // Counter -> Counter(const char *nonce, wU32 size, wSize begin)
 : Counter(nonce.c_str(), nonce.size(), begin)
 {

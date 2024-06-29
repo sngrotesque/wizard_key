@@ -1,21 +1,21 @@
-#include <config/wmkc.hpp>
+#include <config/wuk.hpp>
 
-#if WMKC_SUPPORT
-#ifndef WMKC_CPP_TIME
-#define WMKC_CPP_TIME
+#if WUK_SUPPORT
+#ifndef WUK_CPP_TIME
+#define WUK_CPP_TIME
 #include <config/exception.hpp>
 #include <sys/timeb.h>
 #include <time.h>
 
-#ifdef WMKC_PLATFORM_WINOS
+#ifdef WUK_PLATFORM_WINOS
 #include <Windows.h>
-#elif defined(WMKC_PLATFORM_LINUX)
+#elif defined(WUK_PLATFORM_LINUX)
 #include <sys/time.h>
 #include <unistd.h>
 #endif
 
-namespace wmkc {
-    class LIBWMKC_API Time {
+namespace wuk {
+    class LIBWUK_API Time {
     public:
         Time() {}
         std::string get_now_time(std::string timeFormat = "%a, %m/%d %Y %H:%M:%S");
@@ -24,5 +24,5 @@ namespace wmkc {
     };
 }
 
-#endif /* WMKC_TIME */
-#endif /* WMKC_SUPPORT */
+#endif /* WUK_TIME */
+#endif /* WUK_SUPPORT */

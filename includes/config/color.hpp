@@ -1,11 +1,11 @@
-#include <config/wmkc.hpp>
+#include <config/wuk.hpp>
 
 // 后续看看情况是否将这些字符串改为std::string
-#if WMKC_SUPPORT
-#ifndef WMKC_COLOR
-#define WMKC_COLOR
+#if WUK_SUPPORT
+#ifndef WUK_COLOR
+#define WUK_COLOR
 
-namespace wmkc {
+namespace wuk {
     namespace color {
         namespace all {
             const char *reset   = "\x1b[0m";
@@ -53,6 +53,6 @@ namespace wmkc {
     }
 }
 
-#endif /* WMKC_COLOR */
+#endif /* WUK_COLOR */
 #endif
 

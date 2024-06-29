@@ -1,4 +1,4 @@
-#include <config/wmkc.hpp>
+#include <config/wuk.hpp>
 
 /**
  * 对于在使用浮点数的情况下的pack函数出现问题的解决方法：
@@ -7,9 +7,9 @@
  *    ！！！你如果是作为字面量传入的话，不要使用直接的整数！！！
  *    比如从```pack("df", 0, 1)```改为```pack("df", 0.0, 1.0)```或者```pack("df", 0.0e0, 1.0e0)```。
 */
-#if WMKC_SUPPORT
-#ifndef WMKC_CPP_STRUCT
-#define WMKC_CPP_STRUCT
+#if WUK_SUPPORT
+#ifndef WUK_CPP_STRUCT
+#define WUK_CPP_STRUCT
 #include <config/exception.hpp>
 
 #include <any>
@@ -57,13 +57,13 @@
  *  格式之间的空白字符会被忽略；但是计数及其格式字符中不可有空白字符。
 */
 
-namespace wmkc {
+namespace wuk {
     enum class endianness {
         NO,
         LE,
         BE};
 
-    class LIBWMKC_API Struct {
+    class LIBWUK_API Struct {
     public:
         Struct() {}
         std::string pack(std::string format, ...);

@@ -1,12 +1,12 @@
-#include <config/wmkc.hpp>
+#include <config/wuk.hpp>
 
-#if WMKC_SUPPORT
-#ifndef WMKC_CPP_WINAPI
-#define WMKC_CPP_WINAPI
+#if WUK_SUPPORT
+#ifndef WUK_CPP_WINAPI
+#define WUK_CPP_WINAPI
 #include <config/exception.hpp>
 #include <Windows.h>
 
-namespace wmkc {
+namespace wuk {
     namespace winapi {
         struct widthHeight {
             wU32 width;

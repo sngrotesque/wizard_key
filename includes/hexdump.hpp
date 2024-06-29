@@ -1,16 +1,16 @@
-#include <config/wmkc.hpp>
+#include <config/wuk.hpp>
 
-#if WMKC_SUPPORT
-#ifndef WMKC_CPP_HEXDUMP
-#define WMKC_CPP_HEXDUMP
+#if WUK_SUPPORT
+#ifndef WUK_CPP_HEXDUMP
+#define WUK_CPP_HEXDUMP
 #include <config/exception.hpp>
 #include <fstream>
 
-namespace wmkc {
+namespace wuk {
     template <typename T>
-    LIBWMKC_API void hexdump(T file_path);
-    LIBWMKC_API void hexdump(wByte *data, wSize length);
+    LIBWUK_API void hexdump(T file_path);
+    LIBWUK_API void hexdump(wByte *data, wSize length);
 }
 
-#endif /* WMKC_CPP_BASE */
-#endif /* WMKC_SUPPORT */
+#endif /* WUK_CPP_BASE */
+#endif /* WUK_SUPPORT */

@@ -25,15 +25,15 @@ constexpr wByte b64de_table[256] = {
     255,255,255,255, 255,255,255,255, 255,255,255,255, 255,255,255,255};
 
 // Encoding, definition
-wSize wmkc::Base64::get_encode_length(wSize length)
+wSize wuk::Base64::get_encode_length(wSize length)
 {
     return (length % 3) ? (length / 3 + 1) * 4 : (length / 3 * 4);
 }
 
-char *wmkc::Base64::encode(const wByte *buffer, wSize &length)
+char *wuk::Base64::encode(const wByte *buffer, wSize &length)
 {
     if(!buffer || !length) {
-        throw wmkc::Exception(wmkcErr_ErrNULL, "wmkc::Base64::encode",
+        throw wuk::Exception(wukErr_ErrNULL, "wuk::Base64::encode",
             "buffer is NULL.");
     }
     wSize src_index{0}, dst_index{0};
@@ -41,7 +41,7 @@ char *wmkc::Base64::encode(const wByte *buffer, wSize &length)
 
     char *result = new (std::nothrow) char[result_length + 1];
     if(!result) {
-        throw wmkc::Exception(wmkcErr_ErrMemory, "wmkc::Base64::encode",
+        throw wuk::Exception(wukErr_ErrMemory, "wuk::Base64::encode",
             "Failed to allocate memory for result.");
     }
 
@@ -66,7 +66,7 @@ char *wmkc::Base64::encode(const wByte *buffer, wSize &length)
     return result;
 }
 
-std::string wmkc::Base64::encode(std::string _buffer)
+std::string wuk::Base64::encode(std::string _buffer)
 {
     if(_buffer.empty()) {
         return std::string();
@@ -89,7 +89,7 @@ std::string wmkc::Base64::encode(std::string _buffer)
 }
 
 // Decoding, definition
-wSize wmkc::Base64::get_decode_length(wSize length)
+wSize wuk::Base64::get_decode_length(wSize length)
 {
     // 此处+3的目的是为了不让缓冲区过小
     return (length + 3) / 4 * 3;
@@ -107,7 +107,7 @@ wSize wmkc::Base64::get_decode_length(wSize length)
 * 2. 在一开始将有效的Base64编码字符从被污染的Base64编码串中提取出来，然后进行解码，这个方法最好使用std::vector。
 * 3. https://stackoverflow.com/a/78655704/21376217
 */
-wByte *wmkc::Base64::decode(const char *buffer, wSize &length)
+wByte *wuk::Base64::decode(const char *buffer, wSize &length)
 {
     std::string error_message;
 
@@ -118,7 +118,7 @@ wByte *wmkc::Base64::decode(const char *buffer, wSize &length)
     wSize  bin_len  = this->get_decode_length(ascii_len);
     wByte *bin_data = new (std::nothrow) wByte[bin_len + 1];
     if(!bin_data) {
-        throw wmkc::Exception(wmkcErr_ErrMemory, "wmkc::Base64::decode",
+        throw wuk::Exception(wukErr_ErrMemory, "wuk::Base64::decode",
             "Failed to allocate memory for bin_data.");
     }
     wByte *bin_data_start = bin_data;
@@ -216,7 +216,7 @@ wByte *wmkc::Base64::decode(const char *buffer, wSize &length)
     }
 error_end:
     delete[] bin_data_start;
-    throw wmkc::Exception(wmkcErr_Err, "wmkc::Base64::decode", error_message);
+    throw wuk::Exception(wukErr_Err, "wuk::Base64::decode", error_message);
 
 done:
     length = bin_data - bin_data_start;
@@ -224,7 +224,7 @@ done:
     return bin_data_start;
 }
 
-std::string wmkc::Base64::decode(std::string _buffer)
+std::string wuk::Base64::decode(std::string _buffer)
 {
     if(_buffer.empty()) {
         return std::string();

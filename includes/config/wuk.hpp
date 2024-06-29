@@ -1,5 +1,5 @@
-#ifndef WMKC_CPP
-#define WMKC_CPP
+#ifndef WUK_CPP
+#define WUK_CPP
 
 #include <cstdlib>   // 标准库
 #include <cstdarg>   // 标准参数库
@@ -30,17 +30,17 @@
  * https://gcc.gnu.org/onlinedocs/cpp/Common-Predefined-Macros.html
  */
 #if defined(_WIN32) || defined(_WIN64) // Microsoft Windows
-#   define WMKC_PLATFORM_WINOS
-#   define WMKC_SUPPORT true
-#   define WMKC_LE_ENDIAN true // 小端序，由于绝大多数（几乎所有）的Windows系统都是小端序，所以直接忽略大端序。
+#   define WUK_PLATFORM_WINOS
+#   define WUK_SUPPORT true
+#   define WUK_LE_ENDIAN true // 小端序，由于绝大多数（几乎所有）的Windows系统都是小端序，所以直接忽略大端序。
 #elif defined(__linux) || defined(__gnu_linux__) || defined(__linux__) // Linux
-#   define WMKC_PLATFORM_LINUX
-#   define WMKC_SUPPORT true
+#   define WUK_PLATFORM_LINUX
+#   define WUK_SUPPORT true
 #   if __BYTE_ORDER__
 #       if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
-#           define WMKC_LE_ENDIAN true // 小端序
+#           define WUK_LE_ENDIAN true // 小端序
 #       elif __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
-#           define WMKC_LE_ENDIAN false // 大端序
+#           define WUK_LE_ENDIAN false // 大端序
 #       else
 #           error "Endian judgment error."
 #       endif
@@ -48,12 +48,12 @@
 #       error "Endian judgment error."
 #   endif
 #elif defined(__ANDROID__) // Android
-#   define WMKC_PLATFORM_ANDROID
-#   define WMKC_SUPPORT false
+#   define WUK_PLATFORM_ANDROID
+#   define WUK_SUPPORT false
 #elif defined(macintosh) || defined(Macintosh) || defined(__APPLE__) || \
     defined(__MACH__) // Mac OS
-#   define WMKC_PLATFORM_MACOS
-#   define WMKC_SUPPORT false
+#   define WUK_PLATFORM_MACOS
+#   define WUK_SUPPORT false
 #endif
 
 /**
@@ -75,38 +75,38 @@
 #if defined(_MSC_VER) || defined(__MINGW32__) || defined(__MINGW64__)
 #elif defined(__GNUC__)
 #else
-#   ifndef WMKC_NO_COMPILER_WARNING
+#   ifndef WUK_NO_COMPILER_WARNING
 #       warning "This library is not using this compiler for testing, please be careful."
 #   endif
 #endif
 
 // 检查是否被支持
-#if WMKC_SUPPORT == false
+#if WUK_SUPPORT == false
 #   warning "This library may not support the computer you are using."
 #endif
 
 // 检查是否存在导出宏
-#ifndef LIBWMKC_API
-#  ifdef WMKC_EXPORTS
-#    ifdef WMKC_PLATFORM_WINOS
-#      define LIBWMKC_API     __declspec(dllexport)
-#    elif defined(__ELF__) || defined(WMKC_PLATFORM_LINUX)
-#      define LIBWMKC_API     __attribute__((visibility("protected")))
+#ifndef LIBWUK_API
+#  ifdef WUK_EXPORTS
+#    ifdef WUK_PLATFORM_WINOS
+#      define LIBWUK_API     __declspec(dllexport)
+#    elif defined(__ELF__) || defined(WUK_PLATFORM_LINUX)
+#      define LIBWUK_API     __attribute__((visibility("protected")))
 #    else
-#      define LIBWMKC_API     __attribute__((visibility("default")))
+#      define LIBWUK_API     __attribute__((visibility("default")))
 #    endif
 #  else
-#    ifdef WMKC_PLATFORM_WINOS
-#      define LIBWMKC_API     __declspec(dllimport)
+#    ifdef WUK_PLATFORM_WINOS
+#      define LIBWUK_API     __declspec(dllimport)
 #    else
-#      define LIBWMKC_API     __attribute__((visibility("default")))
+#      define LIBWUK_API     __attribute__((visibility("default")))
 #    endif
 #  endif
 #endif
 
-// WMKC库类型定义
-#ifndef WMKC_TYPE_DEFINED
-#define WMKC_TYPE_DEFINED
+// WUK库类型定义
+#ifndef WUK_TYPE_DEFINED
+#define WUK_TYPE_DEFINED
 typedef uint8_t  wByte,  w_byte;  // 字节类型
 typedef ssize_t  wSSize, w_long;  // 长整数类型
 typedef size_t   wSize,  w_ulong; // 长度类型
@@ -116,13 +116,13 @@ typedef int32_t  wS32,   w_s32;   // 整数类型
 typedef int32_t  wI32,   w_i32;   // 整数类型
 typedef uint16_t wU16,   w_u16;   // 无符号宽字节类型
 typedef uint32_t wU32,   w_u32;   // 无符号整数类型
-#endif /* WMKC_TYPE_DEFINED */
+#endif /* WUK_TYPE_DEFINED */
 
 // 定义宏函数
-#ifndef WMKC_MACRO_DEFINED
-#define WMKC_MACRO_DEFINED
-#define wmkc_toString(x) #x /* 将x转为字符串 */
-#define wmkc_min(x, y) (((x) < (y)) ? (x) : (y))
-#endif /* WMKC_MACRO_DEFINED */
+#ifndef WUK_MACRO_DEFINED
+#define WUK_MACRO_DEFINED
+#define wuk_toString(x) #x /* 将x转为字符串 */
+#define wuk_min(x, y) (((x) < (y)) ? (x) : (y))
+#endif /* WUK_MACRO_DEFINED */
 
-#endif // #ifndef WMKC_CPP
+#endif // #ifndef WUK_CPP
