@@ -108,14 +108,21 @@
 #ifndef WUK_TYPE_DEFINED
 #define WUK_TYPE_DEFINED
 typedef uint8_t  wByte,  w_byte;  // 字节类型
-typedef ssize_t  wSSize, w_long;  // 长整数类型
-typedef size_t   wSize,  w_ulong; // 长度类型
-typedef int16_t  wS16,   w_s16;   // 宽字节类型
-typedef int16_t  wI16,   w_i16;   // 宽字节类型
-typedef int32_t  wS32,   w_s32;   // 整数类型
-typedef int32_t  wI32,   w_i32;   // 整数类型
-typedef uint16_t wU16,   w_u16;   // 无符号宽字节类型
-typedef uint32_t wU32,   w_u32;   // 无符号整数类型
+
+typedef int16_t  wS16,   w_s16;   // 16位带符号整数
+typedef int16_t  wI16,   w_i16;   // 16位带符号整数
+typedef uint16_t wU16,   w_u16;   // 16位无符号整数
+
+typedef int32_t  wS32,   w_s32;   // 32位带符号整数
+typedef int32_t  wI32,   w_i32;   // 32位带符号整数
+typedef uint32_t wU32,   w_u32;   // 32位无符号整数
+
+typedef int64_t  wI64,   w_i64;   // 64位带符号整数
+typedef int64_t  wS64,   w_s64;   // 64位带符号整数
+typedef uint64_t wU64,   w_u64;   // 64位无符号整数
+
+typedef ssize_t  wSSize, w_long;  // 带符号长整数
+typedef size_t   wSize,  w_ulong; // 无符号长整数
 #endif /* WUK_TYPE_DEFINED */
 
 // 定义宏函数
