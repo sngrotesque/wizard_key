@@ -72,10 +72,10 @@ void wuk::misc::print_pybytes(const wByte *buf, wSize size, bool newline)
             } else if(buf[i] == 0x0d) {
                 printf("\\r");
             } else {
-                printf("\\i%02x", buf[i]);
+                printf("\\x%02x", buf[i]);
             }
         } else if(buf[i] > 0x7e) {
-            printf("\\i%02x", buf[i]);
+            printf("\\x%02x", buf[i]);
         } else {
             printf("=");
         }

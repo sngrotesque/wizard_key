@@ -1,5 +1,6 @@
 // python make.py test\struct_test.cpp -O3 -Wall -DWUK_EXPORTS
 #include <struct.cpp>
+#include <time.cpp>
 #include <misc.cpp>
 
 #include <cstdarg>
@@ -11,49 +12,26 @@
 
 using namespace std;
 
-class WUK_endian {
-public:
-    bool change_endian;
+void struct_test()
+{
+    wuk::Struct Struct;
+    wuk::FormatArgs FArgs;
 
-    WUK_endian(wuk::endianness specify)
-    : change_endian(false)
-    {
-        wuk::endianness current = \
-            (WUK_LE_ENDIAN)?(wuk::endianness::LE):(wuk::endianness::BE);
-        this->change_endian = \
-            ((specify!=wuk::endianness::NO)&&(current!=specify))?(true):(false);
-    }
+    FArgs = Struct.format_string_parser("256x", 0);
 
-    void reverse(char *array, w_u32 length)
-    {
-        char swap;
-        for(w_u32 i = 0; i < (length >> 1); ++i) {
-            swap = array[i];
-            array[i] = array[length - i - 1];
-            array[length - i - 1] = swap;
-        }
+    if(FArgs.result.empty()) {
+        cout << "result is null." << endl;
+        return;
     }
+    wByte *buffer = reinterpret_cast<wByte *>(FArgs.result.data());
+    wSize  length = FArgs.result.size();
 
-    template <typename T>
-    void switch_endianness(char *array, T arg)
-    {
-        memcpy(array, &arg, sizeof(T));
-        if(change_endian) {
-            reverse(array, sizeof(T));
-        }
-    }
-};
+    // wuk::misc::print_hex(buffer, length, 16, 1, 0);
+    wuk::misc::print_pybytes(buffer, length, true);
+}
 
 int main(int argc, char **argv)
 {
-    WUK_endian ctx{wuk::endianness::BE};
-
-    w_byte buffer[8]{};
-    double number = 3.1415926;
-
-    ctx.switch_endianness(reinterpret_cast<char *>(buffer), number);
-
-    wuk::misc::print_hex(buffer, sizeof(number), 8, 0, 0);
-
+    struct_test();
     return 0;
 }

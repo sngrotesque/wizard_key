@@ -4,6 +4,7 @@
 #ifndef WUK_CPP_STRUCT
 #define WUK_CPP_STRUCT
 #include <config/exception.hpp>
+#include <memory.hpp>
 
 #include <any>
 #include <vector>
@@ -77,22 +78,42 @@ namespace wuk {
 namespace wuk {
     class LIBWUK_API Struct {
     private:
-        wuk::endianness final_endian;
+        // data member
+        bool is_switch_endianness;
 
-        /**
-         * @brief 格式字符串解析函数
-         * @authors SN-Grotesque
-         * @note 无
-         * @param formatString 传入时必须是一个限定了长度的字符串，比如母串是"I3H5BQQQQd"，那么
-         *                     传入的分别参数必须是"I", "3H", "5B", "Q", "Q", "Q", "Q", "d"。
-         * @param args 对应于formatString类型的值。
-         * @return 无
-         */
+    private:
+        // function member
         template <typename T>
-        wuk::FormatArgs format_string_parser(const std::string formatString, T arg = {});
+        void switch_endianness(char *buffer, T arg);
+
+        void reverse_array(char *array, w_u32 size);
+
+        std::string format_x_option(wSize length);
+        std::string format_c_option(std::vector<char> args);
+        std::string format_B_option(std::vector<wByte> args);
+        std::string format_bool_option(std::vector<bool> args);
+        std::string format_h_option(std::vector<wS16> args);
+        std::string format_H_option(std::vector<wU16> args);
+        std::string format_i_option(std::vector<wS32> args);
+        std::string format_I_option(std::vector<wU32> args);
+        std::string format_l_option(std::vector<wS32> args);
+        std::string format_L_option(std::vector<wU32> args);
+        std::string format_q_option(std::vector<wS64> args);
+        std::string format_Q_option(std::vector<wU64> args);
+        std::string format_f_option(std::vector<float> args);
+        std::string format_d_option(std::vector<double> args);
+        std::string format_s_option(std::string args);
+        std::string format_p_option(std::string args);
 
     public:
-        std::string pack(std::string format_string, ...);
+        Struct();
+
+        // format_string_parser在生产环境移动到private域
+        template <typename T>
+        wuk::FormatArgs format_string_parser(std::string formatString, T arg);
+
+        std::string pack(std::string format_string, std::vector<std::any> args);
+        std::vector<std::any> unpack(std::string format_string, std::string buffer);
     };
 }
 

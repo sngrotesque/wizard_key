@@ -1,11 +1,64 @@
 #include <struct.hpp>
 
+/* -------------------------- Private ------------------------------ */
+
 template <typename T>
-wuk::FormatArgs wuk::Struct::format_string_parser(const std::string formatString, T arg)
+void wuk::Struct::switch_endianness(char *buffer, T arg)
+{
+    memcpy(buffer, &arg, sizeof(T));
+    if(this->is_switch_endianness) {
+        this->reverse_array(buffer, sizeof(T));
+    }
+}
+
+void wuk::Struct::reverse_array(char *array, w_u32 size)
+{
+    for(w_u32 i = 0; i < (size >> 1); ++i) {
+        char swap = array[i];
+        array[i] = array[size - i - 1];
+        array[size - i - 1] = swap;
+    }
+}
+
+std::string wuk::Struct::format_x_option(wSize length)
+{
+    char *result = new (std::nothrow) char[length];
+    if(!result) {
+        throw wuk::Exception(wukErr_ErrMemory, "wuk::Struct::format_x_option",
+            "Failed to allocate memory for result.");
+    }
+    wuk::memory_zero(result, length);
+    std::string result_string{result, length};
+    delete[] result;
+    return result_string;
+}
+
+/* -------------------------- Public ------------------------------- */
+
+wuk::Struct::Struct()
+: is_switch_endianness(false)
+{
+
+}
+
+/**
+ * @brief 格式字符串解析函数
+ * @authors SN-Grotesque
+ * @note 后续考虑将数量作为此函数参数进行传入
+ * @param formatString 传入时必须是一个子串，比如母串是"I3H5BQQQQd5xx"，
+ *      那么每次传入的参数分别必须是"I", "3H", "5B", "Q", "Q", "Q", "Q", "d", "5x", "x"。
+ * @param args 对应于formatString类型的值，如果formatString当前为[x]，那么必须默认为0。
+ * @return 无
+ */
+template <typename T>
+wuk::FormatArgs wuk::Struct::format_string_parser(std::string formatString, T arg)
 {
     const char *fmt_ptr = formatString.c_str();
     char buffer_bytearray[8]{};
     FormatArgs result{};
+
+    // 用于[x]的缓冲区
+    char *padding_buffer = nullptr;
 
     if(!isdigit(*fmt_ptr)) {
         // 如果第一个字符不是数字
@@ -17,12 +70,14 @@ wuk::FormatArgs wuk::Struct::format_string_parser(const std::string formatString
     }
 
     switch(*fmt_ptr) {
-    case 'x':
-        result.type = formatType::FMT_PAD;
+    case 'x': 
+        result.type   = formatType::FMT_PAD;
+        result.result = this->format_x_option(result.count);
         break;
     case 'c':
     case 'b':
         result.type = formatType::FMT_SC;
+        
         break;
     case 'B':
         result.type = formatType::FMT_UC;
@@ -76,3 +131,43 @@ wuk::FormatArgs wuk::Struct::format_string_parser(const std::string formatString
     return result;
 }
 
+std::string wuk::Struct::pack(std::string format_string, std::vector<std::any> args)
+{
+    // 获取当前字节顺序
+    wuk::endianness current = \
+        (WUK_LE_ENDIAN)?(wuk::endianness::LE):(wuk::endianness::BE);;
+    // 将指定字节顺序初始化为无
+    wuk::endianness specify = wuk::endianness::NO;
+
+    const char *fmt_ptr = format_string.c_str();
+    switch (*fmt_ptr) {
+    // 大端序（网络序）
+    case '>':
+    case '!':
+        specify = wuk::endianness::BE;
+        goto skip_ctrl_symbol;
+    // 小端序
+    case '<':
+        specify = wuk::endianness::LE;
+        goto skip_ctrl_symbol;
+    /* 字节顺序-大小-对齐方式：按原字节。
+    *  此字节序方法有额外实现，后续再实现 */
+    case '@':
+        goto skip_ctrl_symbol;
+    case '=':
+    skip_ctrl_symbol:
+        fmt_ptr++;
+    default:
+        break;
+    }
+
+    this->is_switch_endianness = \
+        ((specify!=wuk::endianness::NO)&&(current!=specify))?(true):(false);
+
+
+}
+
+std::vector<std::any> wuk::Struct::unpack(std::string format_string, std::string buffer)
+{
+
+}
