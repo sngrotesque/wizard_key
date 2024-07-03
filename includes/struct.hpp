@@ -88,29 +88,16 @@ namespace wuk {
 
         void reverse_array(char *array, w_u32 size);
 
+        template <typename T>
+        std::string foramt_common_option(std::vector<T> args);
         std::string format_x_option(wSize length);
-        std::string format_c_option(std::vector<char> args);
-        std::string format_B_option(std::vector<wByte> args);
-        std::string format_bool_option(std::vector<bool> args);
-        std::string format_h_option(std::vector<wS16> args);
-        std::string format_H_option(std::vector<wU16> args);
-        std::string format_i_option(std::vector<wS32> args);
-        std::string format_I_option(std::vector<wU32> args);
-        std::string format_l_option(std::vector<wS32> args);
-        std::string format_L_option(std::vector<wU32> args);
-        std::string format_q_option(std::vector<wS64> args);
-        std::string format_Q_option(std::vector<wU64> args);
-        std::string format_f_option(std::vector<float> args);
-        std::string format_d_option(std::vector<double> args);
-        std::string format_s_option(std::string args);
-        std::string format_p_option(std::string args);
 
     public:
         Struct();
 
         // format_string_parser在生产环境移动到private域
         template <typename T>
-        wuk::FormatArgs format_string_parser(std::string formatString, T arg);
+        wuk::FormatArgs format_string_parser(std::string formatString, std::vector<T> arg);
 
         std::string pack(std::string format_string, std::vector<std::any> args);
         std::vector<std::any> unpack(std::string format_string, std::string buffer);

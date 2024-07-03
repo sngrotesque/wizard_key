@@ -1,3 +1,9 @@
+/**
+ * 目前的实现只为了最根本的先实现这个库，对于优化方面，等这个库完全实现之后再进行。
+ * 
+ * 目前的实现不包括'@'字节顺序，大小和对齐方式。
+ */
+
 #include <struct.hpp>
 
 /* -------------------------- Private ------------------------------ */
@@ -27,8 +33,46 @@ std::string wuk::Struct::format_x_option(wSize length)
         throw wuk::Exception(wukErr_ErrMemory, "wuk::Struct::format_x_option",
             "Failed to allocate memory for result.");
     }
+
     wuk::memory_zero(result, length);
+
     std::string result_string{result, length};
+    delete[] result;
+
+    return result_string;
+}
+
+/**
+ * 此处不直接使用std::string result_string(args.begin(), args.end());的原因是为了兼容后续
+ * 会出现的'@'字节序规则。
+ * 
+ * 此方法不应该检查传入的参数个数是否与格式字符串相对应，请在上级方法中进行检查。
+ */
+template <typename T>
+std::string wuk::Struct::foramt_common_option(std::vector<T> args)
+{
+    wSize length = sizeof(T) * args.size();
+    char *result = new (std::nothrow) char[length];
+    if(!result) {
+        throw wuk::Exception(wukErr_ErrMemory, "wuk::Struct::format_x_option",
+            "Failed to allocate memory for result.");
+    }
+    wuk::memory_zero(result, length);
+
+    // 在此函数中决定是否切换端序
+    std::string result_string{};
+    wSize ri, ai; // result index, args index.
+    try {
+        for(ri = ai = 0; ri < length; ri += sizeof(T), ++ai) {
+            *(result + ri) = args.at(ai);
+        }
+    } catch (std::exception &e) {
+        delete[] result;
+        throw;
+    }
+
+    result_string = std::string{result, length};
+
     delete[] result;
     return result_string;
 }
@@ -38,7 +82,7 @@ std::string wuk::Struct::format_x_option(wSize length)
 wuk::Struct::Struct()
 : is_switch_endianness(false)
 {
-
+    
 }
 
 /**
@@ -51,14 +95,11 @@ wuk::Struct::Struct()
  * @return 无
  */
 template <typename T>
-wuk::FormatArgs wuk::Struct::format_string_parser(std::string formatString, T arg)
+wuk::FormatArgs wuk::Struct::format_string_parser(std::string formatString, std::vector<T> arg)
 {
     const char *fmt_ptr = formatString.c_str();
-    char buffer_bytearray[8]{};
+    // char buffer_bytearray[8]{};
     FormatArgs result{};
-
-    // 用于[x]的缓冲区
-    char *padding_buffer = nullptr;
 
     if(!isdigit(*fmt_ptr)) {
         // 如果第一个字符不是数字
@@ -77,10 +118,11 @@ wuk::FormatArgs wuk::Struct::format_string_parser(std::string formatString, T ar
     case 'c':
     case 'b':
         result.type = formatType::FMT_SC;
-        
+        result.result = this->foramt_common_option(arg);
         break;
     case 'B':
         result.type = formatType::FMT_UC;
+        result.result = this->foramt_common_option(arg);
         break;
     case '?':
         result.type = formatType::FMT_BOOL;
@@ -164,10 +206,11 @@ std::string wuk::Struct::pack(std::string format_string, std::vector<std::any> a
     this->is_switch_endianness = \
         ((specify!=wuk::endianness::NO)&&(current!=specify))?(true):(false);
 
-
+    return std::string();
 }
 
 std::vector<std::any> wuk::Struct::unpack(std::string format_string, std::string buffer)
 {
 
+    return std::vector<std::any>();
 }

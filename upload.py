@@ -37,6 +37,8 @@ class git_process:
             self.path.remove('.git')
         if os.path.exists(self.compiled_path):
             self.path.remove('_compiled')
+        if os.path.exists('icon'):
+            self.path.remove('icon')
         # self.path.remove('upload.py')
 
     def view(self):

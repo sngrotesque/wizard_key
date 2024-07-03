@@ -59,6 +59,7 @@ void wuk::misc::print_box(const wByte *box, wSize size, wSize num, bool newline)
 }
 
 // 实现了一个，Python的Bytes的打印？？？
+// yes
 void wuk::misc::print_pybytes(const wByte *buf, wSize size, bool newline)
 {
     for(wSize i = 0; i < size; ++i) {

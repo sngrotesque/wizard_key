@@ -201,8 +201,79 @@ public:
     }
 };
 
+enum class HashDigest_Method {
+    MD5, SHA1, SHA224, SHA256, SHA384, SHA512
+};
+
+string get_hash_hexdigest(const wchar_t *file_path, HashDigest_Method method = HashDigest_Method::SHA256)
+{
+    fstream f_obj{file_path, ios::in | ios::binary};
+
+    wuk::Binascii binascii;
+    wByte digest[64]{};
+    w_u32 digest_size;
+
+    char buffer[4096]{};
+    size_t length;
+
+    if(!f_obj.is_open()) {
+        throw wuk::Exception(wukErr_Err, "get_hash_hexdigest", "failed to file open.");
+    }
+
+    const EVP_MD *md = nullptr;
+    switch(method) {
+    case HashDigest_Method::MD5:
+        md = EVP_md5();
+        digest_size = 16;
+        break;
+    case HashDigest_Method::SHA1:
+        md = EVP_sha1();
+        digest_size = 20;
+        break;
+    case HashDigest_Method::SHA224:
+        md = EVP_sha224();
+        digest_size = 28;
+        break;
+    case HashDigest_Method::SHA256:
+        md = EVP_sha256();
+        digest_size = 32;
+        break;
+    case HashDigest_Method::SHA384:
+        md = EVP_sha384();
+        digest_size = 48;
+        break;
+    case HashDigest_Method::SHA512:
+        md = EVP_sha512();
+        digest_size = 64;
+        break;
+    default:
+        throw wuk::Exception(wukErr_Err, "get_hash_hexdigest", "Wrong hash method.");
+    }
+    EVP_MD_CTX *md_ctx = EVP_MD_CTX_new();
+
+    EVP_DigestInit_ex(md_ctx, md, nullptr);
+    for(;;) {
+        length = f_obj.read(buffer, sizeof(buffer)).gcount();
+        if(!length) {
+            break;
+        }
+        EVP_DigestUpdate(md_ctx, buffer, length);
+    }
+    EVP_DigestFinal_ex(md_ctx, digest, nullptr);
+
+    EVP_MD_CTX_free(md_ctx);
+    f_obj.close();
+
+    return binascii.b2a_hex(string{reinterpret_cast<char *>(digest), digest_size});;
+}
+
 int main(int argc, char **argv)
 {
-    cout << "hello, world" << endl;
+    string hexdigest = get_hash_hexdigest(
+        L"F:/Pitchers/Pixiv/14698535/2021_06_23_09_47_30_90749965_p0.jpg",
+        HashDigest_Method::SHA256);
+    
+    cout << "hexdigest: " << hexdigest << endl;
+
     return 0;
 }

@@ -17,21 +17,29 @@ void struct_test()
     wuk::Struct Struct;
     wuk::FormatArgs FArgs;
 
-    FArgs = Struct.format_string_parser("256x", 0);
+    try {
+        FArgs = Struct.format_string_parser("2B", vector<double>{0x1b, 0xf1, 0x7f, 'B'});
 
-    if(FArgs.result.empty()) {
-        cout << "result is null." << endl;
-        return;
+        if(FArgs.result.empty()) {
+            cout << "result is null." << endl;
+            return;
+        }
+        wByte *buffer = reinterpret_cast<wByte *>(FArgs.result.data());
+        wSize  length = FArgs.result.size();
+
+        cout << "Hex print:\n";
+        wuk::misc::print_hex(buffer, length, 16, 1, 0);
+
+        cout << "\nPyBytes print:\n";
+        wuk::misc::print_pybytes(buffer, length, true);
+    } catch (exception &e) {
+        cout << "Error: " << e.what() << endl;
     }
-    wByte *buffer = reinterpret_cast<wByte *>(FArgs.result.data());
-    wSize  length = FArgs.result.size();
-
-    // wuk::misc::print_hex(buffer, length, 16, 1, 0);
-    wuk::misc::print_pybytes(buffer, length, true);
 }
 
 int main(int argc, char **argv)
 {
     struct_test();
+
     return 0;
 }
