@@ -29,6 +29,12 @@
  * 关于Linux平台（主要为GNU环境，可能不包括Clang）
  * https://gcc.gnu.org/onlinedocs/cpp/Common-Predefined-Macros.html
  */
+
+/**
+ * 对于字节序的判断，如非必要，请勿在代码中直接添加用于判断端序的代码（比如利用指针），
+ * 请直接使用WUK_SUPPORT宏进行判断，如果WUK_SUPPORT宏无法用于判断，请优化此宏并且
+ * 不应在代码中添加判断端序的代码。
+ */
 #if defined(_WIN32) || defined(_WIN64) // Microsoft Windows
 #   define WUK_PLATFORM_WINOS
 #   define WUK_SUPPORT true

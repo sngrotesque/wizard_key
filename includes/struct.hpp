@@ -77,20 +77,17 @@ namespace wuk {
 
 namespace wuk {
     class LIBWUK_API Struct {
-    private:
+    // private:
+    public:
         // data member
         bool is_switch_endianness;
 
     private:
         // function member
-        template <typename T>
-        void switch_endianness(char *buffer, T arg);
-
         void reverse_array(char *array, w_u32 size);
 
         template <typename T>
         std::string foramt_common_option(std::vector<T> args);
-        std::string format_x_option(wSize length);
 
     public:
         Struct();

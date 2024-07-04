@@ -17,6 +17,8 @@ void struct_test()
     wuk::Struct Struct;
     wuk::FormatArgs FArgs;
 
+    // Struct.is_switch_endianness = true;
+    Struct.pack("!I", {});
     try {
         FArgs = Struct.format_string_parser("2B", vector<double>{0x1b, 0xf1, 0x7f, 'B'});
 
@@ -40,6 +42,7 @@ void struct_test()
 int main(int argc, char **argv)
 {
     struct_test();
+    vector<any> args{1, "", 15.2};
 
     return 0;
 }

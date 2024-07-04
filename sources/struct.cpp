@@ -8,15 +8,6 @@
 
 /* -------------------------- Private ------------------------------ */
 
-template <typename T>
-void wuk::Struct::switch_endianness(char *buffer, T arg)
-{
-    memcpy(buffer, &arg, sizeof(T));
-    if(this->is_switch_endianness) {
-        this->reverse_array(buffer, sizeof(T));
-    }
-}
-
 void wuk::Struct::reverse_array(char *array, w_u32 size)
 {
     for(w_u32 i = 0; i < (size >> 1); ++i) {
@@ -24,22 +15,6 @@ void wuk::Struct::reverse_array(char *array, w_u32 size)
         array[i] = array[size - i - 1];
         array[size - i - 1] = swap;
     }
-}
-
-std::string wuk::Struct::format_x_option(wSize length)
-{
-    char *result = new (std::nothrow) char[length];
-    if(!result) {
-        throw wuk::Exception(wukErr_ErrMemory, "wuk::Struct::format_x_option",
-            "Failed to allocate memory for result.");
-    }
-
-    wuk::memory_zero(result, length);
-
-    std::string result_string{result, length};
-    delete[] result;
-
-    return result_string;
 }
 
 /**
@@ -65,6 +40,11 @@ std::string wuk::Struct::foramt_common_option(std::vector<T> args)
     try {
         for(ri = ai = 0; ri < length; ri += sizeof(T), ++ai) {
             *(result + ri) = args.at(ai);
+
+            // 在这编写切换端序的代码
+            if(this->is_switch_endianness) {
+                this->reverse_array(result + ri, sizeof(T));
+            }
         }
     } catch (std::exception &e) {
         delete[] result;
@@ -98,7 +78,6 @@ template <typename T>
 wuk::FormatArgs wuk::Struct::format_string_parser(std::string formatString, std::vector<T> arg)
 {
     const char *fmt_ptr = formatString.c_str();
-    // char buffer_bytearray[8]{};
     FormatArgs result{};
 
     if(!isdigit(*fmt_ptr)) {
@@ -113,7 +92,7 @@ wuk::FormatArgs wuk::Struct::format_string_parser(std::string formatString, std:
     switch(*fmt_ptr) {
     case 'x': 
         result.type   = formatType::FMT_PAD;
-        result.result = this->format_x_option(result.count);
+        result.result.append(result.count, 0x00);
         break;
     case 'c':
     case 'b':
