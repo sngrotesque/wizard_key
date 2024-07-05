@@ -7,8 +7,13 @@
 #include <cmath>
 
 #include <iostream>
+#include <sstream>
 #include <vector>
 #include <any>
+
+#if __cplusplus >= 202002
+#   include <format>
+#endif
 
 using namespace std;
 
@@ -39,10 +44,58 @@ void struct_test()
     }
 }
 
+void B(char fmt_char, w_u32 count)
+{
+#ifdef WUK_STD_CPP_20
+    cout << format("B('{0}', {1})", fmt_char, count) << endl;
+#else
+    std::cout << "B('" << format << "', " << count << ")" << std::endl;
+#endif
+}
+
+void A(const char* format_string)
+{
+    w_u32 i = 0;
+    while (format_string[i]) {
+        char current_char = format_string[i];
+        if (std::isdigit(current_char)) {
+            // 如果是数字，解析出参数个数
+            int count = 0;
+            while (std::isdigit(format_string[i])) {
+                count = count * 10 + (format_string[i] - '0');
+                ++i;
+            }
+            char format = format_string[i];
+            B(format, count);
+        } else {
+            // 否则，统计连续相同字符的个数
+            int count = 1;
+            while (format_string[i + 1] == current_char) {
+                ++count;
+                ++i;
+            }
+            B(current_char, count);
+        }
+        ++i;
+    }
+}
+
 int main(int argc, char **argv)
 {
-    struct_test();
-    vector<any> args{1, "", 15.2};
+    // struct_test();
+
+    // const char *format_string_test1 = "IHccccB3Qd4x";
+    // const char *format_string_test2 = "IIIIIIc256xccbQ";
+    // const char *format_string_test3_1 = "IIccBQQQdf32x";
+    // const char *format_string_test3_2 = "2I2c1B3Q1d1f32x";
+    // const char *format_string_test3_3 = "2I2cB3Qdfxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
+    // A(format_string_test3_3);
+
+    stringstream ss;
+    ss << "function" << "[" << to_string(23) << "]:" << "message";
+    string res{ss.str()};
+
+    cout << res << endl;
 
     return 0;
 }

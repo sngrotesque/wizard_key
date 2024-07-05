@@ -15,7 +15,7 @@
 
 wuk::Exception::Exception(wS32 code, std::string function, std::string message)
 {
-#   if __cplusplus >= 202002
+#   ifdef WUK_STD_CPP_20
     this->output_message = std::format("{0}[{1}]: {2}", function, code, message);
 #   else
     this->output_message = function + "[" + std::to_string(code) + "]: " + message;

@@ -17,6 +17,13 @@
 #   include <cstdbool>  // 标准布尔值库
 #endif
 
+// 判断编译时是否使用C++20标准
+#if __cplusplus >= 202002
+#   ifndef WUK_STD_CPP_20
+#       define WUK_STD_CPP_20
+#   endif
+#endif
+
 /**
  * 平台判断，后续可能继续改进。
  * 
