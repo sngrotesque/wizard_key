@@ -99,6 +99,7 @@ A：因为我从未真正使用过`Mac OS`[^macos]，并且也不熟悉它的操
 7.  完善了[Binascii](includes/binascii.hpp)，修复了[Base64](sources/base64.cpp)中的异常捕获隐患。
 8.  修改并完善了[WUK库的代码和宏定义](includes/config/wuk.hpp)，以便未来更好的支持各个平台以及各个编译器。
 9.  逐渐将所有以前的C语法改为C++语法。
+10. 优化了[make.py](make.py)的代码。
 
 #### v0.7.1
 1.  重写了wuk::Exception（抛弃原先的函数调用std::runtime_error的形式），将其作为一个完整的异常类使用，继承于std::exception。

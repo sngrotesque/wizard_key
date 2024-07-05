@@ -1,6 +1,3 @@
-# from subprocess import (
-#     Popen, PIPE, call
-# )
 from git.repo import Repo
 import subprocess
 import sys
@@ -13,14 +10,6 @@ def RunPopen(cmd :str):
 
 def RunCommand(cmd :str):
     return subprocess.call(cmd, shell = True)
-
-def deleteListData(OriginalList :list, dataContent: str):
-    x = 0
-    while x < len(OriginalList):
-        if OriginalList[x][:3] == dataContent:
-            OriginalList.pop(x)
-            x -= 1
-        x += 1
 
 class git_process:
     def __init__(self, folder_path :str = '.'):
@@ -37,8 +26,6 @@ class git_process:
             self.path.remove('.git')
         if os.path.exists(self.compiled_path):
             self.path.remove('_compiled')
-        if os.path.exists('icon'):
-            self.path.remove('icon')
         # self.path.remove('upload.py')
 
     def view(self):
@@ -54,14 +41,12 @@ class git_process:
         branch_name_1_regular = r'\s+(v[\d.]+_\w+)'
         branch_name_2_regular = r'\s+(v[\d.]+)'
         branch_name_3_regular = r'\s+(\w+\_v[\d.]+)'
-        # pattern = r'\s+(v[\d.]+(?:[_-]\w+)?|\w+[_-]v[\d.]+)'
         
-        versionList_0 = re.findall(branch_name_0_regular, branch_version, re.S)
-        versionList_1 = re.findall(branch_name_1_regular, branch_version, re.S)
-        versionList_2 = re.findall(branch_name_2_regular, branch_version, re.S)
-        versionList_3 = re.findall(branch_name_3_regular, branch_version, re.S)
-        
-        versionList = versionList_0 + versionList_1 + versionList_2 + versionList_3
+        versionList = \
+            re.findall(branch_name_0_regular, branch_version, re.S) + \
+            re.findall(branch_name_1_regular, branch_version, re.S) + \
+            re.findall(branch_name_2_regular, branch_version, re.S) + \
+            re.findall(branch_name_3_regular, branch_version, re.S)
         
         if self.DefinedVersion not in versionList:
             RunCommand(f'git checkout -b {self.DefinedVersion}')
