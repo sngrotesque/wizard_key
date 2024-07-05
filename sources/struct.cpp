@@ -115,6 +115,7 @@ std::string wuk::Struct::format_parser(char fmt_char, wSize count, std::vector<T
     return result;
 }
 
+// 现在我太困了，明天再继续写吧。
 std::string wuk::Struct::pack(std::string format_string, std::vector<std::any> args)
 {
     // 获取当前字节顺序
