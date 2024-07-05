@@ -1,5 +1,5 @@
 /**
- * 目前的实现只为了最根本的先实现这个库，对于优化方面，等这个库完全实现之后再进行。
+ * 目前的实现只为了最根本的先实现这个库，对于优化方面，等这个功能完全实现之后再进行。
  * 
  * 目前的实现不包括'@'字节顺序，大小和对齐方式。
  */
@@ -8,6 +8,13 @@
 
 /* -------------------------- Private ------------------------------ */
 
+/**
+ * @brief 翻转缓冲区
+ * @authors SN-Grotesque
+ * @param array 指向缓冲区的指针
+ * @param size 缓冲区长度（单位：字节）
+ * @return 无
+ */
 void wuk::Struct::reverse_array(char *array, w_u32 size)
 {
     for(w_u32 i = 0; i < (size >> 1); ++i) {
@@ -18,13 +25,19 @@ void wuk::Struct::reverse_array(char *array, w_u32 size)
 }
 
 /**
- * 此方法用于将传入的参数编码为二进制数据。
- * 
- * 此方法不应该检查传入的参数个数是否与格式字符串相对应，请在上级方法中进行检查。
+ * @brief 此方法用于将传入的参数编码为二进制数据。
+ * @authors SN-Grotesque
+ * @note 此方法不应该检查传入的参数个数是否与格式字符串相对应，请在上级方法中进行检查。
+ * @param args 需要编组的同类型数据向量
+ * @return 编组后的二进制序列
  */
 template <typename T>
-std::string wuk::Struct::foramt_common_option(std::vector<T> args)
+std::string wuk::Struct::foramt_number_option(std::vector<T> args)
 {
+    wSize ri; // result index
+    wSize ai; // args index.
+
+    // 申请一个缓冲区用于存放接下来要编组的二进制数据
     wSize length = sizeof(T) * args.size();
     char *result = new (std::nothrow) char[length];
     if(!result) {
@@ -33,25 +46,25 @@ std::string wuk::Struct::foramt_common_option(std::vector<T> args)
     }
     wuk::memory_zero(result, length);
 
-    // 在此函数中决定是否切换端序
-    std::string result_string{};
-    wSize ri, ai; // result index, args index.
-    try {
-        for(ri = ai = 0; ri < length; ri += sizeof(T), ++ai) {
-            *(result + ri) = args.at(ai);
-
-            // 在这编写切换端序的代码
+    for(ri = ai = 0; ri < length; ri += sizeof(T), ++ai) {
+        /**
+         * 将值复制到缓冲区对应位置，此处不应该用'='号赋值，因为会发生截断。
+         * 由于std::vector.at方法会检测是否越界，所以需要捕获异常并进行处理。
+         */
+        try {
+            // 创建一个临时变量的目的是为了兼容bool类型，不然可以直接`&args.at(ai)`。
+            T temp = args.at(ai);
+            memcpy(result + ri, &temp, sizeof(T));
             if(this->is_switch_endianness) {
                 this->reverse_array(result + ri, sizeof(T));
             }
+        } catch (std::exception &e) {
+            delete[] result;
+            throw;
         }
-    } catch (std::exception &e) {
-        delete[] result;
-        throw;
     }
 
-    result_string = std::string{result, length};
-
+    std::string result_string{result, length};
     delete[] result;
     return result_string;
 }
@@ -59,93 +72,44 @@ std::string wuk::Struct::foramt_common_option(std::vector<T> args)
 /* -------------------------- Public ------------------------------- */
 
 wuk::Struct::Struct()
-: is_switch_endianness(false)
 {
-    
+    this->is_switch_endianness = false;
 }
 
-/**
- * @brief 格式字符串解析函数
- * @authors SN-Grotesque
- * @note 后续考虑将数量作为此函数参数进行传入
- * @param formatString 传入时必须是一个子串，比如母串是"I3H5BQQQQd5xx"，
- *      那么每次传入的参数分别必须是"I", "3H", "5B", "Q", "Q", "Q", "Q", "d", "5x", "x"。
- * @param args 对应于formatString类型的值，如果formatString当前为[x]，那么必须默认为0。
- * @return 无
- */
 template <typename T>
-wuk::FormatArgs wuk::Struct::format_string_parser(std::string formatString, std::vector<T> arg)
+std::string wuk::Struct::format_parser(char fmt_char, wSize count, std::vector<T> args)
 {
-    const char *fmt_ptr = formatString.c_str();
-    FormatArgs result{};
+    std::string result;
 
-    if(!isdigit(*fmt_ptr)) {
-        // 如果第一个字符不是数字
-        result.count = 1;
-    } else {
-        // 否则
-        result.count = static_cast<wU32>(strtoul(fmt_ptr, nullptr, 10));
-        for(; *fmt_ptr && isdigit(*fmt_ptr); fmt_ptr++);
-    }
-
-    switch(*fmt_ptr) {
+    switch(fmt_char) {
     case 'x': 
-        result.type   = formatType::FMT_PAD;
-        result.result.append(result.count, 0x00);
+        result.append(count, 0x00);
         break;
     case 'c':
     case 'b':
-        result.type = formatType::FMT_SC;
-        result.result = this->foramt_common_option(arg);
-        break;
     case 'B':
-        result.type = formatType::FMT_UC;
-        result.result = this->foramt_common_option(arg);
-        break;
     case '?':
-        result.type = formatType::FMT_BOOL;
-        break;
     case 'h':
-        result.type = formatType::FMT_SSH;
-        break;
     case 'H':
-        result.type = formatType::FMT_USH;
-        break;
     case 'i':
-        result.type = formatType::FMT_SI;
-        break;
     case 'I':
-        result.type = formatType::FMT_UI;
-        break;
     case 'l':
-        result.type = formatType::FMT_SL;
-        break;
     case 'L':
-        result.type = formatType::FMT_UL;
-        break;
     case 'q':
     case 'n':
-        result.type = formatType::FMT_SQ;
-        break;
     case 'Q':
     case 'N':
-        result.type = formatType::FMT_UQ;
-        break;
     case 'f':
-        result.type = formatType::FMT_F;
-        break;
     case 'd':
-        result.type = formatType::FMT_D;
+        result = this->foramt_number_option(args);
         break;
     case 's':
-        result.type = formatType::FMT_S;
-        break;
     case 'p':
-        result.type = formatType::FMT_P;
+        // 其他实现
         break;
     default:
-        result.type = formatType::FMT_ERR;
-        break;
+        throw wuk::Exception(wukErr_Err, "wuk::Struct::format_parser",
+            "Incorrect formatting character.");
     }
 
     return result;

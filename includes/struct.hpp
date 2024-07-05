@@ -1,3 +1,7 @@
+/**
+ * 在还未完全开发完毕此功能的情况下，这堆代码就是一坨屎，因为
+ * 我现在不想过早优化。
+ */
 #include <config/wuk.hpp>
 
 #if WUK_SUPPORT
@@ -26,7 +30,10 @@ namespace wuk {
         BE
     };
 
-    // 以下缩写未在任何程度映射现实中的机构或任何现有程序缩写
+    /*
+    * 下面这部分代码或许可以去掉了，目前保留着只是为了万一之后用上了，等
+    * 完全实现这个功能之后看看情况来决定到底要不要留下这段代码。
+    */
     enum class formatType {
         FMT_PAD  = 0,  // [x] padding
         FMT_SC   = 1,  // [c] signed char        (1 byte)
@@ -66,7 +73,6 @@ namespace wuk {
 
         FMT_ERR  = 255, // format error
     };
-
     class FormatArgs {
     public:
         formatType  type;   // 参数类型
@@ -77,8 +83,7 @@ namespace wuk {
 
 namespace wuk {
     class LIBWUK_API Struct {
-    // private:
-    public:
+    private:
         // data member
         bool is_switch_endianness;
 
@@ -87,14 +92,13 @@ namespace wuk {
         void reverse_array(char *array, w_u32 size);
 
         template <typename T>
-        std::string foramt_common_option(std::vector<T> args);
+        std::string foramt_number_option(std::vector<T> args);
 
     public:
         Struct();
 
-        // format_string_parser在生产环境移动到private域
         template <typename T>
-        wuk::FormatArgs format_string_parser(std::string formatString, std::vector<T> arg);
+        std::string format_parser(char format, wSize count, std::vector<T> args);
 
         std::string pack(std::string format_string, std::vector<std::any> args);
         std::vector<std::any> unpack(std::string format_string, std::string buffer);

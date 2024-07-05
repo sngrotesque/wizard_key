@@ -20,19 +20,20 @@ using namespace std;
 void struct_test()
 {
     wuk::Struct Struct;
-    wuk::FormatArgs FArgs;
 
-    // Struct.is_switch_endianness = true;
     Struct.pack("!I", {});
     try {
-        FArgs = Struct.format_string_parser("2B", vector<double>{0x1b, 0xf1, 0x7f, 'B'});
+        vector<char> args{'A','b','C','d'};
+        wSize args_size = args.size();
+        printf("param count: %zu.\n", args_size);
+        string result = Struct.format_parser('x', 5, vector<bool>{});
 
-        if(FArgs.result.empty()) {
+        if(result.empty()) {
             cout << "result is null." << endl;
             return;
         }
-        wByte *buffer = reinterpret_cast<wByte *>(FArgs.result.data());
-        wSize  length = FArgs.result.size();
+        wByte *buffer = reinterpret_cast<wByte *>(result.data());
+        wSize  length = result.size();
 
         cout << "Hex print:\n";
         wuk::misc::print_hex(buffer, length, 16, 1, 0);
@@ -82,7 +83,7 @@ void A(const char* format_string)
 
 int main(int argc, char **argv)
 {
-    // struct_test();
+    struct_test();
 
     // const char *format_string_test1 = "IHccccB3Qd4x";
     // const char *format_string_test2 = "IIIIIIc256xccbQ";
@@ -90,14 +91,6 @@ int main(int argc, char **argv)
     // const char *format_string_test3_2 = "2I2c1B3Q1d1f32x";
     // const char *format_string_test3_3 = "2I2cB3Qdfxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
     // A(format_string_test3_3);
-
-    stringstream ss;
-    ss << "function" << "[" << to_string(23) << "]:" << "message";
-    string res;
-
-    ss >> res;
-
-    cout << res << endl;
 
     return 0;
 }
