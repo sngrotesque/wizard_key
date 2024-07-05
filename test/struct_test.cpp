@@ -11,7 +11,7 @@
 #include <vector>
 #include <any>
 
-#if __cplusplus >= 202002
+#ifdef WUK_STD_CPP_20
 #   include <format>
 #endif
 
@@ -49,7 +49,7 @@ void B(char fmt_char, w_u32 count)
 #ifdef WUK_STD_CPP_20
     cout << format("B('{0}', {1})", fmt_char, count) << endl;
 #else
-    std::cout << "B('" << format << "', " << count << ")" << std::endl;
+    std::cout << "B('" << fmt_char << "', " << count << ")" << std::endl;
 #endif
 }
 
@@ -93,7 +93,9 @@ int main(int argc, char **argv)
 
     stringstream ss;
     ss << "function" << "[" << to_string(23) << "]:" << "message";
-    string res{ss.str()};
+    string res;
+
+    ss >> res;
 
     cout << res << endl;
 

@@ -18,8 +18,7 @@ void wuk::Struct::reverse_array(char *array, w_u32 size)
 }
 
 /**
- * 此处不直接使用std::string result_string(args.begin(), args.end());的原因是为了兼容后续
- * 会出现的'@'字节序规则。
+ * 此方法用于将传入的参数编码为二进制数据。
  * 
  * 此方法不应该检查传入的参数个数是否与格式字符串相对应，请在上级方法中进行检查。
  */
