@@ -4,6 +4,11 @@ import sys
 import re
 import os
 
+DEFINED_FOLDER_PATH = '.'
+DEFINED_REMOTE_URL  = 'git@github.com:sngrotesque/wizard_key.git'
+DEFINED_COMMIT      = 'The wizard\'s universal key'
+DEFINED_VERSION     = 'v0.7.2'
+
 def RunPopen(cmd :str):
     p = subprocess.Popen(cmd, shell = True, stdout = subprocess.PIPE)
     return p.stdout.read().decode()
@@ -12,11 +17,11 @@ def RunCommand(cmd :str):
     return subprocess.call(cmd, shell = True)
 
 class git_process:
-    def __init__(self, folder_path :str = '.'):
+    def __init__(self, folder_path :str = DEFINED_FOLDER_PATH):
         self.repo              = Repo.init(folder_path)
-        self.DefinedRemoteUrl  = 'git@github.com:sngrotesque/wizard_key.git'
-        self.DefinedCommit     = 'The wizard\'s universal key'
-        self.DefinedVersion    = 'v0.7.2'
+        self.DefinedRemoteUrl  = DEFINED_REMOTE_URL
+        self.DefinedCommit     = DEFINED_COMMIT
+        self.DefinedVersion    = DEFINED_VERSION
         self.DefinedFolderPath = folder_path
 
         self.compiled_path     = '_compiled'
