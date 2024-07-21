@@ -134,8 +134,8 @@ typedef int64_t  wI64,   w_i64;   // 64位带符号整数
 typedef int64_t  wS64,   w_s64;   // 64位带符号整数
 typedef uint64_t wU64,   w_u64;   // 64位无符号整数
 
-typedef ssize_t  wSSize, w_long,  wLong;  // 带符号长整数
-typedef size_t   wSize,  w_ulong, wULong; // 无符号长整数
+typedef ssize_t  wSSize, w_long,  wLong,  w_ssize; // 带符号长整数
+typedef size_t   wSize,  w_ulong, wULong, w_size;  // 无符号长整数
 #endif /* WUK_TYPE_DEFINED */
 
 // 定义宏函数
