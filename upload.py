@@ -53,10 +53,8 @@ class git_process:
             re.findall(branch_name_2_regular, branch_version, re.S) + \
             re.findall(branch_name_3_regular, branch_version, re.S)
         
-        if self.DefinedVersion not in versionList:
-            RunCommand(f'git checkout -b {self.DefinedVersion}')
-        if self.DefinedVersion in versionList:
-            RunCommand(f'git checkout {self.DefinedVersion}')
+        args = '-b' if self.DefinedVersion not in versionList else ''
+        RunCommand(f'git checkout {args} {self.DefinedVersion}')
 
     def init(self):
         try:
