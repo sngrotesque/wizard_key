@@ -7,7 +7,7 @@ import os
 DEFINED_FOLDER_PATH = '.'
 DEFINED_REMOTE_URL  = 'git@github.com:sngrotesque/wizard_key.git'
 DEFINED_COMMIT      = 'The wizard\'s universal key'
-DEFINED_VERSION     = 'v0.7.2'
+DEFINED_VERSION     = 'v0.8'
 
 def RunPopen(cmd :str):
     p = subprocess.Popen(cmd, shell = True, stdout = subprocess.PIPE)

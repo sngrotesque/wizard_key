@@ -79,12 +79,12 @@ def main():
 
     cmp = compile(sys.argv[1], sys.argv[2:])
 
-    cmp.add_parameter('-I includes')
-    cmp.add_parameter('-I sources')
+    cmp.add_parameter('-I wuk/includes')
+    cmp.add_parameter('-I wuk/sources')
 
     # 通用包含代码
-    cmp.add_parameter('sources/config/exception.cpp')
-    cmp.add_parameter('sources/memory.cpp')
+    cmp.add_parameter('./wuk/sources/config/WukException.cc')
+    cmp.add_parameter('./wuk/sources/WukMemory.cc')
 
     start = time.time()
     cmp.build()
