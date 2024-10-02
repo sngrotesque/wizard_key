@@ -1,25 +1,27 @@
 #include <config/WukConfig.hh>
 
-#include <iostream>
+#include <network/WukException.cc>
+#include <network/WukSocket.cc>
+#include <network/WukPacket.cc>
 
-#include <WukBase64.cc>
-#include <WukBinascii.cc>
-#include <WukRandom.cc>
-#include <WukTime.cc>
+#include <WukMisc.cc>
+
+#include <iostream>
 
 int main(int argc, char **argv)
 {
-    wuk::Base64 wuk_base64;
-    wuk::Binascii wuk_binascii;
-    wuk::Random wuk_random;
-    wuk::Time wuk_time;
+    wuk::net::PacketEndianness endian;
 
-    std::cout << "hello, world" << std::endl;
+    wByte array[4]{};
+    uint32_t number{123456};
 
-    std::cout << wuk_base64.encode("hello, world") << std::endl;
-    std::cout << wuk_binascii.b2a_hex("hello, world") << std::endl;
-    std::cout << wuk_random.randint(0, 0xffff) << std::endl;
-    std::cout << wuk_time.time() << std::endl;
+    endian.write_bytearray(array, sizeof(array), number);
+
+    wuk::misc::print_hex(array, sizeof(array), 8, 1, 0);
+
+    uint32_t result = endian.read_bytearray<uint32_t>(array);
+
+    std::cout << "result: " << result << std::endl;
 
     return 0;
 }

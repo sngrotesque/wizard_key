@@ -98,6 +98,13 @@ lAddr(), rAddr()
     }
 }
 
+wuk::net::Socket::Socket()
+: timeout(), fd(), family(AF_INET), type(SOCK_STREAM), proto(IPPROTO_TCP),transmissionLength(),
+lAddr(), rAddr()
+{
+
+}
+
 wuk::net::Socket::~Socket()
 {
     // this->close();

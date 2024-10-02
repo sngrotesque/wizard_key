@@ -83,8 +83,8 @@ def main():
     cmp.add_parameter('-I wuk/sources')
 
     # 通用包含代码
-    cmp.add_parameter('./wuk/sources/config/WukException.cc')
-    cmp.add_parameter('./wuk/sources/WukMemory.cc')
+    cmp.add_parameter('wuk/sources/config/WukException.cc')
+    cmp.add_parameter('wuk/sources/WukMemory.cc')
 
     start = time.time()
     cmp.build()

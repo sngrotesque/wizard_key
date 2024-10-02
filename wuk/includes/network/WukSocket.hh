@@ -74,6 +74,7 @@ namespace wuk {
             IPEndPoint rAddr; // 套接字绑定的远程IP端点
 
             Socket(wS32 _family, wS32 _type, wS32 _proto = 0, wSocket _fd = EOF);
+            Socket();
             ~Socket();
 
             void setsockopt(int level, int optName, SocketOption &opt);
