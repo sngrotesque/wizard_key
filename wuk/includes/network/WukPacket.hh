@@ -116,13 +116,13 @@ namespace wuk {
 
         class LIBWUK_API Packet {
         private:
+        public:
             PacketFlag flag;
             PacketMate mate;
             PacketData data;
             PacketEndianness endian;
             wuk::net::Socket fd;
 
-        public:
             Packet();
             Packet(wuk::net::Socket fd);
 
