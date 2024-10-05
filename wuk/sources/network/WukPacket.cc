@@ -1,5 +1,68 @@
 #include <network/WukPacket.hh>
 
+// wuk::net::PacketFlag Begin
+wuk::net::PacketFlag::PacketFlag()
+: packet_flag_value()
+{
+    this->set_flag_noerr();
+}
+
+void wuk::net::PacketFlag::set_flag_file()
+{
+    this->packet_flag_value |= PACKET_IS_FILE;
+}
+
+void wuk::net::PacketFlag::set_flag_data()
+{
+    this->packet_flag_value |= PACKET_IS_DATA;
+}
+
+void wuk::net::PacketFlag::set_flag_segment()
+{
+    this->packet_flag_value |= PACKET_IS_SEGMENT;
+}
+
+void wuk::net::PacketFlag::set_flag_over()
+{
+    this->packet_flag_value |= PACKET_IS_OVER;
+}
+
+void wuk::net::PacketFlag::set_flag_xcrypt()
+{
+    this->packet_flag_value |= PACKET_IS_XCRTPT;
+}
+
+void wuk::net::PacketFlag::set_flag_msg()
+{
+    this->packet_flag_value |= PACKET_IS_MSG;
+}
+
+void wuk::net::PacketFlag::set_flag_urgent()
+{
+    this->packet_flag_value |= PACKET_IS_URGENT;
+}
+
+void wuk::net::PacketFlag::set_flag_noerr()
+{
+    this->packet_flag_value |= PACKET_IS_NOERR;
+}
+
+void wuk::net::PacketFlag::clean_flag()
+{
+    this->packet_flag_value = PACKET_IS_NONE;
+}
+
+void wuk::net::PacketFlag::set_flag(PacketFlagValues flag)
+{
+    this->packet_flag_value = flag;
+}
+
+void wuk::net::PacketFlag::set_flag(wU32 flag)
+{
+    this->packet_flag_value = (flag & 0xff);
+}
+// wuk::net::PacketFlag End
+
 // wuk::net::PacketEndianness Begin
 void wuk::net::PacketEndianness::reverse_array(wByte *array, wU32 size)
 {
@@ -48,78 +111,133 @@ T wuk::net::PacketEndianness::read_bytearray(wByte *array)
 
 // wuk::net::PacketMate Begin
 wuk::net::PacketMate::PacketMate()
-: packet_time(),  session_id(), sequence(), mate_crc()
+: mate_time(),  mate_session_id(), mate_sequence(), mate_crc()
 {
 
 }
 
-void wuk::net::PacketMate::write_time(double current_time)
+// 写入元数据：时间
+void wuk::net::PacketMate::write_mate_time(double current_time)
 {
-
+    this->write_bytearray(this->mate_time, sizeof(this->mate_time), current_time);
 }
 
-void wuk::net::PacketMate::write_session_id(w_ulong id)
+// 写入元数据：会话ID
+void wuk::net::PacketMate::write_mate_session_id(w_ulong id)
 {
-
+    this->write_bytearray(this->mate_session_id, sizeof(this->mate_session_id), id);
 }
 
-void wuk::net::PacketMate::write_sequence(w_u32 seq)
+// 写入元数据：顺序号
+void wuk::net::PacketMate::write_mate_sequence(w_u32 seq)
 {
-
+    this->write_bytearray(this->mate_sequence, sizeof(this->mate_sequence), seq);
 }
 
+// 写入元数据：CRC32校验值
 void wuk::net::PacketMate::write_mate_crc()
 {
+    w_u32 crc_val{};
 
+    crc_val = crc32(crc_val, this->mate_time, sizeof(this->mate_time));
+    crc_val = crc32(crc_val, this->mate_session_id, sizeof(this->mate_session_id));
+    crc_val = crc32(crc_val, this->mate_sequence, sizeof(this->mate_sequence));
+
+    this->write_bytearray(this->mate_crc, sizeof(this->mate_crc), crc_val);
 }
 
-double wuk::net::PacketMate::read_time()
+// 读取元数据：时间
+double wuk::net::PacketMate::read_mate_time()
 {
-
+    return this->read_bytearray<double>(this->mate_time);
 }
 
-w_ulong wuk::net::PacketMate::read_session_id()
+// 读取元数据：会话ID
+w_ulong wuk::net::PacketMate::read_mate_session_id()
 {
-
+    return this->read_bytearray<wSize>(this->mate_session_id);
 }
 
-w_u32 wuk::net::PacketMate::read_sequence()
+// 读取元数据：顺序号
+w_u32 wuk::net::PacketMate::read_mate_sequence()
 {
-
+    return this->read_bytearray<w_u32>(this->mate_sequence);
 }
 
+// 读取元数据：CRC32校验值
 w_u32 wuk::net::PacketMate::read_mate_crc()
 {
-
+    return this->read_bytearray<w_u32>(this->mate_crc);
 }
 // wuk::net::PacketMate End
 
 
 // wuk::net::PacketData Begin
 wuk::net::PacketData::PacketData()
-: length_val(), data(), length(), dataCRC()
+: /* length_val(),*/ data_data(), data_size(), data_crc()
 {
 
 }
 
-void wuk::net::PacketData::write_data(wByte *data, wSize data_length)
+void wuk::net::PacketData::write_data_data(wByte *data, wU32 length)
 {
+    if(length > (static_cast<wU32>(~0) - 4)) {
+        throw wuk::Exception(wukErr_Err, "wuk::net::PacketData::write_data",
+            "The data is too long, please segment it.");
+    }
 
+    this->length_val = length;
+
+    this->data_data = (wByte *)malloc(this->length_val);
+    if(!this->data_data) {
+        throw wuk::Exception(wukErr_ErrMemory, "wuk::net::PacketData::write_data",
+            "Failed to allocate memory for data_data.");
+    }
+
+    memcpy(this->data_data, data, this->length_val);
+
+    this->write_bytearray(this->data_size, sizeof(this->data_size), this->length_val);
 }
 
-void wuk::net::PacketData::write_crc()
+void wuk::net::PacketData::write_data_data(std::string data)
 {
-
+    wByte *p = reinterpret_cast<wByte *>(const_cast<char *>(data.c_str()));
+    this->write_data_data(p, data.size());
 }
 
-wByte *wuk::net::PacketData::read_data()
+void wuk::net::PacketData::write_data_crc()
 {
+    if(!this->data_data) {
+        throw wuk::Exception(wukErr_ErrNULL, "wuk::net::PacketData::write_crc",
+            "this->data_data is nullptr.");
+    }
+    w_u32 crc_val{0};
 
+    crc_val = crc32(crc_val, this->data_size, sizeof(this->data_size));
+    crc_val = crc32(crc_val, this->data_data, this->length_val);
+
+    this->write_bytearray(this->data_crc, sizeof(this->data_crc), crc_val);
 }
 
-w_u32 wuk::net::PacketData::read_crc()
+wByte *wuk::net::PacketData::read_data_data()
 {
+    return this->data_data;
+}
 
+w_u32 wuk::net::PacketData::read_data_length()
+{
+    return this->length_val;
+}
+
+w_u32 wuk::net::PacketData::read_data_crc()
+{
+    return this->read_bytearray<w_u32>(this->data_crc);
+}
+
+void wuk::net::PacketData::destroy()
+{
+    free(this->data_data);
+    this->data_data = nullptr;
 }
 // wuk::net::PacketData End
 
@@ -135,3 +253,39 @@ wuk::net::Packet::Packet(wuk::net::Socket fd)
 {
 
 }
+
+void wuk::net::Packet::set_packet_flag(PacketFlag _flag)
+{
+    this->flag = _flag;
+}
+
+void wuk::net::Packet::set_packet_mate(PacketMate _mate)
+{
+    this->mate = _mate;
+}
+
+void wuk::net::Packet::set_packet_mate(double current_time, wSize session_id, w_u32 seq)
+{
+    this->mate.write_mate_time(current_time);
+    this->mate.write_mate_session_id(session_id);
+    this->mate.write_mate_sequence(seq);
+}
+
+void wuk::net::Packet::set_packet_data(PacketData _data)
+{
+    
+}
+void wuk::net::Packet::set_packet_data(wByte *data, w_u32 data_length)
+{
+    
+}
+void wuk::net::Packet::set_packet_data(std::string data)
+{
+    
+}
+
+void wuk::net::Packet::build_packet_data()
+{
+    
+}
+

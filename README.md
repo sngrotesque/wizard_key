@@ -83,6 +83,10 @@ A：因为我从未真正使用过`Mac OS`[^macos]，并且也不熟悉它的操
 > [upload.py](upload.py)  
 > [READMKE.md](README.md)
 
+#### v0.8
+1.  修改了代码文件的格式，以防止使用时与其他头文件冲突。
+2.  将所有`new`方法改为C方法的`malloc`函数，后续考虑是否加入智能指针。
+
 #### v0.7.2
 1.  修复了[Base64解码函数](includes/base64.hpp)在`v0.7.1`版本中的BUG，并修复了`v0.7.1`版本中解码函数未针对填充符进行处理的问题，现已经可以使用。  
     ~~但目前并未完全按照[RFC4648](https://datatracker.ietf.org/doc/html/rfc4648)实现，请等待后续的进一步完善。~~  

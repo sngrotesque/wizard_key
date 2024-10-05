@@ -18,20 +18,43 @@
 
 namespace wuk {
     namespace net {
-        enum class PacketFlag {
-            IS_NONE    = 0x0,  // 00000000 什么都没有（一般用于测试）
-            IS_FILE    = 0x1,  // 00000001 此包传输的是文件
-            IS_DATA    = 0x2,  // 00000010 此包传输的是有效数据
-            IS_SEGMENT = 0x4,  // 00000100 此包传输的已分段数据包
-            IS_OVER    = 0x8,  // 00001000 此包是此处传输的最后一个包
-            IS_XCRTPT  = 0x10, // 00010000 此包已加密
-            IS_MSG     = 0x20, // 00100000 此包为纯消息包
-            IS_URGENT  = 0x40, // 01000000 此包为紧急包
-            IS_NOERR   = 0x80  // 10000000 校验位，必须为1
+        // 此处不使用`enum class`的目的是方便，同时因为在命名空间中就不容易冲突。
+        typedef enum {
+            PACKET_IS_NONE    = 0x0,  // 00000000 什么都没有（一般用于清空标志位）
+            PACKET_IS_FILE    = 0x1,  // 00000001 此包传输的是文件
+            PACKET_IS_DATA    = 0x2,  // 00000010 此包传输的是有效数据
+            PACKET_IS_SEGMENT = 0x4,  // 00000100 此包传输的已分段数据包
+            PACKET_IS_OVER    = 0x8,  // 00001000 此包是此处传输的最后一个包
+            PACKET_IS_XCRTPT  = 0x10, // 00010000 此包已加密
+            PACKET_IS_MSG     = 0x20, // 00100000 此包为纯消息包
+            PACKET_IS_URGENT  = 0x40, // 01000000 此包为紧急包
+            PACKET_IS_NOERR   = 0x80  // 10000000 校验位，必须为1
+        } PacketFlagValues;
+
+        class LIBWUK_API PacketFlag {
+        public:
+            wByte packet_flag_value;
+
+            PacketFlag();
+
+            // 此处为单独设置
+            void set_flag_file();
+            void set_flag_data();
+            void set_flag_segment();
+            void set_flag_over();
+            void set_flag_xcrypt();
+            void set_flag_msg();
+            void set_flag_urgent();
+            void set_flag_noerr();
+
+            // 此处为统一设置
+            void clean_flag();
+            void set_flag(PacketFlagValues flag);
+            void set_flag(wU32 flag);
         };
 
         class LIBWUK_API PacketEndianness {
-        public:
+        protected:
             void reverse_array(wByte *array, wU32 size);
 
             template <typename T>
@@ -41,42 +64,54 @@ namespace wuk {
             T read_bytearray(wByte *array);
         };
 
-        class LIBWUK_API PacketMate {
+        class LIBWUK_API PacketMate :public PacketEndianness {
         public:
-            wByte packet_time[8];
-            wByte session_id[8];
-            wByte sequence[4];
+            wByte mate_time[8];
+            wByte mate_session_id[8];
+            wByte mate_sequence[4];
             wByte mate_crc[4];
 
             PacketMate();
 
-            void write_time(double current_time);
-            void write_session_id(w_ulong id);
-            void write_sequence(w_u32 seq);
+            void write_mate_time(double current_time);
+            void write_mate_session_id(w_ulong id);
+            void write_mate_sequence(w_u32 seq);
             void write_mate_crc();
 
-            double read_time();
-            w_ulong read_session_id();
-            w_u32 read_sequence();
-            w_u32 read_mate_crc();
+            double read_mate_time();
+            wSize  read_mate_session_id();
+            w_u32  read_mate_sequence();
+            w_u32  read_mate_crc();
         };
 
-        class LIBWUK_API PacketData {
+        class LIBWUK_API PacketData :public PacketEndianness {
         private:
-            w_u32 length_val; // 添加这个变量的目的是想实现那样append方法。
+            /*
+            * 这个变量的存在是为了更方便的处理长度数据，并且未来可能会添加
+            * 类似于std::string中那样的append方法。
+            */
+            w_u32 length_val;
 
         public:
-            wByte *data;
-            wByte length[4];
-            wByte dataCRC[4];
+            /*
+            * 此处将data_data排在data_size之前，是为了内存对齐，
+            * 实际使用时，应该将data_size视为第一个数据成员。
+            */
+            wByte *data_data;
+            wByte data_size[4];
+            wByte data_crc[4];
 
             PacketData();
 
-            void write_data(wByte *data, wSize data_length);
-            void write_crc();
+            void write_data_data(wByte *data, wU32 data_length);
+            void write_data_data(std::string data);
+            void write_data_crc();
 
-            wByte *read_data();
-            w_u32 read_crc();
+            wByte *read_data_data();
+            w_u32 read_data_length();
+            w_u32 read_data_crc();
+
+            void destroy();
         };
 
         class LIBWUK_API Packet {
@@ -86,9 +121,21 @@ namespace wuk {
             PacketData data;
             PacketEndianness endian;
             wuk::net::Socket fd;
+
         public:
             Packet();
             Packet(wuk::net::Socket fd);
+
+            void set_packet_flag(PacketFlag _flag);
+
+            void set_packet_mate(PacketMate _mate);
+            void set_packet_mate(double current_time, wSize session_id, w_u32 seq);
+
+            void set_packet_data(PacketData _data);
+            void set_packet_data(wByte *data, w_u32 data_length);
+            void set_packet_data(std::string data);
+
+            void build_packet_data();
         };
     }
 }

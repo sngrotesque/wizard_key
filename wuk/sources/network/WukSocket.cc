@@ -88,9 +88,9 @@ wuk::net::Socket::Socket(wS32 _family, wS32 _type, wS32 _proto, wSocket _fd)
 : timeout(), fd(), family(_family), type(_type), proto(_proto),transmissionLength(),
 lAddr(), rAddr()
 {
-    if(_fd == WUK_NET_ERROR) {
+    if(static_cast<wI32>(_fd) == WUK_NET_ERROR) {
         this->fd = socket(this->family, this->type, this->proto);
-        if(this->fd == WUK_NET_ERROR) {
+        if(static_cast<wI32>(this->fd) == WUK_NET_ERROR) {
             wuk::net::exception("wuk::net::Socket::Socket");
         }
     } else {
@@ -191,7 +191,8 @@ wuk::net::Socket wuk::net::Socket::accept()
     socklen_t cAddr_len = sizeof(cAddr);
     wSocket cSockfd;
 
-    if((cSockfd = ::accept(this->fd, &cAddr, &cAddr_len)) == WUK_NET_ERROR) {
+    cSockfd = ::accept(this->fd, &cAddr, &cAddr_len);
+    if(static_cast<wI32>(cSockfd) == WUK_NET_ERROR) {
         wuk::net::exception("wuk::net::Socket::accept");
     }
 
