@@ -288,6 +288,6 @@ void wuk::net::Packet::set_packet_data(std::string data)
 
 wByte *wuk::net::Packet::build_packet_data()
 {
-    
+    return nullptr;
 }
 
