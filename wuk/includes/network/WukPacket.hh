@@ -115,7 +115,6 @@ namespace wuk {
         };
 
         class LIBWUK_API Packet {
-        private:
         public:
             PacketFlag flag;
             PacketMate mate;
@@ -126,6 +125,7 @@ namespace wuk {
             Packet();
             Packet(wuk::net::Socket fd);
 
+            // 下列方法是为了在你不想直接使用成员时可以相对方便的赋值
             void set_packet_flag(PacketFlag _flag);
 
             void set_packet_mate(PacketMate _mate);
@@ -135,7 +135,7 @@ namespace wuk {
             void set_packet_data(wByte *data, w_u32 data_length);
             void set_packet_data(std::string data);
 
-            void build_packet_data();
+            wByte *build_packet_data();
         };
     }
 }

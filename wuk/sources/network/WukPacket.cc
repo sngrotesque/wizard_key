@@ -275,16 +275,18 @@ void wuk::net::Packet::set_packet_data(PacketData _data)
 {
     
 }
+
 void wuk::net::Packet::set_packet_data(wByte *data, w_u32 data_length)
 {
     
 }
+
 void wuk::net::Packet::set_packet_data(std::string data)
 {
     
 }
 
-void wuk::net::Packet::build_packet_data()
+wByte *wuk::net::Packet::build_packet_data()
 {
     
 }
