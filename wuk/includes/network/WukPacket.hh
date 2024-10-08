@@ -136,7 +136,7 @@ namespace wuk {
 
             // 将数据包打包为一个数据流
             wuk::Buffer build_packet_data();
-            // 将数据流解包为数据包
+            // 将数据流解析为数据包
             void analyze_packet(wuk::Buffer packet_data);
         };
     }
