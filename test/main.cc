@@ -1,3 +1,4 @@
+// python make.py test\main.cc -O3 -Wall -DWUK_EXPORTS -lws2_32 -lz
 #include <config/WukConfig.hh>
 
 #include <network/WukException.cc>

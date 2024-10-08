@@ -10,9 +10,11 @@ namespace  wuk {
     class LIBWUK_API Buffer {
     public:
         wByte *data;
-        w_size size;
+        wSize size;
 
         Buffer();
+        Buffer(wByte *content, wSize length);
+
         ~Buffer();
 
         void append(const wByte *content, wSize length);
