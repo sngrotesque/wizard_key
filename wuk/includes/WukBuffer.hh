@@ -6,7 +6,7 @@
 #include <config/WukException.hh>
 #include <WukMemory.hh>
 
-namespace  wuk {
+namespace wuk {
     class LIBWUK_API Buffer {
     public:
         wByte *data;
