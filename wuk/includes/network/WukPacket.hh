@@ -13,6 +13,7 @@
 #include <network/WukSocket.hh>
 #include <WukMemory.hh>
 #include <WukTime.hh>
+#include <WukBuffer.hh>
 
 #include <zlib.h>
 
@@ -85,14 +86,12 @@ namespace wuk {
         };
 
         class LIBWUK_API PacketData :public PacketEndianness {
-        private:
+        public:
             /*
             * 这个变量的存在是为了更方便的处理长度数据，并且未来可能会添加
             * 类似于std::string中那样的append方法。
             */
             w_u32 length_val;
-
-        public:
             /*
             * 此处将data_data排在data_size之前，是为了内存对齐，
             * 实际使用时，应该将data_size视为第一个数据成员。
@@ -111,7 +110,7 @@ namespace wuk {
             w_u32 read_data_length();
             w_u32 read_data_crc();
 
-            void destroy();
+            // void destroy_data_data();
         };
 
         class LIBWUK_API Packet {
@@ -135,7 +134,7 @@ namespace wuk {
             void set_packet_data(wByte *data, w_u32 data_length);
             void set_packet_data(std::string data);
 
-            wByte *build_packet_data();
+            wuk::Buffer build_packet_data();
         };
     }
 }

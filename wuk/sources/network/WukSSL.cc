@@ -57,7 +57,7 @@ std::string wuk::net::SSL_Socket::recv(const wS32 length)
 
 ///////////////////////////////////////////////////////////////////////////////
 wuk::net::SSL_Context::SSL_Context(const SSL_METHOD *method)
-: ssl_ctx(), ssl()
+: ssl_ctx(nullptr), ssl(nullptr)
 {
     if(!method) {
         method = TLS_method();

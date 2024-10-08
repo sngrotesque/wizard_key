@@ -4,19 +4,23 @@
 #include <network/WukSocket.cc>
 #include <network/WukPacket.cc>
 
+#include <WukBuffer.cc>
 #include <WukMisc.cc>
 #include <WukTime.cc>
 
 #include <iostream>
 #include <iomanip>
 
-int main(int argc, char **argv)
+void free_ptr(wByte **p)
+{
+    free(*p);
+    *p = nullptr;
+}
+
+void build_packet_test()
 {
     wuk::net::Packet packet_packet{};
     wuk::Time timer{};
-
-    wByte *packet{};
-    wSize packet_length{};
 
     packet_packet.flag.set_flag(
         wuk::net::PACKET_IS_FILE |
@@ -27,25 +31,30 @@ int main(int argc, char **argv)
     // 构建元数据
     packet_packet.mate.write_mate_time(timer.time());
     packet_packet.mate.write_mate_session_id(718274593);
-    packet_packet.mate.write_mate_sequence(0);
+    packet_packet.mate.write_mate_sequence(0xeeeeeeee);
     packet_packet.mate.write_mate_crc();
 
     // 构建包数据
     packet_packet.data.write_data_data("hello, world.\n");
     packet_packet.data.write_data_crc();
 
-    packet_length = 1 + 24 + packet_packet.data.read_data_length() + 4;
-    packet = (wByte *)malloc(packet_length);
-    wuk::memory_zero(packet, packet_length);
+    try {
+        wuk::Buffer packet_buffer = packet_packet.build_packet_data();
+        wuk::misc::print_hex(packet_buffer.data, packet_buffer.size, 16, 1, 0);
+    } catch (std::exception &e) {
+        std::cout << e.what() << std::endl;
+        return;
+    }
+}
 
-    *packet = static_cast<wByte>(packet_packet.flag.packet_flag_value);
-    memcpy(packet, &packet_packet.flag.packet_flag_value, 1);
-    // memcpy(packet + 1, )
-
-    wuk::misc::print_hex(packet, packet_length, 16, 1, 0);
-
-    free(packet);
-    packet = nullptr;
+/*
+19 41 d9 c1 5a 4a dd c9 3f 00 00 00 00 2a d0 00
+21 ee ee ee ee 41 d2 c5 6b 00 00 00 00 00 00 00
+00 00 00 00 00 00 00 00 00 00 00
+*/
+int main(int argc, char **argv)
+{
+    build_packet_test();
 
     return 0;
 }

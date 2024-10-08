@@ -7,6 +7,7 @@ wuk::net::PacketFlag::PacketFlag()
     this->set_flag_noerr();
 }
 
+// 单独设置
 void wuk::net::PacketFlag::set_flag_file()
 {
     this->packet_flag_value |= PACKET_IS_FILE;
@@ -47,6 +48,7 @@ void wuk::net::PacketFlag::set_flag_noerr()
     this->packet_flag_value |= PACKET_IS_NOERR;
 }
 
+// 统一设置
 void wuk::net::PacketFlag::clean_flag()
 {
     this->packet_flag_value = PACKET_IS_NONE;
@@ -188,13 +190,20 @@ void wuk::net::PacketData::write_data_data(wByte *data, wU32 length)
 
     this->length_val = length;
 
-    this->data_data = (wByte *)malloc(this->length_val);
-    if(!this->data_data) {
-        throw wuk::Exception(wukErr_ErrMemory, "wuk::net::PacketData::write_data",
-            "Failed to allocate memory for data_data.");
-    }
+    // // 将用户指定的数据复制到数据包的数据中
+    // this->data_data = (wByte *)malloc(this->length_val);
+    // if(!this->data_data) {
+    //     throw wuk::Exception(wukErr_ErrMemory, "wuk::net::PacketData::write_data",
+    //         "Failed to allocate memory for data_data.");
+    // }
+    // memcpy(this->data_data, data, this->length_val);
 
-    memcpy(this->data_data, data, this->length_val);
+    /*
+    * 将数据包数据指针指向用户指定数据（不确定此行为是否存在问题）
+    * 因为像std::string类型存在析构函数，可能会在某些非需要的情况下回收指向的数据。
+    * 此行为应在现在以及未来进行监测，同时保留destroy_data_data方法。
+    */ 
+    this->data_data = data;
 
     this->write_bytearray(this->data_size, sizeof(this->data_size), this->length_val);
 }
@@ -234,11 +243,11 @@ w_u32 wuk::net::PacketData::read_data_crc()
     return this->read_bytearray<w_u32>(this->data_crc);
 }
 
-void wuk::net::PacketData::destroy()
-{
-    free(this->data_data);
-    this->data_data = nullptr;
-}
+// void wuk::net::PacketData::destroy_data_data()
+// {
+//     free(this->data_data);
+//     this->data_data = nullptr;
+// }
 // wuk::net::PacketData End
 
 
@@ -273,21 +282,38 @@ void wuk::net::Packet::set_packet_mate(double current_time, wSize session_id, w_
 
 void wuk::net::Packet::set_packet_data(PacketData _data)
 {
-    
+    this->data = _data;
 }
 
 void wuk::net::Packet::set_packet_data(wByte *data, w_u32 data_length)
 {
-    
+    this->data.write_data_data(data, data_length);
 }
 
 void wuk::net::Packet::set_packet_data(std::string data)
 {
-    
+    this->data.write_data_data(data);
 }
 
-wByte *wuk::net::Packet::build_packet_data()
+wuk::Buffer wuk::net::Packet::build_packet_data()
 {
-    return nullptr;
+    wuk::Buffer packet{};
+
+    // 位标志
+    packet.append(&this->flag.packet_flag_value, 1);
+
+    // 元数据
+    packet.append(this->mate.mate_time, sizeof(this->mate.mate_time));
+    packet.append(this->mate.mate_session_id, sizeof(this->mate.mate_session_id));
+    packet.append(this->mate.mate_sequence, sizeof(this->mate.mate_sequence));
+    packet.append(this->mate.mate_crc, sizeof(this->mate.mate_crc));
+
+    // 实际数据
+    packet.append(this->data.data_size, sizeof(this->data.data_size));
+    packet.append(this->data.data_data, this->data.length_val);
+    packet.append(this->data.data_crc, sizeof(this->data.data_crc));
+
+    return packet;
 }
+
 
