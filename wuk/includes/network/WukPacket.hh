@@ -134,7 +134,10 @@ namespace wuk {
             void set_packet_data(wByte *data, w_u32 data_length);
             void set_packet_data(std::string data);
 
+            // 将数据包打包为一个数据流
             wuk::Buffer build_packet_data();
+            // 将数据流解包为数据包
+            void analyze_packet(wuk::Buffer packet_data);
         };
     }
 }

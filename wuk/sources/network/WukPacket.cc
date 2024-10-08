@@ -316,4 +316,7 @@ wuk::Buffer wuk::net::Packet::build_packet_data()
     return packet;
 }
 
-
+void wuk::net::Packet::analyze_packet(wuk::Buffer packet_data)
+{
+    
+}
