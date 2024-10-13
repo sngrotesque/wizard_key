@@ -12,8 +12,8 @@
 #include <config/WukException.hh>
 #include <network/WukSocket.hh>
 #include <WukMemory.hh>
-#include <WukTime.hh>
 #include <WukBuffer.hh>
+#include <WukTime.hh>
 
 #include <zlib.h>
 

@@ -5,18 +5,15 @@
 #include <network/WukSocket.cc>
 #include <network/WukPacket.cc>
 
+#include <WukPadding.cc>
 #include <WukBuffer.cc>
+#include <WukRandom.cc>
 #include <WukMisc.cc>
 #include <WukTime.cc>
 
 #include <iostream>
 #include <iomanip>
-
-void free_ptr(wByte **p)
-{
-    free(*p);
-    *p = nullptr;
-}
+#include <memory>
 
 void build_packet_test()
 {
@@ -41,21 +38,54 @@ void build_packet_test()
 
     try {
         wuk::Buffer packet_buffer = packet_packet.build_packet_data();
-        wuk::misc::print_hex(packet_buffer.data, packet_buffer.size, 16, 1, 0);
+        wuk::misc::print_hex(packet_buffer.get_data(), packet_buffer.get_size(), 16, 1, 0);
     } catch (std::exception &e) {
         std::cout << e.what() << std::endl;
         return;
     }
 }
 
-/*
-19 41 d9 c1 5a 4a dd c9 3f 00 00 00 00 2a d0 00
-21 ee ee ee ee 41 d2 c5 6b 00 00 00 00 00 00 00
-00 00 00 00 00 00 00 00 00 00 00
-*/
+void wuk_socket_test()
+{
+    WSADATA ws;
+    WSAStartup(MAKEWORD(2,2), &ws);
+
+    try {
+        wuk::net::Socket fd{AF_INET, SOCK_STREAM, IPPROTO_TCP};
+
+        fd.setsockopt(SOL_SOCKET, SO_SNDTIMEO, {1});
+        fd.setsockopt(SOL_SOCKET, SO_RCVTIMEO, {1});
+        fd.setsockopt(SOL_SOCKET, SO_REUSEADDR, {1});
+
+        fd.connect("passport.bilibili.com", 80);
+        fd.send("GET / HTTP/1.1\r\nHost: passport.bilibili.com\r\nUser-Agent: android\r\n\r\n");
+
+        std::cout << fd.recv(4096);
+
+        fd.shutdown(wuk::net::SD_SW::BOTH);
+        fd.close();
+    } catch (std::exception &e) {
+        std::cout << e.what() << std::endl;
+    }
+
+    WSACleanup();
+}
+
+void WukBuffer_test()
+{
+    wuk::Buffer buffer{4096};
+
+    wByte temp[3072]{};
+    memset(temp, 0xff, sizeof(temp));
+
+    memcpy(buffer.get_data(), temp, sizeof(temp));
+
+    wuk::misc::print_hex(buffer.get_data(), sizeof(temp), 32, 1, 0);
+}
+
 int main(int argc, char **argv)
 {
-    build_packet_test();
+    WukBuffer_test();
 
     return 0;
 }

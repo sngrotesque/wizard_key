@@ -29,7 +29,7 @@ A：在功能还没完全成型以及Bug还没排除掉绝大多数的情况下�
 A：因为我从未真正使用过`Mac OS`[^macos]，并且也不熟悉它的操作和工作原理，不过正常来说，既然它是[POSIX标准](https://pubs.opengroup.org/onlinepubs/9699919799/)[^what_is_posix]的产物，那其实应该也是支持的。
 
 ### 关于（About）
-1.  此库拥有多套加密算法，其中包含了[FEA（Fast encryption algorithm）](includes/crypto/fea.hpp)，由[SN-Grotesque](https://github.com/sngrotesque)自制研发的一款分组对称加密算法。更多关于此算法的描述请[查看](Reference.md#L53)。
+1.  此库拥有多套加密算法，其中包含了[FEA（Fast encryption algorithm）](wuk/includes/crypto/fea.hpp)，由[SN-Grotesque](https://github.com/sngrotesque)自制研发的一款分组对称加密算法。更多关于此算法的描述请[查看](Reference.md#L53)。
 2.  此库还在逐步不断完善中，缺少开发者的支持，如果你有能力，请和我一起开发这个库，非常感谢。
 
 ### 使用（Usage）
@@ -87,22 +87,28 @@ A：因为我从未真正使用过`Mac OS`[^macos]，并且也不熟悉它的操
 1.  修改了代码文件的格式，以防止使用时与其他头文件冲突。
 2.  逐步将所有`new`方法改为C方法的`malloc`函数，后续考虑是否加入智能指针。
 3.  修复了关于初始化列表中的一个可能存在的指针指向错误的问题。
+4.  优化了wuk::net中的代码。
+(以下为待完成)
+1.  将网络库中的使用堆空间的指针全部改为[wuk::Buffer](wuk/includes/WukBuffer.hh)。  
+    暂时不会考虑使用智能指针，因其无法达成我的要求。
+2.  重新编写[wuk::net::Packet](wuk/includes/network/WukPacket.hh)中的代码。
+3.  完善[wuk::Buffer](wuk/includes/WukBuffer.hh)的所有功能。
 
 #### v0.7.2
-1.  修复了[Base64解码函数](includes/base64.hpp)在`v0.7.1`版本中的BUG，并修复了`v0.7.1`版本中解码函数未针对填充符进行处理的问题，现已经可以使用。  
+1.  修复了[Base64解码函数](wuk/includes/base64.hpp)在`v0.7.1`版本中的BUG，并修复了`v0.7.1`版本中解码函数未针对填充符进行处理的问题，现已经可以使用。  
     ~~但目前并未完全按照[RFC4648](https://datatracker.ietf.org/doc/html/rfc4648)实现，请等待后续的进一步完善。~~  
     使用Python中的方法来完善了Base64的解码功能，但存在一个处理受污染Base64编码串的小问题。  
     即：最终指针实际使用的内存空间会比解码后应实际占用的内存空间略大（这取决于Base64编码串被污染的程度），将在后续版本中修复此问题。  
     ~~目前又发现一个问题，一种极为特殊的被污染的Base64编码串会导致直接的内存泄露或者程序闪退。~~
     问题解决，问题的根源是`bin_data`指针指向错误，应使用`bin_data_start`指针来释放内存。**妈的终于把心头的一个大石头移开了，我就说这段时间怎么感觉胸闷。**
-2.  提供了用于[公开库的API调用](includes/config/wuk.hpp#L36)，现在可以更好的支持编译器导入和导出库函数了。  
+2.  提供了用于[公开库的API调用](wuk/includes/config/wuk.hpp#L36)，现在可以更好的支持编译器导入和导出库函数了。  
     请在编译时加入宏**WUK_EXPORTS**，否则很可能将编译失败。
 3.  已修复一些编译器的警告项。
 4.  此版本将着重检查和修复一些可能的隐患。
-5.  完善了[密码库的计数器](includes/crypto/utils.hpp#L9)。
-6.  完善了部分[SSL库](includes/network/ssl.hpp)的功能。
-7.  完善了[Binascii](includes/binascii.hpp)，修复了[Base64](sources/base64.cpp)中的异常捕获隐患。
-8.  修改并完善了[WUK库的代码和宏定义](includes/config/wuk.hpp)，以便未来更好的支持各个平台以及各个编译器。
+5.  完善了[密码库的计数器](wuk/includes/crypto/utils.hpp#L9)。
+6.  完善了部分[SSL库](wuk/includes/network/ssl.hpp)的功能。
+7.  完善了[Binascii](wuk/includes/binascii.hpp)，修复了[Base64](sources/base64.cpp)中的异常捕获隐患。
+8.  修改并完善了[WUK库的代码和宏定义](wuk/includes/config/wuk.hpp)，以便未来更好的支持各个平台以及各个编译器。
 9.  逐渐将所有以前的C语法改为C++语法。
 10. 优化了[make.py](make.py)的代码。
 
@@ -110,9 +116,9 @@ A：因为我从未真正使用过`Mac OS`[^macos]，并且也不熟悉它的操
 1.  重写了wuk::Exception（抛弃原先的函数调用std::runtime_error的形式），将其作为一个完整的异常类使用，继承于std::exception。
 2.  增加了对于wuk::crypto::fea::ctr_xcrypt的更多支持，现在请使用counter类来构建一个计数器。
 3.  将所有类的名称使用大驼峰命名法，跟随编码规范。
-4.  ~~更新了[终端字体颜色库](includes/config/color.hpp)对于C++的支持，抛弃了原先的C语法。~~
+4.  ~~更新了[终端字体颜色库](wuk/includes/config/color.hpp)对于C++的支持，抛弃了原先的C语法。~~
 5.  添加了[ChaCha20](https://github.com/marcizhu/ChaCha20)加密算法的实现，如果你要使用其他实现，请自行调用（如OpenSSL库提供的ChaCha20）。
-6.  **如果使用此库中提供的[Base64](includes/base64.hpp)进行解码操作，有可能会导致内存溢出或内存泄漏甚至更严重的后果，请不要使用！！！**  
+6.  **如果使用此库中提供的[Base64](wuk/includes/base64.hpp)进行解码操作，有可能会导致内存溢出或内存泄漏甚至更严重的后果，请不要使用！！！**  
     将重新实现有关Base64编码中的解码函数，目前发现了一个问题，具体描述：  
     在[base64.cpp 第93行](sources/base64.cpp#L93)与[base64.cpp 第94行](sources/base64.cpp#L94)，将值与解码表进行置换后，值甚至会大于`800`，并且
     让这个值与`0xff`进行与运算`v & 0xff`后依旧无法得出正确的值。  
@@ -128,7 +134,7 @@ A：因为我从未真正使用过`Mac OS`[^macos]，并且也不熟悉它的操
     例如：wukBase64变为`wuk::base64`，其中的方法encode变为`wuk::base64().encode()`
 2.  重新优化所有代码。
 3.  修复了FEA加密算法的一个密钥长度隐患。
-4.  完成了`wuk::structure::pack`，但是需要使用者注意`C/C++`的特性，解释在[struct.hpp](includes/struct.hpp)头部。  
+4.  完成了`wuk::structure::pack`，但是需要使用者注意`C/C++`的特性，解释在[struct.hpp](wuk/includes/struct.hpp)头部。  
 
 #### v0.6.6
 1.  C++代码为完全复刻C代码的内容，但是修复了各种问题与难用性。
