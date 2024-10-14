@@ -1,16 +1,12 @@
-/**
- * 具体包的设计标准请参考`doc/network_packet.md`文件。
- * 
- * @date 2024-10-03
- * @copyright Copyright (c) 2024
- */
 #include <config/WukConfig.hh>
 
 #if WUK_SUPPORT
 #ifndef WUK_CPP_PACKET
 #define WUK_CPP_PACKET
+
 #include <config/WukException.hh>
 #include <network/WukSocket.hh>
+
 #include <WukMemory.hh>
 #include <WukBuffer.hh>
 #include <WukTime.hh>
@@ -19,45 +15,54 @@
 
 namespace wuk {
     namespace net {
-        // 此处不使用`enum class`的目的是方便，同时因为在命名空间中就不容易冲突。
         typedef enum {
-            PACKET_IS_NONE    = 0x0,  // 00000000 什么都没有（一般用于清空标志位）
-            PACKET_IS_FILE    = 0x1,  // 00000001 此包传输的是文件
-            PACKET_IS_DATA    = 0x2,  // 00000010 此包传输的是有效数据
-            PACKET_IS_SEGMENT = 0x4,  // 00000100 此包传输的已分段数据包
-            PACKET_IS_OVER    = 0x8,  // 00001000 此包是此处传输的最后一个包
-            PACKET_IS_XCRTPT  = 0x10, // 00010000 此包已加密
-            PACKET_IS_MSG     = 0x20, // 00100000 此包为纯消息包
-            PACKET_IS_URGENT  = 0x40, // 01000000 此包为紧急包
-            PACKET_IS_NOERR   = 0x80  // 10000000 校验位，必须为1
-        } PacketFlagValues;
+            P_IS_NONE    = 0x00000000U, // ................................ 无标志位
+            P_IS_FILE    = 0x00000001U, // ...............................1 文件
+            P_IS_DATA    = 0x00000002U, // ..............................1. 一般数据
+            P_IS_SEGMENT = 0x00000004U, // .............................1.. 已分段
+            P_IS_OVER    = 0x00000008U, // ............................1... 已是分段包的最后一个
+            P_IS_XCRYPT  = 0x00000010U, // ...........................1.... 已加密
+            P_IS_MESSAGE = 0x00000020U, // ..........................1..... 纯消息
+            P_IS_URGENT  = 0x00000040U, // .........................1...... 紧急包
 
-        class LIBWUK_API PacketFlag {
+            P_IS_IMAGE   = 0x00000080U, // ........................1....... 图像且IS_FILE，否则视为表情包
+            P_IS_VIDEO   = 0x00000100U, // .......................1........ 视频
+            P_IS_AUDIO   = 0x00000200U, // ......................1......... 音频
+
+            P_IS_ANYM    = 0x00000400U, // .....................1.......... 匿名包
+
+            P_IS_NOERR   = 0x80000000U  // 1............................... 校验位，必须为1，否则弃包
+        } MessageTypes;
+
+        class LIBWUK_API PacketType {
+        private:
+            w_u32 _val;
+
         public:
-            wByte packet_flag_value;
+            PacketType();
+            PacketType(MessageTypes type);
 
-            PacketFlag();
+            void set_type_file();
+            void set_type_data();
+            void set_type_segment();
+            void set_type_over();
+            void set_type_xcrypt();
+            void set_type_msg();
+            void set_type_urgent();
+            void set_type_image();
+            void set_type_video();
+            void set_type_audio();
+            void set_type_anym();
+            void set_type_noerr();
 
-            // 此处为单独设置
-            void set_flag_file();
-            void set_flag_data();
-            void set_flag_segment();
-            void set_flag_over();
-            void set_flag_xcrypt();
-            void set_flag_msg();
-            void set_flag_urgent();
-            void set_flag_noerr();
-
-            // 此处为统一设置
-            void clean_flag();
-            void set_flag(PacketFlagValues flag);
-            void set_flag(wU32 flag);
+            void clean_type();
+            w_u32 get_type_val();
         };
 
-        class LIBWUK_API PacketEndianness {
+        class LIBWUK_API PacketEndian {
         protected:
-            void reverse_array(wByte *array, wU32 size);
-
+            void reverse_array(wByte *array, wSize size);
+        
             template <typename T>
             void write_bytearray(wByte *array, wSize array_size, T val);
 
@@ -65,79 +70,51 @@ namespace wuk {
             T read_bytearray(wByte *array);
         };
 
-        class LIBWUK_API PacketMate :public PacketEndianness {
-        public:
-            wByte mate_time[8];
-            wByte mate_session_id[8];
-            wByte mate_sequence[4];
-            wByte mate_crc[4];
-
-            PacketMate();
-
-            void write_mate_time(double current_time);
-            void write_mate_session_id(w_ulong id);
-            void write_mate_sequence(w_u32 seq);
-            void write_mate_crc();
-
-            double read_mate_time();
-            wSize  read_mate_session_id();
-            w_u32  read_mate_sequence();
-            w_u32  read_mate_crc();
-        };
-
-        class LIBWUK_API PacketData :public PacketEndianness {
-        public:
-            /*
-            * 这个变量的存在是为了更方便的处理长度数据，并且未来可能会添加
-            * 类似于std::string中那样的append方法。
-            */
-            w_u32 length_val;
-            /*
-            * 此处将data_data排在data_size之前，是为了内存对齐，
-            * 实际使用时，应该将data_size视为第一个数据成员。
-            */
-            wByte *data_data;
-            wByte data_size[4];
-            wByte data_crc[4];
-
-            PacketData();
-
-            void write_data_data(wByte *data, wU32 data_length);
-            void write_data_data(std::string data);
-            void write_data_crc();
-
-            wByte *read_data_data();
-            w_u32 read_data_length();
-            w_u32 read_data_crc();
-
-            // void destroy_data_data();
-        };
-
         class LIBWUK_API Packet {
-        public:
-            PacketFlag flag;
-            PacketMate mate;
-            PacketData data;
-            PacketEndianness endian;
+        private:
+            w_u32 p_proto_ver;
+            w_u32 p_msg_type;
+            w_u32 p_sequence;
+            w_u32 p_segment_id;
+
+            double p_time_stamp;
+
+            wSize p_message_id;
+            wSize p_message_size;
+
+            wSize p_sender_id;
+            wSize p_recipient_id;
+
             wuk::net::Socket fd;
+
+        public:
+            // 元数据
+            wByte proto_ver[4];
+            wByte msg_type[4];
+            wByte sequence[4];
+            wByte segment_id[4];
+
+            // 头部数据
+            wByte time_stamp[8];
+            wByte message_id[8];
+            wByte message_size[8];
+
+            wByte sender_id[8];
+            wByte recipient_id[8];
+
+            // 实际内容
+            wuk::Buffer message;
+
+            // 整个包的摘要
+            wByte *sha256_digest[32];
 
             Packet();
             Packet(wuk::net::Socket fd);
 
-            // 下列方法是为了在你不想直接使用成员时可以相对方便的赋值
-            void set_packet_flag(PacketFlag _flag);
+            void reset_socket(wuk::net::Socket &fd);
 
-            void set_packet_mate(PacketMate _mate);
-            void set_packet_mate(double current_time, wSize session_id, w_u32 seq);
-
-            void set_packet_data(PacketData _data);
-            void set_packet_data(wByte *data, w_u32 data_length);
-            void set_packet_data(std::string data);
-
-            // 将数据包打包为一个数据流
-            wuk::Buffer build_packet_data();
-            // 将数据流解析为数据包
-            void analyze_packet(wuk::Buffer packet_data);
+            void set_mate_info();
+            void set_header_info();
         };
     }
 }
