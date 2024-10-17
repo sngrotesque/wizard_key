@@ -1,6 +1,13 @@
 #include <WukBuffer.hh>
 
 //////////////////////////////////////////////////////////////////////
+/**
+ * @brief 用于增加可用内存大小
+ * @authors SN-Grotesque
+ * @note 不需要在函数外部重新分配this->data_size大小，此方法会自动完成
+ * @param length 需要增加的长度（非总长度），比如要加16字节，就传入16。
+ * @return 无
+ */
 void wuk::Buffer::expand_memory(wSize length)
 {
     if (!this->data) {
@@ -26,6 +33,18 @@ void wuk::Buffer::expand_memory(wSize length)
     this->data_size += length;
 }
 
+/**
+ * @brief 检查当前已申请的内存空间是否足够
+ * @authors SN-Grotesque
+ * @note 无
+ * @param length 新数据的长度
+ * @return 如果足够就返回True，否则False
+ */
+bool wuk::Buffer::is_memory_sufficient(wSize length)
+{
+    return (this->data_len + length) > this->data_size;
+}
+
 //////////////////////////////////////////////////////////////////////
 wuk::Buffer::Buffer()
 : data(nullptr), data_offset(nullptr), data_len(), data_size()
@@ -43,7 +62,7 @@ wuk::Buffer::Buffer(wByte *content, wSize length)
     }
     memcpy(this->data, content, length);
 
-    this->data_offset = this->data;
+    this->data_offset = this->data + length;
 }
 
 wuk::Buffer::Buffer(wSize memory_size)
@@ -67,32 +86,16 @@ wuk::Buffer::~Buffer()
 }
 
 //////////////////////////////////////////////////////////////////////
-void wuk::Buffer::write(wByte *content, wSize length)
-{
-    if(!content) {
-        throw wuk::Exception(wukErr_ErrNULL, "wuk::Buffer::write",
-            "content is nullptr.");
-    }
-
-    if(this->data_offset < this->data) {
-        throw wuk::Exception(wukErr_Err, "wuk::Buffer::write",
-            "The offset pointer points to an incorrect memory address.");
-    }
-
-    if((this->data_len + length) > this->data_size) {
-        throw wuk::Exception(wukErr_Err, "wuk::Buffer::write",
-            "The amount of data written exceeds the requested memory space size.");
-    }
-
-    memcpy(this->data_offset, content, length);
-
-    this->data_offset += length;
-    this->data_len    += length;
-}
-
+/**
+ * @brief 在需要写入指定长度的大小的内容且同时需要指针的情况下调用此方法
+ * @authors SN-Grotesque
+ * @note recv(fd, buffer.write(2048), 2048, 0);
+ * @param length 将要写入的数据内容的长度
+ * @return 指向内部数据内容结尾的指针
+ */
 wByte *wuk::Buffer::write(wSize length)
 {
-    if((this->data_size < length) || ((this->data_len + length) > this->data_size)) {
+    if(this->is_memory_sufficient(length)) {
         throw wuk::Exception(wukErr_Err, "wuk::Buffer::write",
             "The amount of data written exceeds the requested memory space size.");
     }
@@ -110,20 +113,25 @@ void wuk::Buffer::append(const wByte *content, wSize length)
             "content in nullptr.");
     }
 
-    if(this->data_offset < this->data) {
-        throw wuk::Exception(wukErr_Err, "wuk::Buffer::append",
-            "The offset pointer points to an incorrect memory address.");
+    if(this->is_memory_sufficient(length)) {
+        this->expand_memory(length);
     }
 
-    if((this->data_len + length) > this->data_size) {
-        // 内存空间不足的情况下
-    }
+    memcpy(this->data_offset, content, length);
+
+    this->data_offset += length;
+    this->data_len += length;
 }
 
 //////////////////////////////////////////////////////////////////////
 wByte *wuk::Buffer::get_data()
 {
     return this->data;
+}
+
+const char *wuk::Buffer::get_cStr()
+{
+    return reinterpret_cast<const char *>(this->data);
 }
 
 wSize wuk::Buffer::get_length()
