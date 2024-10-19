@@ -1,5 +1,13 @@
 # The wizard's universal key
 
+- [作者 / Authors](#authors)
+- [开放源代码许可 / OpenSource license](#开放源代码许可open-source-license)
+- [提问与解答 / Q&A](#提问与解答qa)
+- [关于 / About](#关于about)
+- [使用 / Usage](#使用usage)
+- [开发规范 / Development Specifications](#开发规范development-specifications)
+- [版本更新日志 / ChangeLogs](#版本更新日志change-log)
+
 ### Author(s):
  - [SN-Grotesque](https://github.com/sngrotesque)
  - [R7](https://github.com/r7z7)

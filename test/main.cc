@@ -17,15 +17,14 @@
 
 using namespace std;
 
-void SSS_WSAStart()
+void SSS_WSAServiceControl(bool start)
 {
-    WSADATA ws;
-    WSAStartup(MAKEWORD(2,2), &ws);
-}
-
-void SSS_WSAStop()
-{
-    WSACleanup();
+    if(start) {
+        WSADATA ws;
+        WSAStartup(MAKEWORD(2,2), &ws);
+    } else {
+        WSACleanup();
+    }
 }
 
 void WukBuffer_test()
@@ -40,7 +39,7 @@ void WukBuffer_test()
     buffer.append((wByte *)text1, strlen(text1));
     buffer.append((wByte *)text2, strlen(text2));
     buffer.append((wByte *)text3, strlen(text3));
-    // memset(buffer.write(16), 0xff, 16);
+    memset(buffer.append_write(16), 0xff, 16);
     buffer.append((wByte *)text4, strlen(text4));
 
     printf("buffer data: %p\n", buffer.data);
@@ -55,24 +54,24 @@ void WukBuffer_test()
 
 void NetworkPacket_BufferTest()
 {
-    SSS_WSAStart();
+    SSS_WSAServiceControl(true);
     wuk::Buffer buffer{4096};
 
     wuk::net::Socket fd{AF_INET, SOCK_STREAM, IPPROTO_TCP};
     fd.connect("www.baidu.com", 80);
     fd.send("GET / HTTP/1.1\r\nHost: www.baidu.com\r\nUser-Agent: Android\r\n\r\n");
-    
-    ::recv(fd.fd, (char *)buffer.write(4096), 4096, 0);
+
+    ::recv(fd.fd, (char *)buffer.append_write(4096), 4096, 0);
 
     fd.close();
 
     cout << buffer.get_data() << endl;
-    SSS_WSAStop();
+    SSS_WSAServiceControl(false);
 }
 
 int main(int argc, char **argv)
 {
-    NetworkPacket_BufferTest();
+    WukBuffer_test();
 
     return 0;
 }

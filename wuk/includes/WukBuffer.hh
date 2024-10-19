@@ -13,6 +13,7 @@
 #include <config/WukException.hh>
 #include <WukMemory.hh>
 
+// 后续考虑是否将`wByte *data`改为`std::vector<wByte>`。
 namespace wuk {
     class LIBWUK_API Buffer {
     private:
@@ -38,10 +39,11 @@ namespace wuk {
         ~Buffer();
 
         // 在需要写入指定长度的大小的内容且同时需要指针的情况下调用此方法
-        wByte *write(wSize length);
-
+        wByte *append_write(wSize length);
         // 追加写入，可用于直接追加和已申请空间的情况下
         void append(const wByte *content, wSize length);
+        void append(const std::string content);
+        void append(const wuk::Buffer buffer);
 
         // 属性
         wByte *get_data();

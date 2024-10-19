@@ -89,15 +89,15 @@ wuk::Buffer::~Buffer()
 /**
  * @brief 在需要写入指定长度的大小的内容且同时需要指针的情况下调用此方法
  * @authors SN-Grotesque
- * @note recv(fd, buffer.write(2048), 2048, 0);
+ * @note 避免临时开辟临时缓冲区造成资源浪费。
+ *       recv(fd, buffer.write(2048), 2048, 0);
  * @param length 将要写入的数据内容的长度
  * @return 指向内部数据内容结尾的指针
  */
-wByte *wuk::Buffer::write(wSize length)
+wByte *wuk::Buffer::append_write(wSize length)
 {
     if(this->is_memory_sufficient(length)) {
-        throw wuk::Exception(wukErr_Err, "wuk::Buffer::write",
-            "The amount of data written exceeds the requested memory space size.");
+        this->expand_memory(length);
     }
 
     this->data_len += length;
