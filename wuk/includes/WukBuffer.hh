@@ -17,7 +17,6 @@
 namespace wuk {
     class LIBWUK_API Buffer {
     private:
-    public:
         wByte *data;
         wByte *data_offset; // 在当前已申请空间的情况下写入数据时使用
 
@@ -33,23 +32,29 @@ namespace wuk {
         // 默认构造函数
         Buffer();
         // 给予数据的构造函数
-        Buffer(wByte *content, wSize length);
+        Buffer(const wByte *content, wSize length);
+        // 兼容std::string
+        Buffer(const std::string content);
         // 申请指定大小内存空间备用的构造函数
         Buffer(wSize memory_size);
         ~Buffer();
 
         // 在需要写入指定长度的大小的内容且同时需要指针的情况下调用此方法
         wByte *append_write(wSize length);
+
         // 追加写入，可用于直接追加和已申请空间的情况下
         void append(const wByte *content, wSize length);
         void append(const std::string content);
-        void append(const wuk::Buffer buffer);
+
+        // 这个方法不应该被实现，留在这是为了提醒以后使用运算符重载将其实现
+        // void append(const wuk::Buffer buffer);
+        // 尝试性实现了+和+=，出现了一个奇怪的BUG，打算后续重新实现了
 
         // 属性
-        wByte *get_data();
-        const char *get_cStr();
-        wSize get_length();
-        wSize get_size();
+        wByte *get_data() const;
+        const char *get_cStr() const;
+        wSize get_length() const;
+        wSize get_size() const;
     };
 }
 

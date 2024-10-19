@@ -10,6 +10,7 @@
  */
 void wuk::Buffer::expand_memory(wSize length)
 {
+    printf("[TEST] wuk::Buffer::expand_memory: %zd\n", length);
     if (!this->data) {
         // 如果指针还未使用
         this->data = (wByte *)malloc(length);
@@ -20,6 +21,8 @@ void wuk::Buffer::expand_memory(wSize length)
         this->data_offset = this->data;
     } else {
         // 如果指针已使用
+        printf("[TEST] wuk::Buffer::expand_memory: %p\n", this->data);
+
         wSize offset_value = this->data_offset - this->data;
         wByte *tmp_ptr = (wByte *)realloc(this->data, this->data_size + length);
         if (!tmp_ptr) {
@@ -52,7 +55,7 @@ wuk::Buffer::Buffer()
     
 }
 
-wuk::Buffer::Buffer(wByte *content, wSize length)
+wuk::Buffer::Buffer(const wByte *content, wSize length)
 : data(nullptr), data_offset(nullptr), data_len(length), data_size(length)
 {
     this->data = (wByte *)malloc(this->data_len);
@@ -63,6 +66,12 @@ wuk::Buffer::Buffer(wByte *content, wSize length)
     memcpy(this->data, content, length);
 
     this->data_offset = this->data + length;
+}
+
+wuk::Buffer::Buffer(const std::string content)
+: Buffer(reinterpret_cast<const wByte *>(content.c_str()), content.size())
+{
+    
 }
 
 wuk::Buffer::Buffer(wSize memory_size)
@@ -123,23 +132,29 @@ void wuk::Buffer::append(const wByte *content, wSize length)
     this->data_len += length;
 }
 
+void wuk::Buffer::append(const std::string content)
+{
+    this->append(reinterpret_cast<const wByte *>(content.c_str()),
+                content.size());
+}
+
 //////////////////////////////////////////////////////////////////////
-wByte *wuk::Buffer::get_data()
+wByte *wuk::Buffer::get_data() const
 {
     return this->data;
 }
 
-const char *wuk::Buffer::get_cStr()
+const char *wuk::Buffer::get_cStr() const
 {
     return reinterpret_cast<const char *>(this->data);
 }
 
-wSize wuk::Buffer::get_length()
+wSize wuk::Buffer::get_length() const
 {
     return this->data_len;
 }
 
-wSize wuk::Buffer::get_size()
+wSize wuk::Buffer::get_size() const
 {
     return this->data_size;
 }

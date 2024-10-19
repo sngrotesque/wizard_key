@@ -29,12 +29,12 @@ void SSS_WSAServiceControl(bool start)
 
 void WukBuffer_test()
 {
-    wuk::Buffer buffer{(wByte *)"hello", 5};
+    wuk::Buffer buffer;
 
     const char *text1 = "hello, world.\n";
     const char *text2 = "I'm SN-Grotesque.\n";
     const char *text3 = "I like C/C++/C#/Python.\n";
-    const char *text4 = "testtesttesttesttesttesttest.";
+    const char *text4 = "testtesttesttesttesttesttest.\r\n";
 
     buffer.append((wByte *)text1, strlen(text1));
     buffer.append((wByte *)text2, strlen(text2));
@@ -71,7 +71,11 @@ void NetworkPacket_BufferTest()
 
 int main(int argc, char **argv)
 {
-    WukBuffer_test();
+    try {
+        WukBuffer_test();
+    } catch (exception &e) {
+        cout << e.what() << endl;
+    }
 
     return 0;
 }

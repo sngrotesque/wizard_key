@@ -1,12 +1,13 @@
 # The wizard's universal key
 
-- [作者 / Authors](#authors)
-- [开放源代码许可 / OpenSource license](#开放源代码许可open-source-license)
-- [提问与解答 / Q&A](#提问与解答qa)
-- [关于 / About](#关于about)
-- [使用 / Usage](#使用usage)
-- [开发规范 / Development Specifications](#开发规范development-specifications)
-- [版本更新日志 / ChangeLogs](#版本更新日志change-log)
+ - [作者 / Authors](#authors)
+ - [开放源代码许可 / OpenSource license](#开放源代码许可open-source-license)
+ - [提问与解答 / Q&A](#提问与解答qa)
+ - [关于 / About](#关于about)
+ - [使用 / Usage](#使用usage)
+ - [开发规范 / Development Specifications](#开发规范development-specifications)
+ - [版本更新日志 / ChangeLogs](#版本更新日志change-log)
+ - [鸣谢 / Acknowledgement](#鸣谢acknowledgement)
 
 ### Author(s):
  - [SN-Grotesque](https://github.com/sngrotesque)
@@ -15,12 +16,16 @@
 ### 开放源代码许可（Open Source License）
  - [OpenSSL](https://github.com/openssl/openssl) - 使用OpenSSL的各种算法库
  - [libpng](http://libpng.org/pub/png/) - 未来将用于PNG图像的读取和写入
- - [Python](https://github.com/python/cpython) - 参考并借鉴了Python的C源代码（包括语法和部分功能的实现），可以说我的开发者生涯都深受Python的影响。
- - [cJSON](https://github.com/DaveGamble/cJSON/) - 前期将使用cJSON来读取和写入json数据，后期再考虑是否使用更复杂的库
  - [Zlib](https://github.com/madler/zlib) - 进行CRC32校验与后续可能的压缩功能
- - [iconv](https://www.gnu.org/software/libiconv/) - 作为编码转换时使用的库，后续考虑自行实现（如果可能）
+ - [iconv](https://www.gnu.org/software/libiconv/) - 作为字符串编码转换时使用的库，如果可能后续考虑自行实现
+
+### 鸣谢（Acknowledgement）
+ - [Python](https://github.com/python/cpython) - 参考并借鉴了Python的C源代码（包括语法和部分功能的实现），可以说我的开发者生涯都深受Python的影响。
 
 ### 提问与解答（Q&A）
+**Q**: 此库的依赖项有哪些？
+A：内部依赖项：[WukConfig](wuk/includes/config/WukConfig.hh)/[WukException](wuk/includes/config/WukException.hh)/[WukMemory](wuk/includes/WukMemory.hh)。外部依赖项：[OpenSSL](https://github.com/openssl/openssl)/[Zlib](https://github.com/madler/zlib)。
+
 **Q**：为什么想开发这个库？  
 A：因为我在未来会制作一个属于自己的即时通讯软件，想以这个库为基础进行开发。
 
