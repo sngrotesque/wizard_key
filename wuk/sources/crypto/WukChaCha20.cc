@@ -134,7 +134,7 @@ static void ChaCha20_block_next(const wU32 in[16], wU32 out[16], wByte **keystre
 	}
 }
 
-wuk::crypto::ChaCha20::ChaCha20(wByte *key, wByte *nonce, wU32 counter)
+wuk::crypto::ChaCha20::ChaCha20(const wByte *key, const wByte *nonce, wU32 counter)
 : counter(counter)
 {
     memcpy(this->key, key, sizeof(this->key));

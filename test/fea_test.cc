@@ -222,13 +222,12 @@ void roundKey_test()
                         wuk::crypto::WUK_FEA_KEYLEN, true, false);
 }
 
-void speed_test()
+void speed_test(wSize length)
 {
     wByte key[32]{}, iv[16]{};
     wuk::crypto::FEA fea(key, iv);
     wuk::Time timer;
     
-    wSize length = 1024 * (1024 * 1024);
     wByte *content = wuk::m_alloc<wByte *>(length);
 
     auto start_time = timer.time();
@@ -247,7 +246,7 @@ void speed_test()
 int main()
 {
     try {
-        speed_test();
+        speed_test(1024 * (1024 * 1024));
     } catch (wuk::Exception &e) {
         std::cout << e.what() << std::endl;
     }
