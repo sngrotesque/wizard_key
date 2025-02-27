@@ -16,6 +16,19 @@
  * I I I I I I I I I I I I I I I I
  */
 
+/* 
+* State:
+* |------------------------------------------|
+* | 00000000 | 00000001 | 00000002 | 00000003|
+* |------------------------------------------|
+* | 00000004 | 00000005 | 00000006 | 00000007|
+* |------------------------------------------|
+* | 00000008 | 00000009 | 0000000a | 0000000b|
+* |------------------------------------------|
+* | 0000000c | 0000000d | 0000000e | 0000000f|
+* |------------------------------------------|
+*/
+
 namespace wuk {
     namespace crypto {
         constexpr wU32 WUK_SSC_KSLEN    = 64; // key stream length
@@ -24,8 +37,7 @@ namespace wuk {
 
         // SN Stream Cipher
         class LIBWUK_API SSC {
-        public:
-        // private:
+        private:
             wByte keystream[WUK_SSC_KSLEN]{};
 
             wByte root_key[WUK_SSC_KEYLEN]{};
@@ -34,17 +46,19 @@ namespace wuk {
 
             wU32 *state = nullptr;
 
-        // private:
+        private:
             void keystream_init();
 
+        public: // temporary public
             void keystream_update();
 
-        // public:
+        public:
             SSC() = default;
             SSC(const wByte *key, const wByte *iv, const wuk::crypto::Counter counter);
 
-        // public:
+        public:
             void xcrypt(wByte *buffer, wSize length);
+            const wByte *get_keystream() const;
         };
     }
 }

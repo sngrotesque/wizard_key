@@ -67,14 +67,14 @@ void print_hex_data(const wByte *data1, const wByte *data2, wSize len1, wSize le
 
 void test1()
 {
-    const wByte *key = (const wByte *)"abcdef0123456789abcdef0123456789";
-    const wByte *iv  = (const wByte *)"abcdef0123456789";
+    const wByte *key = (const wByte *)"bbcdef0123456789abcdef0123456789";
+    const wByte *iv  = (const wByte *)"bbcdef0123456789";
     wuk::crypto::Counter counter("sngrotesque", 1);
 
     wuk::crypto::SSC ssc(key, iv, counter);
 
     char test_plaintext[256] = {
-        "GET /qrcode/getLoginUrl HTTP/1.1\r\n"
+        "gET /qrcode/getLoginUrl HTTP/1.1\r\n"
         "Host: passport.bilibili.com\r\n"
         "Accept: application/json; q=0.9, */*\r\n"
         "Connection: keep-alive\r\n"
@@ -94,26 +94,11 @@ void test1()
 
 void test2()
 {
-    const wByte *key = (const wByte *)"bbcdef0123456789abcdef0123456789";
-    const wByte *iv  = (const wByte *)"abcdef0123456789";
-    wuk::crypto::Counter counter("sngrotesque", 1);
-
-    wuk::crypto::SSC ssc(key, iv, counter);
-
-    for (wU32 c = 0; c < 4; ++c) {
-        std::cout << "Key Stream:\n";
-        wuk::misc::print_hex(ssc.keystream, wuk::crypto::WUK_SSC_KSLEN, 8, true, true);
-        ssc.keystream_update();
-    }
-}
-
-void test3()
-{
     const wByte *key_left = (const wByte *)"abcdef0123456789abcdef0123456789";
     const wByte *iv_left  = (const wByte *)"abcdef0123456789";
 
-    const wByte *key_right = (const wByte *)"abcdef0123456789abcdef0123456789";
-    const wByte *iv_right  = (const wByte *)"bbcdef0123456789";
+    const wByte *key_right = (const wByte *)"bbcdef0123456789abcdef0123456789";
+    const wByte *iv_right  = (const wByte *)"abcdef0123456789";
 
     wuk::crypto::Counter counter("sngrotesque", 21902002);
 
@@ -124,7 +109,7 @@ void test3()
         std::cout << "Key Stream:\n";
 
         print_hex_data(
-            ssc_left.keystream, ssc_right.keystream,
+            ssc_left.get_keystream(), ssc_right.get_keystream(),
             wuk::crypto::WUK_SSC_KSLEN, wuk::crypto::WUK_SSC_KSLEN,
             16, true
         );
@@ -162,9 +147,10 @@ void speed_test(wSize length)
 
 int main()
 {
-    // constexpr wSize length = 1024 * 1024 * 1024;
-    // speed_test(length);
-    test3();
+    // speed_test(1024 * 1024 * 1024);
+
+    test1();
+    // test2();
 
     return 0;
 }

@@ -101,7 +101,7 @@ void wuk::crypto::SSC::keystream_update()
         this->keystream[i + 6] += ((i + 6) & 0xff);
         this->keystream[i + 7] += ((i + 7) & 0xff);
 
-        for (wU32 r = 0; r < 5; ++r) {
+        for (wU32 r = 0; r < 16; ++r) {
             // 行混合（第一列与后面字节混合，其他列按顺序下一个混合）
             this->state[0]  ^= this->state[1]  ^ this->state[2]  ^ this->state[3];
             this->state[4]  ^= this->state[5]  ^ this->state[6]  ^ this->state[7];
@@ -184,8 +184,12 @@ void wuk::crypto::SSC::xcrypt(wByte *buffer, wSize length)
     for (wSize i = 0, ks_i = WUK_SSC_KSLEN; i < length; ++i, ++ks_i) {
         if (ks_i == WUK_SSC_KSLEN) {
             this->keystream_update();
-            ks_i = 0;
         }
-        buffer[i] ^= this->keystream[ks_i];
+        buffer[i] ^= this->keystream[ks_i & 63];
     }
+}
+
+const wByte *wuk::crypto::SSC::get_keystream() const
+{
+    return this->keystream;
 }
