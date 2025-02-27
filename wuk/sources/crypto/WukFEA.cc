@@ -1,6 +1,6 @@
 #include <crypto/WukFEA.hh>
 
-static const wByte sbox[256] = {
+static constexpr wByte sbox[256] = {
     // 0     1     2     3     4     5     6     7     8     9     a     n     c     d     e     f
     0x2b, 0x1b, 0xf5, 0xd5, 0x6c, 0x78, 0xe3, 0xef, 0xce, 0x69, 0xb6, 0xda, 0x28, 0x16, 0xc2, 0xbc,
     0x56, 0xe6, 0x65, 0x48, 0x6b, 0xdd, 0xa9, 0x01, 0xcb, 0x94, 0x76, 0xcf, 0x20, 0xa1, 0x19, 0x91,
@@ -20,7 +20,7 @@ static const wByte sbox[256] = {
     0x13, 0xfa, 0x8e, 0x45, 0x24, 0xf8, 0x6e, 0xee, 0xf0, 0x7c, 0x90, 0xd0, 0xf6, 0x43, 0x8f, 0xc9
 };
 
-static const wByte rsbox[256] = {
+static constexpr wByte rsbox[256] = {
     // 0     1     2     3     4     5     6     7     8     9     a     n     c     d     e     f
     0x81, 0x17, 0xa9, 0x71, 0x99, 0x65, 0x3a, 0x9a, 0xa4, 0x2f, 0x2b, 0x4c, 0xdf, 0xa7, 0xbe, 0x42,
     0x78, 0x72, 0xb7, 0xf0, 0x63, 0x36, 0x0d, 0xc3, 0x39, 0x1e, 0x52, 0x01, 0x93, 0xda, 0xc0, 0x2d,
@@ -40,13 +40,27 @@ static const wByte rsbox[256] = {
     0xf8, 0xb0, 0x3c, 0xa8, 0xdd, 0x02, 0xfc, 0x5f, 0xf5, 0x84, 0xf1, 0xec, 0x67, 0x80, 0x4f, 0xee
 };
 
-// 按位循环左移3位
-#define WUK_FEA_SHIFT_BITS_L(x) (((x >> 5) | (x << 3)) & 0xff)
-// 按位循环右移3位
-#define WUK_FEA_SHIFT_BITS_R(x) (((x << 5) | (x >> 3)) & 0xff)
+constexpr uint8_t WUK_FEA_SBOX(uint8_t x)
+{
+    return sbox[x];
+}
 
-#define WUK_FEA_SBOX(x)  (sbox[(x)])
-#define WUK_FEA_RSBOX(x) (rsbox[(x)])
+constexpr uint8_t WUK_FEA_RSBOX(uint8_t x)
+{
+    return rsbox[x];
+}
+
+// 按位循环左移3位
+constexpr uint8_t WUK_FEA_SHIFT_BITS_L(uint8_t x)
+{
+    return ((((x) >> 5) | ((x) << 3)) & 0xff);
+}
+
+// 按位循环右移3位
+constexpr uint8_t WUK_FEA_SHIFT_BITS_R(uint8_t x)
+{
+    return ((((x) << 5) | ((x) >> 3)) & 0xff);
+}
 
 void wuk::crypto::FEA::sub_bytes(wByte *block)
 {
@@ -104,7 +118,6 @@ void wuk::crypto::FEA::inv_shift_bits(wByte *block)
     }
 }
 
-// 应考虑优化此函数的混淆性
 void wuk::crypto::FEA::shift_rows(wByte *block)
 {
     wByte swap_array[8], swap;
@@ -163,19 +176,10 @@ void wuk::crypto::FEA::xor_with_iv(wByte *block, wByte *iv)
 
 void wuk::crypto::FEA::cipher(wByte *p, wByte *roundKey)
 {
-    /*
-    * 来自DeepSeek的建议：将顺序改变一下，改为。
-    * 1，明文与密钥异或
-    * 2，执行shift_rows操作。
-    * 3，执行shift_bits操作。
-    * 4，执行sub_bytes操作。
-    */
-    wU32 r, i;
-    wByte *subkey = nullptr;
-    for(r = 0; r < WUK_FEA_NR; ++r) {
+    for(wU32 r = 0; r < WUK_FEA_NR; ++r) {
         this->sub_bytes(p);
-        subkey = roundKey + (r << 5); // roundKey + r * 32
-        for(i = 0; i < (WUK_FEA_BL << 1); i += 8) {
+        wByte *subkey = roundKey + (r << 5); // roundKey + r * 32
+        for(wU32 i = 0; i < (WUK_FEA_BL << 1); i += 8) {
             *(p + (i       & 15)) ^= *(subkey + i);
             *(p + ((i + 1) & 15)) ^= *(subkey + i + 1);
             *(p + ((i + 2) & 15)) ^= *(subkey + i + 2);
@@ -192,13 +196,11 @@ void wuk::crypto::FEA::cipher(wByte *p, wByte *roundKey)
 
 void wuk::crypto::FEA::inv_cipher(wByte *c, wByte *roundKey)
 {
-    wU32 r, i;
-    wByte *subkey = nullptr;
-    for(r = 0; r < WUK_FEA_NR; ++r) {
+    for(wU32 r = 0; r < WUK_FEA_NR; ++r) {
         this->inv_shift_bits(c);
         this->inv_shift_rows(c);
-        subkey = roundKey + ((WUK_FEA_NR - r - 1) << 5); // roundKey + r * 32
-        for(i = 0; i < (WUK_FEA_BL << 1); i += 8) {
+        wByte *subkey = roundKey + ((WUK_FEA_NR - r - 1) << 5); // roundKey + r * 32
+        for(wU32 i = 0; i < (WUK_FEA_BL << 1); i += 8) {
             *(c + (i       & 15)) ^= *(subkey + i);
             *(c + ((i + 1) & 15)) ^= *(subkey + (i + 1));
             *(c + ((i + 2) & 15)) ^= *(subkey + (i + 2));
@@ -306,7 +308,7 @@ wuk::crypto::FEA::FEA()
 
 }
 
-wuk::crypto::FEA::FEA(const wByte *key, const wByte *iv, wuk::crypto::Counter counter, const wU32 segmentSize)
+wuk::crypto::FEA::FEA(const wByte *key, const wByte *iv, wuk::crypto::Counter counter, wU32 segmentSize)
 : roundKey(), counter(counter), segmentSize(segmentSize)
 {
     if(!key || !iv) {
@@ -321,7 +323,7 @@ void wuk::crypto::FEA::encrypt(wByte *content, wSize size, mode mode)
 {
     switch(mode) {
         case mode::ECB:
-            this->cipher(content, this->roundKey); break;
+            this->ecb_encrypt(content); break;
         case mode::CBC:
             this->cbc_encrypt(content, size); break;
         case mode::CTR:
@@ -335,7 +337,7 @@ void wuk::crypto::FEA::decrypt(wByte *content, wSize size, mode mode)
 {
     switch(mode) {
         case mode::ECB:
-            this->inv_cipher(content, this->roundKey); break;
+            this->ecb_decrypt(content); break;
         case mode::CBC:
             this->cbc_decrypt(content, size); break;
         case mode::CTR:

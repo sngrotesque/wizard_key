@@ -82,7 +82,7 @@ namespace wuk {
             FEA();
             FEA(const wByte *key, const wByte *iv,
                 wuk::crypto::Counter counter = {},
-                const wU32 segmentSize = 128);
+                wU32 segmentSize = 128);
 
         public:
             void encrypt(wByte *content, wSize size, mode mode);

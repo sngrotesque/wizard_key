@@ -157,6 +157,37 @@ wuk::crypto::FEA build_new_ctx(wuk::Buffer password, wuk::Buffer salt)
     return wuk::crypto::FEA{keyWithIv, keyWithIv + 32};
 }
 
+void roundKey_test()
+{
+    wByte key[32]{};
+    wByte iv[16]{};
+
+    wuk::crypto::FEA fea(key, iv);
+
+    wuk::misc::print_hex(fea.get_round_key(),
+                        wuk::crypto::WUK_FEA_KEYLEN * wuk::crypto::WUK_FEA_NR,
+                        wuk::crypto::WUK_FEA_KEYLEN, true, false);
+}
+
+void speed_test(wSize length)
+{
+    wByte key[32]{}, iv[16]{};
+    wuk::crypto::FEA fea(key, iv);
+    wuk::Time timer;
+    
+    wByte *content = wuk::m_alloc<wByte *>(length);
+
+    auto start_time = timer.time();
+    fea.encrypt(content, length, wuk::crypto::mode::CTR);
+    auto stop_time = timer.time();
+
+    printf("ciphertext[0]: %02x\n", content[0]);
+
+    printf("Timer: %.4lf\n", (stop_time-start_time));
+
+    wuk::m_free(content);
+}
+
 void test1()
 {
     char _content[] = {
@@ -210,43 +241,12 @@ void test2()
     wuk::m_free(ciphertext);
 }
 
-void roundKey_test()
-{
-    wByte key[32]{};
-    wByte iv[16]{};
-
-    wuk::crypto::FEA fea(key, iv);
-
-    wuk::misc::print_hex(fea.get_round_key(),
-                        wuk::crypto::WUK_FEA_KEYLEN * wuk::crypto::WUK_FEA_NR,
-                        wuk::crypto::WUK_FEA_KEYLEN, true, false);
-}
-
-void speed_test(wSize length)
-{
-    wByte key[32]{}, iv[16]{};
-    wuk::crypto::FEA fea(key, iv);
-    wuk::Time timer;
-    
-    wByte *content = wuk::m_alloc<wByte *>(length);
-
-    auto start_time = timer.time();
-    fea.encrypt(content, length, wuk::crypto::mode::CTR);
-    auto stop_time = timer.time();
-
-    printf("ciphertext[0]: %02x\n", content[0]);
-
-    printf("Timer: %.4lf\n", (stop_time-start_time));
-
-    wuk::m_free(content);
-}
-
 // python make.py test\fea_test.cc -DWUK_EXPORTS -lbcrypt -lssl -lcrypto
 
 int main()
 {
     try {
-        speed_test(1024 * (1024 * 1024));
+        speed_test(1024 * 1024 * 1024);
     } catch (wuk::Exception &e) {
         std::cout << e.what() << std::endl;
     }

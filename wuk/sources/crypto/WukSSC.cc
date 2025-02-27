@@ -38,18 +38,154 @@ constexpr wByte rsbox[256] = {
     0xe5, 0x84, 0x36, 0x61, 0x5b, 0xa4, 0x22, 0xfd, 0x47, 0x25, 0x15, 0x48, 0x4d, 0xc8, 0xb8, 0xa7
 };
 
+constexpr uint8_t get_sbox(uint8_t x)
+{
+    return sbox[x];
+}
+
+constexpr uint8_t get_rsbox(uint8_t x)
+{
+    return rsbox[x];
+}
+
+constexpr uint8_t swap_4bits(uint8_t x)
+{
+    return ((x << 4) & 0xff) | (x >> 4);
+}
+
+void wuk::crypto::SSC::keystream_init()
+{
+    wByte *keystream_ptr = this->keystream;
+
+    memcpy(keystream_ptr, this->root_key, WUK_SSC_KEYLEN);
+    keystream_ptr += WUK_SSC_KEYLEN;
+
+    memcpy(keystream_ptr, this->counter.get(), wuk::crypto::COUNTER_BLOCK_SIZE);
+    keystream_ptr += wuk::crypto::COUNTER_BLOCK_SIZE;
+
+    memcpy(keystream_ptr, this->root_iv, WUK_SSC_IVLEN);
+}
+
 void wuk::crypto::SSC::keystream_update()
 {
-    for (wI32 i = WUK_SSC_KSLEN - 1; i >= 0; --i) {
-        if (this->counter[i] != 0xff) {
-            this->counter[i]++;
-            break;
+    this->state = reinterpret_cast<wU32 *>(this->keystream);
+
+    for (wU32 i = 0; i < WUK_SSC_KSLEN; i += 8) {
+        // 字节置换
+        this->keystream[i]     = get_sbox(this->keystream[i]);
+        this->keystream[i + 1] = get_sbox(this->keystream[i + 1]);
+        this->keystream[i + 2] = get_sbox(this->keystream[i + 2]);
+        this->keystream[i + 3] = get_sbox(this->keystream[i + 3]);
+        this->keystream[i + 4] = get_sbox(this->keystream[i + 4]);
+        this->keystream[i + 5] = get_sbox(this->keystream[i + 5]);
+        this->keystream[i + 6] = get_sbox(this->keystream[i + 6]);
+        this->keystream[i + 7] = get_sbox(this->keystream[i + 7]);
+
+        // 位交换
+        this->keystream[i]     = swap_4bits(this->keystream[i]);
+        this->keystream[i + 1] = swap_4bits(this->keystream[i + 1]);
+        this->keystream[i + 2] = swap_4bits(this->keystream[i + 2]);
+        this->keystream[i + 3] = swap_4bits(this->keystream[i + 3]);
+        this->keystream[i + 4] = swap_4bits(this->keystream[i + 4]);
+        this->keystream[i + 5] = swap_4bits(this->keystream[i + 5]);
+        this->keystream[i + 6] = swap_4bits(this->keystream[i + 6]);
+        this->keystream[i + 7] = swap_4bits(this->keystream[i + 7]);
+
+        // 密钥累加
+        this->keystream[i]     += (i       & 0xff);
+        this->keystream[i + 1] += ((i + 1) & 0xff);
+        this->keystream[i + 2] += ((i + 2) & 0xff);
+        this->keystream[i + 3] += ((i + 3) & 0xff);
+        this->keystream[i + 4] += ((i + 4) & 0xff);
+        this->keystream[i + 5] += ((i + 5) & 0xff);
+        this->keystream[i + 6] += ((i + 6) & 0xff);
+        this->keystream[i + 7] += ((i + 7) & 0xff);
+
+        for (wU32 r = 0; r < 5; ++r) {
+            // 行混合（第一列与后面字节混合，其他列按顺序下一个混合）
+            this->state[0]  ^= this->state[1]  ^ this->state[2]  ^ this->state[3];
+            this->state[4]  ^= this->state[5]  ^ this->state[6]  ^ this->state[7];
+            this->state[8]  ^= this->state[9]  ^ this->state[10] ^ this->state[11];
+            this->state[12] ^= this->state[13] ^ this->state[14] ^ this->state[15];
+    
+            this->state[1]  ^= this->state[2]  ^ this->state[3]  ^ this->state[4];
+            this->state[5]  ^= this->state[6]  ^ this->state[7]  ^ this->state[8];
+            this->state[9]  ^= this->state[10] ^ this->state[11] ^ this->state[12];
+            this->state[13] ^= this->state[14] ^ this->state[15] ^ this->state[0];
+    
+            this->state[2]  ^= this->state[3]  ^ this->state[4]  ^ this->state[5];
+            this->state[6]  ^= this->state[7]  ^ this->state[8]  ^ this->state[9];
+            this->state[10] ^= this->state[11] ^ this->state[12] ^ this->state[13];
+            this->state[14] ^= this->state[15] ^ this->state[0]  ^ this->state[1];
+    
+            this->state[3]  ^= this->state[4]  ^ this->state[5]  ^ this->state[6];
+            this->state[7]  ^= this->state[8]  ^ this->state[9]  ^ this->state[10];
+            this->state[11] ^= this->state[12] ^ this->state[13] ^ this->state[14];
+            this->state[15] ^= this->state[0]  ^ this->state[1]  ^ this->state[2];
+    
+            // 斜角混合
+            wU32 swap = this->state[4];
+            this->state[4]  += this->state[9];
+            this->state[9]  += this->state[14];
+            this->state[14] += this->state[3];
+            this->state[3]  += swap;
+            swap ^= this->state[2];
+            this->state[2]  ^= this->state[5];
+            this->state[5]  ^= this->state[8];
+            this->state[8]  ^= this->state[15];
+            this->state[15] ^= swap;
+            
+            swap = this->state[5];
+            this->state[5]  += this->state[10];
+            this->state[10] += this->state[15];
+            this->state[15] += this->state[4];
+            this->state[4]  += swap;
+            swap ^= this->state[3];
+            this->state[3]  ^= this->state[6];
+            this->state[6]  ^= this->state[9];
+            this->state[9]  ^= this->state[0];
+            this->state[0]  ^= swap;
+            
+            swap = this->state[6];
+            this->state[6]  += this->state[11];
+            this->state[11] += this->state[0];
+            this->state[0]  += this->state[5];
+            this->state[5]  += swap;
+            swap ^= this->state[4];
+            this->state[4]  ^= this->state[7];
+            this->state[7]  ^= this->state[10];
+            this->state[10] ^= this->state[1];
+            this->state[1]  ^= swap;
+            
+            swap = this->state[7];
+            this->state[7]  += this->state[12];
+            this->state[12] += this->state[1];
+            this->state[1]  += this->state[6];
+            this->state[6]  += swap;
+            swap ^= this->state[5];
+            this->state[5]  ^= this->state[8];
+            this->state[8]  ^= this->state[11];
+            this->state[11] ^= this->state[2];
+            this->state[2]  ^= swap;
         }
-        this->counter[i] = 0x00;
     }
 }
 
-wuk::crypto::SSC::SSC(const wByte *key, const wByte *iv)
+wuk::crypto::SSC::SSC(const wByte *key, const wByte *iv, const wuk::crypto::Counter counter)
+: counter(counter)
 {
-    
+    memcpy(this->root_key, key, WUK_SSC_KEYLEN);
+    memcpy(this->root_iv, iv, WUK_SSC_IVLEN);
+    this->keystream_init();
+}
+
+void wuk::crypto::SSC::xcrypt(wByte *buffer, wSize length)
+{
+    for (wSize i = 0, ks_i = WUK_SSC_KSLEN; i < length; ++i, ++ks_i) {
+        if (ks_i == WUK_SSC_KSLEN) {
+            this->keystream_update();
+            ks_i = 0;
+        }
+        buffer[i] ^= this->keystream[ks_i];
+    }
 }
