@@ -44,7 +44,13 @@ namespace wuk {
             wByte root_iv[WUK_SSC_IVLEN]{};
             wuk::crypto::Counter counter;
 
-            wU32 *state = nullptr;
+            wU32 *state = reinterpret_cast<wU32 *>(this->keystream);
+
+        private:
+            void keystream_sub_bytes();
+            void keystream_bit_swap();
+            void keystream_4value_mixture();
+            void keystream_oblique_angle_mixing();
 
         private:
             void keystream_init();

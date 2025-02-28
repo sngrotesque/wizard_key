@@ -53,6 +53,160 @@ constexpr uint8_t swap_4bits(uint8_t x)
     return ((x << 4) & 0xff) | (x >> 4);
 }
 
+void wuk::crypto::SSC::keystream_sub_bytes()
+{
+    for (wU32 i = 0; i < 2; ++i) {
+        this->keystream[i]      = get_sbox(this->keystream[i]);
+        this->keystream[i + 1]  = get_sbox(this->keystream[i + 1]);
+        this->keystream[i + 2]  = get_sbox(this->keystream[i + 2]);
+        this->keystream[i + 3]  = get_sbox(this->keystream[i + 3]);
+        this->keystream[i + 4]  = get_sbox(this->keystream[i + 4]);
+        this->keystream[i + 5]  = get_sbox(this->keystream[i + 5]);
+        this->keystream[i + 6]  = get_sbox(this->keystream[i + 6]);
+        this->keystream[i + 7]  = get_sbox(this->keystream[i + 7]);
+
+        this->keystream[i + 8]  = get_sbox(this->keystream[i + 8]);
+        this->keystream[i + 9]  = get_sbox(this->keystream[i + 9]);
+        this->keystream[i + 10] = get_sbox(this->keystream[i + 10]);
+        this->keystream[i + 11] = get_sbox(this->keystream[i + 11]);
+        this->keystream[i + 12] = get_sbox(this->keystream[i + 12]);
+        this->keystream[i + 13] = get_sbox(this->keystream[i + 13]);
+        this->keystream[i + 14] = get_sbox(this->keystream[i + 14]);
+        this->keystream[i + 15] = get_sbox(this->keystream[i + 15]);
+
+        this->keystream[i + 16] = get_sbox(this->keystream[i + 16]);
+        this->keystream[i + 17] = get_sbox(this->keystream[i + 17]);
+        this->keystream[i + 18] = get_sbox(this->keystream[i + 18]);
+        this->keystream[i + 19] = get_sbox(this->keystream[i + 19]);
+        this->keystream[i + 20] = get_sbox(this->keystream[i + 20]);
+        this->keystream[i + 21] = get_sbox(this->keystream[i + 21]);
+        this->keystream[i + 22] = get_sbox(this->keystream[i + 22]);
+        this->keystream[i + 23] = get_sbox(this->keystream[i + 23]);
+
+        this->keystream[i + 24] = get_sbox(this->keystream[i + 24]);
+        this->keystream[i + 25] = get_sbox(this->keystream[i + 25]);
+        this->keystream[i + 26] = get_sbox(this->keystream[i + 26]);
+        this->keystream[i + 27] = get_sbox(this->keystream[i + 27]);
+        this->keystream[i + 28] = get_sbox(this->keystream[i + 28]);
+        this->keystream[i + 29] = get_sbox(this->keystream[i + 29]);
+        this->keystream[i + 30] = get_sbox(this->keystream[i + 30]);
+        this->keystream[i + 31] = get_sbox(this->keystream[i + 31]);
+    }
+}
+
+inline void wuk::crypto::SSC::keystream_bit_swap()
+{
+    for (wU32 i = 0; i < 2; ++i) {
+        this->keystream[i]      = swap_4bits(this->keystream[i]);
+        this->keystream[i + 1]  = swap_4bits(this->keystream[i + 1]);
+        this->keystream[i + 2]  = swap_4bits(this->keystream[i + 2]);
+        this->keystream[i + 3]  = swap_4bits(this->keystream[i + 3]);
+        this->keystream[i + 4]  = swap_4bits(this->keystream[i + 4]);
+        this->keystream[i + 5]  = swap_4bits(this->keystream[i + 5]);
+        this->keystream[i + 6]  = swap_4bits(this->keystream[i + 6]);
+        this->keystream[i + 7]  = swap_4bits(this->keystream[i + 7]);
+
+        this->keystream[i + 8]  = swap_4bits(this->keystream[i + 8]);
+        this->keystream[i + 9]  = swap_4bits(this->keystream[i + 9]);
+        this->keystream[i + 10] = swap_4bits(this->keystream[i + 10]);
+        this->keystream[i + 11] = swap_4bits(this->keystream[i + 11]);
+        this->keystream[i + 12] = swap_4bits(this->keystream[i + 12]);
+        this->keystream[i + 13] = swap_4bits(this->keystream[i + 13]);
+        this->keystream[i + 14] = swap_4bits(this->keystream[i + 14]);
+        this->keystream[i + 15] = swap_4bits(this->keystream[i + 15]);
+
+        this->keystream[i + 16] = swap_4bits(this->keystream[i + 16]);
+        this->keystream[i + 17] = swap_4bits(this->keystream[i + 17]);
+        this->keystream[i + 18] = swap_4bits(this->keystream[i + 18]);
+        this->keystream[i + 19] = swap_4bits(this->keystream[i + 19]);
+        this->keystream[i + 20] = swap_4bits(this->keystream[i + 20]);
+        this->keystream[i + 21] = swap_4bits(this->keystream[i + 21]);
+        this->keystream[i + 22] = swap_4bits(this->keystream[i + 22]);
+        this->keystream[i + 23] = swap_4bits(this->keystream[i + 23]);
+
+        this->keystream[i + 24] = swap_4bits(this->keystream[i + 24]);
+        this->keystream[i + 25] = swap_4bits(this->keystream[i + 25]);
+        this->keystream[i + 26] = swap_4bits(this->keystream[i + 26]);
+        this->keystream[i + 27] = swap_4bits(this->keystream[i + 27]);
+        this->keystream[i + 28] = swap_4bits(this->keystream[i + 28]);
+        this->keystream[i + 29] = swap_4bits(this->keystream[i + 29]);
+        this->keystream[i + 30] = swap_4bits(this->keystream[i + 30]);
+        this->keystream[i + 31] = swap_4bits(this->keystream[i + 31]);
+    }
+}
+
+inline void wuk::crypto::SSC::keystream_4value_mixture()
+{
+    // 4值混合，当前值与后面的3个值进行异或运算
+    this->state[0]  ^= this->state[1]  ^ this->state[2]  ^ this->state[3];
+    this->state[4]  ^= this->state[5]  ^ this->state[6]  ^ this->state[7];
+    this->state[8]  ^= this->state[9]  ^ this->state[10] ^ this->state[11];
+    this->state[12] ^= this->state[13] ^ this->state[14] ^ this->state[15];
+
+    this->state[1]  ^= this->state[2]  ^ this->state[3]  ^ this->state[4];
+    this->state[5]  ^= this->state[6]  ^ this->state[7]  ^ this->state[8];
+    this->state[9]  ^= this->state[10] ^ this->state[11] ^ this->state[12];
+    this->state[13] ^= this->state[14] ^ this->state[15] ^ this->state[0];
+
+    this->state[2]  ^= this->state[3]  ^ this->state[4]  ^ this->state[5];
+    this->state[6]  ^= this->state[7]  ^ this->state[8]  ^ this->state[9];
+    this->state[10] ^= this->state[11] ^ this->state[12] ^ this->state[13];
+    this->state[14] ^= this->state[15] ^ this->state[0]  ^ this->state[1];
+
+    this->state[3]  ^= this->state[4]  ^ this->state[5]  ^ this->state[6];
+    this->state[7]  ^= this->state[8]  ^ this->state[9]  ^ this->state[10];
+    this->state[11] ^= this->state[12] ^ this->state[13] ^ this->state[14];
+    this->state[15] ^= this->state[0]  ^ this->state[1]  ^ this->state[2];
+}
+
+inline void wuk::crypto::SSC::keystream_oblique_angle_mixing()
+{
+    // 斜角混合
+    wU32 swap = this->state[4];
+    this->state[4]  += this->state[9];
+    this->state[9]  += this->state[14];
+    this->state[14] += this->state[3];
+    this->state[3]  += swap;
+    swap ^= this->state[2];
+    this->state[2]  ^= this->state[5];
+    this->state[5]  ^= this->state[8];
+    this->state[8]  ^= this->state[15];
+    this->state[15] ^= swap;
+
+    swap = this->state[5];
+    this->state[5]  += this->state[10];
+    this->state[10] += this->state[15];
+    this->state[15] += this->state[4];
+    this->state[4]  += swap;
+    swap ^= this->state[3];
+    this->state[3]  ^= this->state[6];
+    this->state[6]  ^= this->state[9];
+    this->state[9]  ^= this->state[0];
+    this->state[0]  ^= swap;
+
+    swap = this->state[6];
+    this->state[6]  += this->state[11];
+    this->state[11] += this->state[0];
+    this->state[0]  += this->state[5];
+    this->state[5]  += swap;
+    swap ^= this->state[4];
+    this->state[4]  ^= this->state[7];
+    this->state[7]  ^= this->state[10];
+    this->state[10] ^= this->state[1];
+    this->state[1]  ^= swap;
+
+    swap = this->state[7];
+    this->state[7]  += this->state[12];
+    this->state[12] += this->state[1];
+    this->state[1]  += this->state[6];
+    this->state[6]  += swap;
+    swap ^= this->state[5];
+    this->state[5]  ^= this->state[8];
+    this->state[8]  ^= this->state[11];
+    this->state[11] ^= this->state[2];
+    this->state[2]  ^= swap;
+}
+
 void wuk::crypto::SSC::keystream_init()
 {
     wByte *keystream_ptr = this->keystream;
@@ -68,107 +222,14 @@ void wuk::crypto::SSC::keystream_init()
 
 void wuk::crypto::SSC::keystream_update()
 {
-    this->state = reinterpret_cast<wU32 *>(this->keystream);
+    this->keystream_sub_bytes();
 
-    for (wU32 i = 0; i < WUK_SSC_KSLEN; i += 8) {
-        // 字节置换
-        this->keystream[i]     = get_sbox(this->keystream[i]);
-        this->keystream[i + 1] = get_sbox(this->keystream[i + 1]);
-        this->keystream[i + 2] = get_sbox(this->keystream[i + 2]);
-        this->keystream[i + 3] = get_sbox(this->keystream[i + 3]);
-        this->keystream[i + 4] = get_sbox(this->keystream[i + 4]);
-        this->keystream[i + 5] = get_sbox(this->keystream[i + 5]);
-        this->keystream[i + 6] = get_sbox(this->keystream[i + 6]);
-        this->keystream[i + 7] = get_sbox(this->keystream[i + 7]);
-
-        // 位交换
-        this->keystream[i]     = swap_4bits(this->keystream[i]);
-        this->keystream[i + 1] = swap_4bits(this->keystream[i + 1]);
-        this->keystream[i + 2] = swap_4bits(this->keystream[i + 2]);
-        this->keystream[i + 3] = swap_4bits(this->keystream[i + 3]);
-        this->keystream[i + 4] = swap_4bits(this->keystream[i + 4]);
-        this->keystream[i + 5] = swap_4bits(this->keystream[i + 5]);
-        this->keystream[i + 6] = swap_4bits(this->keystream[i + 6]);
-        this->keystream[i + 7] = swap_4bits(this->keystream[i + 7]);
-
-        // 密钥累加
-        this->keystream[i]     += (i       & 0xff);
-        this->keystream[i + 1] += ((i + 1) & 0xff);
-        this->keystream[i + 2] += ((i + 2) & 0xff);
-        this->keystream[i + 3] += ((i + 3) & 0xff);
-        this->keystream[i + 4] += ((i + 4) & 0xff);
-        this->keystream[i + 5] += ((i + 5) & 0xff);
-        this->keystream[i + 6] += ((i + 6) & 0xff);
-        this->keystream[i + 7] += ((i + 7) & 0xff);
-
-        for (wU32 r = 0; r < 16; ++r) {
-            // 行混合（第一列与后面字节混合，其他列按顺序下一个混合）
-            this->state[0]  ^= this->state[1]  ^ this->state[2]  ^ this->state[3];
-            this->state[4]  ^= this->state[5]  ^ this->state[6]  ^ this->state[7];
-            this->state[8]  ^= this->state[9]  ^ this->state[10] ^ this->state[11];
-            this->state[12] ^= this->state[13] ^ this->state[14] ^ this->state[15];
-    
-            this->state[1]  ^= this->state[2]  ^ this->state[3]  ^ this->state[4];
-            this->state[5]  ^= this->state[6]  ^ this->state[7]  ^ this->state[8];
-            this->state[9]  ^= this->state[10] ^ this->state[11] ^ this->state[12];
-            this->state[13] ^= this->state[14] ^ this->state[15] ^ this->state[0];
-    
-            this->state[2]  ^= this->state[3]  ^ this->state[4]  ^ this->state[5];
-            this->state[6]  ^= this->state[7]  ^ this->state[8]  ^ this->state[9];
-            this->state[10] ^= this->state[11] ^ this->state[12] ^ this->state[13];
-            this->state[14] ^= this->state[15] ^ this->state[0]  ^ this->state[1];
-    
-            this->state[3]  ^= this->state[4]  ^ this->state[5]  ^ this->state[6];
-            this->state[7]  ^= this->state[8]  ^ this->state[9]  ^ this->state[10];
-            this->state[11] ^= this->state[12] ^ this->state[13] ^ this->state[14];
-            this->state[15] ^= this->state[0]  ^ this->state[1]  ^ this->state[2];
-    
-            // 斜角混合
-            wU32 swap = this->state[4];
-            this->state[4]  += this->state[9];
-            this->state[9]  += this->state[14];
-            this->state[14] += this->state[3];
-            this->state[3]  += swap;
-            swap ^= this->state[2];
-            this->state[2]  ^= this->state[5];
-            this->state[5]  ^= this->state[8];
-            this->state[8]  ^= this->state[15];
-            this->state[15] ^= swap;
-            
-            swap = this->state[5];
-            this->state[5]  += this->state[10];
-            this->state[10] += this->state[15];
-            this->state[15] += this->state[4];
-            this->state[4]  += swap;
-            swap ^= this->state[3];
-            this->state[3]  ^= this->state[6];
-            this->state[6]  ^= this->state[9];
-            this->state[9]  ^= this->state[0];
-            this->state[0]  ^= swap;
-            
-            swap = this->state[6];
-            this->state[6]  += this->state[11];
-            this->state[11] += this->state[0];
-            this->state[0]  += this->state[5];
-            this->state[5]  += swap;
-            swap ^= this->state[4];
-            this->state[4]  ^= this->state[7];
-            this->state[7]  ^= this->state[10];
-            this->state[10] ^= this->state[1];
-            this->state[1]  ^= swap;
-            
-            swap = this->state[7];
-            this->state[7]  += this->state[12];
-            this->state[12] += this->state[1];
-            this->state[1]  += this->state[6];
-            this->state[6]  += swap;
-            swap ^= this->state[5];
-            this->state[5]  ^= this->state[8];
-            this->state[8]  ^= this->state[11];
-            this->state[11] ^= this->state[2];
-            this->state[2]  ^= swap;
-        }
+    for (wU32 r = 0; r < 8; ++r) {
+        this->keystream_4value_mixture();
+        this->keystream_oblique_angle_mixing();
     }
+
+    this->keystream_bit_swap();
 }
 
 wuk::crypto::SSC::SSC(const wByte *key, const wByte *iv, const wuk::crypto::Counter counter)
@@ -184,8 +245,9 @@ void wuk::crypto::SSC::xcrypt(wByte *buffer, wSize length)
     for (wSize i = 0, ks_i = WUK_SSC_KSLEN; i < length; ++i, ++ks_i) {
         if (ks_i == WUK_SSC_KSLEN) {
             this->keystream_update();
+            ks_i = 0;
         }
-        buffer[i] ^= this->keystream[ks_i & 63];
+        buffer[i] ^= this->keystream[ks_i];
     }
 }
 

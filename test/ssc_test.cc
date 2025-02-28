@@ -11,6 +11,8 @@
 #include <iostream>
 #include <iomanip>
 #include <chrono>
+#include <fstream>
+#include <filesystem>
 
 void print_hex_data(const wByte *data1, const wByte *data2, wSize len1, wSize len2, wU32 hex_per_line, bool indent)
 {
@@ -73,12 +75,17 @@ void test1()
 
     wuk::crypto::SSC ssc(key, iv, counter);
 
-    char test_plaintext[256] = {
+    char test_plaintext[1024] = {
         "gET /qrcode/getLoginUrl HTTP/1.1\r\n"
         "Host: passport.bilibili.com\r\n"
         "Accept: application/json; q=0.9, */*\r\n"
         "Connection: keep-alive\r\n"
         "User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:129.0) Gecko/20100101 Firefox/129.0\r\n\r\n"
+
+        // "0000000000000000000000000000000000000000000000000000000000000000"
+        // "0000000000000000000000000000000000000000000000000000000000000000"
+        // "0000000000000000000000000000000000000000000000000000000000000000"
+        // "0000000000000000000000000000000000000000000000000000000000000000"
     };
     wByte *buffer = (wByte *)test_plaintext;
     wSize length = strlen(test_plaintext);
@@ -92,15 +99,20 @@ void test1()
     wuk::misc::print_hex(buffer, length, 32, true, true);
 }
 
-void test2()
+void keystream_chack()
 {
-    const wByte *key_left = (const wByte *)"abcdef0123456789abcdef0123456789";
-    const wByte *iv_left  = (const wByte *)"abcdef0123456789";
+    // const wByte *key_left = (const wByte *)"abcdef0123456789abcdef0123456789";
+    // const wByte *iv_left  = (const wByte *)"abcdef0123456789";
+    const wByte *key_left = (const wByte *)"\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0";
+    const wByte *iv_left  = (const wByte *)"\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0";
 
-    const wByte *key_right = (const wByte *)"bbcdef0123456789abcdef0123456789";
-    const wByte *iv_right  = (const wByte *)"abcdef0123456789";
+    // const wByte *key_right = (const wByte *)"bbcdef0123456789abcdef0123456789";
+    // const wByte *iv_right  = (const wByte *)"abcdef0123456789";
+    const wByte *key_right = (const wByte *)"\1\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0";
+    const wByte *iv_right  = (const wByte *)"\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0";
 
-    wuk::crypto::Counter counter("sngrotesque", 21902002);
+    // wuk::crypto::Counter counter("sngrotesque", 21902002);
+    wuk::crypto::Counter counter("\0\0\0\0\0\0\0\0\0\0\0\0", 0);
 
     wuk::crypto::SSC ssc_left(key_left, iv_left, counter);
     wuk::crypto::SSC ssc_right(key_right, iv_right, counter);
@@ -139,18 +151,49 @@ void speed_test(wSize length)
     ssc.xcrypt(buffer, length);
     double stop_time = timer.time();
 
-    std::cout << std::fixed << std::setprecision(4) << "Time taken: " << (stop_time - start_time) << "\n";
-    std::cout << std::hex << std::setw(2) << std::setfill('0') << static_cast<int>(buffer[0]) << "\n";
+    printf("Performance testing, test data size: %zd MB, Time consumption: %.4lf second.\n",
+            length / (1024 * 1024), (stop_time - start_time));
 
     delete[] buffer;
 }
 
+void encrypt_file()
+{
+    std::filesystem::path in_path(L"F:/Pitchers/QQ/[明日方舟]德狗拉狗.7z");
+    std::filesystem::path out_path(L"F:/Pitchers/QQ/[明日方舟]德狗拉狗.7z.enc");
+
+    std::fstream in_file(in_path, std::ios::binary | std::ios::in);
+    std::fstream out_file(out_path, std::ios::binary | std::ios::out);
+
+    if (!in_file.is_open() || !out_file.is_open()) {
+        std::cerr << "failed to file open.\n";
+        return;
+    }
+
+    const wByte *key = (const wByte *)"au18ty)*(GEY91g3957g(&EGb13./))-";
+    const wByte *iv  = (const wByte *)"B))U)84u1-5,_+G+";
+    wuk::crypto::Counter counter("sngrotesque", 921);
+    wuk::crypto::SSC ssc(key, iv, counter);
+
+    for (;;) {
+        wByte buffer[4096]{};
+        wSize length = in_file.read(reinterpret_cast<char *>(buffer), sizeof(buffer)).gcount();
+        if (!length) {
+            break;
+        }
+
+        ssc.xcrypt(buffer, length);
+
+        out_file.write(reinterpret_cast<char *>(buffer), length);
+    }
+}
+
 int main()
 {
-    // speed_test(1024 * 1024 * 1024);
-
-    test1();
-    // test2();
+    // test1();
+    // keystream_chack();
+    // speed_test(256 * 1024 * 1024);
+    encrypt_file();
 
     return 0;
 }
