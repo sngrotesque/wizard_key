@@ -53,6 +53,17 @@ constexpr uint8_t swap_4bits(uint8_t x)
     return ((x << 4) & 0xff) | (x >> 4);
 }
 
+// 向左循环位移7位
+constexpr uint32_t move_bits_left(uint32_t x)
+{
+    return ((((x) >> 25) | ((x) << 7)) & 0xffffffff);
+}
+
+constexpr uint32_t move_bits_right(uint32_t x)
+{
+    return ((((x) << 25) | ((x) >> 7)) & 0xffffffff);
+}
+
 void wuk::crypto::SSC::keystream_sub_bytes()
 {
     for (wU32 i = 0; i < 2; ++i) {
@@ -137,74 +148,74 @@ inline void wuk::crypto::SSC::keystream_bit_swap()
 
 inline void wuk::crypto::SSC::keystream_4value_mixture()
 {
-    // 4值混合，当前值与后面的3个值进行异或运算
-    this->state[0]  ^= this->state[1]  ^ this->state[2]  ^ this->state[3];
-    this->state[4]  ^= this->state[5]  ^ this->state[6]  ^ this->state[7];
-    this->state[8]  ^= this->state[9]  ^ this->state[10] ^ this->state[11];
-    this->state[12] ^= this->state[13] ^ this->state[14] ^ this->state[15];
+    // 4值混合
+    this->state[0]  ^= this->state[15] ^ this->state[14] ^ this->state[13];
+    this->state[1]  ^= this->state[12] ^ this->state[11] ^ this->state[10];
+    this->state[2]  ^= this->state[9]  ^ this->state[8]  ^ this->state[7];
+    this->state[3]  ^= this->state[6]  ^ this->state[5]  ^ this->state[4];
 
-    this->state[1]  ^= this->state[2]  ^ this->state[3]  ^ this->state[4];
-    this->state[5]  ^= this->state[6]  ^ this->state[7]  ^ this->state[8];
-    this->state[9]  ^= this->state[10] ^ this->state[11] ^ this->state[12];
-    this->state[13] ^= this->state[14] ^ this->state[15] ^ this->state[0];
+    this->state[4]  ^= this->state[3]  ^ this->state[2]  ^ this->state[1];
+    this->state[5]  ^= this->state[0]  ^ this->state[15] ^ this->state[14];
+    this->state[6]  ^= this->state[13] ^ this->state[12] ^ this->state[11];
+    this->state[7]  ^= this->state[10] ^ this->state[9]  ^ this->state[8];
 
-    this->state[2]  ^= this->state[3]  ^ this->state[4]  ^ this->state[5];
-    this->state[6]  ^= this->state[7]  ^ this->state[8]  ^ this->state[9];
-    this->state[10] ^= this->state[11] ^ this->state[12] ^ this->state[13];
-    this->state[14] ^= this->state[15] ^ this->state[0]  ^ this->state[1];
+    this->state[8]  ^= this->state[7]  ^ this->state[6]  ^ this->state[5];
+    this->state[9]  ^= this->state[4]  ^ this->state[3]  ^ this->state[2];
+    this->state[10] ^= this->state[1]  ^ this->state[0]  ^ this->state[15];
+    this->state[11] ^= this->state[14] ^ this->state[13] ^ this->state[12];
 
-    this->state[3]  ^= this->state[4]  ^ this->state[5]  ^ this->state[6];
-    this->state[7]  ^= this->state[8]  ^ this->state[9]  ^ this->state[10];
-    this->state[11] ^= this->state[12] ^ this->state[13] ^ this->state[14];
-    this->state[15] ^= this->state[0]  ^ this->state[1]  ^ this->state[2];
+    this->state[12] ^= this->state[11] ^ this->state[10] ^ this->state[9];
+    this->state[13] ^= this->state[8]  ^ this->state[7]  ^ this->state[6];
+    this->state[14] ^= this->state[5]  ^ this->state[4]  ^ this->state[3];
+    this->state[15] ^= this->state[2]  ^ this->state[1]  ^ this->state[0];
 }
 
 inline void wuk::crypto::SSC::keystream_oblique_angle_mixing()
 {
-    // 斜角混合
-    wU32 swap = this->state[4];
-    this->state[4]  += this->state[9];
-    this->state[9]  += this->state[14];
-    this->state[14] += this->state[3];
+    // 斜角混合（混合的有问题，下次修改时再修改）
+    wU32 swap;
+
+    swap             = move_bits_left(this->state[0]);
+    this->state[0]  += move_bits_left(this->state[5]);
+    this->state[5]  += move_bits_left(this->state[10]);
+    this->state[10] += move_bits_left(this->state[15]);
+    this->state[15] += swap;
+    swap             = move_bits_left(this->state[4]);
+    this->state[4]  += move_bits_left(this->state[9]);
+    this->state[9]  += move_bits_left(this->state[14]);
+    this->state[14] += move_bits_left(this->state[3]);
     this->state[3]  += swap;
-    swap ^= this->state[2];
-    this->state[2]  ^= this->state[5];
-    this->state[5]  ^= this->state[8];
-    this->state[8]  ^= this->state[15];
+    swap             = move_bits_left(this->state[8]);
+    this->state[8]  += move_bits_left(this->state[13]);
+    this->state[13] += move_bits_left(this->state[2]);
+    this->state[2]  += move_bits_left(this->state[7]);
+    this->state[7]  += swap;
+    swap             = move_bits_left(this->state[12]);
+    this->state[12] += move_bits_left(this->state[1]);
+    this->state[1]  += move_bits_left(this->state[6]);
+    this->state[6]  += move_bits_left(this->state[11]);
+    this->state[11] += swap;
+
+    swap             = move_bits_right(this->state[3]);
+    this->state[3]  ^= move_bits_right(this->state[6]);
+    this->state[6]  ^= move_bits_right(this->state[9]);
+    this->state[9]  ^= move_bits_right(this->state[12]);
+    this->state[12] ^= swap;
+    swap             = move_bits_right(this->state[2]);
+    this->state[2]  ^= move_bits_right(this->state[5]);
+    this->state[5]  ^= move_bits_right(this->state[8]);
+    this->state[8]  ^= move_bits_right(this->state[15]);
     this->state[15] ^= swap;
-
-    swap = this->state[5];
-    this->state[5]  += this->state[10];
-    this->state[10] += this->state[15];
-    this->state[15] += this->state[4];
-    this->state[4]  += swap;
-    swap ^= this->state[3];
-    this->state[3]  ^= this->state[6];
-    this->state[6]  ^= this->state[9];
-    this->state[9]  ^= this->state[0];
-    this->state[0]  ^= swap;
-
-    swap = this->state[6];
-    this->state[6]  += this->state[11];
-    this->state[11] += this->state[0];
-    this->state[0]  += this->state[5];
-    this->state[5]  += swap;
-    swap ^= this->state[4];
-    this->state[4]  ^= this->state[7];
-    this->state[7]  ^= this->state[10];
-    this->state[10] ^= this->state[1];
-    this->state[1]  ^= swap;
-
-    swap = this->state[7];
-    this->state[7]  += this->state[12];
-    this->state[12] += this->state[1];
-    this->state[1]  += this->state[6];
-    this->state[6]  += swap;
-    swap ^= this->state[5];
-    this->state[5]  ^= this->state[8];
-    this->state[8]  ^= this->state[11];
-    this->state[11] ^= this->state[2];
-    this->state[2]  ^= swap;
+    swap             = move_bits_right(this->state[1]);
+    this->state[1]  ^= move_bits_right(this->state[4]);
+    this->state[4]  ^= move_bits_right(this->state[11]);
+    this->state[11] ^= move_bits_right(this->state[14]);
+    this->state[14] ^= swap;
+    swap             = move_bits_right(this->state[0]);
+    this->state[0]  ^= move_bits_right(this->state[7]);
+    this->state[7]  ^= move_bits_right(this->state[10]);
+    this->state[10] ^= move_bits_right(this->state[13]);
+    this->state[13] ^= swap;
 }
 
 void wuk::crypto::SSC::keystream_init()

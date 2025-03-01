@@ -62,8 +62,8 @@ void speed_test(size_t length)
 
 int main()
 {
-    // chacha20_test();
-    speed_test(1024 * pow(1024, 2));
+    chacha20_test();
+    // speed_test(1024 * pow(1024, 2));
 
     return 0;
 }

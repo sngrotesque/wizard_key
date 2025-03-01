@@ -69,9 +69,9 @@ void print_hex_data(const wByte *data1, const wByte *data2, wSize len1, wSize le
 
 void test1()
 {
-    const wByte *key = (const wByte *)"bbcdef0123456789abcdef0123456789";
+    const wByte *key = (const wByte *)"abcdef0123456789abcdef0123456789";
     const wByte *iv  = (const wByte *)"bbcdef0123456789";
-    wuk::crypto::Counter counter("sngrotesque", 1);
+    wuk::crypto::Counter counter("Sngrotesque", 1);
 
     wuk::crypto::SSC ssc(key, iv, counter);
 
@@ -86,9 +86,19 @@ void test1()
         // "0000000000000000000000000000000000000000000000000000000000000000"
         // "0000000000000000000000000000000000000000000000000000000000000000"
         // "0000000000000000000000000000000000000000000000000000000000000000"
+
+        // "\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"
+        // "\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"
+        // "\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"
+        // "\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"
+        // "\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"
+        // "\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"
     };
     wByte *buffer = (wByte *)test_plaintext;
-    wSize length = strlen(test_plaintext);
+    wSize length = 192; // strlen(test_plaintext);
+
+    std::cout << "keystream:\n";
+    wuk::misc::print_hex(ssc.get_keystream(), wuk::crypto::WUK_SSC_KSLEN, 32, true, true);
 
     std::cout << "Plaintext:\n";
     wuk::misc::print_hex(buffer, length, 32, true, true);
@@ -108,16 +118,17 @@ void keystream_chack()
 
     // const wByte *key_right = (const wByte *)"bbcdef0123456789abcdef0123456789";
     // const wByte *iv_right  = (const wByte *)"abcdef0123456789";
-    const wByte *key_right = (const wByte *)"\1\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0";
+    const wByte *key_right = (const wByte *)"\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0";
     const wByte *iv_right  = (const wByte *)"\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0";
 
     // wuk::crypto::Counter counter("sngrotesque", 21902002);
-    wuk::crypto::Counter counter("\0\0\0\0\0\0\0\0\0\0\0\0", 0);
+    wuk::crypto::Counter counter_left("\0\0\0\0\0\0\0\0\0\0\0\0", 0);
+    wuk::crypto::Counter counter_right("\0\0\0\0\0\0\0\0\0\0\0\0", 1);
 
-    wuk::crypto::SSC ssc_left(key_left, iv_left, counter);
-    wuk::crypto::SSC ssc_right(key_right, iv_right, counter);
+    wuk::crypto::SSC ssc_left(key_left, iv_left, counter_left);
+    wuk::crypto::SSC ssc_right(key_right, iv_right, counter_right);
 
-    for (wU32 c = 0; c < 4; ++c) {
+    for (wU32 c = 0; c < 8; ++c) {
         std::cout << "Key Stream:\n";
 
         print_hex_data(
@@ -159,8 +170,8 @@ void speed_test(wSize length)
 
 void encrypt_file()
 {
-    std::filesystem::path in_path(L"F:/Pitchers/QQ/[明日方舟]德狗拉狗.7z");
-    std::filesystem::path out_path(L"F:/Pitchers/QQ/[明日方舟]德狗拉狗.7z.enc");
+    std::filesystem::path in_path(L"C:/Users/sn/Desktop/SSC_TEST/plaintext.txt");
+    std::filesystem::path out_path(L"C:/Users/sn/Desktop/SSC_TEST/ciphertext.txt");
 
     std::fstream in_file(in_path, std::ios::binary | std::ios::in);
     std::fstream out_file(out_path, std::ios::binary | std::ios::out);
@@ -191,9 +202,9 @@ void encrypt_file()
 int main()
 {
     // test1();
-    // keystream_chack();
-    // speed_test(256 * 1024 * 1024);
-    encrypt_file();
+    keystream_chack();
+    // speed_test(1024 * 1024 * 1024);
+    // encrypt_file();
 
     return 0;
 }
