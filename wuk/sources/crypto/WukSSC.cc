@@ -59,6 +59,7 @@ constexpr uint32_t move_bits_left(uint32_t x)
     return ((((x) >> 25) | ((x) << 7)) & 0xffffffff);
 }
 
+// 向右循环位移7位
 constexpr uint32_t move_bits_right(uint32_t x)
 {
     return ((((x) << 25) | ((x) >> 7)) & 0xffffffff);
