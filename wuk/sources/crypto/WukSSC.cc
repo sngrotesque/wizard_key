@@ -173,7 +173,7 @@ inline void wuk::crypto::SSC::keystream_4value_mixture()
 
 inline void wuk::crypto::SSC::keystream_oblique_angle_mixing()
 {
-    // 斜角混合（混合的有问题，下次修改时再修改）
+    // 斜角混合
     wU32 swap;
 
     swap             = move_bits_left(this->state[0]);

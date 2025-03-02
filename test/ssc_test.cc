@@ -70,13 +70,13 @@ void print_hex_data(const wByte *data1, const wByte *data2, wSize len1, wSize le
 void test1()
 {
     const wByte *key = (const wByte *)"abcdef0123456789abcdef0123456789";
-    const wByte *iv  = (const wByte *)"bbcdef0123456789";
-    wuk::crypto::Counter counter("Sngrotesque", 1);
+    const wByte *iv  = (const wByte *)"abcdef0123456789";
+    wuk::crypto::Counter counter("sngrotesque", 2);
 
     wuk::crypto::SSC ssc(key, iv, counter);
 
     char test_plaintext[1024] = {
-        "gET /qrcode/getLoginUrl HTTP/1.1\r\n"
+        "GET /qrcode/getLoginUrl HTTP/1.1\r\n"
         "Host: passport.bilibili.com\r\n"
         "Accept: application/json; q=0.9, */*\r\n"
         "Connection: keep-alive\r\n"
@@ -98,7 +98,7 @@ void test1()
     wSize length = 192; // strlen(test_plaintext);
 
     std::cout << "keystream:\n";
-    wuk::misc::print_hex(ssc.get_keystream(), wuk::crypto::WUK_SSC_KSLEN, 32, true, true);
+    wuk::misc::print_hex(ssc.get_keystream(), wuk::crypto::WUK_SSC_KSLEN, 16, true, true);
 
     std::cout << "Plaintext:\n";
     wuk::misc::print_hex(buffer, length, 32, true, true);
@@ -109,21 +109,46 @@ void test1()
     wuk::misc::print_hex(buffer, length, 32, true, true);
 }
 
-void keystream_chack()
+void keystream_chack(const wU32 test_type = 0)
 {
-    // const wByte *key_left = (const wByte *)"abcdef0123456789abcdef0123456789";
-    // const wByte *iv_left  = (const wByte *)"abcdef0123456789";
-    const wByte *key_left = (const wByte *)"\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0";
-    const wByte *iv_left  = (const wByte *)"\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0";
+    wuk::crypto::Counter counter_left;
+    const wByte *key_left = nullptr;
+    const wByte *iv_left  = nullptr;
+    
+    wuk::crypto::Counter counter_right;
+    const wByte *key_right = nullptr;
+    const wByte *iv_right  = nullptr;
 
-    // const wByte *key_right = (const wByte *)"bbcdef0123456789abcdef0123456789";
-    // const wByte *iv_right  = (const wByte *)"abcdef0123456789";
-    const wByte *key_right = (const wByte *)"\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0";
-    const wByte *iv_right  = (const wByte *)"\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0";
+    switch (test_type) {
+        default:
+        case 0:
+            key_left = (const wByte *)"abcdef0123456789abcdef0123456789";
+            iv_left  = (const wByte *)"abcdef0123456789";
+            counter_left = {"sngrotesque", 776};
 
-    // wuk::crypto::Counter counter("sngrotesque", 21902002);
-    wuk::crypto::Counter counter_left("\0\0\0\0\0\0\0\0\0\0\0\0", 0);
-    wuk::crypto::Counter counter_right("\0\0\0\0\0\0\0\0\0\0\0\0", 1);
+            key_right = (const wByte *)"bbcdef0123456789abcdef0123456789";
+            iv_right  = (const wByte *)"abcdef0123456789";
+            counter_right = {"sngrotesque", 776};
+            break;
+        case 1:
+            key_left = (const wByte *)"\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0";
+            iv_left  = (const wByte *)"\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0";
+            counter_left = {{"\0\0\0\0\0\0\0\0\0\0\0\0", 12}, 0};
+
+            key_right = (const wByte *)"\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0";
+            iv_right  = (const wByte *)"\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0";
+            counter_right = {{"\0\0\0\0\0\1\0\0\0\0\0\0", 12}, 0};
+            break;
+        case 2:
+            key_left = (const wByte *)"\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff";
+            iv_left  = (const wByte *)"\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff";
+            counter_left = {"\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff", 0xffffffff};
+
+            key_right = (const wByte *)"\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff";
+            iv_right  = (const wByte *)"\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xfe";
+            counter_right = {"\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff", 0xffffffff};
+            break;
+    }
 
     wuk::crypto::SSC ssc_left(key_left, iv_left, counter_left);
     wuk::crypto::SSC ssc_right(key_right, iv_right, counter_right);
@@ -201,8 +226,8 @@ void encrypt_file()
 
 int main()
 {
-    // test1();
-    keystream_chack();
+    test1();
+    // keystream_chack(1);
     // speed_test(1024 * 1024 * 1024);
     // encrypt_file();
 
