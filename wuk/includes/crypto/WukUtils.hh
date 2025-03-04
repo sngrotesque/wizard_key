@@ -21,7 +21,7 @@ namespace wuk {
             Counter(std::string nonce, wSize begin);
 
         public:
-            wByte *get() noexcept;
+            const wByte *get() const noexcept;
             void clean() noexcept;
             void step_up() noexcept;
         };

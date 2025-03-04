@@ -246,7 +246,8 @@ void test2()
 int main()
 {
     try {
-        speed_test(1024 * 1024 * 1024);
+        // speed_test(1024 * 1024 * 1024);
+        test1();
     } catch (wuk::Exception &e) {
         std::cout << e.what() << std::endl;
     }

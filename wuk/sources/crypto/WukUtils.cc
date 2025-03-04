@@ -2,20 +2,27 @@
 
 wuk::crypto::Counter::Counter(const wByte *nonce, wU32 size, wSize begin)
 {
+    if (!nonce) {
+        throw wuk::Exception(wuk::Error::NPTR, "wuk::crypto::Counter::Counter",
+                            "Nonce is nullptr.");
+    }
+
     if (size >= COUNTER_BLOCK_SIZE) {
         throw wuk::Exception(wuk::Error::ERR, "wuk::crypto::Counter::Counter",
                             "Nonce is too long.");
     }
     memcpy(this->counter, nonce, size);
 
-    this->counter[8]  |= (begin >> 56) & 0xff;
-    this->counter[9]  |= (begin >> 48) & 0xff;
-    this->counter[10] |= (begin >> 40) & 0xff;
-    this->counter[11] |= (begin >> 32) & 0xff;
-    this->counter[12] |= (begin >> 24) & 0xff;
-    this->counter[13] |= (begin >> 16) & 0xff;
-    this->counter[14] |= (begin >> 8)  & 0xff;
-    this->counter[15] |= begin         & 0xff;
+    if (begin) {
+        this->counter[8]  |= (begin >> 56) & 0xff;
+        this->counter[9]  |= (begin >> 48) & 0xff;
+        this->counter[10] |= (begin >> 40) & 0xff;
+        this->counter[11] |= (begin >> 32) & 0xff;
+        this->counter[12] |= (begin >> 24) & 0xff;
+        this->counter[13] |= (begin >> 16) & 0xff;
+        this->counter[14] |= (begin >> 8)  & 0xff;
+        this->counter[15] |= begin         & 0xff;
+    }
 }
 
 wuk::crypto::Counter::Counter(const char *nonce, wU32 size, wSize begin)
@@ -30,7 +37,7 @@ wuk::crypto::Counter::Counter(std::string nonce, wSize begin)
 
 }
 
-wByte *wuk::crypto::Counter::get() noexcept
+const wByte *wuk::crypto::Counter::get() const noexcept
 {
     return this->counter;
 }
