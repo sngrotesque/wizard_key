@@ -1,5 +1,10 @@
 #include <crypto/WukSSC.hh>
 
+static const wByte ssc_constant[8] = {
+    // S64-CRP+
+    0x53, 0x36, 0x34, 0x2d, 0x43, 0x52, 0x50, 0x2b
+};
+
 static constexpr wByte sbox[256] = {
     0x80, 0x30, 0x4f, 0x85, 0x65, 0x8c, 0x6a, 0xaa, 0x1b, 0x87, 0xcd, 0xb1, 0x53, 0x6e, 0x39, 0x28,
     0x8d, 0xb3, 0xca, 0x0d, 0xa0, 0xfa, 0x72, 0x10, 0x44, 0x35, 0x31, 0x41, 0x9e, 0x79, 0xba, 0x9f,
@@ -248,8 +253,8 @@ wuk::crypto::SSC::SSC(const wByte *key, const wByte *iv, const wuk::crypto::Coun
     *   - - - - - - - - - - - - - - - - - -
     * 0 | K K K K K K K K K K K K K K K K | (Key       0 ~ 15)
     * 1 | K K K K K K K K K K K K K K K K | (Key      16 ~ 31)
-    * 2 | C C C C C C C C C C C C C C C C | (Counter  32 ~ 47)
-    * 3 | I I I I I I I I I I I I I I I I | (IV       48 ~ 63)
+    * 3 | I I I I I I I I C C C C C C C C | (IV       32 ~ 39, Constant    40 ~ 47)
+    * 2 | C C C C C C C C C C C C C C C C | (Counter  48 ~ 63)
     *   - - - - - - - - - - - - - - - - - -
     */
     if (!key || !iv) {
@@ -258,13 +263,20 @@ wuk::crypto::SSC::SSC(const wByte *key, const wByte *iv, const wuk::crypto::Coun
     }
 
     wByte *keystream_ptr = this->keystream;
+
     memcpy(keystream_ptr, key, WUK_SSC_KEYLEN);
     keystream_ptr += WUK_SSC_KEYLEN;
+
+    memcpy(keystream_ptr, iv, WUK_SSC_IVLEN);
+    keystream_ptr += WUK_SSC_IVLEN;
+
+    memcpy(keystream_ptr, ssc_constant, sizeof(ssc_constant));
+    keystream_ptr += sizeof(ssc_constant);
 
     memcpy(keystream_ptr, this->counter.get(), wuk::crypto::COUNTER_BLOCK_SIZE);
     keystream_ptr += wuk::crypto::COUNTER_BLOCK_SIZE;
 
-    memcpy(keystream_ptr, iv, WUK_SSC_IVLEN);
+    keystream_ptr = nullptr;
 }
 
 void wuk::crypto::SSC::xcrypt(wByte *buffer, wSize length)

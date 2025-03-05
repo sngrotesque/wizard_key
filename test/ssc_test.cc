@@ -187,38 +187,6 @@ void encrypt_file()
     }
 }
 
-void chosen_plaintext()
-{
-    const wByte *key = (const wByte *)"abcdef0123456789abcdef0123456789";
-    const wByte *iv  = (const wByte *)"abcdef0123456789";
-    wuk::crypto::Counter counter("sngrotesque", 12);
-
-    wuk::crypto::SSC ssc(key, iv, counter);
-
-    char plaintext[256] = {
-        "Huge foreign run woman word politics single. Morning doctor college know. Visit very since purpose. Many decade theory page."
-    };
-    wSize length = strlen(plaintext);
-    char ciphertext[256]{};
-
-    memcpy(ciphertext, plaintext, length);
-
-    ssc.xcrypt((wByte *)ciphertext, length);
-
-    wByte keystream[64]{};
-    for (wU32 i = 0; i < 64; ++i) {
-        keystream[i] = plaintext[i] ^ ciphertext[i];
-    }
-
-    wuk::crypto::Counter counter_attack({(char *)(keystream + 32), 15}, static_cast<wSize>(*(keystream + 32 + 15)));
-    wuk::crypto::SSC ssc_attack(keystream, keystream + 32 + 16, counter_attack);
-
-    ssc_attack.xcrypt((wByte *)ciphertext+64, length-64);
-    print_hex_data(ssc.get_keystream(), ssc_attack.get_keystream(), 64, 64, 16, true);
-
-    std::cout << (char *)(ciphertext+64) << std::endl;
-}
-
 int main()
 {
     // const wByte *key_left              = (const wByte *)"abcdef0123456789abcdef0123456789";
@@ -239,8 +207,8 @@ int main()
     // test1();
     // keystream_chack(key_left, iv_left, counter_left, key_right, iv_right, counter_right, 4);
     // speed_test(1024 * 1024 * 1024);
-    // encrypt_file();
-    chosen_plaintext();
+    encrypt_file();
+    // chosen_plaintext();
 
     return 0;
 }

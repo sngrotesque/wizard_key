@@ -115,6 +115,8 @@ A：因为我从未真正使用过`Mac OS`[^macos]，并且也不熟悉它的操
     暂时不会考虑使用智能指针，因其无法达成我的要求。
 6.  完善了[wuk::Buffer](wuk/includes/WukBuffer.hh)模块的功能，未来也许会添加更多功能。
 7.  完善并优化了一些细节与修复了一个空指针指向问题。
+8.  优化了代码。
+9.  修复了流密码算法[wuk::crypto::SSC](wuk/includes/crypto/WukSSC.hh)的弱点。
 
 #### v0.7.2
 1.  修复了[Base64解码函数](wuk/includes/base64.hpp)在`v0.7.1`版本中的BUG，并修复了`v0.7.1`版本中解码函数未针对填充符进行处理的问题，现已经可以使用。  

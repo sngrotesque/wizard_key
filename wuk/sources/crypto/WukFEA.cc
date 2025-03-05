@@ -126,8 +126,11 @@ void wuk::crypto::FEA::shift_rows(wByte *block)
     memcpy(block, block + 8, 8);
     memcpy(block + 8, swap_array, 8);
 
-    swap = (*(block + 8)  ^ *(block + 9)  ^ *(block + 10) ^ *(block + 11) ^
-            *(block + 12) ^ *(block + 13) ^ *(block + 14) ^ *(block + 15));
+    swap = (*(block + 8)  ^ *(block + 9)  ^
+            *(block + 10) ^ *(block + 11) ^
+            *(block + 12) ^ *(block + 13) ^
+            *(block + 14) ^ *(block + 15)
+    );
 
     *(block + 0) ^= swap;
     *(block + 1) ^= swap;
@@ -143,8 +146,11 @@ void wuk::crypto::FEA::inv_shift_rows(wByte *block)
 {
     wByte swap_array[8], swap;
 
-    swap = (*(block + 8)  ^ *(block + 9)  ^ *(block + 10) ^ *(block + 11) ^
-            *(block + 12) ^ *(block + 13) ^ *(block + 14) ^ *(block + 15));
+    swap = (*(block + 8)  ^ *(block + 9)  ^
+            *(block + 10) ^ *(block + 11) ^
+            *(block + 12) ^ *(block + 13) ^
+            *(block + 14) ^ *(block + 15)
+    );
 
     *(block + 0) ^= swap;
     *(block + 1) ^= swap;

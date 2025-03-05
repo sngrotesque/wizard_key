@@ -10,7 +10,7 @@ namespace wuk {
     namespace crypto {
         constexpr wU32 WUK_SSC_KSLEN    = 64; // key stream length
         constexpr wU32 WUK_SSC_KEYLEN   = 32; // key length
-        constexpr wU32 WUK_SSC_IVLEN    = 16; // Initialization vector length
+        constexpr wU32 WUK_SSC_IVLEN    = 8;  // Initialization vector length
 
         // SN Stream Cipher
         class LIBWUK_API SSC {
