@@ -128,4 +128,6 @@ typedef size_t   wSize,  w_ulong, wULong, w_size;  // 无符号长整数
 #define WUK_MACRO_DEFINED
 #define wuk_toString(x) #x /* 将x转为字符串 */
 #define wuk_min(x, y) (((x) < (y)) ? (x) : (y))
+#define wuk_max(x, y) (((x) > (y)) ? (x) : (y))
+
 #endif /* WUK_MACRO_DEFINED */

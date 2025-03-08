@@ -72,82 +72,48 @@ constexpr uint32_t move_bits_right(uint32_t x, uint32_t n)
 
 inline void wuk::crypto::SSC::keystream_sub_bytes()
 {
-    *(this->keystream)      = get_sbox(*(this->keystream));
-    *(this->keystream + 1)  = get_sbox(*(this->keystream + 1));
-    *(this->keystream + 2)  = get_sbox(*(this->keystream + 2));
-    *(this->keystream + 3)  = get_sbox(*(this->keystream + 3));
-    *(this->keystream + 4)  = get_sbox(*(this->keystream + 4));
-    *(this->keystream + 5)  = get_sbox(*(this->keystream + 5));
-    *(this->keystream + 6)  = get_sbox(*(this->keystream + 6));
-    *(this->keystream + 7)  = get_sbox(*(this->keystream + 7));
+    for (wU32 i = 0; i < WUK_SSC_KSLEN; i += (WUK_SSC_KSLEN >> 1)) {
+        this->keystream[i]      = get_sbox(this->keystream[i]);
+        this->keystream[i + 1]  = get_sbox(this->keystream[i + 1]);
+        this->keystream[i + 2]  = get_sbox(this->keystream[i + 2]);
+        this->keystream[i + 3]  = get_sbox(this->keystream[i + 3]);
+        this->keystream[i + 4]  = get_sbox(this->keystream[i + 4]);
+        this->keystream[i + 5]  = get_sbox(this->keystream[i + 5]);
+        this->keystream[i + 6]  = get_sbox(this->keystream[i + 6]);
+        this->keystream[i + 7]  = get_sbox(this->keystream[i + 7]);
 
-    *(this->keystream + 8)  = get_sbox(*(this->keystream + 8));
-    *(this->keystream + 9)  = get_sbox(*(this->keystream + 9));
-    *(this->keystream + 10) = get_sbox(*(this->keystream + 10));
-    *(this->keystream + 11) = get_sbox(*(this->keystream + 11));
-    *(this->keystream + 12) = get_sbox(*(this->keystream + 12));
-    *(this->keystream + 13) = get_sbox(*(this->keystream + 13));
-    *(this->keystream + 14) = get_sbox(*(this->keystream + 14));
-    *(this->keystream + 15) = get_sbox(*(this->keystream + 15));
+        this->keystream[i + 8]  = get_sbox(this->keystream[i + 8]);
+        this->keystream[i + 9]  = get_sbox(this->keystream[i + 9]);
+        this->keystream[i + 10] = get_sbox(this->keystream[i + 10]);
+        this->keystream[i + 11] = get_sbox(this->keystream[i + 11]);
+        this->keystream[i + 12] = get_sbox(this->keystream[i + 12]);
+        this->keystream[i + 13] = get_sbox(this->keystream[i + 13]);
+        this->keystream[i + 14] = get_sbox(this->keystream[i + 14]);
+        this->keystream[i + 15] = get_sbox(this->keystream[i + 15]);
 
-    *(this->keystream + 16) = get_sbox(*(this->keystream + 16));
-    *(this->keystream + 17) = get_sbox(*(this->keystream + 17));
-    *(this->keystream + 18) = get_sbox(*(this->keystream + 18));
-    *(this->keystream + 19) = get_sbox(*(this->keystream + 19));
-    *(this->keystream + 20) = get_sbox(*(this->keystream + 20));
-    *(this->keystream + 21) = get_sbox(*(this->keystream + 21));
-    *(this->keystream + 22) = get_sbox(*(this->keystream + 22));
-    *(this->keystream + 23) = get_sbox(*(this->keystream + 23));
-    
-    *(this->keystream + 24) = get_sbox(*(this->keystream + 24));
-    *(this->keystream + 25) = get_sbox(*(this->keystream + 25));
-    *(this->keystream + 26) = get_sbox(*(this->keystream + 26));
-    *(this->keystream + 27) = get_sbox(*(this->keystream + 27));
-    *(this->keystream + 28) = get_sbox(*(this->keystream + 28));
-    *(this->keystream + 29) = get_sbox(*(this->keystream + 29));
-    *(this->keystream + 30) = get_sbox(*(this->keystream + 30));
-    *(this->keystream + 31) = get_sbox(*(this->keystream + 31));
+        this->keystream[i + 16] = get_sbox(this->keystream[i + 16]);
+        this->keystream[i + 17] = get_sbox(this->keystream[i + 17]);
+        this->keystream[i + 18] = get_sbox(this->keystream[i + 18]);
+        this->keystream[i + 19] = get_sbox(this->keystream[i + 19]);
+        this->keystream[i + 20] = get_sbox(this->keystream[i + 20]);
+        this->keystream[i + 21] = get_sbox(this->keystream[i + 21]);
+        this->keystream[i + 22] = get_sbox(this->keystream[i + 22]);
+        this->keystream[i + 23] = get_sbox(this->keystream[i + 23]);
 
-    *(this->keystream + 32) = get_sbox(*(this->keystream + 32));
-    *(this->keystream + 33) = get_sbox(*(this->keystream + 33));
-    *(this->keystream + 34) = get_sbox(*(this->keystream + 34));
-    *(this->keystream + 35) = get_sbox(*(this->keystream + 35));
-    *(this->keystream + 36) = get_sbox(*(this->keystream + 36));
-    *(this->keystream + 37) = get_sbox(*(this->keystream + 37));
-    *(this->keystream + 38) = get_sbox(*(this->keystream + 38));
-    *(this->keystream + 39) = get_sbox(*(this->keystream + 39));
-
-    *(this->keystream + 40) = get_sbox(*(this->keystream + 40));
-    *(this->keystream + 41) = get_sbox(*(this->keystream + 41));
-    *(this->keystream + 42) = get_sbox(*(this->keystream + 42));
-    *(this->keystream + 43) = get_sbox(*(this->keystream + 43));
-    *(this->keystream + 44) = get_sbox(*(this->keystream + 44));
-    *(this->keystream + 45) = get_sbox(*(this->keystream + 45));
-    *(this->keystream + 46) = get_sbox(*(this->keystream + 46));
-    *(this->keystream + 47) = get_sbox(*(this->keystream + 47));
-
-    *(this->keystream + 48) = get_sbox(*(this->keystream + 48));
-    *(this->keystream + 49) = get_sbox(*(this->keystream + 49));
-    *(this->keystream + 50) = get_sbox(*(this->keystream + 50));
-    *(this->keystream + 51) = get_sbox(*(this->keystream + 51));
-    *(this->keystream + 52) = get_sbox(*(this->keystream + 52));
-    *(this->keystream + 53) = get_sbox(*(this->keystream + 53));
-    *(this->keystream + 54) = get_sbox(*(this->keystream + 54));
-    *(this->keystream + 55) = get_sbox(*(this->keystream + 55));
-
-    *(this->keystream + 56) = get_sbox(*(this->keystream + 56));
-    *(this->keystream + 57) = get_sbox(*(this->keystream + 57));
-    *(this->keystream + 58) = get_sbox(*(this->keystream + 58));
-    *(this->keystream + 59) = get_sbox(*(this->keystream + 59));
-    *(this->keystream + 60) = get_sbox(*(this->keystream + 60));
-    *(this->keystream + 61) = get_sbox(*(this->keystream + 61));
-    *(this->keystream + 62) = get_sbox(*(this->keystream + 62));
-    *(this->keystream + 63) = get_sbox(*(this->keystream + 63));
+        this->keystream[i + 24] = get_sbox(this->keystream[i + 24]);
+        this->keystream[i + 25] = get_sbox(this->keystream[i + 25]);
+        this->keystream[i + 26] = get_sbox(this->keystream[i + 26]);
+        this->keystream[i + 27] = get_sbox(this->keystream[i + 27]);
+        this->keystream[i + 28] = get_sbox(this->keystream[i + 28]);
+        this->keystream[i + 29] = get_sbox(this->keystream[i + 29]);
+        this->keystream[i + 30] = get_sbox(this->keystream[i + 30]);
+        this->keystream[i + 31] = get_sbox(this->keystream[i + 31]);
+    }
 }
 
 inline void wuk::crypto::SSC::keystream_bits_swap()
 {
-    for (wU32 i = 0; i < WUK_SSC_KSLEN; i += WUK_SSC_KEYLEN) {
+    for (wU32 i = 0; i < WUK_SSC_KSLEN; i += (WUK_SSC_KSLEN >> 1)) {
         this->keystream[i]      = swap_4bits(this->keystream[i]);
         this->keystream[i + 1]  = swap_4bits(this->keystream[i + 1]);
         this->keystream[i + 2]  = swap_4bits(this->keystream[i + 2]);
@@ -200,7 +166,6 @@ inline void wuk::crypto::SSC::keystream_mixture()
     * | 0000000c | 0000000d | 0000000e | 0000000f|
     * |------------------------------------------|
     */
-
     // 向左循环4值混合
     this->state[0]  ^= this->state[15] ^ this->state[14] ^ this->state[13];
     this->state[1]  ^= this->state[12] ^ this->state[11] ^ this->state[10];
@@ -244,9 +209,8 @@ void wuk::crypto::SSC::keystream_update()
 }
 
 wuk::crypto::SSC::SSC(const wByte *key, const wByte *iv, const wuk::crypto::Counter counter)
-: counter(counter)
 {
-    /**
+    /*
     * Key stream structure:
     * 
     * \   0 1 2 3 4 5 6 7 8 9 a b c d e f
@@ -257,26 +221,25 @@ wuk::crypto::SSC::SSC(const wByte *key, const wByte *iv, const wuk::crypto::Coun
     * 2 | C C C C C C C C C C C C C C C C | (Counter  48 ~ 63)
     *   - - - - - - - - - - - - - - - - - -
     */
+    this->state = reinterpret_cast<wU32 *>(this->keystream);
+    this->keystream_init(key, iv, counter);
+}
+
+void wuk::crypto::SSC::keystream_init(const wByte *key, const wByte *iv, wuk::crypto::Counter counter)
+{
     if (!key || !iv) {
         throw wuk::Exception(wuk::Error::NPTR, "wuk::crypto::SSC::SSC",
             "key or iv is nullptr.");
     }
 
     wByte *keystream_ptr = this->keystream;
-
     memcpy(keystream_ptr, key, WUK_SSC_KEYLEN);
     keystream_ptr += WUK_SSC_KEYLEN;
-
     memcpy(keystream_ptr, iv, WUK_SSC_IVLEN);
     keystream_ptr += WUK_SSC_IVLEN;
-
     memcpy(keystream_ptr, ssc_constant, sizeof(ssc_constant));
     keystream_ptr += sizeof(ssc_constant);
-
-    memcpy(keystream_ptr, this->counter.get(), wuk::crypto::COUNTER_BLOCK_SIZE);
-    keystream_ptr += wuk::crypto::COUNTER_BLOCK_SIZE;
-
-    keystream_ptr = nullptr;
+    memcpy(keystream_ptr, counter.get(), wuk::crypto::COUNTER_BLOCK_SIZE);
 }
 
 void wuk::crypto::SSC::xcrypt(wByte *buffer, wSize length)
