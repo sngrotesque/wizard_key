@@ -7,6 +7,17 @@ import os
 
 output_folder  = '_compiled'
 c_cpp_filename = ['c', 'cc', 'cpp', 'cxx']
+color_table = {
+    'black':   '\x1b[90m',
+    'red':     '\x1b[91m',
+    'green':   '\x1b[92m',
+    'yellow':  '\x1b[93m',
+    'blue':    '\x1b[94m',
+    'magenta': '\x1b[95m',
+    'cyan':    '\x1b[96m',
+    'white':   '\x1b[97m',
+    'reset':   '\x1b[0m'
+}
 
 def create_output_filename(in_path :str):
     if not os.path.exists(in_path):
@@ -26,7 +37,7 @@ def create_output_filename(in_path :str):
     return output_fn, 'gcc' if extensions_filename == 'c' else 'g++'
 
 class compile:
-    def __init__(self, source_file_path :str, user_args :list):
+    def __init__(self, source_file_path :str, user_args :list, print_info :bool = True):
         if not os.path.exists(source_file_path):
             raise FileExistsError(f'\'{source_file_path}\' does not exists.')
 
@@ -36,13 +47,15 @@ class compile:
         self.output_path = None
         self.user_args = user_args
 
+        self.print_info = print_info
+
     def __run_command(self, cmd :str):
-        # return subprocess.call(cmd, shell=True)
         try:
             result = subprocess.run(cmd, shell = True, check = True)
             return result.returncode
         except subprocess.CalledProcessError as e:
-            logging.error(f'Command \'{cmd}\' failed with return code {e.returncode}')
+            if self.print_info:
+                logging.error(f'Command \'{cmd}\' failed with return code {e.returncode}')
             sys.exit(e.returncode)
 
     # 合并GCC参数
@@ -66,22 +79,25 @@ class compile:
         self.output_path = os.path.join(output_folder, output_filename)
         build_command = f'{compile_program} {self.source_path} {args} -o {self.output_path}'
 
-        logging.info(f'程序编译开始，完整指令为：{COLOR}{build_command}{RESET}')
+        if self.print_info:
+            logging.info(f'程序编译开始，完整指令为：{COLOR}{build_command}{RESET}')
+
         compile_err_code = self.__run_command(build_command)
         if compile_err_code:
             sys.exit(f'编译程序时出现了错误，返回的错误代码为：{compile_err_code}')
 
     def run(self):
-        logging.info(f'程序编译完成，程序路径为：{COLOR}{self.output_path}{RESET}')
+        if self.print_info:
+            logging.info(f'程序编译完成，程序路径为：{COLOR}{self.output_path}{RESET}')
         self.__run_command(self.output_path)
 
-def main():
+def main(print_info :bool = True):
     logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
     if len(sys.argv) < 2:
         sys.exit(f'Too few parameters: {COLOR}{sys.argv[0]}{RESET} {COLOR}[src_file, [parameter]]{RESET}')
 
-    comp = compile(sys.argv[1], sys.argv[2:])
+    comp = compile(sys.argv[1], sys.argv[2:], print_info)
 
     compile_params = (
         '-I wuk/includes',
@@ -116,27 +132,30 @@ def main():
     comp.build()
     stop = time.time()
 
-    logging.info(f'构建所用时间：{stop-start:.2f}秒。')
+    if print_info:
+        logging.info(f'构建所用时间：{stop-start:.2f}秒。')
 
     comp.run()
 
-if __name__ == '__main__':
-    color_table = {
-        'black':   '\x1b[90m',
-        'red':     '\x1b[91m',
-        'green':   '\x1b[92m',
-        'yellow':  '\x1b[93m',
-        'blue':    '\x1b[94m',
-        'magenta': '\x1b[95m',
-        'cyan':    '\x1b[96m',
-        'white':   '\x1b[97m',
-        'reset':   '\x1b[0m'
-    }
+# def remove_arg(arg_name):
+#     """
+#     从 sys.argv 中删除指定的参数及其值（如果存在）。
+#     :param arg_name: 要删除的参数名（如 "--input"）
+#     :return: 参数的值（如果存在），否则返回 None
+#     """
+#     if arg_name in sys.argv:
+#         index = sys.argv.index(arg_name)
+#         # 删除参数名
+#         sys.argv.pop(index)
+#         # 如果参数有值，删除值并返回
+#         if index < len(sys.argv) and not sys.argv[index].startswith("-"):
+#             return sys.argv.pop(index)
+#     return None
 
-    COLOR, RESET = '', color_table['reset']
-
-    if '--color' in sys.argv:
-        console_color_param = sys.argv.index('--color')
+def process_args(arg :str):
+    color_code = ''
+    if arg in sys.argv:
+        console_color_param = sys.argv.index(arg)
         console_color_use_default = False
         try:
             if sys.argv[console_color_param + 1].lower() not in color_table:
@@ -145,11 +164,16 @@ if __name__ == '__main__':
             console_color_use_default = True
 
         if console_color_use_default:
-            COLOR = color_table['cyan']
+            color_code = color_table['cyan']
         else:
-            COLOR = color_table[sys.argv[console_color_param + 1].lower()]
+            color_code = color_table[sys.argv[console_color_param + 1].lower()]
             sys.argv.pop(console_color_param)
 
         sys.argv.pop(console_color_param)
+    return color_code
 
-    main()
+if __name__ == '__main__':
+    COLOR, RESET = process_args('--color'), color_table['reset']
+
+    # main()
+    main(False)
