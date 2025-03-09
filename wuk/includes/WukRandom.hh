@@ -26,8 +26,8 @@ namespace wuk {
     public:
         wSize rand();
         wSize randint(wSize min, wSize max);
-        void urandom(wByte *buf, wSize size);
-        std::string urandom(wU32 size);
+        void urandom(wByte *buffer, wSize length);
+        std::string urandom(wU32 length);
     };
 }
 

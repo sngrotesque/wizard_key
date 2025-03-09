@@ -74,7 +74,7 @@ namespace wuk {
         void append(const std::string content);
 
         // 传入数字并序列化
-        // 比如传入2 (int)，得到 00 00 00 02 (Hex)
+        // 比如传入2 (uint32_t)，得到 00 00 00 02 (Hex)
         template <typename T>
         void append_number(T val);
 

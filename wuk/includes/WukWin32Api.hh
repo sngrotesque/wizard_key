@@ -9,11 +9,11 @@
 #include <Windows.h>
 
 namespace wuk {
-    class WinApi {
+    class LIBWUK_API WinApi {
     private:
         char err_msg[256];
         wuk::Error err_code;
-    
+
     private:
         void get_error() noexcept;
 
