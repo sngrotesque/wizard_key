@@ -9,14 +9,15 @@
 namespace wuk {
     class LIBWUK_API Base64 {
     private:
-        bool strict_mode;
+        bool strict_mode = false;
 
     private:
-        wSize get_encode_length(wSize length);
-        wSize get_decode_length(wSize length);
+        constexpr wSize get_encode_length(wSize length);
+        constexpr wSize get_decode_length(wSize length);
 
     public:
-        Base64(bool strict_mode = false);
+        Base64() = default;
+        Base64(bool strict_mode);
 
     public:
         char *encode(const wByte *buffer, wSize &length);

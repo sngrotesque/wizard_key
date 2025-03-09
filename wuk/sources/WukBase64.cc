@@ -25,20 +25,19 @@ constexpr wByte b64de_table[256] = {
     255,255,255,255, 255,255,255,255, 255,255,255,255, 255,255,255,255};
 
 // Encoding, definition
-wSize wuk::Base64::get_encode_length(wSize length)
+constexpr wSize wuk::Base64::get_encode_length(wSize length)
 {
     return (length % 3) ? (length / 3 + 1) * 4 : (length / 3 * 4);
 }
 
 // Decoding, definition
-wSize wuk::Base64::get_decode_length(wSize length)
+constexpr wSize wuk::Base64::get_decode_length(wSize length)
 {
     // 此处+3的目的是为了不让缓冲区过小
     return (length + 3) / 4 * 3;
 }
 
-wuk::Base64::Base64(bool strict_mode)
-: strict_mode(strict_mode)
+wuk::Base64::Base64(bool strict_mode) : strict_mode(strict_mode)
 {
 
 }
@@ -69,7 +68,8 @@ char *wuk::Base64::encode(const wByte *buffer, wSize &length)
     switch(length % 3) {
         case 1:
             result[dst_index - 2] = BASE64PAD;
-            [[fallthrough]]; // 感到困惑请参考：https://zh.cppreference.com/w/cpp/language/attributes
+            // 感到困惑请参考：https://zh.cppreference.com/w/cpp/language/attributes
+            [[fallthrough]];
         case 2:
             result[dst_index - 1] = BASE64PAD;
     }

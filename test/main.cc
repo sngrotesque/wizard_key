@@ -2,7 +2,8 @@
 #include <config/WukConfig.hh>
 
 #include <network/WukSocket.cc>
-#include <network/WukPacket.cc>
+#include <network/WukIPEndPoint.cc>
+#include <network/WukSocketOptions.cc>
 
 #include <crypto/WukFEA.cc>
 #include <crypto/WukFEA_ECB.cc>
@@ -140,9 +141,48 @@ void test()
     }
 }
 
+void base64_binascii_test()
+{
+    wuk::Time timer;
+    wuk::Base64 base64;
+    wuk::Binascii binascii;
+    double time_start, time_stop;
+    wSize length = 1024*1024*1024;
+    wByte *buffer = nullptr;
+    char *result = nullptr;
+
+    buffer = wuk::m_alloc<wByte *>(length);
+    wuk::memory_zero(buffer, length);
+
+    time_start = timer.time();
+    result = base64.encode(buffer, length);
+    time_stop = timer.time();
+    wuk::m_free(buffer);
+    cout << "base64 encode, Timer taken: " << fixed << setprecision(4) << (time_stop-time_start) << endl;
+
+    time_start = timer.time();
+    buffer = base64.decode(result, length);
+    time_stop = timer.time();
+    wuk::m_free(result);
+    cout << "base64 decode, Timer taken: " << fixed << setprecision(4) << (time_stop-time_start) << endl;
+
+    time_start = timer.time();
+    result = binascii.b2a_hex(buffer, length);
+    time_stop = timer.time();
+    wuk::m_free(buffer);
+    cout << "binascii b2a_hex, Timer taken: " << fixed << setprecision(4) << (time_stop-time_start) << endl;
+
+    time_start = timer.time();
+    buffer = binascii.a2b_hex(result, length);
+    time_stop = timer.time();
+    wuk::m_free(result);
+    cout << "binascii a2b_hex, Timer taken: " << fixed << setprecision(4) << (time_stop-time_start) << endl;
+    wuk::m_free(buffer);
+}
+
 int main()
 {
-    test();
+    base64_binascii_test();
 
     return 0;
 }

@@ -8,8 +8,8 @@
 namespace wuk {
     class LIBWUK_API Binascii {
     private:
-        wByte to_top(wByte c);
-        wByte to_bot(wByte c);
+        constexpr wByte to_top(wByte c);
+        constexpr wByte to_bot(wByte c);
 
     public:
         Binascii() = default;

@@ -175,5 +175,5 @@ def process_args(arg :str):
 if __name__ == '__main__':
     COLOR, RESET = process_args('--color'), color_table['reset']
 
-    # main()
-    main(False)
+    main()
+    # main(False)

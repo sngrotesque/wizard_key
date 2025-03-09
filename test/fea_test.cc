@@ -174,16 +174,26 @@ void speed_test(wSize length)
     wByte key[32]{}, iv[16]{};
     wuk::crypto::FEA fea(key, iv);
     wuk::Time timer;
-    
+    double start_time;
+    double stop_time;
+
     wByte *content = wuk::m_alloc<wByte *>(length);
+    if (!content) {
+        throw wuk::Exception(wuk::Error::MEMORY, "speed_test",
+            "content malloc error.");
+    }
 
-    auto start_time = timer.time();
+    start_time = timer.time();
     fea.encrypt(content, length, wuk::crypto::mode::CTR);
-    auto stop_time = timer.time();
+    stop_time = timer.time();
 
-    printf("ciphertext[0]: %02x\n", content[0]);
+    printf("Encryption time taken: %.4lf\n", (stop_time-start_time));
 
-    printf("Timer: %.4lf\n", (stop_time-start_time));
+    start_time = timer.time();
+    fea.decrypt(content, length, wuk::crypto::mode::CTR);
+    stop_time = timer.time();
+
+    printf("Decryption time taken: %.4lf\n", (stop_time-start_time));
 
     wuk::m_free(content);
 }
@@ -246,8 +256,8 @@ void test2()
 int main()
 {
     try {
-        // speed_test(1024 * 1024 * 1024);
-        test1();
+        speed_test(1024 * 1024 * 1024);
+        // test1();
     } catch (wuk::Exception &e) {
         std::cout << e.what() << std::endl;
     }

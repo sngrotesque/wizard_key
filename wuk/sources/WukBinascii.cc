@@ -18,12 +18,12 @@ static const wByte hexTable[256] = {
     31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31,
     31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31};
 
-wByte wuk::Binascii::to_top(wByte c)
+constexpr wByte wuk::Binascii::to_top(wByte c)
 {
     return ((c >> 4) < 0xa) ? ((c >> 4) + 0x30) : ((c >> 4) + 0x57);
 }
 
-wByte wuk::Binascii::to_bot(wByte c)
+constexpr wByte wuk::Binascii::to_bot(wByte c)
 {
     return ((c & 0xf) < 0xa) ? ((c & 0xf) + 0x30) : ((c & 0xf) + 0x57);
 }
