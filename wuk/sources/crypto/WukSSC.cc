@@ -188,9 +188,9 @@ inline void wuk::crypto::SSC::keystream_mixture()
     this->state[2]  += move_bits_left(this->state[7], 17);
     this->state[7]  += this->state[8];
 
-    this->state[12] += move_bits_left(this->state[1], 19);
-    this->state[1]  += move_bits_left(this->state[6], 20);
-    this->state[6]  += move_bits_left(this->state[11], 21);
+    this->state[12] += move_bits_left(this->state[1], 18);
+    this->state[1]  += move_bits_left(this->state[6], 19);
+    this->state[6]  += move_bits_left(this->state[11], 20);
     this->state[11] += this->state[12];
 }
 

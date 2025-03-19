@@ -8,17 +8,24 @@
 #include <malloc.h>
 
 namespace wuk {
-    LIBWUK_API void memory_zero(void *p, wSize n)
+    LIBWUK_API void memory_zero(void *buffer, wSize length)
     {
-        memset(p, 0x00, n);
+        memset(buffer, 0x00, length);
     }
 
-    LIBWUK_API void memory_secure(void *p, wSize n)
+    LIBWUK_API void memory_secure(void *buffer, wSize length)
     {
 #       if defined(WUK_PLATFORM_WINOS)
-        SecureZeroMemory(p, n);
+        SecureZeroMemory(buffer, length);
 #       elif defined(WUK_PLATFORM_LINUX)
-        explicit_bzero(p, n);
+#       ifdef WUK_PLATFORM_ANDROID
+        volatile char *ptr = buffer;
+        do {
+            *ptr++ = 0;
+        } while (--Length);
+#       else
+        explicit_bzero(buffer, length);
+#       endif
 #       endif
     }
 
@@ -35,7 +42,7 @@ namespace wuk {
     }
 
     template <typename T>
-    LIBWUK_API T m_calloc(wSize length)
+    LIBWUK_API T m_calloc(wSize length) noexcept
     {
         return static_cast<T>(calloc(sizeof(T), length));
     }

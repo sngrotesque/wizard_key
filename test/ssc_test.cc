@@ -144,8 +144,8 @@ int main()
     wuk::crypto::Counter root_counter("helloworld", 1);
 
     test1(root_key, root_iv, root_counter);
-    keystream_chack(key_left, iv_left, counter_left, key_right, iv_right, counter_right, 3);
-    speed_test(1024 * 1024 * 1024, root_key, root_iv, root_counter);
+    keystream_chack(key_left, iv_left, counter_left, key_right, iv_right, counter_right, 5);
+    // speed_test(1024 * 1024 * 1024, root_key, root_iv, root_counter);
     // encrypt_file("", "", root_key, root_iv, root_counter);
 
     return 0;

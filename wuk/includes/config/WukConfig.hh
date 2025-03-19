@@ -40,10 +40,10 @@
 #   define WUK_SUPPORT true
 #elif defined(__linux) || defined(__gnu_linux__) || defined(__linux__) // Linux
 #   define WUK_PLATFORM_LINUX
+#   if defined(__ANDROID__) // Android，此处主要用于支持安卓终端模拟（如Termux）用户。
+#       define WUK_PLATFORM_ANDROID
+#   endif
 #   define WUK_SUPPORT true
-#elif defined(__ANDROID__) // Android
-#   define WUK_PLATFORM_ANDROID
-#   define WUK_SUPPORT false
 #elif defined(macintosh) || defined(Macintosh) || defined(__APPLE__) || \
     defined(__MACH__) // Mac OS
 #   define WUK_PLATFORM_MACOS
