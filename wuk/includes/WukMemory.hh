@@ -22,7 +22,7 @@ namespace wuk {
         volatile char *ptr = buffer;
         do {
             *ptr++ = 0;
-        } while (--Length);
+        } while (--length);
 #       else
         explicit_bzero(buffer, length);
 #       endif

@@ -15,14 +15,14 @@
 namespace wuk {
     class LIBWUK_API Buffer {
     private:
-        wByte *data;
+        wByte *data = nullptr;
 
         // 在当前已申请空间的情况下写入数据时使用（指向数据末端用于追加写入）
         // 可以简单理解为这个指针指向的位置永远必须是`data + data_len`。
-        wByte *data_offset;
+        wByte *data_offset = nullptr;
 
-        wSize data_len;     // 代表实际使用长度
-        wSize data_size;    // 代表已申请的内存空间长度
+        wSize data_len  = 0; // 代表实际使用长度
+        wSize data_size = 0; // 代表已申请的内存空间长度
 
         // 用于增加可用内存大小
         void expand_memory(wSize length);
@@ -33,13 +33,13 @@ namespace wuk {
 
     public:
         // 构造函数
-        Buffer();
+        Buffer() = default;
         Buffer(const wuk::Buffer &other);
         Buffer(wuk::Buffer &&other) noexcept;
         // 给予数据的构造函数
         Buffer(const wByte *content, wSize length);
         // 申请指定大小内存空间备用的构造函数
-        Buffer(wSize memory_size);
+        explicit Buffer(wSize memory_size);
         // 兼容std::string
         Buffer(const std::string &content);
 

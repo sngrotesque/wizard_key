@@ -79,14 +79,8 @@ bool wuk::Buffer::is_memory_sufficient(wSize length)
 }
 
 //////////////////////////////////////////////////////////////////////
-wuk::Buffer::Buffer()
-: data(nullptr), data_offset(nullptr), data_len(), data_size()
-{
-    
-}
-
 wuk::Buffer::Buffer(const wuk::Buffer &other)
-: data(nullptr), data_offset(nullptr), data_len(other.data_len), data_size(other.data_size)
+: data_len(other.data_len), data_size(other.data_size)
 {
     wSize offset_val = other.data_offset - other.data;
 
@@ -101,7 +95,7 @@ wuk::Buffer::Buffer(const wuk::Buffer &other)
 }
 
 wuk::Buffer::Buffer(wuk::Buffer &&other) noexcept
-: data(nullptr), data_offset(nullptr), data_len(other.data_len), data_size(other.data_size)
+: data_len(other.data_len), data_size(other.data_size)
 {
     this->data = other.data;
     this->data_offset = other.data_offset;
@@ -111,7 +105,7 @@ wuk::Buffer::Buffer(wuk::Buffer &&other) noexcept
 }
 
 wuk::Buffer::Buffer(const wByte *content, wSize length)
-: data(nullptr), data_offset(nullptr), data_len(length), data_size(length)
+: data_len(length), data_size(length)
 {
     if (!content) {
         throw wuk::Exception(wuk::Error::NPTR, "wuk::Buffer::Buffer",
@@ -129,7 +123,7 @@ wuk::Buffer::Buffer(const wByte *content, wSize length)
 }
 
 wuk::Buffer::Buffer(wSize memory_size)
-: data(nullptr), data_offset(nullptr), data_len(), data_size(memory_size)
+: data_len(), data_size(memory_size)
 {
     this->data = wuk::m_alloc<wByte *>(this->data_size);
     if (!this->data) {

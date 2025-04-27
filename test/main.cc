@@ -180,9 +180,21 @@ void base64_binascii_test()
     wuk::m_free(buffer);
 }
 
+void binascii_test()
+{
+    wuk::Binascii binascii;
+
+    string res = binascii.a2b_hex("41424344FFFFCCDEFA");
+    
+    wByte *buffer = (wByte *)res.c_str();
+    wSize length = res.size();
+
+    wuk::misc::print_hex(buffer, length, 16, true, false);
+}
+
 int main()
 {
-    base64_binascii_test();
+    binascii_test();
 
     return 0;
 }

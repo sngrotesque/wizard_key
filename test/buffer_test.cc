@@ -133,10 +133,17 @@ void method_7()
     wuk::misc::print_hex(buffer.get_data(), buffer.get_length(), 16, true, false);
 }
 
+void method_8()
+{
+    wuk::Buffer a(10);
+
+    cout << a.get_size() << endl;
+}
+
 int main()
 {
     try {
-        method_7();
+        method_8();
     } catch (wuk::Exception &e) {
         cout << e.what() << endl;
     }

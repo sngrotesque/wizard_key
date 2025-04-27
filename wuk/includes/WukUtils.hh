@@ -4,12 +4,13 @@
 #if WUK_SUPPORT
 #include <config/WukException.hh>
 #include <WukMemory.hh>
-
-#include <zlib.h>
-#include <lzma.h>
+#include <WukRandom.hh>
 
 namespace wuk {
-    w_u32 wuk_zlib_crc32(w_u32 crc, w_byte *buffer, w_ulong length);
+    class Utils {
+    public:
+        void secure_delete_file(const std::string &path, wU32 passes = 3);
+    };
 }
 
 #endif

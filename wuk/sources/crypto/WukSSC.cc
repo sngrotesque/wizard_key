@@ -173,24 +173,24 @@ inline void wuk::crypto::SSC::keystream_mixture()
     this->state[3]  ^= this->state[6]  ^ this->state[5]  ^ this->state[4];
 
     // 斜角混合
-    this->state[0]  += move_bits_left(this->state[5], 7);
-    this->state[5]  += move_bits_left(this->state[10], 9);
-    this->state[10] += move_bits_left(this->state[15], 10);
+    this->state[0]  += move_bits_left(this->state[5], 3);
+    this->state[5]  += move_bits_left(this->state[10], 5);
+    this->state[10] += move_bits_left(this->state[15], 7);
     this->state[15] += this->state[0];
 
     this->state[4]  += move_bits_left(this->state[9], 11);
-    this->state[9]  += move_bits_left(this->state[14], 12);
-    this->state[14] += move_bits_left(this->state[3], 13);
+    this->state[9]  += move_bits_left(this->state[14], 13);
+    this->state[14] += move_bits_left(this->state[3], 17);
     this->state[3]  += this->state[4];
 
-    this->state[8]  += move_bits_left(this->state[13], 14);
-    this->state[13] += move_bits_left(this->state[2], 15);
-    this->state[2]  += move_bits_left(this->state[7], 17);
+    this->state[8]  += move_bits_left(this->state[13], 19);
+    this->state[13] += move_bits_left(this->state[2], 23);
+    this->state[2]  += move_bits_left(this->state[7], 27);
     this->state[7]  += this->state[8];
 
-    this->state[12] += move_bits_left(this->state[1], 18);
-    this->state[1]  += move_bits_left(this->state[6], 19);
-    this->state[6]  += move_bits_left(this->state[11], 20);
+    this->state[12] += move_bits_left(this->state[1], 29);
+    this->state[1]  += move_bits_left(this->state[6], 31);
+    this->state[6]  += move_bits_left(this->state[11], 1);
     this->state[11] += this->state[12];
 }
 
@@ -200,7 +200,7 @@ void wuk::crypto::SSC::keystream_update()
     this->keystream_sub_bytes();
 
     // 密钥流混合
-    for (wU32 r = 0; r < 8; ++r) {
+    for (wU32 r = 0; r < 9; ++r) {
         this->keystream_mixture();
     }
 
