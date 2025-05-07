@@ -16,15 +16,10 @@ namespace wuk {
         class LIBWUK_API SSC {
         private:
             wByte keystream[WUK_SSC_KSLEN]{}; // 密钥流
-            wU32 *state = nullptr;            // 密钥流状态
-
-        private:
-            void keystream_sub_bytes();       // 字节置换
-            void keystream_bits_swap();       // 位交换
-            void keystream_mixture();         // 密钥混合
+            wU32 *state = reinterpret_cast<wU32 *>(keystream); // 密钥流状态
 
         public: // temporary public
-            void keystream_update();          // 密钥流更新
+            inline void keystream_update() noexcept;          // 密钥流更新
 
         public:
             SSC() = default;

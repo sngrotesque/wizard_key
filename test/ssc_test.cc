@@ -155,14 +155,14 @@ void some_encryption_test()
 
     wByte *result = nullptr;
     char __content[] = {
-        // "我草泥马"
+        "1234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
-        "RStqI6gSBrz3jSKX"
+        // "RStqI6gSBrz3jSKX"
     };
     wByte *buffer = reinterpret_cast<wByte *>(__content);
     wSize length = strlen(__content);
- 
-    if (0) {
+
+    if (1) {
         ssc.xcrypt(buffer, length);
         std::cout << "result(Hex):" << std::endl;
         wuk::misc::print_hex(buffer, length, 32, true, true);
@@ -186,24 +186,24 @@ int main()
     // const wByte *iv_right              = (const wByte *)"abcdef0123456789";
     // wuk::crypto::Counter counter_right = {"sngrotesquE", 776};
 
-    // char null_array[32]{};
-    // const wByte *key_left = (const wByte *)null_array;
-    // const wByte *iv_left = (const wByte *)null_array;
-    // wuk::crypto::Counter counter_left = {{null_array, 12}, 0x1000};
-    // const wByte *key_right = (const wByte *)null_array;
-    // const wByte *iv_right = (const wByte *)null_array;
-    // wuk::crypto::Counter counter_right = {{null_array, 12}, 0x1001};
+    char null_array[32]{};
+    const wByte *key_left = (const wByte *)null_array;
+    const wByte *iv_left = (const wByte *)null_array;
+    wuk::crypto::Counter counter_left = {{null_array, 12}, 0x0000};
+    const wByte *key_right = (const wByte *)null_array;
+    const wByte *iv_right = (const wByte *)null_array;
+    wuk::crypto::Counter counter_right = {{null_array, 12}, 0x0001};
 
-    // const wByte *root_key = (const wByte *)"sngrotesque0123456789abcdef.-+=~";
-    // const wByte *root_iv = (const wByte *)"abcdef0123456789";
-    // wuk::crypto::Counter root_counter("helloworld", 1);
+    const wByte *root_key = (const wByte *)"sngrotesque0123456789abcdef.-+=~";
+    const wByte *root_iv = (const wByte *)"abcdef0123456789";
+    wuk::crypto::Counter root_counter("helloworld", 1);
 
     try {
         // test1(root_key, root_iv, root_counter);
-        // keystream_chack(key_left, iv_left, counter_left, key_right, iv_right, counter_right, 5);
-        // speed_test(1024 * 1024 * 1024, root_key, root_iv, root_counter);
+        keystream_chack(key_left, iv_left, counter_left, key_right, iv_right, counter_right, 3);
+        speed_test(1024 * 1024 * 1024, root_key, root_iv, root_counter);
         // encrypt_file("F:/Pitchers/sn-cosplay/image.bin", "F:/Pitchers/sn-cosplay/image.encrypted.bin", root_key, root_iv, root_counter);
-        some_encryption_test();
+        // some_encryption_test();
     } catch (wuk::Exception &e) {
         std::cout << "Error: " << e.what() << std::endl;
     }
