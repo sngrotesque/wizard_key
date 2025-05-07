@@ -7,15 +7,6 @@
 
 #include <crypto/WukUtils.hh>
 
-// #define WUK_FEA_NB 4
-// #define WUK_FEA_NK 4
-// #define WUK_FEA_NR 4
-
-// #define WUK_FEA_BL 16 // WUK FEA Block length
-
-// #define WUK_FEA_KEYLEN 32
-// #define WUK_FEA_IVLEN  16
-
 namespace wuk {
     namespace crypto {
         constexpr wU32 WUK_FEA_KEYLEN = 32;

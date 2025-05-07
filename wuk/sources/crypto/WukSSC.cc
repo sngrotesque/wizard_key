@@ -101,12 +101,12 @@ static inline void keystream_mixture(wU32 *state) noexcept
 
     state[8]  += move_bits_left(state[13], 19);
     state[13] += move_bits_left(state[2], 23);
-    state[2]  += move_bits_left(state[7], 27);
+    state[2]  += move_bits_left(state[7], 29);
     state[7]  += state[8];
 
-    state[12] += move_bits_left(state[1], 29);
-    state[1]  += move_bits_left(state[6], 31);
-    state[6]  += move_bits_left(state[11], 1);
+    state[12] += move_bits_left(state[1], 31);
+    state[1]  += move_bits_left(state[6],  1);
+    state[6]  += move_bits_left(state[11], 2);
     state[11] += state[12];
 }
 
