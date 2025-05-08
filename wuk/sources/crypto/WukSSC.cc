@@ -40,7 +40,6 @@ static inline void keystream_sub_bytes(wByte *keystream) noexcept
 }
 */
 
-/*
 static inline uint8_t swap_4bits(uint8_t x) noexcept
 {
     return ((x << 4) & 0xf0U) | (x >> 4);
@@ -59,7 +58,6 @@ static inline void keystream_bits_swap(wByte *keystream) noexcept
         keystream[i + 7]  = swap_4bits(keystream[i + 7]);
     }
 }
-*/
 
 /////////////////////////////////////////////////////////
 
@@ -118,9 +116,11 @@ void wuk::crypto::SSC::keystream_update() noexcept
     keystream_mixture(this->state);
     keystream_mixture(this->state);
 
-    // 密钥流混合
     keystream_mixture(this->state);
     keystream_mixture(this->state);
+
+    keystream_bits_swap(this->keystream);
+
     keystream_mixture(this->state);
     keystream_mixture(this->state);
 }
