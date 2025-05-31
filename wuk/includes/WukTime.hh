@@ -19,7 +19,13 @@ namespace wuk {
     
     public:
         void sleep(double delay);
-        double time();
+        
+        static double time()
+        {
+            auto now = std::chrono::system_clock::now();
+            auto duration = now.time_since_epoch();
+            return std::chrono::duration<double>(duration).count();
+        }
     };
 }
 

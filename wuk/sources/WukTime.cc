@@ -9,9 +9,3 @@ void wuk::Time::sleep(double delay)
 #   endif
 }
 
-double wuk::Time::time()
-{
-    auto now = std::chrono::system_clock::now();
-    auto duration = now.time_since_epoch();
-    return std::chrono::duration<double>(duration).count();
-}

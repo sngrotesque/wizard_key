@@ -11,6 +11,7 @@ namespace wuk {
             wByte key[32];
             wByte nonce[12];
 
+        public:
             wU32 state[16];
             wU32 counter;
         public:

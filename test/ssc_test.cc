@@ -140,20 +140,22 @@ void some_encryption_test()
     // wuk::misc::print_box(counter.get(), 16, 16, true);
 
     wByte key[32] = {
-        0xe4, 0xdb, 0x7e, 0x14, 0x89, 0xbc, 0x0c, 0x94, 0xdc, 0xd3, 0xb9, 0xc8, 0x81, 0x46, 0xcb, 0xdf,
-        0xd3, 0x84, 0x72, 0x98, 0xe8, 0xc0, 0xce, 0xd2, 0x03, 0xb6, 0xf5, 0x24, 0xf4, 0x22, 0x96, 0xf6
-    };
-    wByte    iv[16] = {0x4d, 0xaf, 0xbc, 0x86, 0xd9, 0x71, 0x60, 0xe3};
-    wByte nonce[12] = {0xa3, 0xcb, 0x72, 0x41, 0xf3, 0x90, 0x92, 0xbe, 0x0e, 0xaf, 0xce, 0x01};
-    wuk::crypto::Counter counter(nonce, sizeof(nonce), 0x02);
+        0xe5, 0xdb, 0x7e, 0x14, 0x89, 0xbc, 0x0c, 0x94,
+        0xdc, 0xd3, 0xb9, 0xc8, 0x81, 0x46, 0xcb, 0xdf,
+        0xd3, 0x84, 0x72, 0x98, 0xe8, 0xc0, 0xce, 0xd2,
+        0x03, 0xb6, 0xf5, 0x24, 0xf4, 0x22, 0x96, 0xf6};
+    wByte    iv[16] = {0x4f, 0xaf, 0xbc, 0x86, 0xd9, 0x71, 0x60, 0xe3};
+    wByte nonce[12] = {0xa4, 0xcb, 0x72, 0x41, 0xf3, 0x90, 0x92, 0xbe, 0x0e, 0xaf, 0xce, 0x01};
+    wuk::crypto::Counter counter(nonce, sizeof(nonce), 0x00);
     wuk::crypto::SSC ssc(key, iv, counter);
     wuk::Base64 base64;
 
     wByte *result = nullptr;
     char __content[] = {
-        "煮波，你怎么了"
+        "This is a test content for WukSSC stream cipher encryption. "
+        "It should be encrypted and then printed in hexadecimal format."
 
-        // "RStqI6gSBrz3jSKX"
+        // ""
     };
     wByte *buffer = reinterpret_cast<wByte *>(__content);
     wSize length = strlen(__content);
@@ -173,6 +175,39 @@ void some_encryption_test()
     }
 }
 
+void some_test()
+{
+    wByte key[32]{};
+    wByte iv[8]{};
+    wByte nonce[12]{};
+    wU32 count = 0x12345678;
+
+    wByte temp[64]{}; wByte *tp = temp;
+    for (wU32 i = 0; i < 64; temp[i] = i, i++);
+    // temp[0]++;
+
+    memcpy(key,   tp, 32); tp += 32;
+    memcpy(iv,    tp, 8);  tp += 8;
+    memcpy(nonce, tp, 12);
+
+    wuk::crypto::Counter counter(nonce, sizeof nonce, count);
+
+    wuk::crypto::SSC sdse(key, iv, counter);
+
+    // char __content[] = {"Hello, World! This is a test of the SDSE encryption."};
+    // wByte *buffer = reinterpret_cast<wByte *>(__content);
+    // wSize length = sizeof(__content) - 1; // Exclude null terminator
+
+    constexpr wSize length = 128;
+    wByte buffer[length]{};
+
+    sdse.xcrypt(buffer, length);
+
+    // Output the encrypted content
+    std::cout << "Encrypted content:\n";
+    wuk::misc::print_hex(buffer, length, 32, true, true);
+}
+
 int main()
 {
     // const wByte *key_left              = (const wByte *)"abcdef0123456789abcdef0123456789";
@@ -182,12 +217,12 @@ int main()
     // const wByte *iv_right              = (const wByte *)"abcdef0123456789";
     // wuk::crypto::Counter counter_right = {"sngrotesquE", 776};
 
-    const wByte key_left[32]{1};
-    const wByte iv_left[8]{0};
-    wuk::crypto::Counter counter_left = {"sngrotesque", 0x1001};
-    const wByte key_right[32]{73};
-    const wByte iv_right[8]{10};
-    wuk::crypto::Counter counter_right = {"Sngrotesque", 0x1000};
+    // const wByte key_left[32]{};
+    // const wByte iv_left[8]{0};
+    // wuk::crypto::Counter counter_left = {"", 0x01};
+    // const wByte key_right[32]{};
+    // const wByte iv_right[8]{};
+    // wuk::crypto::Counter counter_right = {"", 0x00};
 
     // const wByte *root_key = (const wByte *)"sngrotesque0123456789abcdef.-+=~";
     // const wByte *root_iv = (const wByte *)"abcdef0123456789";
@@ -195,10 +230,11 @@ int main()
 
     try {
         // test1(root_key, root_iv, root_counter);
-        keystream_chack(key_left, iv_left, counter_left, key_right, iv_right, counter_right, 7);
-        // speed_test(1024 * 1024 * 1024, root_key, root_iv, root_counter);
+        // keystream_chack(key_left, iv_left, counter_left, key_right, iv_right, counter_right, 7);
+        // speed_test(1024ULL * 1024 * 1024, root_key, root_iv, root_counter);
         // encrypt_file("F:/Pitchers/sn-cosplay/image.bin", "F:/Pitchers/sn-cosplay/image.encrypted.bin", root_key, root_iv, root_counter);
         // some_encryption_test();
+        some_test();
     } catch (wuk::Exception &e) {
         std::cout << "Error: " << e.what() << std::endl;
     }

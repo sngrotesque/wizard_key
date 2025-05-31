@@ -60,10 +60,38 @@ void speed_test(size_t length)
     delete[] buffer;
 }
 
+void keystream_test(wU32 count)
+{
+    const wByte *cc20kl = (wByte *)"abcdef0123456789abcdef0123456789";
+    const wByte *cc20nl = (wByte *)"abcdef012345";
+    const wU32   cc20cl = 1535;
+
+    const wByte *cc20kr = (wByte *)"bbcdef0123456789abcdef0123456789";
+    const wByte *cc20nr = (wByte *)"abcdef012345";
+    const wU32   cc20cr = 1535;
+
+    wuk::crypto::ChaCha20 cc20l(cc20kl, cc20nl, cc20cl);
+    wuk::crypto::ChaCha20 cc20r(cc20kr, cc20nr, cc20cr);
+
+    cc20l.init();
+    cc20r.init();
+
+    wByte data[4]{};
+    for (wU32 c = 0; c < count; ++c) {
+        std::cout << "Keystream test, count: " << c + 1 << ".\n";
+        wuk::misc::print_diff_hex((uint8_t *)cc20l.state, (uint8_t *)cc20r.state,
+                                  sizeof(cc20l.state), sizeof(cc20r.state), 16, true);
+
+        cc20r.xcrypt(data, sizeof data);
+        cc20l.xcrypt(data, sizeof data);
+    }
+}
+
 int main()
 {
-    chacha20_test();
+    // chacha20_test();
     // speed_test(1024 * pow(1024, 2));
+    keystream_test(4);
 
     return 0;
 }

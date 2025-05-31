@@ -8,10 +8,44 @@
 #include <string>
 
 /**
+ * https://blog.kowalczyk.info/article/j/guide-to-predefined-macros-in-c-compilers-gcc-clang-msvc-etc..html
+ * https://dev.to/tenry/predefined-c-c-macros-43id
+ * Visual Studio       _MSC_VER
+ * gcc                 __GNUC__
+ * clang               __clang__
+ * llvm                __llvm__
+ * MinGW 32            __MINGW32__
+ * MinGW-w64 32bit     __MINGW32__
+ * MinGW-w64 64bit     __MINGW64__
+ * 
+ * 对于Clang
+ * https://releases.llvm.org/11.0.0/tools/clang/docs/UsersManual.html
+ * https://clang.llvm.org/docs/ClangCommandLineReference.html
+ * https://www.bookstack.cn/read/clang-llvm/get_started.md
+ */
+#if defined(_MSC_VER)
+#   define WUK_COMPILER_MSVC
+#elif defined(__MINGW32__) || defined(__MINGW64__)
+#   define WUK_COMPILER_MINGW
+#elif defined(__GNUC__)
+#   define WUK_COMPILER_GCC
+#elif defined(__clang__)
+#   define WUK_COMPILER_CLANG
+#   ifndef WUK_NO_COMPILER_ERROR
+#       warning "This library is using Clang compiler for testing, please be careful."
+#   endif
+#else
+#   define WUK_COMPILER_UNKNOWN
+#   ifndef WUK_NO_COMPILER_ERROR
+#       error "Unknown compiler, unsure if this library supports it, please be careful."
+#   endif
+#endif
+
+/**
  * 在Visual Studio中，C++已经集成了bool类型，不需要使用此头文件了。
  * https://learn.microsoft.com/zh-cn/cpp/cpp/bool-cpp?view=msvc-170
  */
-#ifndef _MSC_VER
+#if WUK_COMPILER_MSVC
 #   include <cstdbool>  // 标准布尔值库
 #endif
 
@@ -34,7 +68,6 @@
  * 关于Linux平台（主要为GNU环境，可能不包括Clang）
  * https://gcc.gnu.org/onlinedocs/cpp/Common-Predefined-Macros.html
  */
-
 #if defined(_WIN32) || defined(_WIN64) // Microsoft Windows
 #   define WUK_PLATFORM_WINOS
 #   define WUK_SUPPORT true
@@ -48,30 +81,6 @@
     defined(__MACH__) // Mac OS
 #   define WUK_PLATFORM_MACOS
 #   define WUK_SUPPORT false
-#endif
-
-/**
- * https://blog.kowalczyk.info/article/j/guide-to-predefined-macros-in-c-compilers-gcc-clang-msvc-etc..html
- * https://dev.to/tenry/predefined-c-c-macros-43id
- * Visual Studio       _MSC_VER
- * gcc                 __GNUC__
- * clang               __clang__
- * llvm                __llvm__
- * MinGW 32            __MINGW32__
- * MinGW-w64 32bit     __MINGW32__
- * MinGW-w64 64bit     __MINGW64__
- * 
- * 对于Clang
- * https://releases.llvm.org/11.0.0/tools/clang/docs/UsersManual.html
- * https://clang.llvm.org/docs/ClangCommandLineReference.html
- * https://www.bookstack.cn/read/clang-llvm/get_started.md
- */
-#if defined(_MSC_VER) || defined(__MINGW32__) || defined(__MINGW64__)
-#elif defined(__GNUC__)
-#else
-#   ifndef WUK_NO_COMPILER_WARNING
-#       warning "This library is not using this compiler for testing, please be careful."
-#   endif
 #endif
 
 // 检查是否被支持

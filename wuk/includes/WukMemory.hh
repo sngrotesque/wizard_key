@@ -19,7 +19,7 @@ namespace wuk {
         SecureZeroMemory(buffer, length);
 #       elif defined(WUK_PLATFORM_LINUX)
 #       ifdef WUK_PLATFORM_ANDROID
-        volatile char *ptr = buffer;
+        volatile char *ptr = (volatile char *)buffer;
         do {
             *ptr++ = 0;
         } while (--length);
