@@ -81,7 +81,7 @@ void test()
 
 int main()
 {
-    // speed_test();
+    speed_test();
     test();
 
     return 0;

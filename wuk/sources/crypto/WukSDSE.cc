@@ -1,11 +1,9 @@
 #include <crypto/WukSDSE.hh>
 
-#if defined(WUK_COMPILER_GCC) || defined(WUK_COMPILER_CLANG)
-#define ROTL32(x, n) __builtin_rotateleft32(x, n)
-#elif defined(WUK_COMPILER_MSVC)
-#define ROTL32(x, n) _rotl(x, n)
+#ifdef WUK_COMPILER_MSVC
+#   define ROTL32(x, n) _rotl(x, n)
 #else
-#define ROTL32(x, n) (((x) << (n)) | ((x) >> (32 - (n))))
+#   define ROTL32(x, n) (((x) << (n)) | ((x) >> (32 - (n))))
 #endif
 
 static inline uint32_t load32_le(const uint8_t d[4]) noexcept
