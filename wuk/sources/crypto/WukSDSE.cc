@@ -6,16 +6,16 @@
 #   define ROTL32(x, n) (((x) << (n)) | ((x) >> (32 - (n))))
 #endif
 
-static inline uint32_t load32_le(const uint8_t d[4]) noexcept
+static inline wU32 load32_le(const wByte d[4]) noexcept
 {
-    uint32_t w;
+    wU32 w;
 #   if WUK_IS_LITTLE_ENDIAN()
     memcpy(&w, d, sizeof w);
 #   else
-    uint32_t w = (uint32_t) d[0];
-            w |= (uint32_t) d[1] <<  8;
-            w |= (uint32_t) d[2] << 16;
-            w |= (uint32_t) d[3] << 24;
+    w =  (wU32) d[0];
+    w |= (wU32) d[1] <<  8;
+    w |= (wU32) d[2] << 16;
+    w |= (wU32) d[3] << 24;
 #   endif
     return w;
 }
@@ -58,7 +58,7 @@ wuk::crypto::SDSE::SDSE(const wByte *key, const wByte *iv, const wuk::crypto::Co
     }
 
     // Initialize the keystream
-    this->keystream_init(key, iv, counter);
+    this->init(key, iv, counter);
 }
 
 wuk::crypto::SDSE::~SDSE()
@@ -67,10 +67,10 @@ wuk::crypto::SDSE::~SDSE()
     this->clean();
 }
 
-void wuk::crypto::SDSE::keystream_init(const wByte *key, const wByte *iv, wuk::crypto::Counter counter)
+void wuk::crypto::SDSE::init(const wByte *key, const wByte *iv, wuk::crypto::Counter counter)
 {
     if (!key || !iv) {
-        throw wuk::Exception(wuk::Error::NPTR, "wuk::crypto::SDSE::keystream_init",
+        throw wuk::Exception(wuk::Error::NPTR, "wuk::crypto::SDSE::init",
             "key or iv is nullptr.");
     }
 
@@ -116,16 +116,13 @@ void wuk::crypto::SDSE::xcrypt(wByte *buffer, wSize length)
             // Update the keystream (10 Rounds of mixing)
             keystream_mixture(tmp);
             keystream_mixture(tmp);
-            
             keystream_mixture(tmp);
-            keystream_mixture(tmp);
-
             keystream_mixture(tmp);
             keystream_mixture(tmp);
 
             keystream_mixture(tmp);
             keystream_mixture(tmp);
-
+            keystream_mixture(tmp);
             keystream_mixture(tmp);
             keystream_mixture(tmp);
 

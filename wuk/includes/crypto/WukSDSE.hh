@@ -24,7 +24,7 @@ namespace wuk {
             ~SDSE();
 
         public:
-            void keystream_init(const wByte *key, const wByte *iv, const wuk::crypto::Counter counter);
+            void init(const wByte *key, const wByte *iv, const wuk::crypto::Counter counter);
             void xcrypt(wByte *buffer, wSize length);
 
             const uint32_t *get_state() const noexcept {

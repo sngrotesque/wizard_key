@@ -1,11 +1,14 @@
 #include <crypto/WukSDSE.hh>
 #include <crypto/WukUtils.hh>
+#include <WukBase64.hh>
 // #include <WukRandom.hh>
 #include <WukMisc.hh>
 #include <WukTime.hh>
 
 #include <crypto/WukSDSE.cc>
 #include <crypto/WukUtils.cc>
+#include <WukBuffer.cc>
+#include <WukBase64.cc>
 // #include <WukRandom.cc>
 #include <WukMisc.cc>
 #include <WukTime.cc>
@@ -56,16 +59,14 @@ void test()
     wByte nonce[12]{
         0x4e, 0x05, 0xa7, 0x90, 0x6e, 0xa5, 0x37, 0xaa,
         0xed, 0x39, 0xe2, 0x7f};
-    wU32 count = 0x6420bba2;
-    
+    wU32 count = 0x315bad94;
+
     wuk::crypto::Counter counter(nonce, sizeof nonce, count);
     wuk::crypto::SDSE sdse(key, iv, counter);
 
     char _plaintext[] = {
-        "GET / HTTP/1.1\r\n"
-        "Host: example.com\r\n"
-        "Accept: */*\r\n"
-        "User-Agent: TestClient/1.0\r\n\r\n"
+        "fuck off!fuck off!fuck off!fuck off!"
+        "fuck off!fuck off!fuck off!fuck off!"
     };
     wByte *buffer = reinterpret_cast<wByte *>(_plaintext);
     wSize length = strlen(_plaintext);
@@ -77,6 +78,9 @@ void test()
 
     std::cout << "Encrypted text:\n";
     wuk::misc::print_hex(buffer, length, 32, true, true);
+
+    std::cout << "Encrypted text (Rawstream):\n\t";
+    wuk::misc::print_pybytes(buffer, length, true);
 }
 
 int main()
