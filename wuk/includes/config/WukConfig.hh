@@ -45,7 +45,7 @@
  * 在Visual Studio中，C++已经集成了bool类型，不需要使用此头文件了。
  * https://learn.microsoft.com/zh-cn/cpp/cpp/bool-cpp?view=msvc-170
  */
-#if WUK_COMPILER_MSVC
+#ifndef WUK_COMPILER_MSVC
 #   include <cstdbool>  // 标准布尔值库
 #endif
 

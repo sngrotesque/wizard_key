@@ -82,9 +82,7 @@ void wuk::misc::print_box(const wByte *box, wSize size, wSize num, bool newline)
 void wuk::misc::print_pybytes(const wByte *buf, wSize size, bool newline)
 {
     for(wSize i = 0; i < size; ++i) {
-        if(buf[i] >= 0x20 && buf[i] < 0x7f) {
-            printf("%c", buf[i]);
-        } else if(buf[i] < 0x20) {
+        if (buf[i] < 0x20) {
             switch (buf[i]) {
             case 0x0a:
                 printf("\\n"); break;
@@ -96,10 +94,14 @@ void wuk::misc::print_pybytes(const wByte *buf, wSize size, bool newline)
                 printf("\\x%02x", buf[i]);
                 break;
             }
-        } else if(buf[i] > 0x7e) {
-            printf("\\x%02x", buf[i]);
+        } else if (buf[i] >= 0x20 && buf[i] < 0x7f) {
+            if (buf[i] == 0x5c) {
+                printf("\\\\");
+            } else {
+                printf("%c", buf[i]);
+            }
         } else {
-            printf("=");
+            printf("\\x%02x", buf[i]);
         }
     }
     if(newline) {

@@ -59,17 +59,23 @@ void test()
     wByte nonce[12]{
         0x4e, 0x05, 0xa7, 0x90, 0x6e, 0xa5, 0x37, 0xaa,
         0xed, 0x39, 0xe2, 0x7f};
-    wU32 count = 0x315bad94;
+    wU32 count = 0x315bad93;
 
     wuk::crypto::Counter counter(nonce, sizeof nonce, count);
     wuk::crypto::SDSE sdse(key, iv, counter);
 
-    char _plaintext[] = {
-        "fuck off!fuck off!fuck off!fuck off!"
-        "fuck off!fuck off!fuck off!fuck off!"
-    };
-    wByte *buffer = reinterpret_cast<wByte *>(_plaintext);
-    wSize length = strlen(_plaintext);
+    // char _plaintext[] = {
+    //     " This is a test string for SDSE encryption.\r\n"
+    //     "It will be encrypted using the SDSE algorithm.\r\n"
+    //     "The SDSE algorithm is a stream cipher that uses a keystream to encrypt data.\r\n\r\n"
+    // };
+    // wByte *buffer = reinterpret_cast<wByte *>(_plaintext);
+    // wSize length = strlen(_plaintext);
+    wByte buffer[256]{};
+    wSize length = 256;
+    for(int x=0;x<256;++x) {
+        buffer[x] = x;
+    }
 
     std::cout << "Original plaintext:\n";
     wuk::misc::print_hex(buffer, length, 32, true, true);
@@ -79,14 +85,14 @@ void test()
     std::cout << "Encrypted text:\n";
     wuk::misc::print_hex(buffer, length, 32, true, true);
 
-    std::cout << "Encrypted text (Rawstream):\n\t";
-    wuk::misc::print_pybytes(buffer, length, true);
+    // std::cout << "Encrypted text (Rawstream):\n\t";
+    // wuk::misc::print_pybytes(buffer, length, true);
 }
 
 int main()
 {
     speed_test();
-    test();
+    // test();
 
     return 0;
 }
