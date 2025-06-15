@@ -125,8 +125,30 @@ def main(print_info :bool = True):
         '-Wno-unused-parameter', # 忽略未使用参数
     )
 
+    compile_sources = (
+        # 'wuk/sources/crypto/WukFEA.cc',
+        # 'wuk/sources/crypto/WukFEA_CBC.cc',
+        # 'wuk/sources/crypto/WukFEA_CTR.cc',
+        # 'wuk/sources/crypto/WukFEA_CFB.cc',
+        # 'wuk/sources/crypto/WukFEA_ECB.cc',
+        'wuk/sources/crypto/WukSDSE.cc',
+        # 'wuk/sources/crypto/WukSSC.cc',
+        'wuk/sources/crypto/WukUtils.cc',
+        
+        # 'wuk/sources/WukBase64.cc',
+        'wuk/sources/WukBinascii.cc',
+        'wuk/sources/WukBuffer.cc',
+        'wuk/sources/WukMisc.cc',
+        # 'wuk/sources/WukPadding.cc',
+        # 'wuk/sources/WukRandom.cc',
+        'wuk/sources/WukTime.cc',
+    )
+
     for param in compile_params:
         comp.add_parameter(param)
+
+    for source in compile_sources:
+        comp.add_parameter(source)
 
     start = time.time()
     comp.build()

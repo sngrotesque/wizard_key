@@ -4,6 +4,7 @@
 #if WUK_SUPPORT
 #include <config/WukException.hh>
 #include <WukMemory.hh>
+#include <WukBuffer.hh>
 
 namespace wuk {
     class LIBWUK_API Binascii {
@@ -19,6 +20,9 @@ namespace wuk {
 
         std::string b2a_hex(std::string buffer);
         std::string a2b_hex(std::string buffer);
+
+        wuk::Buffer b2a_hex(wuk::Buffer buffer);
+        wuk::Buffer a2b_hex(wuk::Buffer buffer);
     };
 }
 

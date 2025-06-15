@@ -116,3 +116,35 @@ std::string wuk::Binascii::a2b_hex(std::string _buffer)
 
     return result_string;
 }
+
+wuk::Buffer wuk::Binascii::b2a_hex(wuk::Buffer _buffer)
+{
+    if (_buffer.is_empty()) {
+        return wuk::Buffer{};
+    }
+
+    wByte *buffer = const_cast<wByte *>(_buffer.get_data());
+    wSize length = _buffer.get_length();
+    char *result = this->b2a_hex(buffer, length);
+
+    wuk::Buffer _result{reinterpret_cast<wByte *>(result), length};
+    wuk::m_free(result);
+
+    return _result;
+}
+
+wuk::Buffer wuk::Binascii::a2b_hex(wuk::Buffer _buffer)
+{
+    if (_buffer.is_empty()) {
+        return wuk::Buffer{};
+    }
+
+    const char *buffer = _buffer.get_cstr();
+    wSize length = _buffer.get_length();
+    wByte *result = this->a2b_hex(buffer, length);
+
+    wuk::Buffer _result{reinterpret_cast<wByte *>(result), length};
+    wuk::m_free(result);
+
+    return _result;
+}

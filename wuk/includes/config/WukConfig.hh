@@ -50,10 +50,25 @@
 #endif
 
 // 判断编译时是否使用C++20标准
-#if __cplusplus >= 202002
+#if (__cplusplus >= 202002) || (_MSVC_LANG >= 202002)
 #   ifndef WUK_STD_CPP_20
 #       define WUK_STD_CPP_20
 #   endif
+#else
+#    if defined(_MSVC_LANG)
+#        if _MSVC_LANG < 201703L
+#            ifdef __GNUC__
+#                warning "Requires C++17 or later (current: C++" #__cplusplus "). Compile with '-std=c++17' or higher."
+#            else
+#                pragma message("Warning: Requires C++17 or later (current: C++" #_MSVC_LANG \
+                                "). Use '/std:c++17' or higher.")
+#            endif
+#        endif
+#    else
+#        if __cplusplus < 201703L
+#            warning "Requires C++17 or later (current: C++" #__cplusplus "). Compile with '-std=c++17' or higher."
+#        endif
+#    endif
 #endif
 
 /**

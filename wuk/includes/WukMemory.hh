@@ -8,12 +8,12 @@
 #include <malloc.h>
 
 namespace wuk {
-    LIBWUK_API void memory_zero(void *buffer, wSize length)
+    LIBWUK_API inline void memory_zero(void *buffer, wSize length)
     {
         memset(buffer, 0x00, length);
     }
 
-    LIBWUK_API void memory_secure(void *buffer, wSize length)
+    LIBWUK_API inline void memory_secure(void *buffer, wSize length)
     {
 #       if defined(WUK_PLATFORM_WINOS)
         SecureZeroMemory(buffer, length);
@@ -47,7 +47,7 @@ namespace wuk {
         return static_cast<T>(calloc(sizeof(T), length));
     }
 
-    LIBWUK_API void m_free(void *p) noexcept
+    LIBWUK_API inline void m_free(void *p) noexcept
     {
         free(p);
     }

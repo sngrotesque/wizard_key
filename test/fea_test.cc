@@ -3,28 +3,14 @@
 #include <WukBuffer.hh>
 #include <WukBase64.hh>
 #include <WukPadding.hh>
+#include <WukRandom.hh>
 #include <WukMisc.hh>
 #include <WukTime.hh>
-
-#include <crypto/WukFEA.cc>
-#include <crypto/WukFEA_ECB.cc>
-#include <crypto/WukFEA_CBC.cc>
-#include <crypto/WukFEA_CTR.cc>
-#include <crypto/WukFEA_CFB.cc>
-#include <crypto/WukUtils.cc>
-#include <WukBuffer.cc>
-#include <WukBase64.cc>
-#include <WukPadding.cc>
-#include <WukMisc.cc>
-#include <WukTime.cc>
 
 #include <iostream>
 #include <filesystem>
 #include <fstream>
 #include <chrono>
-
-#include <WukRandom.hh>
-#include <WukRandom.cc>
 
 #include <openssl/evp.h>
 
@@ -256,8 +242,8 @@ void test2()
 int main()
 {
     try {
-        speed_test(1024 * 1024 * 1024);
-        // test1();
+        // speed_test(1024 * 1024 * 1024);
+        test1();
     } catch (wuk::Exception &e) {
         std::cout << e.what() << std::endl;
     }

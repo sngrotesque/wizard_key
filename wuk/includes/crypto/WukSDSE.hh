@@ -5,7 +5,6 @@
 #include <WukMemory.hh>
 #include <config/WukException.hh>
 #include <config/WukEndianness.hh>
-#include <crypto/WukUtils.hh>
 
 namespace wuk {
     namespace crypto {
@@ -20,11 +19,11 @@ namespace wuk {
 
         public:
             SDSE() = default;
-            SDSE(const wByte *key, const wByte *iv, const wuk::crypto::Counter counter);
+            SDSE(const wByte key[32], const wByte nonce[20], wU32 counter = 0);
             ~SDSE();
 
         public:
-            void init(const wByte *key, const wByte *iv, const wuk::crypto::Counter counter);
+            void init(const wByte key[32], const wByte nonce[20], wU32 counter = 0);
             void xcrypt(wByte *buffer, wSize length);
 
             const uint32_t *get_state() const noexcept {

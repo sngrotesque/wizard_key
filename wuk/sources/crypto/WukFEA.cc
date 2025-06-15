@@ -269,38 +269,6 @@ void wuk::crypto::FEA::key_extension(const wByte *key, const wByte *iv)
 
         this->sub_bytes(keyBuffer);
         this->sub_bytes(keyBuffer + WUK_FEA_BL);
-
-        // // 新的尝试密钥扩展算法
-        // this->xor_with_iv(keyBuffer, ivBuffer);
-        // this->sub_bytes(ivBuffer);
-        // this->xor_with_iv(keyBuffer + WUK_FEA_BL, ivBuffer);
-
-        // this->sub_bytes(ivBuffer);
-        // this->shift_rows(ivBuffer);
-        // this->shift_bits(ivBuffer);
-        // this->xor_with_iv(ivBuffer, keyBuffer);
-        // this->xor_with_iv(ivBuffer, keyBuffer + WUK_FEA_BL);
-
-        // this->sub_bytes(ivBuffer);
-        // this->sub_bytes(keyBuffer);
-        // this->sub_bytes(keyBuffer + WUK_FEA_BL);
-
-        // for (wU32 r = 0; r < 4; ++r) {
-        //     for (wU32 i = 0; i < WUK_FEA_KEYLEN; ++i) {
-        //         keyBuffer[i] ^= ivBuffer[i & 15];
-        //         this->shift_rows(ivBuffer);
-        //         this->shift_bits(ivBuffer);
-        //         keyBuffer[i] ^= ivBuffer[(i + 5) & 15];
-        //     }
-        //     for (wU32 i = 0; i < WUK_FEA_BL; ++i) {
-        //         ivBuffer[i] += (keyBuffer[i] + (i + 71));
-        //         this->sub_bytes(keyBuffer);
-        //         this->sub_bytes(keyBuffer + WUK_FEA_BL);
-        //         this->sub_bytes(ivBuffer);
-        //         this->xor_with_iv(keyBuffer, ivBuffer);
-        //         this->xor_with_iv(keyBuffer + WUK_FEA_BL, ivBuffer);
-        //     }
-        // }
     }
 
     wuk::memory_secure(keyBuffer, WUK_FEA_KEYLEN);
