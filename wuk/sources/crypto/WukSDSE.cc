@@ -34,32 +34,69 @@ static inline void store32_le(wByte dst[4], wU32 w)
 
 static inline void keystream_mixture(wU32 state[16]) noexcept
 {
-    state[0]  ^= state[15] ^ state[14] ^ state[13];
-    state[1]  ^= state[12] ^ state[11] ^ state[10];
-    state[2]  ^= state[9]  ^ state[8]  ^ state[7];
-    state[3]  ^= state[6]  ^ state[5]  ^ state[4];
-
-    // 斜角混合
     state[0]  += ROTL32(state[5], 3);
-    state[5]  += ROTL32(state[10], 5);
+    state[5]  ^= ROTL32(state[10], 5);
     state[10] += ROTL32(state[15], 7);
-    state[15] += state[0];
+    state[15] ^= state[0];
+
+    state[0]  ^= (state[15] - state[14]) ^ state[13];
 
     state[4]  += ROTL32(state[9], 11);
-    state[9]  += ROTL32(state[14], 13);
+    state[9]  ^= ROTL32(state[14], 13);
     state[14] += ROTL32(state[3], 17);
-    state[3]  += state[4];
+    state[3]  ^= state[4];
 
-    state[8]  += ROTL32(state[13], 19);
+    state[1]  ^= (state[12] ^ state[11]) - state[10];
+
+    state[8]  ^= ROTL32(state[13], 19);
     state[13] += ROTL32(state[2], 23);
-    state[2]  += ROTL32(state[7], 29);
+    state[2]  ^= ROTL32(state[7], 29);
     state[7]  += state[8];
 
-    state[12] += ROTL32(state[1], 31);
+    state[2]  ^= (state[9]  - state[8])  ^ state[7];
+
+    state[12] ^= ROTL32(state[1], 31);
     state[1]  += ROTL32(state[6],  1);
-    state[6]  += ROTL32(state[11], 2);
+    state[6]  ^= ROTL32(state[11], 2);
     state[11] += state[12];
+
+    state[3]  ^= (state[6]  ^ state[5])  - state[4];
 }
+
+/*
+static inline void keystream_mixture_reverse(wU32 state[16]) noexcept
+{
+    // 逆向最后一步异或操作
+    state[3]  ^= (state[6] ^ state[5]) - state[4];
+
+    // 逆向斜角混合（从下往上回退）
+    state[11] -= state[12];
+    state[6]  ^= ROTL32(state[11], 2);
+    state[1]  -= ROTL32(state[6], 1);
+    state[12] ^= ROTL32(state[1], 31);
+
+    state[2]  ^= (state[9] - state[8]) ^ state[7];
+
+    state[7]  -= state[8];
+    state[2]  ^= ROTL32(state[7], 29);
+    state[13] -= ROTL32(state[2], 23);
+    state[8]  ^= ROTL32(state[13], 19);
+
+    state[1]  ^= (state[12] ^ state[11]) - state[10];
+
+    state[3]  ^= state[4];
+    state[14] -= ROTL32(state[3], 17);
+    state[9]  ^= ROTL32(state[14], 13);
+    state[4]  -= ROTL32(state[9], 11);
+
+    state[0]  ^= (state[15] - state[14]) ^ state[13];
+
+    state[15] ^= state[0];
+    state[10] -= ROTL32(state[15], 7);
+    state[5]  ^= ROTL32(state[10], 5);
+    state[0]  -= ROTL32(state[5], 3);
+}
+*/
 
 wuk::crypto::SDSE::SDSE(const wByte key[32], const wByte nonce[20], wU32 counter)
 {
