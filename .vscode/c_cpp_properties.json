@@ -1,0 +1,20 @@
+{
+    "configurations": [
+        {
+            "name": "Windows MSYS2",
+            "includePath": [
+                "wuk/includes/**",
+                "wuk/sources/**"
+            ],
+            "compilerPath": "D:/Z_SSS/msys2/mingw64/bin/g++.exe",
+            "intelliSenseMode": "windows-gcc-x64",
+            "cppStandard": "c++20",
+            "compilerArgs": [
+                "-Wall",
+                "-Wextra",
+                "-Wpedantic"
+            ]
+        }
+    ],
+    "version": 4
+}
