@@ -436,6 +436,7 @@ void op4_threads()
     std::cout << "Multi threaded encryption is in progress.." << std::endl;
     wU32 thread_count = std::min(static_cast<wU32>(std::thread::hardware_concurrency()),
                                 static_cast<wU32>((length + block_size - 1) / block_size));
+    std::cout << "threads count: " << thread_count << std::endl;
     SPEED_TEST(op4_thread(ciphertext, plaintext, length, key, nonce, thread_count));
 #   else
     std::cout << "single threaded encryption is in progress.." << std::endl;
@@ -468,7 +469,7 @@ void anonymous_function()
 
 int main()
 {
-    anonymous_function();
+    op4_threads();
 
     return 0;
 }

@@ -1,3 +1,4 @@
+#pragma once
 #include <config/WukConfig.hh>
 
 #if WUK_SUPPORT
