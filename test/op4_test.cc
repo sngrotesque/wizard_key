@@ -414,7 +414,7 @@ void op4_single_thread(wByte* ciphertext, const wByte* plaintext, wSize length,
 
 void op4_threads()
 {
-    constexpr wSize length = static_cast<wSize>(102.4f * 1024 * 1024);
+    constexpr wSize length = static_cast<wSize>(1024ULL * 1024 * 1024);
     wByte *plaintext = new (std::align_val_t(16), std::nothrow) wByte[length];
     if (!plaintext) {
         throw wuk::Exception(wuk::Error::MEMORY, "op4_threads",
