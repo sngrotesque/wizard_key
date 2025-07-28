@@ -16,11 +16,6 @@ static inline void forced_zeroing(volatile void *p, wSize length)
 }
 
 namespace wuk {
-    LIBWUK_API inline void memory_zero(void *buffer, wSize length)
-    {
-        memset(buffer, 0x00, length);
-    }
-
     LIBWUK_API inline void memory_secure(void *buffer, wSize length)
     {
 #       if defined(WUK_PLATFORM_WINOS)
@@ -32,6 +27,11 @@ namespace wuk {
         explicit_bzero(buffer, length);
 #           endif
 #       endif
+    }
+
+    LIBWUK_API inline void memory_zero(void *buffer, wSize length)
+    {
+        memset(buffer, 0x00, length);
     }
 
     template <typename T>

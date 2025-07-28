@@ -1,6 +1,6 @@
+#if 0
+
 #include <config/WukConfig.hh>
-#include <network/WukSocket.hh>
-#include <network/WukException.hh>
 
 #include <iostream>
 
@@ -50,3 +50,4 @@ int main() {
     return 0;
 }
 
+#endif

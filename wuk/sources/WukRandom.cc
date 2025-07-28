@@ -20,32 +20,15 @@ void wuk::Random::urandom(wByte *buffer, wSize length)
 {
     if(!buffer || !length) {
         throw wuk::Exception(wuk::Error::NPTR, "wuk::Random::urandom",
-                                        "buffer or length is NULL.");
+            "buffer or length is NULL.");
     }
 
 #   if defined(WUK_PLATFORM_WINOS)
-    // 后续请改为`wuk/sources/network/WukException.cc`中那样的获取错误字符串
-#       ifdef WUK_CRYPTO_RANDOM_OLD
-    HCRYPTPROV hProv;
-    if(!CryptAcquireContext(&hProv, NULL, NULL, PROV_RSA_FULL, 0)) {
-        throw wuk::Exception(static_cast<wuk::Error>(GetLastError()), "wuk::Random::urandom",
-            "CryptAcquireContext function returned an error code when called.");
-    }
-    if(!CryptGenRandom(hProv, length, buffer)) {
-        throw wuk::Exception(static_cast<wuk::Error>(GetLastError()), "wuk::Random::urandom",
-            "CryptGenRandom function returned an error code when called.");
-    }
-    if(!CryptReleaseContext(hProv, 0)) {
-        throw wuk::Exception(static_cast<wuk::Error>(GetLastError()), "wuk::Random::urandom",
-            "CryptReleaseContext function returned an error code when called.");
-    }
-#       else
     NTSTATUS status = BCryptGenRandom(nullptr, buffer, length, BCRYPT_USE_SYSTEM_PREFERRED_RNG);
     if (status != STATUS_SUCCESS) {
         throw wuk::Exception(status, "wuk::Random::urandom",
             "BCryptGenRandom function returned an error code when called.");
     }
-#       endif
 #   elif defined(WUK_PLATFORM_LINUX)
     if(getrandom(buffer, length, GRND_RANDOM) == EOF) {
         throw wuk::Exception(static_cast<wuk::Error>(errno), "wuk::Random::urandom",

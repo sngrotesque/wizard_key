@@ -161,14 +161,19 @@ OP4_SI(void) key_schedule_transformation(wByte key[wuk::crypto::WukOP4_KL])
     }
 }
 
-OP4_SI(void) key_extension(wByte key[wuk::crypto::WukOP4_KL],
-                           wByte round_key[wuk::crypto::WukOP4_RKL])
+OP4_SI(void) key_extension(const wByte key[wuk::crypto::WukOP4_KL],
+                                 wByte round_key[wuk::crypto::WukOP4_RKL])
 {
+    wByte copy_key[wuk::crypto::WukOP4_KL]{0};
+    memcpy(copy_key, key, wuk::crypto::WukOP4_KL);
+
     for (wU32 i = 0; i < wuk::crypto::WukOP4_NK; ++i) {
-        key_schedule_transformation(key);
-        memcpy(round_key + i * wuk::crypto::WukOP4_KL, key,
+        key_schedule_transformation(copy_key);
+        memcpy(round_key + i * wuk::crypto::WukOP4_KL, copy_key,
             wuk::crypto::WukOP4_KL);
     }
+
+    wuk::memory_secure(copy_key, wuk::crypto::WukOP4_KL);
 }
 
 wuk::crypto::WukOP4::WukOP4(const wByte key[WukOP4_KL], wU32 counter)
@@ -178,12 +183,7 @@ wuk::crypto::WukOP4::WukOP4(const wByte key[WukOP4_KL], wU32 counter)
         throw wuk::Exception(wuk::Error::NPTR, "wuk::crypto::WukOP4::WukOP4",
             "key is nullptr.");
     }
-    wByte copy_key[WukOP4_KL]{};
-
-    memcpy(copy_key, key, WukOP4_KL);
-    key_extension(copy_key, this->round_key);
-
-    wuk::memory_secure(copy_key, WukOP4_KL); // Clear sensitive data
+    key_extension(key, this->round_key);
 }
 
 void wuk::crypto::WukOP4::ecb_encrypt(wByte *out, const wByte *in, wSize length)

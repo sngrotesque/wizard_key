@@ -71,7 +71,7 @@ wByte *wuk::Binascii::a2b_hex(const char *buffer, wSize &length)
     *(result + (length >> 1)) = 0x00;
 
     wSize bi, ri;
-    wS32 top, bot;
+    wI32 top, bot;
     for(bi = ri = 0; bi < length; bi += 2, ++ri) {
         top = hexTable[*(buffer_p + bi)];
         bot = hexTable[*(buffer_p + (bi + 1))];

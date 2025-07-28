@@ -120,6 +120,7 @@ def main(verbose: bool = True):
         # 'wuk/sources/crypto/WukFEA.cc',
         # 'wuk/sources/crypto/WukOP4.cc',
         'wuk/sources/crypto/WukOP4_sse4.cc',
+        # 'wuk/sources/crypto/WukChaCha20.cc',
         # 'wuk/sources/WukBase64.cc',
         'wuk/sources/WukBinascii.cc',
         'wuk/sources/WukBuffer.cc',

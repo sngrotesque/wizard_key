@@ -1,5 +1,4 @@
 #include <WukBuffer.hh>
-#include <config/WukColor.hh>
 
 //////////////////////////////////////////////////////////////////////
 /**
@@ -236,7 +235,7 @@ wuk::Buffer wuk::Buffer::operator+(const wuk::Buffer &other)
     return result;
 }
 
-wuk::Buffer &wuk::Buffer::operator+=(const wuk::Buffer other)
+wuk::Buffer &wuk::Buffer::operator+=(const wuk::Buffer &other)
 {
     this->expand_memory(other.data_len);
 
@@ -350,23 +349,6 @@ void wuk::Buffer::append(const std::string content)
 
     this->append(reinterpret_cast<const wByte *>(content.c_str()),
                 content.size());
-}
-
-template <typename T>
-void wuk::Buffer::append_number(T val)
-{
-    if constexpr (!std::is_integral_v<T> && !std::is_floating_point_v<T>) {
-        wuk::Exception(wuk::Error::ERR, "void wuk::Buffer::append_number",
-            "The parameter must be a number.");
-    }
-    wByte buffer[sizeof(T)];
-
-    memcpy(buffer, &val, sizeof(T));
-#   ifdef WUK_NATIVE_LE
-    wuk::reversal_array(buffer, sizeof(T));
-#   endif
-
-    this->append(buffer, sizeof(T));
 }
 
 void wuk::Buffer::shrink_to_fit()

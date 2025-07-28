@@ -2,29 +2,30 @@
 #include <config/WukConfig.hh>
 
 #if WUK_SUPPORT
-#ifndef WUK_NATIVE_LE
-#   if defined(WUK_PLATFORM_WINOS)
+#if defined(WUK_PLATFORM_WINOS)
+#   define WUK_NATIVE_LE // Windows is little-endian by default
+#elif defined(__BYTE_ORDER__) && defined(__ORDER_LITTLE_ENDIAN__) && defined(__ORDER_BIG_ENDIAN__)
+// POSIX systems: <endian.h> provides macros
+#   if (__BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__)
 #       define WUK_NATIVE_LE
-#   else
-#      include <endian.h>
-#      if __BYTE_ORDER__
-#          if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
-#              define WUK_NATIVE_LE
-#          endif
-#      endif
+#   elif (__BYTE_ORDER__ == __ORDER_BIG_ENDIAN__)
+#       define WUK_NATIVE_BE
 #   endif
+#else
+// #   warning "Unable to detect system endianness. Defaulting to little-endian assumptions."
+#   define WUK_NATIVE_LE
 #endif
 
 namespace wuk {
     template <typename T>
     void reversal_array(T *buffer, wSize length)
     {
-        for (wU32 i = 0; i < (length >> 1); ++i) {
-            const T swap = buffer[i];
-            buffer[i] = buffer[length - i - 1];
-            buffer[length - i - 1] = swap;
+        for (wSize i = 0; i < (length >> 1); ++i) {
+            T tmp = buffer[i];
+            buffer[i] = buffer[length - 1 - i];
+            buffer[length - 1 - i] = tmp;
         }
     }
 }
 
-#endif
+#endif // WUK_SUPPORT

@@ -1,7 +1,4 @@
-#include <network/WukSocket.hh>
-
-#include <network/WukSocket.cc>
-
+#if 0
 #include <iostream>
 #include <windows.h>
 
@@ -112,3 +109,4 @@ int main()
     }
 
 }
+#endif

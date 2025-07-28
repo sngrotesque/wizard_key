@@ -15,18 +15,16 @@ alignas(16) OP4_SI(constexpr wU32) INV_MUL_COEFFS[4] = {
 OP4_SI(void) xor_with_iv(wByte state[wuk::crypto::WukOP4_BL],
                    const wByte iv[wuk::crypto::WukOP4_BL])
 {
-    sse::s128 src = sse::loadu128(state);
-    sse::s128 val = sse::loadu128(iv);
-    sse::s128 dst = sse::xor128(src, val);
-    sse::storeu128(state, dst);
+    sse::storeu128(state,
+        sse::xor128(sse::loadu128(state), sse::loadu128(iv)));
 }
 
 OP4_SI(void) xor_with_iv(wByte state[wuk::crypto::WukOP4_BL],
                    const wByte a[wuk::crypto::WukOP4_BL],
                    const wByte b[wuk::crypto::WukOP4_BL])
 {
-    sse::s128 dst = sse::xor128(sse::loadu128(a), sse::loadu128(b));
-    sse::storeu128(state, dst);
+    sse::storeu128(state,
+        sse::xor128(sse::loadu128(a), sse::loadu128(b)));
 }
 
 OP4_SI(void) cipher(wByte state[wuk::crypto::WukOP4_BL],
@@ -157,14 +155,19 @@ OP4_SI(void) key_schedule_transformation(wByte key[wuk::crypto::WukOP4_KL])
     }
 }
 
-OP4_SI(void) key_extension(wByte key[wuk::crypto::WukOP4_KL],
-                           wByte round_key[wuk::crypto::WukOP4_RKL])
+OP4_SI(void) key_extension(const wByte key[wuk::crypto::WukOP4_KL],
+                                 wByte round_key[wuk::crypto::WukOP4_RKL])
 {
+    wByte copy_key[wuk::crypto::WukOP4_KL]{0};
+    memcpy(copy_key, key, wuk::crypto::WukOP4_KL);
+
     for (wU32 i = 0; i < wuk::crypto::WukOP4_NK; ++i) {
-        key_schedule_transformation(key);
-        memcpy(round_key + i * wuk::crypto::WukOP4_KL, key,
+        key_schedule_transformation(copy_key);
+        memcpy(round_key + i * wuk::crypto::WukOP4_KL, copy_key,
             wuk::crypto::WukOP4_KL);
     }
+
+    wuk::memory_secure(copy_key, wuk::crypto::WukOP4_KL);
 }
 
 wuk::crypto::WukOP4::WukOP4(const wByte key[WukOP4_KL], wU32 counter)
@@ -174,12 +177,7 @@ wuk::crypto::WukOP4::WukOP4(const wByte key[WukOP4_KL], wU32 counter)
         throw wuk::Exception(wuk::Error::NPTR, "wuk::crypto::WukOP4::WukOP4",
             "key is nullptr.");
     }
-    wByte copy_key[WukOP4_KL]{};
-
-    memcpy(copy_key, key, WukOP4_KL);
-    key_extension(copy_key, this->round_key);
-
-    wuk::memory_secure(copy_key, WukOP4_KL); // Clear sensitive data
+    key_extension(key, this->round_key);
 }
 
 void wuk::crypto::WukOP4::ecb_encrypt(wByte *out, const wByte *in, wSize length)
@@ -294,7 +292,7 @@ void wuk::crypto::WukOP4::ctr_stream(wByte *out, const wByte *in, wSize length,
     memcpy(keystream, nonce, WukOP4_NL);
 
     size_t remaining = length;
-    while (remaining >= WukOP4_BL) {  // 完整块处理
+    while (remaining >= WukOP4_BL) {
         pack32le(keystream + WukOP4_NL, this->counter++);
         cipher(state, keystream, this->round_key);
         xor_with_iv(out, in, state);
@@ -302,10 +300,10 @@ void wuk::crypto::WukOP4::ctr_stream(wByte *out, const wByte *in, wSize length,
         in += WukOP4_BL;
         remaining -= WukOP4_BL;
     }
-    if (remaining > 0) {  // 处理末尾部分块
+    if (remaining > 0) {
         pack32le(keystream + WukOP4_NL, this->counter++);
         cipher(state, keystream, this->round_key);
-        for (size_t i = 0; i < remaining; i++) {  // 逐字节处理
+        for (size_t i = 0; i < remaining; i++) {
             out[i] = in[i] ^ state[i];
         }
     }

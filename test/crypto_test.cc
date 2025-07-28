@@ -1,3 +1,4 @@
+#include <crypto/WukChaCha20.hh>
 #include <WukBuffer.hh>
 #include <WukTime.hh>
 #include <WukMisc.hh>

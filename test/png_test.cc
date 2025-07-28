@@ -7,9 +7,6 @@
 #include <filesystem>
 #include <fstream>
 
-#include <WukBuffer.cc>
-#include <WukMisc.cc>
-
 using namespace std;
 
 constexpr wByte png_head_bytes[8] = {0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A};

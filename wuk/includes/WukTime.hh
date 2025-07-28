@@ -6,12 +6,6 @@
 #include <WukMemory.hh>
 #include <chrono>
 
-#ifdef WUK_PLATFORM_WINOS
-#include <Windows.h>
-#elif defined(WUK_PLATFORM_LINUX)
-#include <unistd.h>
-#endif
-
 namespace wuk {
     class LIBWUK_API Time {
     public:
@@ -20,12 +14,11 @@ namespace wuk {
     public:
         void sleep(double delay);
         
-        static double time()
+        inline double time()
         {
             auto now = std::chrono::high_resolution_clock::now();
-            // auto duration = now.time_since_epoch();
-            static auto start = now;
-            return std::chrono::duration<double>(now - start).count();
+            auto duration = now.time_since_epoch();
+            return std::chrono::duration<double>(duration).count();
         }
     };
 }

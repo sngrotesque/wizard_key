@@ -3,6 +3,7 @@
 
 #if WUK_SUPPORT
 #include <config/WukColor.hh>
+#include <cstdio>
 
 namespace wuk {
     namespace misc {

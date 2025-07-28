@@ -12,6 +12,9 @@
 #   include <windows.h>
 #   include <bcrypt.h>
 #   include <ntstatus.h>
+#   ifdef WUK_COMPILER_MSVC
+#       pragma comment(lib, "bcrypt")
+#   endif
 #endif
 
 namespace wuk {

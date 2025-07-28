@@ -2,9 +2,14 @@
 #include <cstdlib>   // 标准库
 #include <cstring>   // 标准字符串库
 #include <cstdint>   // 标准数字类型库
-#include <cinttypes> // 用于在跨平台打印同样的数据类型
 
-#include <string>
+/**
+ * 在Visual Studio（以及C++17标准）中，C++已经集成了bool类型，不需要使用此头文件了。
+ * https://learn.microsoft.com/zh-cn/cpp/cpp/bool-cpp?view=msvc-170
+ */
+#ifdef INCLUDE_STDBOOL
+#   include <cstdbool>  // 标准布尔值库
+#endif
 
 /**
  * https://blog.kowalczyk.info/article/j/guide-to-predefined-macros-in-c-compilers-gcc-clang-msvc-etc..html
@@ -40,34 +45,28 @@
 #   endif
 #endif
 
-/**
- * 在Visual Studio中，C++已经集成了bool类型，不需要使用此头文件了。
- * https://learn.microsoft.com/zh-cn/cpp/cpp/bool-cpp?view=msvc-170
- */
-#ifdef INCLUDE_STDBOOL
-#   include <cstdbool>  // 标准布尔值库
+// 判断编译时是否使用C++20标准
+// ===============================================
+// C++ Standard Version Detection
+// ===============================================
+
+// MSVC uses _MSVC_LANG instead of __cplusplus (unless /Zc:__cplusplus is enabled)
+#ifdef _MSVC_LANG
+#   define WUK_CPP_STD _MSVC_LANG
+#else
+#   define WUK_CPP_STD __cplusplus
 #endif
 
-// 判断编译时是否使用C++20标准
-#if (__cplusplus >= 202002) || (_MSVC_LANG >= 202002)
-#   ifndef WUK_STD_CPP_20
-#       define WUK_STD_CPP_20
-#   endif
+// C++17 baseline (WUK requires C++17 or higher)
+#if WUK_CPP_STD >= 201703L
+#   define WUK_STD_CPP_17
 #else
-#    if defined(_MSVC_LANG)
-#        if _MSVC_LANG < 201703L
-#            ifdef __GNUC__
-#                warning "Requires C++17 or later (current: C++" #__cplusplus "). Compile with '-std=c++17' or higher."
-#            else
-#                pragma message("Warning: Requires C++17 or later (current: C++" #_MSVC_LANG \
-                                "). Use '/std:c++17' or higher.")
-#            endif
-#        endif
-#    else
-#        if __cplusplus < 201703L
-#            warning "Requires C++17 or later (current: C++" #__cplusplus "). Compile with '-std=c++17' or higher."
-#        endif
-#    endif
+#   error "WUK requires C++17 or later. Please use /std:c++17 or -std=c++17."
+#endif
+
+// Optional: C++20 feature macros
+#if WUK_CPP_STD >= 202002L
+#   define WUK_STD_CPP_20
 #endif
 
 /**
@@ -99,7 +98,7 @@
 
 // 检查是否被支持
 #if WUK_SUPPORT == false
-#   warning "This library may not support the computer you are using."
+#   error "This library may not support the computer you are using."
 #endif
 
 // 检查是否存在导出宏
@@ -122,35 +121,35 @@
 #endif
 
 // WUK库类型定义
-#ifndef WUK_TYPE_DEFINED
-#define WUK_TYPE_DEFINED
-typedef uint8_t  wByte,  w_byte;  // 字节类型
-
-typedef int16_t  wS16,   w_s16;   // 16位带符号整数
-typedef int16_t  wI16,   w_i16;   // 16位带符号整数
-typedef uint16_t wU16,   w_u16;   // 16位无符号整数
-
-typedef int32_t  wS32,   w_s32;   // 32位带符号整数
-typedef int32_t  wI32,   w_i32;   // 32位带符号整数
-typedef uint32_t wU32,   w_u32;   // 32位无符号整数
-
-typedef int64_t  wI64,   w_i64;   // 64位带符号整数
-typedef int64_t  wS64,   w_s64;   // 64位带符号整数
-typedef uint64_t wU64,   w_u64;   // 64位无符号整数
-
 #ifdef _MSC_VER
-typedef int64_t ssize_t;
+#   include <BaseTsd.h>
+using ssize_t = SSIZE_T;
 #endif
 
-typedef ssize_t  wSSize, w_long,  wLong,  w_ssize; // 带符号长整数
-typedef size_t   wSize,  w_ulong, wULong, w_size;  // 无符号长整数
-#endif /* WUK_TYPE_DEFINED */
+using wByte  = uint8_t;
 
-// 定义宏函数
-#ifndef WUK_MACRO_DEFINED
-#define WUK_MACRO_DEFINED
-#define wuk_toString(x) #x /* 将x转为字符串 */
-#define wuk_min(x, y) (((x) < (y)) ? (x) : (y))
-#define wuk_max(x, y) (((x) > (y)) ? (x) : (y))
+using wU16   = uint16_t;
+using wU32   = uint32_t;
+using wU64   = uint64_t;
 
-#endif /* WUK_MACRO_DEFINED */
+using wI16   = int16_t;
+using wI32   = int32_t;
+using wI64   = int64_t;
+
+using wSize  = size_t;
+using wSSize = ssize_t;
+
+// 定义通用函数
+namespace wuk {
+    template <typename T>
+    inline const T &min(const T &x, const T &y)
+    {
+        return (x < y) ? x : y;
+    }
+
+    template <typename T>
+    inline const T &max(const T &x, const T &y)
+    {
+        return (x > y) ? x : y;
+    }
+}

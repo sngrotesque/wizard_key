@@ -11,6 +11,7 @@
 #include <config/WukEndianness.hh>
 #include <config/WukException.hh>
 #include <WukMemory.hh>
+#include <vector>
 
 namespace wuk {
     class LIBWUK_API Buffer {
@@ -34,7 +35,9 @@ namespace wuk {
     public:
         // 构造函数
         Buffer() = default;
+        // 拷贝构造函数
         Buffer(const wuk::Buffer &other);
+        // 移动构造函数
         Buffer(wuk::Buffer &&other) noexcept;
         // 给予数据的构造函数
         Buffer(const wByte *content, wSize length);
@@ -56,7 +59,7 @@ namespace wuk {
         wuk::Buffer &operator=(std::string &&other_string);
 
         Buffer operator+(const Buffer &other);
-        Buffer &operator+=(const Buffer other);
+        Buffer &operator+=(const Buffer &other);
 
         bool operator==(const Buffer &other);
         bool operator!=(const Buffer &other);
@@ -76,7 +79,19 @@ namespace wuk {
         // 传入数字并序列化
         // 比如传入2 (uint32_t)，得到 00 00 00 02 (Hex)
         template <typename T>
-        void append_number(T val);
+        inline void append_number(T val)
+        {
+            if constexpr (!std::is_integral_v<T> && !std::is_floating_point_v<T>) {
+                wuk::Exception(wuk::Error::ERR, "void wuk::Buffer::append_number",
+                    "The parameter must be a number.");
+            }
+            wByte buffer[sizeof(T)];
+            memcpy(buffer, &val, sizeof(T));
+#           ifdef WUK_NATIVE_LE
+            wuk::reversal_array(buffer, sizeof(T));
+#           endif
+            this->append(buffer, sizeof(T));
+        }
 
         // 将占用的内存空间与实际使用的内存空间保持同步（防止无意义的内存占用）
         void shrink_to_fit();

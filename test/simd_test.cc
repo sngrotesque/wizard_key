@@ -111,8 +111,8 @@ void test()
     SPEED_TEST(avx_test(output, input, length, key));
     for (wSize i = 0; i < length; i += 32) {
         if (memcmp(output + i, key, 32) != 0) {
-            wuk::m_free(output);
-            wuk::m_free(input);
+            test_free<wByte>(output, length, 32);
+            test_free<wByte>(input, length, 32);
             throw wuk::Exception(wuk::Error::ERR, "test",
                 "failed to encryption.");
         }

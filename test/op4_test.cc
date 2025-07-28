@@ -6,6 +6,7 @@
 
 #include <filesystem>
 #include <iostream>
+#include <iomanip>
 #include <fstream>
 #include <thread>
 #include <vector>
@@ -155,21 +156,6 @@ void xcryption_verification()
         std::cout << "\x1b[91m" << "[!] CTR Decryption failed! [!]\n" << "\x1b[0m";
         exit(decryption_error);
     }
-}
-
-void speed_test(size_t length = 128ULL * 1024 * 1024)
-{
-    wByte *plaintext = new (std::align_val_t(16), std::nothrow) wByte[length];
-    wByte *ciphertext = new (std::align_val_t(16), std::nothrow) wByte[length];
-    wByte key[WukOP4_KL]{0};
-    wByte iv[WukOP4_BL]{0};
-    WukOP4 op4(key);
-    wuk::Time timer;
-
-    SPEED_TEST(op4.ctr_stream(ciphertext, plaintext, length, iv));
-
-    operator delete[](ciphertext, std::align_val_t(16));
-    operator delete[](plaintext, std::align_val_t(16));
 }
 #endif
 
@@ -322,7 +308,6 @@ void op4_thread(wByte *ciphertext, const wByte *plaintext, wSize length,
 }
 
 #elif defined(THREADS_METHOD) && (THREADS_METHOD == 3)
-// 前置声明
 struct ThreadArgs {
     wByte* ciphertext;
     const wByte* plaintext;
@@ -333,7 +318,6 @@ struct ThreadArgs {
     wU32 counter;
 };
 
-// 线程工作函数
 void op4_thread_worker(const ThreadArgs* args) {
     WukOP4 op4(args->key, args->counter);
     
@@ -363,7 +347,6 @@ void op4_thread_worker(const ThreadArgs* args) {
     }
 }
 
-// 主线程函数
 void op4_thread(wByte* ciphertext, const wByte* plaintext, wSize length,
             const wByte key[WukOP4_KL], const wByte nonce[WukOP4_NL],
             wU32 thread_count = 4) 
@@ -414,7 +397,8 @@ void op4_single_thread(wByte* ciphertext, const wByte* plaintext, wSize length,
 
 void op4_threads()
 {
-    constexpr wSize length = static_cast<wSize>(1024ULL * 1024 * 1024);
+    // 128KB（131072 Bytes）是多线程弱于单线程性能的分水岭
+    constexpr wSize length = static_cast<wSize>(128ULL * 1024*1024);
     wByte *plaintext = new (std::align_val_t(16), std::nothrow) wByte[length];
     if (!plaintext) {
         throw wuk::Exception(wuk::Error::MEMORY, "op4_threads",
@@ -432,7 +416,11 @@ void op4_threads()
     const wByte nonce[WukOP4_KL]{0};
     wuk::Time timer;
 
-#   if THREADS_METHOD
+    std::cout << "The length of the encrypted data is: "
+              << std::fixed << std::setprecision(2)
+              << (static_cast<double>(length) / (1024*1024))
+              << " MB." << std::endl;
+#   if defined(THREADS_METHOD) && ((THREADS_METHOD >= 1) && (THREADS_METHOD <= 3))
     std::cout << "Multi threaded encryption is in progress.." << std::endl;
     wU32 thread_count = std::min(static_cast<wU32>(std::thread::hardware_concurrency()),
                                 static_cast<wU32>((length + block_size - 1) / block_size));
@@ -446,14 +434,15 @@ void op4_threads()
     std::cout << "Ciphertext hexdigest: " << hash_sha256(ciphertext, length) << std::endl;
 
     wByte *decrypted = new (std::align_val_t(16), std::nothrow) wByte[length];
-    if (!ciphertext) {
+    if(!decrypted) {
+        operator delete[](ciphertext, std::align_val_t(16));
         operator delete[](plaintext, std::align_val_t(16));
-        throw wuk::Exception(wuk::Error::MEMORY, "op4_threads",
-            "failed to allocate for ciphertext.");
+        throw wuk::Exception(wuk::Error::MEMORY, "op4_threads", "failed to allocate for ciphertext.");
     }
     op4_single_thread(decrypted, ciphertext, length, key, nonce);
-    if (memcmp(plaintext, decrypted, length) != 0) {
-        std::cout << "\x1b[91m[!] \x1b[0m" << "Data decryption failed due to inconsistent code logic, unable to pass." << std::endl;
+    if(memcmp(plaintext, decrypted, length) != 0) {
+        std::cout << "\x1b[91m[!] \x1b[0m"
+                  << "Data decryption failed due to inconsistent code logic, unable to pass." << std::endl;
     }
 
     operator delete[](decrypted, std::align_val_t(16));
@@ -469,6 +458,9 @@ void anonymous_function()
 
 int main()
 {
+#   ifdef TEST
+    xcryption_verification();
+#   endif
     op4_threads();
 
     return 0;
