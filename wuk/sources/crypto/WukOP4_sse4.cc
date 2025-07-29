@@ -51,10 +51,10 @@ OP4_SI(void) cipher(wByte state[wuk::crypto::WukOP4_BL],
         wU32 v1 = sse::extract<simd_size::epi32, 1>(temp);
         wU32 v2 = sse::extract<simd_size::epi32, 2>(temp);
         wU32 v3 = sse::extract<simd_size::epi32, 3>(temp);
-        v0 = rotl32(v0, 13) + v1 + v2 + v3;
-        v1 = rotl32(v1, 19) + v2 + v3 + v0;
-        v2 = rotl32(v2, 11) + v3 + v0 + v1;
-        v3 = rotl32(v3, 17) + v0 + v1 + v2;
+        v0 = wuk::crypto::rotl32(v0, 13) + v1 + v2 + v3;
+        v1 = wuk::crypto::rotl32(v1, 19) + v2 + v3 + v0;
+        v2 = wuk::crypto::rotl32(v2, 11) + v3 + v0 + v1;
+        v3 = wuk::crypto::rotl32(v3, 17) + v0 + v1 + v2;
         temp = _mm_set_epi32(v3, v2, v1, v0);
         // multiply
         temp = sse::mullo<simd_size::epi32>(temp, mul);
@@ -92,10 +92,10 @@ OP4_SI(void) inv_cipher(wByte state[wuk::crypto::WukOP4_BL],
         wU32 v1 = sse::extract<simd_size::epi32, 1>(temp);
         wU32 v2 = sse::extract<simd_size::epi32, 2>(temp);
         wU32 v3 = sse::extract<simd_size::epi32, 3>(temp);
-        v3 = rotr32(v3 - v0 - v1 - v2, 17);
-        v2 = rotr32(v2 - v3 - v0 - v1, 11);
-        v1 = rotr32(v1 - v2 - v3 - v0, 19);
-        v0 = rotr32(v0 - v1 - v2 - v3, 13);
+        v3 = wuk::crypto::rotr32(v3 - v0 - v1 - v2, 17);
+        v2 = wuk::crypto::rotr32(v2 - v3 - v0 - v1, 11);
+        v1 = wuk::crypto::rotr32(v1 - v2 - v3 - v0, 19);
+        v0 = wuk::crypto::rotr32(v0 - v1 - v2 - v3, 13);
         temp = _mm_set_epi32(v3, v2, v1, v0);
     }
     sse::storeu128(state, temp);
@@ -113,38 +113,38 @@ OP4_SI(void) key_obfuscation(wByte k[wuk::crypto::WukOP4_KL])
 {
     // Process the 0, 4, 8, and 12 bytes each time.
     for (wU32 i = 0; i < wuk::crypto::WukOP4_KL; i += 4) {
-        k[i] += rotl8(k[i] ^ k[i+1] ^ k[i+2] ^ k[i+3], 5);
+        k[i] += wuk::crypto::rotl8(k[i] ^ k[i+1] ^ k[i+2] ^ k[i+3], 5);
     }
     wU32 v0, v1, v2, v3, v4, v5, v6, v7;
     wU32 t0, t1, t2, t3, t4, t5, t6, t7;
 
     // Introduce a diffusion mechanism for key
-    v0 = load32le(k     ); t0 = v0;
-    v1 = load32le(k +  4); t1 = v1;
-    v2 = load32le(k +  8); t2 = v2;
-    v3 = load32le(k + 12); t3 = v3;
-    v4 = load32le(k + 16); t4 = v4;
-    v5 = load32le(k + 20); t5 = v5;
-    v6 = load32le(k + 24); t6 = v6;
-    v7 = load32le(k + 28); t7 = v7;
+    v0 = wuk::crypto::load32le(k     ); t0 = v0;
+    v1 = wuk::crypto::load32le(k +  4); t1 = v1;
+    v2 = wuk::crypto::load32le(k +  8); t2 = v2;
+    v3 = wuk::crypto::load32le(k + 12); t3 = v3;
+    v4 = wuk::crypto::load32le(k + 16); t4 = v4;
+    v5 = wuk::crypto::load32le(k + 20); t5 = v5;
+    v6 = wuk::crypto::load32le(k + 24); t6 = v6;
+    v7 = wuk::crypto::load32le(k + 28); t7 = v7;
 
-    t7 += rotl32((v0 ^ v7) + v6, 15);
-    t6 += rotl32((v7 ^ v6) + v5, 19);
-    t5 += rotl32((v6 ^ v5) + v4, 21);
-    t4 += rotl32((v5 ^ v4) + v3, 29);
-    t3 += rotl32((v4 ^ v3) + v2, 13);
-    t2 += rotl32((v3 ^ v2) + v1, 7);
-    t1 += rotl32((v2 ^ v1) + v0, 23);
-    t0 += rotl32((v1 ^ v0) + v7, 17);
+    t7 += wuk::crypto::rotl32((v0 ^ v7) + v6, 15);
+    t6 += wuk::crypto::rotl32((v7 ^ v6) + v5, 19);
+    t5 += wuk::crypto::rotl32((v6 ^ v5) + v4, 21);
+    t4 += wuk::crypto::rotl32((v5 ^ v4) + v3, 29);
+    t3 += wuk::crypto::rotl32((v4 ^ v3) + v2, 13);
+    t2 += wuk::crypto::rotl32((v3 ^ v2) + v1, 7);
+    t1 += wuk::crypto::rotl32((v2 ^ v1) + v0, 23);
+    t0 += wuk::crypto::rotl32((v1 ^ v0) + v7, 17);
 
-    pack32le(k,      t0);
-    pack32le(k + 4,  t1);
-    pack32le(k + 8,  t2);
-    pack32le(k + 12, t3);
-    pack32le(k + 16, t4);
-    pack32le(k + 20, t5);
-    pack32le(k + 24, t6);
-    pack32le(k + 28, t7);
+    wuk::crypto::pack32le(k,      t0);
+    wuk::crypto::pack32le(k + 4,  t1);
+    wuk::crypto::pack32le(k + 8,  t2);
+    wuk::crypto::pack32le(k + 12, t3);
+    wuk::crypto::pack32le(k + 16, t4);
+    wuk::crypto::pack32le(k + 20, t5);
+    wuk::crypto::pack32le(k + 24, t6);
+    wuk::crypto::pack32le(k + 28, t7);
 }
 
 OP4_SI(void) key_schedule_transformation(wByte key[wuk::crypto::WukOP4_KL])
@@ -293,7 +293,7 @@ void wuk::crypto::WukOP4::ctr_stream(wByte *out, const wByte *in, wSize length,
 
     size_t remaining = length;
     while (remaining >= WukOP4_BL) {
-        pack32le(keystream + WukOP4_NL, this->counter++);
+        wuk::crypto::pack32le(keystream + WukOP4_NL, this->counter++);
         cipher(state, keystream, this->round_key);
         xor_with_iv(out, in, state);
         out += WukOP4_BL;
@@ -301,7 +301,7 @@ void wuk::crypto::WukOP4::ctr_stream(wByte *out, const wByte *in, wSize length,
         remaining -= WukOP4_BL;
     }
     if (remaining > 0) {
-        pack32le(keystream + WukOP4_NL, this->counter++);
+        wuk::crypto::pack32le(keystream + WukOP4_NL, this->counter++);
         cipher(state, keystream, this->round_key);
         for (size_t i = 0; i < remaining; i++) {
             out[i] = in[i] ^ state[i];

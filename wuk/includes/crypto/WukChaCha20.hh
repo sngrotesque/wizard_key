@@ -27,6 +27,20 @@ namespace wuk {
 
             void crypto_stream(wByte *out, const wByte *in, wSize length, wByte nonce[WukCC20_NL]);
         };
+
+        class LIBWUK_API WukRFC8439 {
+        private:
+            alignas(16) wU32 state[16]{0};
+            wByte key[WukCC20_KL]{0};
+            wU32 counter = 0U;
+        
+        public:
+            WukRFC8439() = default;
+            WukRFC8439(const wByte key[WukCC20_KL], wU32 counter = 0U);
+            ~WukRFC8439();
+
+            void crypto_stream(wByte *out, const wByte *in, wSize length, wByte nonce[WukCC20_NL]);
+        };
     }
 }
 

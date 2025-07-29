@@ -66,7 +66,7 @@ namespace wuk {
 
     public:
         // 判断是否为空
-        bool is_empty();
+        bool is_empty() const noexcept;
         // 在需要写入指定长度的大小的内容且同时需要指针的情况下调用此方法
         wByte *append_write(wSize length);
         // 直接写入，从指针起始处写入，覆盖原数据，不追加。
@@ -82,7 +82,7 @@ namespace wuk {
         inline void append_number(T val)
         {
             if constexpr (!std::is_integral_v<T> && !std::is_floating_point_v<T>) {
-                wuk::Exception(wuk::Error::ERR, "void wuk::Buffer::append_number",
+                throw wuk::Exception(wuk::Error::ERR, "void wuk::Buffer::append_number",
                     "The parameter must be a number.");
             }
             wByte buffer[sizeof(T)];
@@ -101,6 +101,7 @@ namespace wuk {
         const char *get_cstr() const noexcept;
         wSize get_length() const noexcept;
         wSize get_size() const noexcept;
+        std::string hex() const noexcept;
     };
 }
 

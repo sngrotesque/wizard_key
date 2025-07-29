@@ -108,13 +108,19 @@ void method_8()
 
 void method_9()
 {
-    wuk::Buffer s((wByte *)"\x1b\x01\x02\x03\x04\x05", 6);
+    wByte buf[] = {
+        0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06,
+        0xff, 0xfe, 0xfd, 0xfc, 0xfb, 0xfa, 0x7f
+    };
+
+    wuk::Buffer s(buf, sizeof buf);
+    std::cout << s.hex() << std::endl;
 }
 
 int main()
 {
     try {
-        method_8();
+        method_9();
     } catch (wuk::Exception &e) {
         cout << e.what() << endl;
     }

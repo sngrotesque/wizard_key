@@ -1,5 +1,7 @@
 #include <WukBuffer.hh>
 
+static constexpr char hex_table[] = "0123456789abcdef";
+
 //////////////////////////////////////////////////////////////////////
 /**
  * @brief 用于增加可用内存大小
@@ -275,7 +277,7 @@ bool wuk::Buffer::operator!=(const wuk::Buffer &other)
 }
 
 //////////////////////////////////////////////////////////////////////
-bool wuk::Buffer::is_empty()
+bool wuk::Buffer::is_empty() const noexcept
 {
     return ((!this->data) || (!this->data_len) || (!this->data_size));
 }
@@ -378,4 +380,19 @@ wSize wuk::Buffer::get_length() const noexcept
 wSize wuk::Buffer::get_size() const noexcept
 {
     return this->data_size;
+}
+
+std::string wuk::Buffer::hex() const noexcept
+{
+    if (this->is_empty()) {
+        return std::string{};
+    }
+    std::string out(this->data_len * 2, '0');
+
+    for (size_t i = 0; i < this->data_len; ++i) {
+        out[i * 2]     = hex_table[(this->data[i] >> 4) & 0xf];
+        out[i * 2 + 1] = hex_table[this->data[i] & 0xf];
+    }
+
+    return out;
 }

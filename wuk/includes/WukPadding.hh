@@ -8,28 +8,6 @@
 
 namespace wuk {
     /**
-    * @brief wukPad提供的默认填充方法（需要内存空间长度大于等于填充后长度）
-    * @authors SN-Grotesque
-    * @note 无
-    * @param data 源内容
-    * @param length 传入时作为源内容长度，函数调用结束后作为填充后的长度
-    * @param blockSize 填充的块大小
-    * @param randVal 是否使用随机数填充
-    * @return 无
-    */
-    LIBWUK_API void pad(wByte *data, wSize &length, wU32 blockSize);
-
-    /**
-    * @brief wukPad提供的默认清除填充方法
-    * @authors SN-Grotesque
-    * @note 无
-    * @param data 源内容
-    * @param length 传入时作为源内容长度，函数调用结束后作为清除填充后的长度
-    * @return 无
-    */
-    LIBWUK_API void unpad(wByte *data, wSize &length);
-
-    /**
     * @brief PKCS7填充
     * @authors SN-Grotesque
     * @note 无
