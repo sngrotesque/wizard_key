@@ -4,6 +4,10 @@
 #if WUK_SUPPORT
 #include <config/WukEndianness.hh>
 
+#ifdef LIBSODIUM_SUPPORT
+#   include <sodium.h>
+#endif
+
 namespace wuk {
     namespace crypto {
         inline wU32 rotl32(const wU32 &x, const wU32 &n)

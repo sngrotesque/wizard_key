@@ -2,37 +2,19 @@
 
 using namespace wuk::crypto;
 
-wuk::crypto::WukChaCha20::WukChaCha20(const wByte key[WukCC20_KL], wU32 counter)
-: counter(counter)
-{
-    if (!key) {
-        wuk::Exception(wuk::Error::NPTR, "wuk::crypto::WukChaCha20::WukChaCha20",
-            "key is nullptr.");
-    }
-    memcpy(this->key, key, WukCC20_KL);
-}
-
-wuk::crypto::WukChaCha20::~WukChaCha20()
-{
-    wuk::memory_secure(this->key, WukCC20_KL);
-}
-
-void wuk::crypto::WukChaCha20::crypto_stream(wByte *out, const wByte *in, wSize length,
-                                             wByte nonce[WukCC20_NL])
-{
-    crypto_stream_chacha20_ietf_xor_ic(out, in, length,
-        nonce, this->counter, this->key);
-    this->counter += ((length + WukCC20_KSL - 1) / WukCC20_KSL);
-}
-
-/** RFC 8439 **/
 #define U32C(x) x##U
-
 #define QUARTERROUND(a, b, c, d) \
     a += b; d ^= a; d = wuk::crypto::rotl32(d, 16); \
     c += d; b ^= c; b = wuk::crypto::rotl32(b, 12); \
     a += b; d ^= a; d = wuk::crypto::rotl32(d, 8);  \
     c += d; b ^= c; b = wuk::crypto::rotl32(b, 7);
+
+static inline void state_recombination(wU32 keystream[16], const wU32 state[16])
+{
+    for (wU32 i = 0; i < 16; ++i) {
+        keystream[i] += state[i];
+    }
+}
 
 static inline void state_set_key(wU32 state[16], const wByte key[WukCC20_KL])
 {
@@ -62,9 +44,9 @@ static inline void state_set_iv(wU32 state[16],
 }
 
 static inline void state_init(wU32  state[16],
-                            const wByte key[WukCC20_KL],
-                            const wByte nonce[WukCC20_NL],
-                                  wU32  counter)
+                        const wByte key[WukCC20_KL],
+                        const wByte nonce[WukCC20_NL],
+                              wU32  counter)
 {
     wByte ic[4] {0};
 
@@ -74,30 +56,26 @@ static inline void state_init(wU32  state[16],
     state_set_iv(state, nonce, ic);
 }
 
-static inline void state_recombination(wU32 keystream[16], const wU32 state[16])
-{
-    for (wU32 i = 0; i < 16; ++i) {
-        keystream[i] += state[i];
-    }
-}
-
-wuk::crypto::WukRFC8439::WukRFC8439(const wByte key[WukCC20_KL], wU32 counter)
+wuk::crypto::WukChaCha20::WukChaCha20(const wByte key[WukCC20_KL], wU32 counter)
 : counter(counter)
 {
     if (!key) {
-        wuk::Exception(wuk::Error::NPTR, "wuk::crypto::WukRFC8439::WukRFC8439",
+        wuk::Exception(wuk::Error::NPTR, "wuk::crypto::WukChaCha20::WukChaCha20",
             "key is nullptr.");
     }
     memcpy(this->key, key, WukCC20_KL);
+#   ifdef LIBSODIUM_SUPPORT
+    this->use_libsodium = (sodium_init() >= 0);
+#   endif
 }
 
-wuk::crypto::WukRFC8439::~WukRFC8439()
+wuk::crypto::WukChaCha20::~WukChaCha20()
 {
     wuk::memory_secure(this->key, WukCC20_KL);
 }
 
-void wuk::crypto::WukRFC8439::crypto_stream(wByte *out, const wByte *in,
-                                            wSize length, wByte nonce[WukCC20_NL])
+void wuk::crypto::WukChaCha20::rfc8439_crypto_stream(wByte *out, const wByte *in, wSize length,
+                           wByte nonce[WukCC20_NL])
 {
     state_init(this->state, this->key, nonce, this->counter);
 
@@ -128,5 +106,19 @@ void wuk::crypto::WukRFC8439::crypto_stream(wByte *out, const wByte *in,
         out[i] = in[i] ^ ksp[ki];
     }
 
+    this->counter += ((length + WukCC20_KSL - 1) / WukCC20_KSL);
+}
+
+void wuk::crypto::WukChaCha20::crypto_stream(wByte *out, const wByte *in, wSize length,
+                                             wByte nonce[WukCC20_NL])
+{
+    if (this->use_libsodium) {
+#       ifdef LIBSODIUM_SUPPORT
+        crypto_stream_chacha20_ietf_xor_ic(out, in, length,
+            nonce, this->counter, this->key);
+#       endif
+    } else {
+        this->rfc8439_crypto_stream(out, in, length, nonce);
+    }
     this->counter += ((length + WukCC20_KSL - 1) / WukCC20_KSL);
 }
