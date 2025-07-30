@@ -114,6 +114,7 @@ void wuk::crypto::WukChaCha20::crypto_stream(wByte *out, const wByte *in, wSize 
 {
     if (this->use_libsodium) {
 #       ifdef LIBSODIUM_SUPPORT
+        // 此处的宏仅仅是为了避免在未使用Libsodium库时出现此函数未定义的情况
         crypto_stream_chacha20_ietf_xor_ic(out, in, length,
             nonce, this->counter, this->key);
 #       endif

@@ -1,5 +1,5 @@
 #include <crypto/WukOP4.hh>
-#include <WukBinascii.hh>
+#include <WukBuffer.hh>
 #include <WukRandom.hh>
 #include <WukTime.hh>
 #include <WukMisc.hh>
@@ -160,8 +160,8 @@ void xcryption_verification()
 #endif
 
 // 计算 SHA-256 哈希
-static std::string hash_sha256(const void* data, size_t length) {
-    wuk::Binascii ba;
+static std::string hash_sha256(const void* data, size_t length)
+{
     wByte digest[32]{0};
 
     EVP_MD_CTX* ctx = EVP_MD_CTX_new();
@@ -170,7 +170,7 @@ static std::string hash_sha256(const void* data, size_t length) {
     EVP_DigestFinal_ex(ctx, digest, nullptr);
     EVP_MD_CTX_free(ctx);
 
-    return ba.b2a_hex(std::string{(char *)digest, sizeof(digest)});
+    return wuk::Buffer{digest, sizeof digest}.hex();
 }
 
 void derive_key_pbkdf2(const char *password, const wByte salt[OP4_SALT_LEN], wByte out_key[WukOP4_KL])
@@ -398,7 +398,7 @@ void op4_single_thread(wByte* ciphertext, const wByte* plaintext, wSize length,
 void op4_threads()
 {
     // 128KB（131072 Bytes）是多线程弱于单线程性能的分水岭
-    constexpr wSize length = static_cast<wSize>(128ULL * 1024*1024);
+    constexpr wSize length = static_cast<wSize>(512ULL * 1024*1024);
     wByte *plaintext = new (std::align_val_t(16), std::nothrow) wByte[length];
     if (!plaintext) {
         throw wuk::Exception(wuk::Error::MEMORY, "op4_threads",
@@ -455,6 +455,8 @@ void anonymous_function()
     auto f = [](int a) -> int {return a * 2;};
     std::cout << f(5) << std::endl;
 }
+
+// python make.py test/op4_test.cc -DWUK_EXPORTS -lsodium -lssl -lcrypto --std=c++17 -march=native -DLIBSODIUM_SUPPORT -DTHREADS_METHOD=1
 
 int main()
 {
