@@ -86,11 +86,9 @@ void print_test_info(const wByte *ciphertext1, const wByte *ciphertext2, wSize l
 
 void avalanche_effect_test()
 {
-    const char *original_message = "what the fuck?!";
-    const wSize length = strlen(original_message);
-
-    wByte plaintext1[WukOP4_BL] {0};
-    wByte plaintext2[WukOP4_BL] {0};
+    wSize length    = WukOP4_BL;
+    wByte plaintext1 [WukOP4_BL]{0};
+    wByte plaintext2 [WukOP4_BL]{0};
     wByte ciphertext1[WukOP4_BL]{0};
     wByte ciphertext2[WukOP4_BL]{0};
     wuk::Random random;
