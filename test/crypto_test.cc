@@ -6,8 +6,10 @@
 #include <WukTime.hh>
 #include <WukMisc.hh>
 
+#include <filesystem>
 #include <algorithm>
 #include <iostream>
+#include <fstream>
 #include <iomanip>
 #include <new>
 
@@ -15,6 +17,7 @@
 
 using namespace wuk::crypto;
 using namespace wuk::misc;
+namespace fs = std::filesystem;
 
 #define SPEED_TEST(func) \
     func; \
@@ -50,87 +53,6 @@ wuk::Buffer get_key(std::string password, wuk::Buffer salt, wU32 length = 32)
     return result;
 }
 
-wU32 bit_diff(const wByte *a, const wByte *b, size_t length)
-{
-    wU32 diff = 0;
-
-    for (size_t i = 0; i < length; ++i) {
-        diff += [](wByte x) -> wU32 {
-            wU32 count = 0;
-            while (x) {
-                count += x & 1;
-                x >>= 1;
-            }
-            return count;
-        } (a[i] ^ b[i]);
-    }
-
-    return diff;
-}
-
-void print_test_info(const wByte *ciphertext1, const wByte *ciphertext2, wSize length)
-{
-    std::cout << "Ciphertext1:\t\t\t\t\t\t\tCiphertext2:" << std::endl;
-    print_diff_hex((wByte *)ciphertext1, ciphertext2, length, length, 16, false); std::cout << std::endl;
-
-#   ifdef VIEW_HEXDIGEST
-    std::cout << "Ciphertext1 hexdigest: " << sha256(ciphertext1, length) << std::endl;
-    std::cout << "ciphertext2 hexdigest: " << sha256(ciphertext2, length) << std::endl;
-#   endif
-
-    wU32 diff_bits = bit_diff(ciphertext1, (wByte *)ciphertext2, length);
-    double diff_ratio = static_cast<double>(diff_bits) / (length * 8);
-    std::cout << "Diff ratio: " << diff_bits << " / " << (length * 8)
-              << " = " << (diff_ratio * 100) << "%" << std::endl;
-}
-
-void avalanche_effect_test()
-{
-    wSize length    = WukOP4_BL;
-    wByte plaintext1 [WukOP4_BL]{0};
-    wByte plaintext2 [WukOP4_BL]{0};
-    wByte ciphertext1[WukOP4_BL]{0};
-    wByte ciphertext2[WukOP4_BL]{0};
-    wuk::Random random;
-
-    wByte key1  [WukOP4_KL] {0};
-    wByte key2  [WukOP4_KL] {0};
-    wByte nonce1[WukOP4_NL] {0};
-    wByte nonce2[WukOP4_NL] {0};
-
-    random.urandom(key1,   sizeof key1);
-    random.urandom(nonce1, sizeof nonce1);
-
-    constexpr wByte bit = 1 << 7;
-    for (wU32 i = 0; i < WukOP4_KL; ++i) {
-        std::cout << "Key test:\n";
-        memcpy(key2,   key1,   WukOP4_KL);
-        memcpy(nonce2, nonce1, WukOP4_NL);
-        key2[i] ^= bit;
-
-        WukOP4 cipher1(key1);
-        cipher1.ctr_stream(ciphertext1, plaintext1, length, nonce1);
-        WukOP4 cipher2(key2);
-        cipher2.ctr_stream(ciphertext2, plaintext2, length, nonce2);
-        print_test_info(ciphertext1, ciphertext2, length);
-        std::cout << std::endl;
-    }
-
-    for (wU32 i = 0; i < WukOP4_NL; ++i) {
-        std::cout << "Nonce test:\n";
-        memcpy(key2,   key1,   WukOP4_KL);
-        memcpy(nonce2, nonce1, WukOP4_NL);
-        nonce2[i] ^= bit;
-
-        WukOP4 cipher1(key1);
-        cipher1.ctr_stream(ciphertext1, plaintext1, length, nonce1);
-        WukOP4 cipher2(key2);
-        cipher2.ctr_stream(ciphertext2, plaintext2, length, nonce2);
-        print_test_info(ciphertext1, ciphertext2, length);
-        std::cout << std::endl;
-    }
-}
-
 void chacha20_test()
 {
     wuk::Random random;
@@ -157,7 +79,7 @@ void chacha20_test()
 
 int main()
 {
-    avalanche_effect_test();
+    chacha20_test();
 
     return 0;
 }
