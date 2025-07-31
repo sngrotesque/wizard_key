@@ -18,15 +18,6 @@
 using namespace wuk::crypto;
 using namespace wuk::misc;
 
-namespace fs = std::filesystem;
-
-constexpr wU32 OP4_SALT_LEN  = WukOP4_BL;
-constexpr wU32 OP4_NONCE_LEN = WukOP4_NL;
-constexpr wU32 PBKDF2_ROUNDS = 114514;
-constexpr wU32 block_size    = 4096;
-
-constexpr wU32 decryption_error = 777777777;
-
 #define SPEED_TEST(func) \
     func; \
     double start = timer.time(); \
@@ -38,6 +29,15 @@ constexpr wU32 decryption_error = 777777777;
     printf("Speed: %.2lf MB/s.\n", throughput);
 
 #ifdef TEST
+namespace fs = std::filesystem;
+
+constexpr wU32 OP4_SALT_LEN  = WukOP4_BL;
+constexpr wU32 OP4_NONCE_LEN = WukOP4_NL;
+constexpr wU32 PBKDF2_ROUNDS = 114514;
+constexpr wU32 block_size    = 4096;
+
+constexpr wU32 decryption_error = 777777777;
+
 void weak_key_test()
 {
     wByte key_l[WukOP4_KL] = {
@@ -157,21 +157,6 @@ void xcryption_verification()
         exit(decryption_error);
     }
 }
-#endif
-
-// 计算 SHA-256 哈希
-static std::string hash_sha256(const void* data, size_t length)
-{
-    wByte digest[32]{0};
-
-    EVP_MD_CTX* ctx = EVP_MD_CTX_new();
-    EVP_DigestInit_ex(ctx, EVP_sha256(), nullptr);
-    EVP_DigestUpdate(ctx, data, length);
-    EVP_DigestFinal_ex(ctx, digest, nullptr);
-    EVP_MD_CTX_free(ctx);
-
-    return wuk::Buffer{digest, sizeof digest}.hex();
-}
 
 void derive_key_pbkdf2(const char *password, const wByte salt[OP4_SALT_LEN], wByte out_key[WukOP4_KL])
 {
@@ -237,6 +222,21 @@ void file_decrypt(fs::path input_file, fs::path output_file, const char *passwor
         op4.ctr_stream(plaintext, ciphertext, n, nonce);
         fout.write((char*)plaintext, n);
     }
+}
+#endif
+
+// 计算 SHA-256 哈希
+static std::string hash_sha256(const void* data, size_t length)
+{
+    wByte digest[32]{0};
+
+    EVP_MD_CTX* ctx = EVP_MD_CTX_new();
+    EVP_DigestInit_ex(ctx, EVP_sha256(), nullptr);
+    EVP_DigestUpdate(ctx, data, length);
+    EVP_DigestFinal_ex(ctx, digest, nullptr);
+    EVP_MD_CTX_free(ctx);
+
+    return wuk::Buffer{digest, sizeof digest}.hex();
 }
 
 #if defined(THREADS_METHOD) && (THREADS_METHOD == 1)
@@ -448,12 +448,6 @@ void op4_threads()
     operator delete[](decrypted, std::align_val_t(16));
     operator delete[](ciphertext, std::align_val_t(16));
     operator delete[](plaintext, std::align_val_t(16));
-}
-
-void anonymous_function()
-{
-    auto f = [](int a) -> int {return a * 2;};
-    std::cout << f(5) << std::endl;
 }
 
 // python make.py test/op4_test.cc -DWUK_EXPORTS -lsodium -lssl -lcrypto --std=c++17 -march=native -DLIBSODIUM_SUPPORT -DTHREADS_METHOD=1
