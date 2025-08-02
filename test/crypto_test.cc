@@ -55,8 +55,8 @@ wuk::Buffer get_key(std::string password, wuk::Buffer salt, wU32 length = 32)
 
 void chacha20_test()
 {
-    wuk::Random random;
-    wuk::Time timer;
+    wuk::WukRandom random;
+    wuk::WukTime timer;
     wByte key  [WukCC20_KL] {0};
     wByte nonce[WukCC20_NL] {0};
 

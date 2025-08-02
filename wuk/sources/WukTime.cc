@@ -6,7 +6,7 @@
 #include <unistd.h>
 #endif
 
-void wuk::Time::sleep(double delay)
+void wuk::WukTime::sleep(double delay)
 {
 #   if defined(WUK_PLATFORM_WINOS)
     Sleep(delay * 1e3);

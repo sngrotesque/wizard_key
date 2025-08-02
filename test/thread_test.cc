@@ -66,7 +66,7 @@ void sse_xor(wByte *out, const wByte *in, wSize length, wByte key[16])
 
 void test()
 {
-    wuk::Time timer;
+    wuk::WukTime timer;
     wByte *key = (wByte *)"\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\5\5\5\5\5\5\5\5\5\5\5\5\5\5\5\5";
     wSize length = 1024ULL * 1024 * 1024;
     wByte *input = test_alloc<wByte>(length, 32);
@@ -121,7 +121,7 @@ void thread_test()
             "failed to allocate for output.");
     }
     wByte *key = (wByte *)"AAAAAAAAAAAAAAAA";
-    wuk::Time timer;
+    wuk::WukTime timer;
 
     SPEED_TEST(_thread_test(output, input, length, key, 8));
 

@@ -83,7 +83,7 @@ void avx_test(wByte *out, const wByte *in, wSize length, wByte key[32])
 
 void test()
 {
-    wuk::Time timer;
+    wuk::WukTime timer;
 
     wByte *key = (wByte *)"\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\5\5\5\5\5\5\5\5\5\5\5\5\5\5\5\5";
     wSize length = 1024ULL * 1024 * 1024;

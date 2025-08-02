@@ -1,94 +1,133 @@
 #include <net/WukPacket.hh>
 
-// PUBLIC
-wuk::net::WukPacket::WukPacket(MsgT msg_type,
-                  wU32 proto_ver, wU32 seg_id, wU32 msg_seq, wU64 msg_id,
-                  wU64 sender_id, wU64 recipient_id)
+#define RETURN return *this
+
+bool wuk::net::WukPacket::validate() const
 {
-    this->proto_ver = proto_ver;
-    this->seg_id = seg_id;
-    this->msg_seq = msg_seq;
-    this->msg_type = msg_type;
+    if (this->_message.proto_ver() < 0x01) {
+        return false;
+    }
+    if (this->_message.seg_id() == 0 && (this->_message.msg_type() & SEGMENT)) {
+        return false;
+    }
 
-    this->msg_id = msg_id;
+    if (this->_message.message().size() != this->_message.msg_size()) {
+        return false;
+    }
 
-    this->sender_id = sender_id;
-    this->recipient_id = recipient_id;
+    if (this->_message.sender_id() == 0) {
+        return false;
+    }
+
+    if (this->_message.recipient_id() == 0) {
+        return false;
+    }
+
+    return true;
 }
 
-void wuk::net::WukPacket::set_proto_ver(wU32 value)
+wuk::net::WukPacket &wuk::net::WukPacket::set_type(MessageType type)
 {
-    this->proto_ver = value;
+    this->_message.set_msg_type(type);
+    RETURN;
 }
 
-void wuk::net::WukPacket::set_seg_id(wU32 value)
+wuk::net::WukPacket &wuk::net::WukPacket::add_flag(MessageType flag)
 {
-    this->seg_id = value;
+    wU32 cur_flag = static_cast<int>(this->_message.msg_type());
+    wU32 new_flag = static_cast<int>(flag);
+    this->_message.set_msg_type(static_cast<MessageType>(cur_flag | new_flag));
+    RETURN;
 }
 
-void wuk::net::WukPacket::set_msg_seq(wU32 value)
+wuk::net::WukPacket &wuk::net::WukPacket::set_seq(wU32 seq)
 {
-    this->msg_seq = value;
+    this->_message.set_msg_seq(seq);
+    RETURN;
 }
 
-void wuk::net::WukPacket::set_msg_type(MsgT value)
+wuk::net::WukPacket &wuk::net::WukPacket::set_segment(wU32 seg_id, bool is_last)
 {
-    this->msg_type = value;
+    this->_message.set_seg_id(seg_id);
+
+    if (seg_id) {
+        this->add_flag(MessageType::SEGMENT);
+    }
+
+    if (is_last) {
+        this->add_flag(MessageType::OVER);
+    }
+
+    RETURN;
 }
 
-void wuk::net::WukPacket::set_msg_id(wU64 value)
+wuk::net::WukPacket &wuk::net::WukPacket::set_protocol(wU32 version)
 {
-    this->msg_id = value;
+    if (version < 0x01) {
+        throw wuk::Exception(wuk::Error::ERR, "wuk::net::WukPacket::set_protocol",
+            "Protocol version too low.");
+    }
+    this->_message.set_proto_ver(version);
+    RETURN;
 }
 
-void wuk::net::WukPacket::set_sender_id(wU64 value)
+wuk::net::WukPacket &wuk::net::WukPacket::set_ids(wU64 sender, wU64 recipient)
 {
-    this->sender_id = value;
+    this->_message.set_sender_id(sender);
+    this->_message.set_recipient_id(recipient);
+    RETURN;
 }
 
-void wuk::net::WukPacket::set_recipient_id(wU64 value)
+wuk::net::WukPacket &wuk::net::WukPacket::set_timestamp(double time_val)
 {
-    this->recipient_id = value;
+    if (time_val == 0) {
+        time_val = timer.time();
+    }
+    this->_message.set_time_stamp(time_val);
+    RETURN;
 }
 
-void wuk::net::WukPacket::set_message(wuk::Buffer message)
+wuk::net::WukPacket &wuk::net::WukPacket::set_message_id(wU32 id)
 {
-    this->message = message;
+    this->_message.set_msg_id(id);
+    RETURN;
 }
 
-wuk::Buffer wuk::net::WukPacket::get_packet() noexcept
+wuk::net::WukPacket &wuk::net::WukPacket::set_message(const void *buffer, wSize length)
 {
-    wuk::Time timer;
-    wuk::Buffer verify_buffer;
-    wU32 crc_val{0};
+    this->_message.set_msg_size(length);
+    this->_message.set_message(buffer, length);
+    RETURN;
+}
 
-    // 保持最新数据更新
-    this->time_stamp = timer.time();
-    this->msg_size = this->message.get_length();
+wuk::net::WukPacket &wuk::net::WukPacket::set_message(const std::string &buffer)
+{
+    return this->set_message(reinterpret_cast<const wByte *>(buffer.data()),
+                            buffer.length());
+}
 
-    // 添加元数据
-    verify_buffer.append_number(this->proto_ver);
-    verify_buffer.append_number(this->seg_id);
-    verify_buffer.append_number(this->msg_seq);
-    verify_buffer.append_number(static_cast<wU32>(this->msg_type));
+wuk::net::WukPacket &wuk::net::WukPacket::set_message(const wuk::Buffer &buffer)
+{
+    return this->set_message(buffer.get_data(), buffer.get_length());
+}
 
-    verify_buffer.append_number(this->msg_id);
-    verify_buffer.append_number(this->msg_size);
+const std::string wuk::net::WukPacket::serialize()
+{
+    if (this->validate() == false) {
+        throw wuk::Exception(wuk::Error::ERR, "wuk::net::WukPacket::serialize",
+            "Data member validation failed.");
+    }
 
-    verify_buffer.append_number(this->sender_id);
-    verify_buffer.append_number(this->recipient_id);
+    if (this->_message.msg_id() == 0) {
+        std::string s = this->_message.SerializeAsString();
+        wU32 crc_val = crc32(0, reinterpret_cast<wByte *>(s.data()), s.length());
+        this->_message.set_msg_id(crc_val);
+    }
+    return this->_message.SerializeAsString();
+}
 
-    verify_buffer.append_number(this->time_stamp);
-
-    // 添加消息体
-    verify_buffer.append(this->message.get_data(),
-                        this->message.get_length());
-
-    // 计算出CRC校验值
-    crc_val = crc32(0,  verify_buffer.get_data(),
-                        verify_buffer.get_length());
-    // 添加CRC32校验值
-    verify_buffer.append_number(crc_val);
-
-    return verify_buffer;
+wuk::net::Message &wuk::net::WukPacket::parse(const std::string &buffer)
+{
+    _message.ParseFromString(buffer);
+    return _message;
 }

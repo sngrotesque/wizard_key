@@ -174,7 +174,7 @@ void derive_key_pbkdf2(const char *password, const wByte salt[OP4_SALT_LEN], wBy
 
 void file_encrypt(fs::path input_file, fs::path output_file, const char *password)
 {
-    wuk::Random random;
+    wuk::WukRandom random;
     wByte salt[OP4_SALT_LEN];
     wByte nonce[OP4_NONCE_LEN];
     wByte key[WukOP4_KL];
@@ -405,7 +405,7 @@ void op4_threads()
     wuk::memory_secure(ciphertext, length);
     const wByte key[WukOP4_KL]{0};
     const wByte nonce[WukOP4_KL]{0};
-    wuk::Time timer;
+    wuk::WukTime timer;
 
     std::cout << "The length of the encrypted data is: "
               << std::fixed << std::setprecision(2)
@@ -484,7 +484,7 @@ void avalanche_effect_test()
     wByte plaintext2 [WukOP4_BL]{0};
     wByte ciphertext1[WukOP4_BL]{0};
     wByte ciphertext2[WukOP4_BL]{0};
-    wuk::Random random;
+    wuk::WukRandom random;
 
     wByte key1  [WukOP4_KL] {0};
     wByte key2  [WukOP4_KL] {0};

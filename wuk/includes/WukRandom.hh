@@ -18,13 +18,12 @@
 #endif
 
 namespace wuk {
-    class LIBWUK_API Random {
+    class LIBWUK_API WukRandom {
     private:
-        std::random_device rd;
         std::mt19937 generator;
 
     public:
-        Random();
+        WukRandom();
 
     public:
         wSize rand();

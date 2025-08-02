@@ -1,11 +1,13 @@
-#include <net/WukPacket.hh>
-#include <net/WukPacket.pb.h>
+#include "packet.pb.h"
+#include "packet.pb.cc"
 
 #include <WukRandom.hh>
-#include <WukTime.hh>
 #include <WukMisc.hh>
+#include <WukTime.hh>
 
 #include <iostream>
+#include <iomanip>
+#include <sstream>
 
 using namespace wuk;
 using namespace wuk::net;
@@ -21,26 +23,37 @@ string get_fixed(double x)
 
 int main()
 {
-    WukPacket packet;
-    // WukRandom random;
-    // WukTime timer;
+    wuk::Random random;
+    wuk::Time timer;
 
-    packet.set_type(MessageType::IMAGE)
-          .set_protocol(0x11111111)
-          .set_segment(0x22222222)
-          .set_seq(0x33333333)
-          .set_timestamp(0x4444444444444444)
-          .set_ids(0x5555555555555555, 0x6666666666666666)
-          .set_message(std::string{"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"});
-    std::string res = packet.serialize();
+    WukPacket send_packet;
+    WukPacket recv_packet;
 
-    string a = packet.serialize();
+    // 设置消息包数据
+    const char message[] = {
+        "GET / HTTP/1.1\r\n"
+        "Host: exmple.com\r\n"
+        "Accept: */*\r\n"
+        "User-Agent: Android\r\n\r\n"
+    };
+    size_t message_length = sizeof(message) - 1;
+    send_packet.set_msg_type(MessageType::DATA);
+    send_packet.set_msg_seq(static_cast<wU32>(random.rand()));
+    send_packet.set_seg_id(0);
+    send_packet.set_proto_ver(0x01);
+    send_packet.set_msg_id(static_cast<wU32>(random.rand()));
+    send_packet.set_msg_size(message_length);
+    send_packet.set_sender_id(random.rand());
+    send_packet.set_recipient_id(random.rand());
+    send_packet.set_time_stamp(timer.time());
+    send_packet.set_message(message, message_length);
+    // 序列化消息包数据并显示
+    string a = send_packet.SerializeAsString();
     cout << "Send packet buffer:\n";
     print_hex((wByte *)a.data(), a.length(), 16, true, true);
 
     // 读取序列化数据并显示
     cout << "Recv packet buffer:\n";
-    Message recv_packet;
     recv_packet.ParseFromString(a);
     string recv_message = recv_packet.message();
     cout << "\tMessage type:         " << static_cast<wU32>(recv_packet.msg_type()) << "\n"
@@ -53,7 +66,6 @@ int main()
          << "\tMessage recipient id: " << recv_packet.recipient_id() << "\n"
          << "\tMessage time stamp:   " << get_fixed(recv_packet.time_stamp()) << "\n"
          << "\tMessage:              " << get_pybytes((wByte *)recv_message.data(), recv_message.length(), false) << endl;
-
 
     return 0;
 }

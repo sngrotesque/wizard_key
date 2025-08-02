@@ -7,9 +7,9 @@
 #include <chrono>
 
 namespace wuk {
-    class LIBWUK_API Time {
+    class LIBWUK_API WukTime {
     public:
-        Time() = default;
+        WukTime() = default;
     
     public:
         void sleep(double delay);

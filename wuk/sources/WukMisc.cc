@@ -130,3 +130,36 @@ void wuk::misc::print_pybytes(const wByte *buf, wSize size, bool newline)
         printf("\n");
     }
 }
+
+std::string wuk::misc::get_pybytes(const wByte *buf, wSize size, bool newline)
+{
+    std::stringstream ss;
+
+    for(wSize i = 0; i < size; ++i) {
+        if (buf[i] < 0x20) {
+            switch (buf[i]) {
+                case 0x0a: ss << "\\n"; break;
+                case 0x09: ss << "\\t"; break;
+                case 0x0d: ss << "\\r"; break;
+                default:   ss << "\\x"
+                              << std::hex
+                              << std::setw(2)
+                              << std::setfill('0')
+                              << static_cast<int>(buf[i]);
+                              break;
+            }
+        } else if (buf[i] >= 0x20 && buf[i] < 0x7f) {
+            if (buf[i] == 0x5c) {
+                ss << "\\\\";
+            } else {
+                ss << buf[i];
+            }
+        } else {
+            ss << "\\x" << std::hex << std::setw(2) << std::setfill('0') << static_cast<int>(buf[i]);
+        }
+    }
+    if(newline) {
+        ss << "\n";
+    }
+    return ss.str();
+}
