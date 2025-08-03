@@ -22,38 +22,36 @@ string get_fixed(double x)
 int main()
 {
     WukPacket packet;
-    // WukRandom random;
-    // WukTime timer;
+    WukRandom random;
+    WukTime timer;
 
-    packet.set_type(MessageType::IMAGE)
-          .set_protocol(0x11111111)
-          .set_segment(0x22222222)
-          .set_seq(0x33333333)
-          .set_timestamp(0x4444444444444444)
-          .set_ids(0x5555555555555555, 0x6666666666666666)
+    packet.set_type(MessageType::MESSAGE)
+          .set_protocol(0x0101)
+          .set_segment(0)
+          .set_seq(random.rand())
+          .set_timestamp(timer.time())
+          .set_ids(random.rand(), random.rand())
           .set_message(std::string{"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"});
     std::string res = packet.serialize();
 
-    string a = packet.serialize();
     cout << "Send packet buffer:\n";
-    print_hex((wByte *)a.data(), a.length(), 16, true, true);
+    print_hex((wByte *)res.data(), res.length(), 16, true, true);
 
     // 读取序列化数据并显示
     cout << "Recv packet buffer:\n";
-    Message recv_packet;
-    recv_packet.ParseFromString(a);
-    string recv_message = recv_packet.message();
-    cout << "\tMessage type:         " << static_cast<wU32>(recv_packet.msg_type()) << "\n"
-         << "\tMessage seq:          " << recv_packet.msg_seq() << "\n"
-         << "\tMessage seg id:       " << recv_packet.seg_id() << "\n"
-         << "\tMessage proto ver:    " << recv_packet.proto_ver() << "\n"
-         << "\tMessage id:           " << recv_packet.msg_id() << "\n"
-         << "\tMessage size:         " << recv_packet.msg_size() << "\n"
-         << "\tMessage sender id:    " << recv_packet.sender_id() << "\n"
-         << "\tMessage recipient id: " << recv_packet.recipient_id() << "\n"
-         << "\tMessage time stamp:   " << get_fixed(recv_packet.time_stamp()) << "\n"
+    WukPacket recv_packet;
+    recv_packet.parse(res);
+    std::string recv_message = recv_packet.get_message();
+    cout << "\tMessage type:         " << static_cast<wU32>(recv_packet.get_type()) << "\n"
+         << "\tMessage seq:          " << recv_packet.get_seq() << "\n"
+         << "\tMessage seg id:       " << recv_packet.get_segment() << "\n"
+         << "\tMessage proto ver:    " << recv_packet.get_protocol() << "\n"
+         << "\tMessage id:           " << recv_packet.get_message_id() << "\n"
+         << "\tMessage size:         " << recv_packet.get_message_size() << "\n"
+         << "\tMessage sender id:    " << recv_packet.get_sender() << "\n"
+         << "\tMessage recipient id: " << recv_packet.get_recipient() << "\n"
+         << "\tMessage time stamp:   " << get_fixed(recv_packet.get_timestamp()) << "\n"
          << "\tMessage:              " << get_pybytes((wByte *)recv_message.data(), recv_message.length(), false) << endl;
-
 
     return 0;
 }

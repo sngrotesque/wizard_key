@@ -2,6 +2,8 @@
 
 #define RETURN return *this
 
+// PRIVATE: Function
+
 bool wuk::net::WukPacket::validate() const
 {
     if (this->_message.proto_ver() < 0x01) {
@@ -15,16 +17,15 @@ bool wuk::net::WukPacket::validate() const
         return false;
     }
 
-    if (this->_message.sender_id() == 0) {
-        return false;
-    }
-
-    if (this->_message.recipient_id() == 0) {
+    if ((this->_message.sender_id() == 0) ||
+        (this->_message.recipient_id() == 0)) {
         return false;
     }
 
     return true;
 }
+
+// PUBLIC: Setter
 
 wuk::net::WukPacket &wuk::net::WukPacket::set_type(MessageType type)
 {
@@ -111,6 +112,71 @@ wuk::net::WukPacket &wuk::net::WukPacket::set_message(const wuk::Buffer &buffer)
     return this->set_message(buffer.get_data(), buffer.get_length());
 }
 
+// PUBLIC: Getter
+
+wuk::net::MessageType wuk::net::WukPacket::get_type() const
+{
+    return this->_message.msg_type();
+}
+
+bool wuk::net::WukPacket::has_flag(MessageType flag) const
+{
+    return (this->get_type() & flag) == flag;
+}
+
+wU32 wuk::net::WukPacket::get_seq() const
+{
+    return this->_message.msg_seq();
+}
+
+wU32 wuk::net::WukPacket::get_segment() const
+{
+    return this->_message.seg_id();
+}
+
+wU32 wuk::net::WukPacket::get_protocol() const
+{
+    return this->_message.proto_ver();
+}
+
+wU64 wuk::net::WukPacket::get_sender() const
+{
+    return this->_message.sender_id();
+}
+
+wU64 wuk::net::WukPacket::get_recipient() const
+{
+    return this->_message.recipient_id();
+}
+
+double wuk::net::WukPacket::get_timestamp() const
+{
+    return this->_message.time_stamp();
+}
+
+wU32 wuk::net::WukPacket::get_message_id() const
+{
+    return this->_message.msg_id();
+}
+
+wSize wuk::net::WukPacket::get_message_size() const
+{
+    return this->_message.message().length();
+}
+
+const std::string &wuk::net::WukPacket::get_message() const
+{
+    return this->_message.message();
+}
+
+const wuk::Buffer wuk::net::WukPacket::get_message(int) const
+{
+    return wuk::Buffer(reinterpret_cast<const wByte *>(this->_message.message().data()),
+                    this->_message.message().length());
+}
+
+// PUBLIC: Function
+
 const std::string wuk::net::WukPacket::serialize()
 {
     if (this->validate() == false) {
@@ -126,8 +192,22 @@ const std::string wuk::net::WukPacket::serialize()
     return this->_message.SerializeAsString();
 }
 
-wuk::net::Message &wuk::net::WukPacket::parse(const std::string &buffer)
+wuk::net::WukPacket &wuk::net::WukPacket::parse(const std::string &buffer)
 {
-    _message.ParseFromString(buffer);
-    return _message;
+    return this->parse_from(buffer.data(), buffer.length());
+}
+
+wuk::net::WukPacket &wuk::net::WukPacket::parse_from(const void *buffer, wSize length)
+{
+    if (!this->_message.ParseFromArray(buffer, static_cast<int>(length))) {
+        throw wuk::Exception(wuk::Error::ERR, "wuk::net::WukPacket::parse_from",
+            "Invalid binary data");
+    }
+
+    if (!this->validate()) {
+        throw wuk::Exception(wuk::Error::ERR, "wuk::net::WukPacket::parse",
+            "Parsed data validation failed");
+    }
+
+    return *this;
 }

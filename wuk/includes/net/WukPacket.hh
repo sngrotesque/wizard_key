@@ -12,7 +12,6 @@
 namespace wuk::net {
     class LIBWUK_API WukPacket {
     private:
-    public:
         Message _message;
         wuk::WukTime timer;
 
@@ -22,7 +21,7 @@ namespace wuk::net {
     public:
         WukPacket() = default;
 
-    public:
+    public: // Setter
         WukPacket &set_type(MessageType type);
         WukPacket &add_flag(MessageType type);
 
@@ -40,10 +39,29 @@ namespace wuk::net {
         WukPacket &set_message(const void *buffer, wSize length);
         WukPacket &set_message(const std::string &buffer);
         WukPacket &set_message(const wuk::Buffer &buffer);
-    
-    public:
+
+    public: // Getter
+        MessageType get_type() const;
+        bool has_flag(MessageType flag) const;
+        wU32 get_seq() const;
+        wU32 get_segment() const;
+        wU32 get_protocol() const;
+
+        wU64 get_sender() const;
+        wU64 get_recipient() const;
+
+        double get_timestamp() const;
+
+        wU32 get_message_id() const;
+        wSize get_message_size() const;
+
+        const std::string &get_message() const;
+        const wuk::Buffer get_message(int) const;
+
+    public: // Function
         const std::string serialize();
-        Message &parse(const std::string &buffer);
+        WukPacket &parse(const std::string &buffer);
+        WukPacket &parse_from(const void *buffer, wSize length);
     };
 }
 #endif
