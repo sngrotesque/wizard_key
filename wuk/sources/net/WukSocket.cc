@@ -206,9 +206,9 @@ std::string wuk::net::WukSocket::recv(const wU32 &length, wI32 flag)
 void wuk::net::WukSocket::close()
 {
 #   if defined(WUK_PLATFORM_WINOS)
-    wI32 err = closesocket(this->fd);
+    wI32 err = ::closesocket(this->fd);
 #   else
-    wI32 err = close(this->fd);
+    wI32 err = ::close(this->fd);
 #   endif
     if (err == NETERROR) {
         wI32 err_code = wuk::net::SystemError::code();
