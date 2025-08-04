@@ -88,6 +88,73 @@ socklen_t wuk::net::WukSockaddr::get_addrlen() const noexcept
     return this->addrlen;
 }
 
+const std::string wuk::net::WukSockaddr::get_address_string() const
+{
+    char buffer[INET6_ADDRSTRLEN] = {0};
+    const sockaddr *sa = this->get_addr();
+    
+    if (!sa) {
+        return std::string{};
+    }
+
+    auto throw_error = []() -> void {
+        wI32 err_code = wuk::net::SystemError::code();
+        throw wuk::Exception(err_code, "WukSockaddr::get_address_string",
+            wuk::net::SystemError::message(err_code).c_str());
+    };
+
+    switch (sa->sa_family) {
+        case AF_INET:
+        {
+            const sockaddr_in *sin = reinterpret_cast<const sockaddr_in *>(sa);
+            if (!inet_ntop(AF_INET, &sin->sin_addr, buffer, sizeof(buffer))) {
+                throw_error();
+            }
+            break;
+        }
+        case AF_INET6:
+        {
+            const sockaddr_in6 *sin6 = reinterpret_cast<const sockaddr_in6 *>(sa);
+            if (!inet_ntop(AF_INET6, &sin6->sin6_addr, buffer, sizeof(buffer))) {
+                throw_error();
+            }
+            break;
+        }
+        default:
+            throw wuk::Exception(wuk::Error::ERR,
+                "wuk::net::WukSockaddr::get_address_string",
+                "Unsupported address family");
+    }
+
+    return std::string(buffer);
+}
+
+const wU16 wuk::net::WukSockaddr::get_port() const
+{
+    const sockaddr *sa = this->get_addr();
+    
+    if (!sa) {
+        return 0;
+    }
+
+    switch (sa->sa_family) {
+        case AF_INET:
+        {
+            const sockaddr_in *sin = reinterpret_cast<const sockaddr_in *>(sa);
+            return ntohs(sin->sin_port);
+        }
+        case AF_INET6:
+        {
+            const sockaddr_in6 *sin6 = reinterpret_cast<const sockaddr_in6 *>(sa);
+            return ntohs(sin6->sin6_port);
+        }
+        default:
+            throw wuk::Exception(wuk::Error::ERR,
+                "wuk::net::WukSockaddr::get_port",
+                "Unsupported address family");
+    }
+}
+
 // WukSocket BEGIN
 
 wuk::net::WukSocket::WukSocket(wI32 family, wI32 sock_type, wI32 proto)
@@ -225,4 +292,14 @@ void wuk::net::WukSocket::set_raddr(const WukSockaddr &addr)
 void wuk::net::WukSocket::set_laddr(const WukSockaddr &addr)
 {
     this->m_laddr = addr;
+}
+
+const wuk::net::WukSockaddr &wuk::net::WukSocket::get_raddr() const noexcept
+{
+    return this->m_raddr;
+}
+
+const wuk::net::WukSockaddr &wuk::net::WukSocket::get_laddr() const noexcept
+{
+    return this->m_laddr;
 }

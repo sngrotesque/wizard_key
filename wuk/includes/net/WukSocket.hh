@@ -53,6 +53,9 @@ namespace wuk::net {
 
         const sockaddr *get_addr() const noexcept;
         socklen_t get_addrlen() const noexcept;
+
+        const std::string get_address_string() const;
+        const wU16 get_port() const;
     };
 
 // WukSocket BEGIN
@@ -111,12 +114,19 @@ namespace wuk::net {
         void send(const std::string &buffer, wI32 flag = 0);
         std::string recv(const wU32 &length, wI32 flag = 0);
         void close();
-    
+
     public:
         void set_raddr(const WukSockaddr &addr);
         void set_laddr(const WukSockaddr &addr);
+
+        const WukSockaddr &get_raddr() const noexcept;
+        const WukSockaddr &get_laddr() const noexcept;
+    
+    public:
+        const wSocket get_fd() const
+        {
+            return this->fd;
+        }
     };
 }
-
-
 #endif
