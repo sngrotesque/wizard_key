@@ -1,5 +1,7 @@
 #include <WukBase64.hh>
 
+#include <WukMemory.hh>
+
 #define BASE64PAD '='
 constexpr wByte __ = 0x7f;
 

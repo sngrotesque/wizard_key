@@ -1,5 +1,8 @@
 #include <WukBuffer.hh>
 
+#include <WukMemory.hh>
+#include <vector>
+
 static constexpr char hex_table[] = "0123456789abcdef";
 
 //////////////////////////////////////////////////////////////////////

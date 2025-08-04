@@ -1,5 +1,9 @@
 #include <crypto/WukOP4.hh>
 
+#include <config/WukEndianness.hh>
+#include <crypto/WukCommon.hh>
+#include <WukMemory.hh>
+
 #define OP4_SI(T) static inline T
 
 alignas(16) OP4_SI(constexpr wU32) MUL_COEFFS[4] = {

@@ -26,9 +26,9 @@ int main()
     WukTime timer;
 
     packet.set_type(MessageType::MESSAGE)
-          .set_protocol(0x0101)
-          .set_segment(0)
-          .set_seq(random.rand())
+          .set_proto_ver(0x0101)
+          .set_segment_id(0)
+          .set_sequence(random.rand())
           .set_timestamp(timer.time())
           .set_ids(random.rand(), random.rand())
           .set_message(std::string{"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"});
@@ -43,9 +43,9 @@ int main()
     recv_packet.parse(res);
     std::string recv_message = recv_packet.get_message();
     cout << "\tMessage type:         " << static_cast<wU32>(recv_packet.get_type()) << "\n"
-         << "\tMessage seq:          " << recv_packet.get_seq() << "\n"
-         << "\tMessage seg id:       " << recv_packet.get_segment() << "\n"
-         << "\tMessage proto ver:    " << recv_packet.get_protocol() << "\n"
+         << "\tMessage seq:          " << recv_packet.get_sequence() << "\n"
+         << "\tMessage seg id:       " << recv_packet.get_segment_id() << "\n"
+         << "\tMessage proto ver:    " << recv_packet.get_proto_ver() << "\n"
          << "\tMessage id:           " << recv_packet.get_message_id() << "\n"
          << "\tMessage size:         " << recv_packet.get_message_size() << "\n"
          << "\tMessage sender id:    " << recv_packet.get_sender() << "\n"

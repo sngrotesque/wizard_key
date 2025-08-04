@@ -1,5 +1,9 @@
 #include <WukPadding.hh>
 
+#include <config/WukException.hh>
+#include <WukMemory.hh>
+#include <WukRandom.hh>
+
 static inline void throw_error(const void *data, wSize length, wU32 bs, const char *fn)
 {
     if (!data || !length) {

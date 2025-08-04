@@ -71,12 +71,14 @@ enum MessageType : int {
   VIDEO = 256,
   AUDIO = 512,
   ANYM = 1024,
+  GROUP = 1073741824,
+  PRIVACY = 536870912,
   MessageType_INT_MIN_SENTINEL_DO_NOT_USE_ = std::numeric_limits<int32_t>::min(),
   MessageType_INT_MAX_SENTINEL_DO_NOT_USE_ = std::numeric_limits<int32_t>::max()
 };
 bool MessageType_IsValid(int value);
 constexpr MessageType MessageType_MIN = NONE;
-constexpr MessageType MessageType_MAX = ANYM;
+constexpr MessageType MessageType_MAX = GROUP;
 constexpr int MessageType_ARRAYSIZE = MessageType_MAX + 1;
 
 const ::PROTOBUF_NAMESPACE_ID::EnumDescriptor* MessageType_descriptor();
@@ -216,110 +218,110 @@ class Message final :
   // accessors -------------------------------------------------------
 
   enum : int {
-    kMessageFieldNumber = 10,
-    kMsgTypeFieldNumber = 1,
-    kMsgSeqFieldNumber = 2,
-    kSegIdFieldNumber = 3,
-    kProtoVerFieldNumber = 4,
-    kSenderIdFieldNumber = 5,
-    kRecipientIdFieldNumber = 6,
-    kTimeStampFieldNumber = 7,
-    kMsgSizeFieldNumber = 8,
-    kMsgIdFieldNumber = 9,
+    kMContentFieldNumber = 10,
+    kMTypeFieldNumber = 1,
+    kMSequenceFieldNumber = 2,
+    kMSegmentIdFieldNumber = 3,
+    kMProtoVerFieldNumber = 4,
+    kMSenderFieldNumber = 5,
+    kMRecipientFieldNumber = 6,
+    kMTimestampFieldNumber = 7,
+    kMLengthFieldNumber = 8,
+    kMIdFieldNumber = 9,
   };
-  // bytes message = 10;
-  void clear_message();
-  const std::string& message() const;
+  // bytes m_content = 10;
+  void clear_m_content();
+  const std::string& m_content() const;
   template <typename ArgT0 = const std::string&, typename... ArgT>
-  void set_message(ArgT0&& arg0, ArgT... args);
-  std::string* mutable_message();
-  PROTOBUF_NODISCARD std::string* release_message();
-  void set_allocated_message(std::string* message);
+  void set_m_content(ArgT0&& arg0, ArgT... args);
+  std::string* mutable_m_content();
+  PROTOBUF_NODISCARD std::string* release_m_content();
+  void set_allocated_m_content(std::string* m_content);
   private:
-  const std::string& _internal_message() const;
-  inline PROTOBUF_ALWAYS_INLINE void _internal_set_message(const std::string& value);
-  std::string* _internal_mutable_message();
+  const std::string& _internal_m_content() const;
+  inline PROTOBUF_ALWAYS_INLINE void _internal_set_m_content(const std::string& value);
+  std::string* _internal_mutable_m_content();
   public:
 
-  // .wuk.net.MessageType msg_type = 1;
-  void clear_msg_type();
-  ::wuk::net::MessageType msg_type() const;
-  void set_msg_type(::wuk::net::MessageType value);
+  // .wuk.net.MessageType m_type = 1;
+  void clear_m_type();
+  ::wuk::net::MessageType m_type() const;
+  void set_m_type(::wuk::net::MessageType value);
   private:
-  ::wuk::net::MessageType _internal_msg_type() const;
-  void _internal_set_msg_type(::wuk::net::MessageType value);
+  ::wuk::net::MessageType _internal_m_type() const;
+  void _internal_set_m_type(::wuk::net::MessageType value);
   public:
 
-  // uint32 msg_seq = 2;
-  void clear_msg_seq();
-  uint32_t msg_seq() const;
-  void set_msg_seq(uint32_t value);
+  // uint32 m_sequence = 2;
+  void clear_m_sequence();
+  uint32_t m_sequence() const;
+  void set_m_sequence(uint32_t value);
   private:
-  uint32_t _internal_msg_seq() const;
-  void _internal_set_msg_seq(uint32_t value);
+  uint32_t _internal_m_sequence() const;
+  void _internal_set_m_sequence(uint32_t value);
   public:
 
-  // uint32 seg_id = 3;
-  void clear_seg_id();
-  uint32_t seg_id() const;
-  void set_seg_id(uint32_t value);
+  // uint32 m_segment_id = 3;
+  void clear_m_segment_id();
+  uint32_t m_segment_id() const;
+  void set_m_segment_id(uint32_t value);
   private:
-  uint32_t _internal_seg_id() const;
-  void _internal_set_seg_id(uint32_t value);
+  uint32_t _internal_m_segment_id() const;
+  void _internal_set_m_segment_id(uint32_t value);
   public:
 
-  // uint32 proto_ver = 4;
-  void clear_proto_ver();
-  uint32_t proto_ver() const;
-  void set_proto_ver(uint32_t value);
+  // uint32 m_proto_ver = 4;
+  void clear_m_proto_ver();
+  uint32_t m_proto_ver() const;
+  void set_m_proto_ver(uint32_t value);
   private:
-  uint32_t _internal_proto_ver() const;
-  void _internal_set_proto_ver(uint32_t value);
+  uint32_t _internal_m_proto_ver() const;
+  void _internal_set_m_proto_ver(uint32_t value);
   public:
 
-  // uint64 sender_id = 5;
-  void clear_sender_id();
-  uint64_t sender_id() const;
-  void set_sender_id(uint64_t value);
+  // uint64 m_sender = 5;
+  void clear_m_sender();
+  uint64_t m_sender() const;
+  void set_m_sender(uint64_t value);
   private:
-  uint64_t _internal_sender_id() const;
-  void _internal_set_sender_id(uint64_t value);
+  uint64_t _internal_m_sender() const;
+  void _internal_set_m_sender(uint64_t value);
   public:
 
-  // uint64 recipient_id = 6;
-  void clear_recipient_id();
-  uint64_t recipient_id() const;
-  void set_recipient_id(uint64_t value);
+  // uint64 m_recipient = 6;
+  void clear_m_recipient();
+  uint64_t m_recipient() const;
+  void set_m_recipient(uint64_t value);
   private:
-  uint64_t _internal_recipient_id() const;
-  void _internal_set_recipient_id(uint64_t value);
+  uint64_t _internal_m_recipient() const;
+  void _internal_set_m_recipient(uint64_t value);
   public:
 
-  // double time_stamp = 7;
-  void clear_time_stamp();
-  double time_stamp() const;
-  void set_time_stamp(double value);
+  // double m_timestamp = 7;
+  void clear_m_timestamp();
+  double m_timestamp() const;
+  void set_m_timestamp(double value);
   private:
-  double _internal_time_stamp() const;
-  void _internal_set_time_stamp(double value);
+  double _internal_m_timestamp() const;
+  void _internal_set_m_timestamp(double value);
   public:
 
-  // uint32 msg_size = 8;
-  void clear_msg_size();
-  uint32_t msg_size() const;
-  void set_msg_size(uint32_t value);
+  // uint32 m_length = 8;
+  void clear_m_length();
+  uint32_t m_length() const;
+  void set_m_length(uint32_t value);
   private:
-  uint32_t _internal_msg_size() const;
-  void _internal_set_msg_size(uint32_t value);
+  uint32_t _internal_m_length() const;
+  void _internal_set_m_length(uint32_t value);
   public:
 
-  // uint32 msg_id = 9;
-  void clear_msg_id();
-  uint32_t msg_id() const;
-  void set_msg_id(uint32_t value);
+  // uint32 m_id = 9;
+  void clear_m_id();
+  uint32_t m_id() const;
+  void set_m_id(uint32_t value);
   private:
-  uint32_t _internal_msg_id() const;
-  void _internal_set_msg_id(uint32_t value);
+  uint32_t _internal_m_id() const;
+  void _internal_set_m_id(uint32_t value);
   public:
 
   // @@protoc_insertion_point(class_scope:wuk.net.Message)
@@ -330,16 +332,16 @@ class Message final :
   typedef void InternalArenaConstructable_;
   typedef void DestructorSkippable_;
   struct Impl_ {
-    ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr message_;
-    int msg_type_;
-    uint32_t msg_seq_;
-    uint32_t seg_id_;
-    uint32_t proto_ver_;
-    uint64_t sender_id_;
-    uint64_t recipient_id_;
-    double time_stamp_;
-    uint32_t msg_size_;
-    uint32_t msg_id_;
+    ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr m_content_;
+    int m_type_;
+    uint32_t m_sequence_;
+    uint32_t m_segment_id_;
+    uint32_t m_proto_ver_;
+    uint64_t m_sender_;
+    uint64_t m_recipient_;
+    double m_timestamp_;
+    uint32_t m_length_;
+    uint32_t m_id_;
     mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   };
   union { Impl_ _impl_; };
@@ -356,234 +358,234 @@ class Message final :
 #endif  // __GNUC__
 // Message
 
-// .wuk.net.MessageType msg_type = 1;
-inline void Message::clear_msg_type() {
-  _impl_.msg_type_ = 0;
+// .wuk.net.MessageType m_type = 1;
+inline void Message::clear_m_type() {
+  _impl_.m_type_ = 0;
 }
-inline ::wuk::net::MessageType Message::_internal_msg_type() const {
-  return static_cast< ::wuk::net::MessageType >(_impl_.msg_type_);
+inline ::wuk::net::MessageType Message::_internal_m_type() const {
+  return static_cast< ::wuk::net::MessageType >(_impl_.m_type_);
 }
-inline ::wuk::net::MessageType Message::msg_type() const {
-  // @@protoc_insertion_point(field_get:wuk.net.Message.msg_type)
-  return _internal_msg_type();
+inline ::wuk::net::MessageType Message::m_type() const {
+  // @@protoc_insertion_point(field_get:wuk.net.Message.m_type)
+  return _internal_m_type();
 }
-inline void Message::_internal_set_msg_type(::wuk::net::MessageType value) {
+inline void Message::_internal_set_m_type(::wuk::net::MessageType value) {
   
-  _impl_.msg_type_ = value;
+  _impl_.m_type_ = value;
 }
-inline void Message::set_msg_type(::wuk::net::MessageType value) {
-  _internal_set_msg_type(value);
-  // @@protoc_insertion_point(field_set:wuk.net.Message.msg_type)
+inline void Message::set_m_type(::wuk::net::MessageType value) {
+  _internal_set_m_type(value);
+  // @@protoc_insertion_point(field_set:wuk.net.Message.m_type)
 }
 
-// uint32 msg_seq = 2;
-inline void Message::clear_msg_seq() {
-  _impl_.msg_seq_ = 0u;
+// uint32 m_sequence = 2;
+inline void Message::clear_m_sequence() {
+  _impl_.m_sequence_ = 0u;
 }
-inline uint32_t Message::_internal_msg_seq() const {
-  return _impl_.msg_seq_;
+inline uint32_t Message::_internal_m_sequence() const {
+  return _impl_.m_sequence_;
 }
-inline uint32_t Message::msg_seq() const {
-  // @@protoc_insertion_point(field_get:wuk.net.Message.msg_seq)
-  return _internal_msg_seq();
+inline uint32_t Message::m_sequence() const {
+  // @@protoc_insertion_point(field_get:wuk.net.Message.m_sequence)
+  return _internal_m_sequence();
 }
-inline void Message::_internal_set_msg_seq(uint32_t value) {
+inline void Message::_internal_set_m_sequence(uint32_t value) {
   
-  _impl_.msg_seq_ = value;
+  _impl_.m_sequence_ = value;
 }
-inline void Message::set_msg_seq(uint32_t value) {
-  _internal_set_msg_seq(value);
-  // @@protoc_insertion_point(field_set:wuk.net.Message.msg_seq)
+inline void Message::set_m_sequence(uint32_t value) {
+  _internal_set_m_sequence(value);
+  // @@protoc_insertion_point(field_set:wuk.net.Message.m_sequence)
 }
 
-// uint32 seg_id = 3;
-inline void Message::clear_seg_id() {
-  _impl_.seg_id_ = 0u;
+// uint32 m_segment_id = 3;
+inline void Message::clear_m_segment_id() {
+  _impl_.m_segment_id_ = 0u;
 }
-inline uint32_t Message::_internal_seg_id() const {
-  return _impl_.seg_id_;
+inline uint32_t Message::_internal_m_segment_id() const {
+  return _impl_.m_segment_id_;
 }
-inline uint32_t Message::seg_id() const {
-  // @@protoc_insertion_point(field_get:wuk.net.Message.seg_id)
-  return _internal_seg_id();
+inline uint32_t Message::m_segment_id() const {
+  // @@protoc_insertion_point(field_get:wuk.net.Message.m_segment_id)
+  return _internal_m_segment_id();
 }
-inline void Message::_internal_set_seg_id(uint32_t value) {
+inline void Message::_internal_set_m_segment_id(uint32_t value) {
   
-  _impl_.seg_id_ = value;
+  _impl_.m_segment_id_ = value;
 }
-inline void Message::set_seg_id(uint32_t value) {
-  _internal_set_seg_id(value);
-  // @@protoc_insertion_point(field_set:wuk.net.Message.seg_id)
+inline void Message::set_m_segment_id(uint32_t value) {
+  _internal_set_m_segment_id(value);
+  // @@protoc_insertion_point(field_set:wuk.net.Message.m_segment_id)
 }
 
-// uint32 proto_ver = 4;
-inline void Message::clear_proto_ver() {
-  _impl_.proto_ver_ = 0u;
+// uint32 m_proto_ver = 4;
+inline void Message::clear_m_proto_ver() {
+  _impl_.m_proto_ver_ = 0u;
 }
-inline uint32_t Message::_internal_proto_ver() const {
-  return _impl_.proto_ver_;
+inline uint32_t Message::_internal_m_proto_ver() const {
+  return _impl_.m_proto_ver_;
 }
-inline uint32_t Message::proto_ver() const {
-  // @@protoc_insertion_point(field_get:wuk.net.Message.proto_ver)
-  return _internal_proto_ver();
+inline uint32_t Message::m_proto_ver() const {
+  // @@protoc_insertion_point(field_get:wuk.net.Message.m_proto_ver)
+  return _internal_m_proto_ver();
 }
-inline void Message::_internal_set_proto_ver(uint32_t value) {
+inline void Message::_internal_set_m_proto_ver(uint32_t value) {
   
-  _impl_.proto_ver_ = value;
+  _impl_.m_proto_ver_ = value;
 }
-inline void Message::set_proto_ver(uint32_t value) {
-  _internal_set_proto_ver(value);
-  // @@protoc_insertion_point(field_set:wuk.net.Message.proto_ver)
+inline void Message::set_m_proto_ver(uint32_t value) {
+  _internal_set_m_proto_ver(value);
+  // @@protoc_insertion_point(field_set:wuk.net.Message.m_proto_ver)
 }
 
-// uint64 sender_id = 5;
-inline void Message::clear_sender_id() {
-  _impl_.sender_id_ = uint64_t{0u};
+// uint64 m_sender = 5;
+inline void Message::clear_m_sender() {
+  _impl_.m_sender_ = uint64_t{0u};
 }
-inline uint64_t Message::_internal_sender_id() const {
-  return _impl_.sender_id_;
+inline uint64_t Message::_internal_m_sender() const {
+  return _impl_.m_sender_;
 }
-inline uint64_t Message::sender_id() const {
-  // @@protoc_insertion_point(field_get:wuk.net.Message.sender_id)
-  return _internal_sender_id();
+inline uint64_t Message::m_sender() const {
+  // @@protoc_insertion_point(field_get:wuk.net.Message.m_sender)
+  return _internal_m_sender();
 }
-inline void Message::_internal_set_sender_id(uint64_t value) {
+inline void Message::_internal_set_m_sender(uint64_t value) {
   
-  _impl_.sender_id_ = value;
+  _impl_.m_sender_ = value;
 }
-inline void Message::set_sender_id(uint64_t value) {
-  _internal_set_sender_id(value);
-  // @@protoc_insertion_point(field_set:wuk.net.Message.sender_id)
+inline void Message::set_m_sender(uint64_t value) {
+  _internal_set_m_sender(value);
+  // @@protoc_insertion_point(field_set:wuk.net.Message.m_sender)
 }
 
-// uint64 recipient_id = 6;
-inline void Message::clear_recipient_id() {
-  _impl_.recipient_id_ = uint64_t{0u};
+// uint64 m_recipient = 6;
+inline void Message::clear_m_recipient() {
+  _impl_.m_recipient_ = uint64_t{0u};
 }
-inline uint64_t Message::_internal_recipient_id() const {
-  return _impl_.recipient_id_;
+inline uint64_t Message::_internal_m_recipient() const {
+  return _impl_.m_recipient_;
 }
-inline uint64_t Message::recipient_id() const {
-  // @@protoc_insertion_point(field_get:wuk.net.Message.recipient_id)
-  return _internal_recipient_id();
+inline uint64_t Message::m_recipient() const {
+  // @@protoc_insertion_point(field_get:wuk.net.Message.m_recipient)
+  return _internal_m_recipient();
 }
-inline void Message::_internal_set_recipient_id(uint64_t value) {
+inline void Message::_internal_set_m_recipient(uint64_t value) {
   
-  _impl_.recipient_id_ = value;
+  _impl_.m_recipient_ = value;
 }
-inline void Message::set_recipient_id(uint64_t value) {
-  _internal_set_recipient_id(value);
-  // @@protoc_insertion_point(field_set:wuk.net.Message.recipient_id)
+inline void Message::set_m_recipient(uint64_t value) {
+  _internal_set_m_recipient(value);
+  // @@protoc_insertion_point(field_set:wuk.net.Message.m_recipient)
 }
 
-// double time_stamp = 7;
-inline void Message::clear_time_stamp() {
-  _impl_.time_stamp_ = 0;
+// double m_timestamp = 7;
+inline void Message::clear_m_timestamp() {
+  _impl_.m_timestamp_ = 0;
 }
-inline double Message::_internal_time_stamp() const {
-  return _impl_.time_stamp_;
+inline double Message::_internal_m_timestamp() const {
+  return _impl_.m_timestamp_;
 }
-inline double Message::time_stamp() const {
-  // @@protoc_insertion_point(field_get:wuk.net.Message.time_stamp)
-  return _internal_time_stamp();
+inline double Message::m_timestamp() const {
+  // @@protoc_insertion_point(field_get:wuk.net.Message.m_timestamp)
+  return _internal_m_timestamp();
 }
-inline void Message::_internal_set_time_stamp(double value) {
+inline void Message::_internal_set_m_timestamp(double value) {
   
-  _impl_.time_stamp_ = value;
+  _impl_.m_timestamp_ = value;
 }
-inline void Message::set_time_stamp(double value) {
-  _internal_set_time_stamp(value);
-  // @@protoc_insertion_point(field_set:wuk.net.Message.time_stamp)
+inline void Message::set_m_timestamp(double value) {
+  _internal_set_m_timestamp(value);
+  // @@protoc_insertion_point(field_set:wuk.net.Message.m_timestamp)
 }
 
-// uint32 msg_size = 8;
-inline void Message::clear_msg_size() {
-  _impl_.msg_size_ = 0u;
+// uint32 m_length = 8;
+inline void Message::clear_m_length() {
+  _impl_.m_length_ = 0u;
 }
-inline uint32_t Message::_internal_msg_size() const {
-  return _impl_.msg_size_;
+inline uint32_t Message::_internal_m_length() const {
+  return _impl_.m_length_;
 }
-inline uint32_t Message::msg_size() const {
-  // @@protoc_insertion_point(field_get:wuk.net.Message.msg_size)
-  return _internal_msg_size();
+inline uint32_t Message::m_length() const {
+  // @@protoc_insertion_point(field_get:wuk.net.Message.m_length)
+  return _internal_m_length();
 }
-inline void Message::_internal_set_msg_size(uint32_t value) {
+inline void Message::_internal_set_m_length(uint32_t value) {
   
-  _impl_.msg_size_ = value;
+  _impl_.m_length_ = value;
 }
-inline void Message::set_msg_size(uint32_t value) {
-  _internal_set_msg_size(value);
-  // @@protoc_insertion_point(field_set:wuk.net.Message.msg_size)
+inline void Message::set_m_length(uint32_t value) {
+  _internal_set_m_length(value);
+  // @@protoc_insertion_point(field_set:wuk.net.Message.m_length)
 }
 
-// uint32 msg_id = 9;
-inline void Message::clear_msg_id() {
-  _impl_.msg_id_ = 0u;
+// uint32 m_id = 9;
+inline void Message::clear_m_id() {
+  _impl_.m_id_ = 0u;
 }
-inline uint32_t Message::_internal_msg_id() const {
-  return _impl_.msg_id_;
+inline uint32_t Message::_internal_m_id() const {
+  return _impl_.m_id_;
 }
-inline uint32_t Message::msg_id() const {
-  // @@protoc_insertion_point(field_get:wuk.net.Message.msg_id)
-  return _internal_msg_id();
+inline uint32_t Message::m_id() const {
+  // @@protoc_insertion_point(field_get:wuk.net.Message.m_id)
+  return _internal_m_id();
 }
-inline void Message::_internal_set_msg_id(uint32_t value) {
+inline void Message::_internal_set_m_id(uint32_t value) {
   
-  _impl_.msg_id_ = value;
+  _impl_.m_id_ = value;
 }
-inline void Message::set_msg_id(uint32_t value) {
-  _internal_set_msg_id(value);
-  // @@protoc_insertion_point(field_set:wuk.net.Message.msg_id)
+inline void Message::set_m_id(uint32_t value) {
+  _internal_set_m_id(value);
+  // @@protoc_insertion_point(field_set:wuk.net.Message.m_id)
 }
 
-// bytes message = 10;
-inline void Message::clear_message() {
-  _impl_.message_.ClearToEmpty();
+// bytes m_content = 10;
+inline void Message::clear_m_content() {
+  _impl_.m_content_.ClearToEmpty();
 }
-inline const std::string& Message::message() const {
-  // @@protoc_insertion_point(field_get:wuk.net.Message.message)
-  return _internal_message();
+inline const std::string& Message::m_content() const {
+  // @@protoc_insertion_point(field_get:wuk.net.Message.m_content)
+  return _internal_m_content();
 }
 template <typename ArgT0, typename... ArgT>
 inline PROTOBUF_ALWAYS_INLINE
-void Message::set_message(ArgT0&& arg0, ArgT... args) {
+void Message::set_m_content(ArgT0&& arg0, ArgT... args) {
  
- _impl_.message_.SetBytes(static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
-  // @@protoc_insertion_point(field_set:wuk.net.Message.message)
+ _impl_.m_content_.SetBytes(static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
+  // @@protoc_insertion_point(field_set:wuk.net.Message.m_content)
 }
-inline std::string* Message::mutable_message() {
-  std::string* _s = _internal_mutable_message();
-  // @@protoc_insertion_point(field_mutable:wuk.net.Message.message)
+inline std::string* Message::mutable_m_content() {
+  std::string* _s = _internal_mutable_m_content();
+  // @@protoc_insertion_point(field_mutable:wuk.net.Message.m_content)
   return _s;
 }
-inline const std::string& Message::_internal_message() const {
-  return _impl_.message_.Get();
+inline const std::string& Message::_internal_m_content() const {
+  return _impl_.m_content_.Get();
 }
-inline void Message::_internal_set_message(const std::string& value) {
+inline void Message::_internal_set_m_content(const std::string& value) {
   
-  _impl_.message_.Set(value, GetArenaForAllocation());
+  _impl_.m_content_.Set(value, GetArenaForAllocation());
 }
-inline std::string* Message::_internal_mutable_message() {
+inline std::string* Message::_internal_mutable_m_content() {
   
-  return _impl_.message_.Mutable(GetArenaForAllocation());
+  return _impl_.m_content_.Mutable(GetArenaForAllocation());
 }
-inline std::string* Message::release_message() {
-  // @@protoc_insertion_point(field_release:wuk.net.Message.message)
-  return _impl_.message_.Release();
+inline std::string* Message::release_m_content() {
+  // @@protoc_insertion_point(field_release:wuk.net.Message.m_content)
+  return _impl_.m_content_.Release();
 }
-inline void Message::set_allocated_message(std::string* message) {
-  if (message != nullptr) {
+inline void Message::set_allocated_m_content(std::string* m_content) {
+  if (m_content != nullptr) {
     
   } else {
     
   }
-  _impl_.message_.SetAllocated(message, GetArenaForAllocation());
+  _impl_.m_content_.SetAllocated(m_content, GetArenaForAllocation());
 #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  if (_impl_.message_.IsDefault()) {
-    _impl_.message_.Set("", GetArenaForAllocation());
+  if (_impl_.m_content_.IsDefault()) {
+    _impl_.m_content_.Set("", GetArenaForAllocation());
   }
 #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  // @@protoc_insertion_point(field_set_allocated:wuk.net.Message.message)
+  // @@protoc_insertion_point(field_set_allocated:wuk.net.Message.m_content)
 }
 
 #ifdef __GNUC__

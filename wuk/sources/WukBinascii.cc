@@ -1,5 +1,7 @@
 #include <WukBinascii.hh>
 
+#include <WukMemory.hh>
+
 constexpr wByte __ = 0x1f;
 
 static constexpr wByte hexTable[256] = {

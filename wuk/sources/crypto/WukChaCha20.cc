@@ -1,5 +1,10 @@
 #include <crypto/WukChaCha20.hh>
 
+#include <config/WukException.hh>
+#include <config/WukEndianness.hh>
+#include <crypto/WukCommon.hh>
+#include <WukMemory.hh>
+
 using namespace wuk::crypto;
 
 #define U32C(x) x##U

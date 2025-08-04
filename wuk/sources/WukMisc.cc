@@ -1,5 +1,9 @@
 #include <WukMisc.hh>
 
+#include <cstdio>
+#include <sstream>
+#include <iomanip>
+
 using namespace wuk::color;
 
 void print_diff_hex_byte(wByte byte) {

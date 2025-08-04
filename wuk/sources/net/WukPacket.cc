@@ -1,24 +1,45 @@
 #include <net/WukPacket.hh>
 
+#include <zlib.h>
+
 #define RETURN return *this
 
 // PRIVATE: Function
 
 bool wuk::net::WukPacket::validate() const
 {
-    if (this->_message.proto_ver() < 0x01) {
-        return false;
-    }
-    if (this->_message.seg_id() == 0 && (this->_message.msg_type() & SEGMENT)) {
+    MessageType m_type_flag = this->m_message.m_type();
+
+    if (this->m_message.m_proto_ver() < 0x01) {
         return false;
     }
 
-    if (this->_message.message().size() != this->_message.msg_size()) {
+    if (this->m_message.m_content().size() != this->m_message.m_length()) {
         return false;
     }
 
-    if ((this->_message.sender_id() == 0) ||
-        (this->_message.recipient_id() == 0)) {
+    if ((this->m_message.m_sender() == 0) ||
+        (this->m_message.m_recipient() == 0)) {
+        return false;
+    }
+
+    if (this->m_message.m_timestamp() <= 0) {
+        return false;
+    }
+
+    // 如果未设置分包包id却设置了SEGMENT位
+    if (this->m_message.m_segment_id() == 0 &&
+        (m_type_flag & MessageType::SEGMENT)) {
+        return false;
+    }
+    // 如果设置了OVER位但未定义此为分段包
+    if ( (m_type_flag & MessageType::OVER) &&
+        !(m_type_flag & MessageType::SEGMENT)) {
+        return false;
+    }
+    // 如果设置了IMAGE位但未定义此为文件包
+    if ( (m_type_flag & MessageType::IMAGE) &&
+        !(m_type_flag & MessageType::FILE)) {
         return false;
     }
 
@@ -29,29 +50,29 @@ bool wuk::net::WukPacket::validate() const
 
 wuk::net::WukPacket &wuk::net::WukPacket::set_type(MessageType type)
 {
-    this->_message.set_msg_type(type);
+    this->m_message.set_m_type(type);
     RETURN;
 }
 
 wuk::net::WukPacket &wuk::net::WukPacket::add_flag(MessageType flag)
 {
-    wU32 cur_flag = static_cast<int>(this->_message.msg_type());
+    wU32 cur_flag = static_cast<int>(this->m_message.m_type());
     wU32 new_flag = static_cast<int>(flag);
-    this->_message.set_msg_type(static_cast<MessageType>(cur_flag | new_flag));
+    this->m_message.set_m_type(static_cast<MessageType>(cur_flag | new_flag));
     RETURN;
 }
 
-wuk::net::WukPacket &wuk::net::WukPacket::set_seq(wU32 seq)
+wuk::net::WukPacket &wuk::net::WukPacket::set_sequence(wU32 seq)
 {
-    this->_message.set_msg_seq(seq);
+    this->m_message.set_m_sequence(seq);
     RETURN;
 }
 
-wuk::net::WukPacket &wuk::net::WukPacket::set_segment(wU32 seg_id, bool is_last)
+wuk::net::WukPacket &wuk::net::WukPacket::set_segment_id(wU32 m_segment_id, bool is_last)
 {
-    this->_message.set_seg_id(seg_id);
+    this->m_message.set_m_segment_id(m_segment_id);
 
-    if (seg_id) {
+    if (m_segment_id) {
         this->add_flag(MessageType::SEGMENT);
     }
 
@@ -62,20 +83,32 @@ wuk::net::WukPacket &wuk::net::WukPacket::set_segment(wU32 seg_id, bool is_last)
     RETURN;
 }
 
-wuk::net::WukPacket &wuk::net::WukPacket::set_protocol(wU32 version)
+wuk::net::WukPacket &wuk::net::WukPacket::set_proto_ver(wU32 version)
 {
     if (version < 0x01) {
-        throw wuk::Exception(wuk::Error::ERR, "wuk::net::WukPacket::set_protocol",
+        throw wuk::Exception(wuk::Error::ERR, "wuk::net::WukPacket::set_proto_ver",
             "Protocol version too low.");
     }
-    this->_message.set_proto_ver(version);
+    this->m_message.set_m_proto_ver(version);
     RETURN;
 }
 
 wuk::net::WukPacket &wuk::net::WukPacket::set_ids(wU64 sender, wU64 recipient)
 {
-    this->_message.set_sender_id(sender);
-    this->_message.set_recipient_id(recipient);
+    this->m_message.set_m_sender(sender);
+    this->m_message.set_m_recipient(recipient);
+    RETURN;
+}
+
+wuk::net::WukPacket &wuk::net::WukPacket::set_sender(wU64 id)
+{
+    this->m_message.set_m_sender(id);
+    RETURN;
+}
+
+wuk::net::WukPacket &wuk::net::WukPacket::set_recipient(wU64 id)
+{
+    this->m_message.set_m_recipient(id);
     RETURN;
 }
 
@@ -84,20 +117,20 @@ wuk::net::WukPacket &wuk::net::WukPacket::set_timestamp(double time_val)
     if (time_val == 0) {
         time_val = timer.time();
     }
-    this->_message.set_time_stamp(time_val);
+    this->m_message.set_m_timestamp(time_val);
     RETURN;
 }
 
 wuk::net::WukPacket &wuk::net::WukPacket::set_message_id(wU32 id)
 {
-    this->_message.set_msg_id(id);
+    this->m_message.set_m_id(id);
     RETURN;
 }
 
 wuk::net::WukPacket &wuk::net::WukPacket::set_message(const void *buffer, wSize length)
 {
-    this->_message.set_msg_size(length);
-    this->_message.set_message(buffer, length);
+    this->m_message.set_m_length(length);
+    this->m_message.set_m_content(buffer, length);
     RETURN;
 }
 
@@ -116,7 +149,7 @@ wuk::net::WukPacket &wuk::net::WukPacket::set_message(const wuk::Buffer &buffer)
 
 wuk::net::MessageType wuk::net::WukPacket::get_type() const
 {
-    return this->_message.msg_type();
+    return this->m_message.m_type();
 }
 
 bool wuk::net::WukPacket::has_flag(MessageType flag) const
@@ -124,55 +157,57 @@ bool wuk::net::WukPacket::has_flag(MessageType flag) const
     return (this->get_type() & flag) == flag;
 }
 
-wU32 wuk::net::WukPacket::get_seq() const
+wU32 wuk::net::WukPacket::get_sequence() const
 {
-    return this->_message.msg_seq();
+    return this->m_message.m_sequence();
 }
 
-wU32 wuk::net::WukPacket::get_segment() const
+wU32 wuk::net::WukPacket::get_segment_id() const
 {
-    return this->_message.seg_id();
+    return this->m_message.m_segment_id();
 }
 
-wU32 wuk::net::WukPacket::get_protocol() const
+wU32 wuk::net::WukPacket::get_proto_ver() const
 {
-    return this->_message.proto_ver();
+    return this->m_message.m_proto_ver();
 }
 
 wU64 wuk::net::WukPacket::get_sender() const
 {
-    return this->_message.sender_id();
+    return this->m_message.m_sender();
 }
 
 wU64 wuk::net::WukPacket::get_recipient() const
 {
-    return this->_message.recipient_id();
+    return this->m_message.m_recipient();
 }
 
 double wuk::net::WukPacket::get_timestamp() const
 {
-    return this->_message.time_stamp();
+    return this->m_message.m_timestamp();
 }
 
 wU32 wuk::net::WukPacket::get_message_id() const
 {
-    return this->_message.msg_id();
+    return this->m_message.m_id();
 }
 
 wSize wuk::net::WukPacket::get_message_size() const
 {
-    return this->_message.message().length();
+    return this->m_message.m_content().length();
 }
 
 const std::string &wuk::net::WukPacket::get_message() const
 {
-    return this->_message.message();
+    return this->m_message.m_content();
 }
 
 const wuk::Buffer wuk::net::WukPacket::get_message(int) const
 {
-    return wuk::Buffer(reinterpret_cast<const wByte *>(this->_message.message().data()),
-                    this->_message.message().length());
+    const std::string &s = this->m_message.m_content();
+    const wByte *buffer = reinterpret_cast<const wByte *>(s.data());
+    const wSize length = s.length();
+    return wuk::Buffer(buffer, length);
 }
 
 // PUBLIC: Function
@@ -184,12 +219,14 @@ const std::string wuk::net::WukPacket::serialize()
             "Data member validation failed.");
     }
 
-    if (this->_message.msg_id() == 0) {
-        std::string s = this->_message.SerializeAsString();
-        wU32 crc_val = crc32(0, reinterpret_cast<wByte *>(s.data()), s.length());
-        this->_message.set_msg_id(crc_val);
+    // 防御性拷贝避免多线程竞争
+    wuk::net::Message tmp = this->m_message;
+    if (this->m_message.m_id() == 0) {
+        std::string s = tmp.SerializeAsString();
+        tmp.set_m_id(crc32(0, reinterpret_cast<wByte *>(s.data()), s.length()));
     }
-    return this->_message.SerializeAsString();
+
+    return this->m_message.SerializeAsString();
 }
 
 wuk::net::WukPacket &wuk::net::WukPacket::parse(const std::string &buffer)
@@ -199,12 +236,15 @@ wuk::net::WukPacket &wuk::net::WukPacket::parse(const std::string &buffer)
 
 wuk::net::WukPacket &wuk::net::WukPacket::parse_from(const void *buffer, wSize length)
 {
-    if (!this->_message.ParseFromArray(buffer, static_cast<int>(length))) {
+    this->m_message.Clear();
+
+    if (!this->m_message.ParseFromArray(buffer, static_cast<int>(length))) {
         throw wuk::Exception(wuk::Error::ERR, "wuk::net::WukPacket::parse_from",
             "Invalid binary data");
     }
 
     if (!this->validate()) {
+        this->m_message.Clear();
         throw wuk::Exception(wuk::Error::ERR, "wuk::net::WukPacket::parse",
             "Parsed data validation failed");
     }

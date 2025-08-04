@@ -10,8 +10,6 @@
 #if WUK_SUPPORT
 #include <config/WukEndianness.hh>
 #include <config/WukException.hh>
-#include <WukMemory.hh>
-#include <vector>
 
 namespace wuk {
     class LIBWUK_API Buffer {

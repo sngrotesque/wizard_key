@@ -1,4 +1,8 @@
 #include <crypto/WukOP4.hh>
+
+#include <config/WukEndianness.hh>
+#include <crypto/WukCommon.hh>
+#include <WukMemory.hh>
 #include <WukSIMD.hh>
 
 using namespace wuk::simd;

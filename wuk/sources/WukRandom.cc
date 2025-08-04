@@ -1,5 +1,19 @@
 #include <WukRandom.hh>
 
+#include <config/WukException.hh>
+#include <WukMemory.hh>
+
+#if defined(WUK_PLATFORM_LINUX)
+#   include <sys/random.h>
+#elif defined(WUK_PLATFORM_WINOS)
+#   include <windows.h>
+#   include <bcrypt.h>
+#   include <ntstatus.h>
+#   ifdef WUK_COMPILER_MSVC
+#       pragma comment(lib, "bcrypt")
+#   endif
+#endif
+
 wuk::WukRandom::WukRandom()
 {
     std::random_device rd;

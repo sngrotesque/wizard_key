@@ -1,5 +1,7 @@
 #include <WukHexdump.hh>
 
+#include <fstream>
+
 constexpr wU32 WUK_HD_BL = 16; // HexDump Block Size
 
 /**
@@ -37,7 +39,7 @@ void _hexdump(wSize offset, wByte *buf, wU32 size)
     printf("\n");
 }
 
-void wuk::hexdump(std::filesystem::path file_path)
+void wuk::hexdump(fs::path file_path)
 {
     std::fstream f(file_path, std::ios::in | std::ios::binary);
 

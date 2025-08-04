@@ -2,10 +2,6 @@
 #include <config/WukConfig.hh>
 
 #if WUK_SUPPORT
-#include <config/WukException.hh>
-#include <config/WukEndianness.hh>
-#include <crypto/WukCommon.hh>
-#include <WukMemory.hh>
 
 namespace wuk {
     namespace crypto {

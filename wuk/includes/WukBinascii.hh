@@ -3,7 +3,6 @@
 
 #if WUK_SUPPORT
 #include <config/WukException.hh>
-#include <WukMemory.hh>
 #include <WukBuffer.hh>
 
 namespace wuk {
