@@ -1,11 +1,11 @@
 #include <net/WukPacket.hh>
-#include <net/WukPacket.pb.h>
 
 #include <WukRandom.hh>
 #include <WukTime.hh>
 #include <WukMisc.hh>
 
 #include <iostream>
+#include <iomanip>
 
 using namespace wuk;
 using namespace wuk::net;

@@ -119,8 +119,8 @@ def main(verbose: bool = True):
         # 'wuk/sources/crypto/WukOP4.cc',
         # 'wuk/sources/crypto/WukOP4_sse4.cc',
         # 'wuk/sources/crypto/WukChaCha20.cc',
-        # 'wuk/sources/net/WukPacket.pb.cc',
-        # 'wuk/sources/net/WukPacket.cc',
+        'wuk/sources/net/WukPacket.pb.cc',
+        'wuk/sources/net/WukPacket.cc',
         'wuk/sources/net/WukSocket.cc',
         # 'wuk/sources/WukBase64.cc',
         # 'wuk/sources/WukBinascii.cc',
@@ -129,7 +129,7 @@ def main(verbose: bool = True):
         # 'wuk/sources/WukMisc.cc',
         # 'wuk/sources/WukPadding.cc',
         # 'wuk/sources/WukRandom.cc',
-        # 'wuk/sources/WukTime.cc',
+        'wuk/sources/WukTime.cc',
     )
 
     start = time.time()

@@ -15,6 +15,11 @@ using wSocket = wI32;
 #endif
 
 namespace wuk::net {
+// 类类型声明
+    class LIBWUK_API WukAddrinfo;
+    class LIBWUK_API WukSockaddr;
+    class LIBWUK_API WukSocket;
+
 // WukAddrinfo BEGIN
     class LIBWUK_API WukAddrinfo {
     private:
@@ -26,11 +31,12 @@ namespace wuk::net {
         ~WukAddrinfo();
 
     public:
-        void resolve(const std::string &addr, const wU16 &port);
+        WukAddrinfo &resolve(const std::string &addr, const wU16 &port);
 
     public:
         const sockaddr *get_addr() const;
         socklen_t get_addrlen() const;
+        WukSockaddr get_sockaddr() const;
     };
 
 // WukSockaddr BEGIN
@@ -55,7 +61,7 @@ namespace wuk::net {
         socklen_t get_addrlen() const noexcept;
 
         const std::string get_address_string() const;
-        const wU16 get_port() const;
+        wU16 get_port() const;
     };
 
 // WukSocket BEGIN
@@ -71,7 +77,6 @@ namespace wuk::net {
         WukSockaddr m_laddr;
 
     public:
-        WukSocket() = default;
         WukSocket(wI32 family, wI32 sock_type, wI32 proto);
         WukSocket(wI32 family, wI32 sock_type, wI32 proto, wSocket cur_fd);
 
@@ -109,10 +114,17 @@ namespace wuk::net {
     public:
         void connect(const std::string &addr, const wU16 &port);
         void bind(const std::string &addr, const wU16 &port);
-        void listen(const wU32 &backlog);
+        void listen(const socklen_t &backlog);
         std::optional<WukSocket> accept() const;
-        void send(const std::string &buffer, wI32 flag = 0);
-        std::string recv(const wU32 &length, wI32 flag = 0);
+
+        socklen_t send(const std::string &buffer, wI32 flag = 0);
+        std::string recv(const socklen_t &length, wI32 flag = 0);
+        void sendall(const std::string &buffer, wI32 flag = 0);
+
+        socklen_t sendto(const std::string &buffer, const WukSockaddr &addr, wI32 flag = 0);
+        std::string recvfrom(const socklen_t &length, WukSockaddr &addr, wI32 flag = 0);
+
+        void shutdown(const wI32 &how);
         void close();
 
     public:

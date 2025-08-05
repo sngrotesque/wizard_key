@@ -1,67 +1,88 @@
 #include <net/WukSocket.hh>
 #include <net/WukPacket.hh>
+#include <WukTime.hh>
 
 #include <iostream>
-#ifdef WUK_STD_CPP_20
-#   include <format>
-#else
-#   include <sstream>
-#endif
+#include <sstream>
+
+namespace wn = wuk::net;
 
 void server_test(const std::string &addr, const wU16 &port)
 {
-    try {
-        wuk::net::WukSocket fd(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+    wuk::net::WukSocket fd(AF_INET, SOCK_STREAM, IPPROTO_TCP);
 
-        fd.setsockopt<bool>(SOL_SOCKET, SO_REUSEADDR, true);
-        std::cout << "getsockopt: " << fd.getsockopt<bool>(SOL_SOCKET, SO_REUSEADDR) << std::endl;
-        fd.bind(addr, port);
-        fd.listen(5);
+    fd.setsockopt<bool>(SOL_SOCKET, SO_REUSEADDR, true);
+    std::cout << "getsockopt: " << fd.getsockopt<bool>(SOL_SOCKET, SO_REUSEADDR) << std::endl;
+    fd.bind(addr, port);
+    fd.listen(5);
 
-        std::cout << "waiting connecting...\n";
-        if (auto client_fd = fd.accept()) {
-            std::cout << client_fd->recv(5) << std::endl;
-            client_fd->send("hello");
-            client_fd->close();
-        }
-
-        fd.close();
-    } catch (wuk::Exception &e) {
-        std::cerr << e.what() << std::endl;
+    std::cout << "waiting connecting...\n";
+    if (auto client_fd = fd.accept()) {
+        std::cout << client_fd->recv(5) << std::endl;
+        client_fd->send("hello");
+        client_fd->close();
     }
+
+    fd.close();
 }
 
 void client_test(const std::string &addr, const wU16 &port)
 {
-    try {
-        wuk::net::WukSocket fd(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+    wuk::net::WukSocket fd(AF_INET, SOCK_STREAM, IPPROTO_TCP);
 
-        fd.connect(addr, port);
+    fd.connect(addr, port);
 
-#       ifdef WUK_STD_CPP_20
-        std::string headers = std::format(
-            "GET / HTTP/1.1\r\n"
-            "Host: {0}\r\n"
-            "Accept: */*\r\n"
-            "User-Agent: Android\r\n\r\n",
-            addr
-        );
-#       else
-        std::stringstream ss;
-        ss  << "GET / HTTP/1.1\r\n"
-            << "Host: " << addr << "\r\n"
-            << "Accept: */*\r\n"
-            << "User-Agent: Android\r\n\r\n";
-        std::string headers = ss.str();
-#       endif
-        fd.send(headers);
+    std::stringstream ss;
+    ss  << "GET / HTTP/1.1\r\n"
+        << "Host: " << addr << "\r\n"
+        << "Accept: */*\r\n"
+        << "User-Agent: Android\r\n\r\n";
+    std::string headers = ss.str();
 
-        std::cout << fd.recv(4096) << std::endl;
+    fd.send(headers);
 
-        fd.close();
-    } catch (wuk::Exception &e) {
-        std::cerr << e.what() << std::endl;
-    }
+    std::cout << fd.recv(4096) << std::endl;
+
+    fd.close();
+}
+
+void udp_test(const std::string &addr, const wU16 &port)
+{
+    wuk::net::WukSocket fd(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
+    wuk::net::WukAddrinfo ainfo(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
+    wuk::net::WukSockaddr remote;
+
+    fd.bind("0.0.0.0", 48999);
+
+    std::cout << "send...\n";
+    fd.sendto("hello", ainfo.resolve(addr, port).get_sockaddr());
+    std::cout << "recv...\n";
+    fd.recvfrom(5, remote);
+    std::cout << "close...\n";
+    fd.close();
+}
+
+void protobuf_test(const std::string &addr, const wU16 &port)
+{
+    wuk::net::WukSocket sock(AF_INET, SOCK_STREAM, 0);
+    wuk::net::WukPacket packet;
+    wuk::WukTime time;
+
+    std::cout << "Build message package...\n";
+    packet.set_type(wuk::net::MessageType::MESSAGE)
+          .set_timestamp(time.time())
+          .set_ids(123, 123)
+          .set_proto_ver(0x01);
+    std::cout << "Connection...\n";
+    sock.connect(addr, port);
+    std::cout << "Sendall...\n";
+    sock.sendall(packet.serialize());
+    std::cout << "Recv...\n";
+    std::cout << "The remote host returns a message: "
+              << sock.recv(1024)
+              << std::endl;
+    std::cout << "Close...\n";
+    sock.close();
 }
 
 int main()
@@ -71,10 +92,14 @@ int main()
     WSAStartup(MAKEWORD(2,2), &ws);
 #   endif
 
-    std::string remote_addr = "www.baidu.com";
-    wU16 remote_port = 80;
+    std::string remote_addr = "127.0.0.1";
+    wU16 remote_port = 48888;
 
-    client_test(remote_addr, remote_port);
+    try {
+        protobuf_test(remote_addr, remote_port);
+    } catch (wuk::Exception &e) {
+        std::cerr << e.what() << std::endl;
+    }
 
 #   ifdef WUK_PLATFORM_WINOS
     WSACleanup();
