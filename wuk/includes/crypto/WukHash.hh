@@ -63,7 +63,7 @@ namespace wuk::crypto {
 
             EVP_DigestInit_ex(this->ctx, this->md, nullptr);
         }
-        
+
         ~WukHash()
         {
             this->free_ctx();

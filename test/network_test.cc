@@ -85,6 +85,28 @@ void protobuf_test(const std::string &addr, const wU16 &port)
     sock.close();
 }
 
+void block_test(const std::string &addr, const wU16 &port)
+{
+    wuk::net::WukSocket fd(AF_INET, SOCK_STREAM, 0);
+
+    fd.set_blocking(false);
+
+    fd.connect(addr, port);
+
+    std::stringstream ss;
+    ss  << "GET / HTTP/1.1\r\n"
+        << "Host: " << addr << "\r\n"
+        << "Accept: */*\r\n"
+        << "User-Agent: Android\r\n\r\n";
+    std::string headers = ss.str();
+
+    fd.send(headers);
+
+    std::cout << fd.recv(4096) << std::endl;
+
+    fd.close();
+}
+
 int main()
 {
 #   ifdef WUK_PLATFORM_WINOS
@@ -92,11 +114,11 @@ int main()
     WSAStartup(MAKEWORD(2,2), &ws);
 #   endif
 
-    std::string remote_addr = "127.0.0.1";
-    wU16 remote_port = 48888;
+    std::string remote_addr = "www.baidu.com";
+    wU16 remote_port = 80;
 
     try {
-        protobuf_test(remote_addr, remote_port);
+        block_test(remote_addr, remote_port);
     } catch (wuk::Exception &e) {
         std::cerr << e.what() << std::endl;
     }

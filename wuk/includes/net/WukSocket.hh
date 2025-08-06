@@ -111,6 +111,8 @@ namespace wuk::net {
 
         const WukSockaddr getsockname();
 
+        void set_blocking(bool blocked);
+
     public:
         void connect(const std::string &addr, const wU16 &port);
         void bind(const std::string &addr, const wU16 &port);

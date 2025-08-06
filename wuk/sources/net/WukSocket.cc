@@ -1,5 +1,7 @@
 #include <net/WukSocket.hh>
 
+#include <fcntl.h>
+
 // WukAddrinfo BEGIN
 
 wuk::net::WukAddrinfo::WukAddrinfo(wI32 family, wI32 sock_type, wI32 proto)
@@ -198,6 +200,34 @@ const wuk::net::WukSockaddr wuk::net::WukSocket::getsockname()
             wuk::net::SystemError::message(err_code).c_str());
     }
     return addr;
+}
+
+void wuk::net::WukSocket::set_blocking(bool blocked)
+{
+    wI32 err = 0;
+
+#   ifdef WUK_PLATFORM_WINOS
+    wU32 mode = static_cast<wU32>(!blocked);
+    err = ioctlsocket(this->fd, FIONBIO, reinterpret_cast<u_long *>(&mode));
+#   else
+    wI32 flag = fcntl(this->fd, F_GETFL, 0);
+    if (flag == NETERROR) {
+        wI32 err_code = wuk::net::SystemError::code();
+        throw wuk::Exception(err_code, "wuk::net::WukSocket::set_blocking",
+            wuk::net::SystemError::message(err_code).c_str());
+    }
+    if (blocked) {
+        flag &= ~O_NONBLOCK;
+    } else {
+        flag |= O_NONBLOCK;
+    }
+    err = fcntl(this->fd, F_SETFL, flag);
+#   endif
+    if (err == NETERROR) {
+        wI32 err_code = wuk::net::SystemError::code();
+        throw wuk::Exception(err_code, "wuk::net::WukSocket::set_blocking",
+            wuk::net::SystemError::message(err_code).c_str());
+    }
 }
 
 void wuk::net::WukSocket::connect(const std::string &addr, const wU16 &port)
