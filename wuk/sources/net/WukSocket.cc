@@ -317,11 +317,12 @@ std::string wuk::net::WukSocket::recv(const socklen_t &length, wI32 flag)
 
 void wuk::net::WukSocket::sendall(const std::string &buffer, wI32 flag)
 {
+    constexpr wSSize block_size = 2048;
     const char *data_ptr = buffer.c_str();
-    socklen_t data_len = static_cast<socklen_t>(buffer.length());
+    wSSize data_len = static_cast<socklen_t>(buffer.length());
     while (data_len) {
-        socklen_t size = wuk::min(2048, data_len);
-        socklen_t sent = ::send(this->fd, data_ptr, size, flag);
+        wSSize size = wuk::min(block_size, data_len);
+        wSSize sent = ::send(this->fd, data_ptr, size, flag);
         if (sent == NETERROR) {
             wI32 err_code = wuk::net::SystemError::code();
             throw wuk::Exception(err_code, "wuk::net::WukSocket::send",
