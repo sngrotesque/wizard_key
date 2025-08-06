@@ -190,6 +190,11 @@ wuk::net::WukSocket::WukSocket(wI32 family, wI32 sock_type, wI32 proto, wSocket 
     this->fd = cur_fd;
 }
 
+wuk::net::WukSocket::~WukSocket()
+{
+    this->close();
+}
+
 const wuk::net::WukSockaddr wuk::net::WukSocket::getsockname()
 {
     wuk::net::WukSockaddr addr;
@@ -228,6 +233,11 @@ void wuk::net::WukSocket::set_blocking(bool blocked)
         throw wuk::Exception(err_code, "wuk::net::WukSocket::set_blocking",
             wuk::net::SystemError::message(err_code).c_str());
     }
+}
+
+void wuk::net::WukSocket::set_timeout(double t)
+{
+    this->m_timeout = t;
 }
 
 void wuk::net::WukSocket::connect(const std::string &addr, const wU16 &port)
@@ -379,6 +389,10 @@ void wuk::net::WukSocket::shutdown(const wI32 &how)
 
 void wuk::net::WukSocket::close()
 {
+    if (this->is_close) {
+        return;
+    }
+
 #   if defined(WUK_PLATFORM_WINOS)
     wI32 err = ::closesocket(this->fd);
 #   else
@@ -389,6 +403,8 @@ void wuk::net::WukSocket::close()
         throw wuk::Exception(err_code, "wuk::net::WukSocket::close",
             wuk::net::SystemError::message(err_code).c_str());
     }
+
+    this->is_close = true;
 }
 
 void wuk::net::WukSocket::set_raddr(const WukSockaddr &addr)

@@ -97,7 +97,7 @@
 #endif
 
 // 检查是否被支持
-#if WUK_SUPPORT == false
+#if defined(WUK_SUPPORT) && (WUK_SUPPORT != true)
 #   error "This library may not support the computer you are using."
 #endif
 
@@ -121,7 +121,7 @@
 #endif
 
 // WUK库类型定义
-#ifdef _MSC_VER
+#ifdef WUK_COMPILER_MSVC
 #   include <BaseTsd.h>
 using ssize_t = SSIZE_T;
 #endif

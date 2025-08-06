@@ -1,6 +1,7 @@
 #include <net/WukSocket.hh>
 #include <net/WukPacket.hh>
 #include <WukTime.hh>
+#include <cmath>
 
 #include <iostream>
 #include <sstream>

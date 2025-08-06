@@ -76,9 +76,14 @@ namespace wuk::net {
         WukSockaddr m_raddr;
         WukSockaddr m_laddr;
 
+        double m_timeout = 0;
+
+        bool is_close = false;
+
     public:
         WukSocket(wI32 family, wI32 sock_type, wI32 proto);
         WukSocket(wI32 family, wI32 sock_type, wI32 proto, wSocket cur_fd);
+        ~WukSocket();
 
     public:
         template <typename T>
@@ -112,6 +117,8 @@ namespace wuk::net {
         const WukSockaddr getsockname();
 
         void set_blocking(bool blocked);
+
+        void set_timeout(double t);
 
     public:
         void connect(const std::string &addr, const wU16 &port);

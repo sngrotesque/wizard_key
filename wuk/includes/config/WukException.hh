@@ -5,21 +5,6 @@
 #include <sstream>
 #include <cerrno>
 
-#ifdef WUK_STD_CPP_20
-#   include <format>
-#endif
-
-static inline std::string get_msg(wI32 code, const char *f, const char *m)
-{
-#   ifdef WUK_STD_CPP_20
-    return std::format("{0}[{1}]: {2}", f, code, m);
-#   else
-    std::stringstream ss;
-    ss << f << "[" << std::to_string(code) << "]: " << m;
-    return ss.str();
-#   endif
-}
-
 namespace wuk {
     typedef enum : wI32 {
         OK     = 0, // 一切正常，无异常
@@ -32,24 +17,53 @@ namespace wuk {
 
     class LIBWUK_API Exception {
     private:
+        wI32 code {wuk::Error::OK};
+        std::string func;
         std::string msg;
+        std::string err_msg;
+
+    private:
+        void set(wI32 code, const std::string &func, const std::string &message)
+        {
+            auto get_err_message = [&]() -> std::string {
+                std::stringstream ss;
+                ss  << func
+                    << "[" << std::to_string(code) << "]: "
+                    << message;
+                return ss.str();
+            };
+
+            this->code = code;
+            this->func = func;
+            this->msg = message;
+            this->err_msg = get_err_message();
+        }
 
     public:
-        Exception() = default;
-
-        Exception(wuk::Error code, const char *function, const char *message)
+        template <typename T>
+        Exception(T code, const std::string &function, const std::string &message)
         {
-            this->msg = get_msg(static_cast<wI32>(code), function, message);
+            this->set(static_cast<wI32>(code), function, message);
         }
 
-        Exception(wI32 code, const char *function, const char *message)
+        inline const wI32 &get_err_code() const noexcept
         {
-            this->msg = get_msg(code, function, message);
+            return this->code;
         }
 
-        const char *what() const noexcept
+        inline const std::string &get_err_func() const noexcept
         {
-            return this->msg.c_str();
+            return this->func;
+        }
+
+        inline const std::string &get_err_msg() const noexcept
+        {
+            return this->msg;
+        }
+
+        inline const std::string &what() const noexcept
+        {
+            return this->err_msg;
         }
     };
 }
