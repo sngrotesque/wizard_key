@@ -142,8 +142,12 @@ namespace wuk::net {
             case EADDRINUSE: return SocketError::ADDRINUSE;
             case EADDRNOTAVAIL: return SocketError::ADDRNOTAVAIL;
             case EAFNOSUPPORT: return SocketError::AFNOSUPPORT;
-            case EAGAIN:
+#           if (EAGAIN == EWOULDBLOCK)
+            case EAGAIN: return SocketError::WOULDBLOCK;
+#           else
+            case EAGAIN: return SocketError::WOULDBLOCK;
             case EWOULDBLOCK: return SocketError::WOULDBLOCK;
+#           endif
             case EALREADY: return SocketError::ALREADY;
             case EBADF: return SocketError::BADF;
             case ECONNABORTED: return SocketError::CONNABORTED;
