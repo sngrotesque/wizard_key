@@ -66,6 +66,7 @@ void connect_test(wn::WukSocket &fd, const std::string &addr, const wU16 &port, 
             throw;
         }
     }
+    fd.set_blocking(true);
 }
 
 int main()
