@@ -37,7 +37,8 @@ void connect_test(const std::string &addr, const wU16 &port, double timeout)
         fd.connect(addr, port);
     } catch (wuk::Exception &e) {
         try {
-            if (wn::from_code(e.get_err_code()) == wn::SocketError::WOULDBLOCK) {
+            wn::SocketError serr = wn::from_code(e.get_err_code());
+            if ((serr == wn::SocketError::WOULDBLOCK) || (serr == wn::SocketError::INPROGRESS)) {
                 std::cout << "WSAEWOULDBLOCK in connect() - selecting.\n";
                 while (true) {
                     FD_ZERO(&my_fd_set);
