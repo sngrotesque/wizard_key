@@ -6,7 +6,7 @@
 
 namespace wn = wuk::net;
 
-void connect_test(const std::string &addr, const wU16 &port, double timeout)
+void connect_test(wn::WukSocket &fd, const std::string &addr, const wU16 &port, double timeout)
 {
     auto create_timeval = [](double t) -> timeval {
         timeval tv {0};
@@ -28,7 +28,6 @@ void connect_test(const std::string &addr, const wU16 &port, double timeout)
         throw wuk::Exception(err_code, "connect_test", err_msg);
     };
 
-    wn::WukSocket fd(AF_INET, SOCK_STREAM, IPPROTO_TCP);
     fd_set my_fd_set;
 
     fd.set_blocking(false);
@@ -64,7 +63,6 @@ void connect_test(const std::string &addr, const wU16 &port, double timeout)
             }
         } catch (wuk::Exception &e) {
             fd.set_blocking(true);
-            fd.close();
             throw;
         }
     }
@@ -78,7 +76,25 @@ int main()
 #   endif
 
     try {
-        connect_test("www.pixiv.net", 80, 2);
+        wn::WukSocket fd(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+        std::string addr("www.pixiv.net");
+        wU16 port = 80;
+
+        connect_test(fd, addr, port, 2);
+
+        std::stringstream ss;
+        ss  << "GET / HTTP/1.1\r\n"
+            << "Host: " << addr << "\r\n"
+            << "Accept: */*\r\n"
+            << "User-Agent: Android\r\n\r\n";
+        std::string headers = ss.str();
+
+        fd.send(headers);
+
+        std::cout << fd.recv(4096) << std::endl;
+
+        fd.close();
+
     } catch (wuk::Exception &e) {
         std::cerr << e.what() << std::endl;
     }
