@@ -35,7 +35,7 @@ namespace wuk::net {
 
     public:
         const sockaddr *get_addr() const;
-        wI32 get_addrlen() const;
+        socklen_t get_addrlen() const;
         WukSockaddr get_sockaddr() const;
     };
 
@@ -43,22 +43,22 @@ namespace wuk::net {
     class LIBWUK_API WukSockaddr {
     private:
         sockaddr_storage addr {0};
-        wI32 addrlen = sizeof(addr);
+        socklen_t addrlen = sizeof(addr);
 
     public:
         WukSockaddr() = default;
-        WukSockaddr(const sockaddr_storage *addr, const wI32 &addrlen);
-        WukSockaddr(const sockaddr *addr, const wI32 &addrlen);
+        WukSockaddr(const sockaddr_storage *addr, const socklen_t &addrlen);
+        WukSockaddr(const sockaddr *addr, const socklen_t &addrlen);
 
     public:
         sockaddr *set_addr() noexcept;
-        wI32 *set_addrlen() noexcept;
+        socklen_t *set_addrlen() noexcept;
 
-        void set_addr(const sockaddr *addr, const wI32 &addrlen);
+        void set_addr(const sockaddr *addr, const socklen_t &addrlen);
         void set_addr(const WukSockaddr &addr);
 
         const sockaddr *get_addr() const noexcept;
-        wI32 get_addrlen() const noexcept;
+        socklen_t get_addrlen() const noexcept;
 
         const std::string get_address_string() const;
         wU16 get_port() const;
@@ -85,7 +85,7 @@ namespace wuk::net {
         inline void setsockopt(wI32 level, wI32 opt_name, const T &value)
         {
             const char *opt_ptr = reinterpret_cast<const char *>(&value);
-            wI32 opt_len = static_cast<wI32>(sizeof(T));
+            socklen_t opt_len = static_cast<socklen_t>(sizeof(T));
             int err = ::setsockopt(this->fd, level, opt_name, opt_ptr, opt_len);
             if (err == NETERROR) {
                 int err_code = wuk::net::SystemError::code();
@@ -98,7 +98,7 @@ namespace wuk::net {
         inline T getsockopt(wI32 level, wI32 opt_name)
         {
             T value {};
-            wI32 opt_len = static_cast<wI32>(sizeof(T));
+            socklen_t opt_len = static_cast<socklen_t>(sizeof(T));
             int err = ::getsockopt(this->fd, level, opt_name,
                                 reinterpret_cast<char *>(&value), &opt_len);
             if (err == NETERROR) {
@@ -116,15 +116,15 @@ namespace wuk::net {
     public:
         void connect(const std::string &addr, const wU16 &port);
         void bind(const std::string &addr, const wU16 &port);
-        void listen(const wI32 &backlog);
+        void listen(const socklen_t &backlog);
         std::optional<WukSocket> accept() const;
 
-        wI32 send(const std::string &buffer, wI32 flag = 0);
-        std::string recv(const wI32 &length, wI32 flag = 0);
+        wSSize send(const std::string &buffer, wI32 flag = 0);
+        std::string recv(const socklen_t &length, wI32 flag = 0);
         void sendall(const std::string &buffer, wI32 flag = 0);
 
-        wI32 sendto(const std::string &buffer, const WukSockaddr &addr, wI32 flag = 0);
-        std::string recvfrom(const wI32 &length, WukSockaddr &addr, wI32 flag = 0);
+        wSSize sendto(const std::string &buffer, const WukSockaddr &addr, wI32 flag = 0);
+        std::string recvfrom(const socklen_t &length, WukSockaddr &addr, wI32 flag = 0);
 
         void shutdown(const wI32 &how);
         void close();

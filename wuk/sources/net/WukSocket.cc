@@ -39,7 +39,7 @@ const sockaddr *wuk::net::WukAddrinfo::get_addr() const
     return this->res->ai_addr;
 }
 
-wI32 wuk::net::WukAddrinfo::get_addrlen() const
+socklen_t wuk::net::WukAddrinfo::get_addrlen() const
 {
     if (!this->res) {
         throw wuk::Exception(wuk::Error::NPTR, "WukAddrinfo::get_addrlen",
@@ -59,12 +59,12 @@ wuk::net::WukSockaddr wuk::net::WukAddrinfo::get_sockaddr() const
 
 // WukSockaddr BEGIN
 
-wuk::net::WukSockaddr::WukSockaddr(const sockaddr_storage *addr, const wI32 &addrlen)
+wuk::net::WukSockaddr::WukSockaddr(const sockaddr_storage *addr, const socklen_t &addrlen)
 {
     this->set_addr(reinterpret_cast<const sockaddr *>(addr), addrlen);
 }
 
-wuk::net::WukSockaddr::WukSockaddr(const sockaddr *addr, const wI32 &addrlen)
+wuk::net::WukSockaddr::WukSockaddr(const sockaddr *addr, const socklen_t &addrlen)
 {
     this->set_addr(addr, addrlen);
 }
@@ -74,14 +74,14 @@ sockaddr *wuk::net::WukSockaddr::set_addr() noexcept
     return reinterpret_cast<sockaddr *>(&this->addr);
 }
 
-wI32 *wuk::net::WukSockaddr::set_addrlen() noexcept
+socklen_t *wuk::net::WukSockaddr::set_addrlen() noexcept
 {
     return &this->addrlen;
 }
 
-void wuk::net::WukSockaddr::set_addr(const sockaddr *addr, const wI32 &addrlen)
+void wuk::net::WukSockaddr::set_addr(const sockaddr *addr, const socklen_t &addrlen)
 {
-    if (!addr || addrlen > static_cast<wI32>(sizeof(sockaddr_storage))) {
+    if (!addr || addrlen > static_cast<socklen_t>(sizeof(sockaddr_storage))) {
         throw wuk::Exception(wuk::Error::ERR, "wuk::net::WukSockaddr::set_addr",
             "Invalid address or length");
     }
@@ -99,7 +99,7 @@ const sockaddr *wuk::net::WukSockaddr::get_addr() const noexcept
     return reinterpret_cast<const sockaddr *>(&this->addr);
 }
 
-wI32 wuk::net::WukSockaddr::get_addrlen() const noexcept
+socklen_t wuk::net::WukSockaddr::get_addrlen() const noexcept
 {
     return this->addrlen;
 }
@@ -260,7 +260,7 @@ void wuk::net::WukSocket::bind(const std::string &addr, const wU16 &port)
 std::optional<wuk::net::WukSocket> wuk::net::WukSocket::accept() const
 {
     sockaddr_storage client_addrinfo {0};
-    wI32 client_addrinfo_len = sizeof(client_addrinfo);
+    socklen_t client_addrinfo_len = sizeof(client_addrinfo);
 
     wSocket client_sock = ::accept(this->fd,
                                 reinterpret_cast<sockaddr *>(&client_addrinfo),
@@ -277,7 +277,7 @@ std::optional<wuk::net::WukSocket> wuk::net::WukSocket::accept() const
     return new_sock;
 }
 
-void wuk::net::WukSocket::listen(const wI32 &backlog)
+void wuk::net::WukSocket::listen(const socklen_t &backlog)
 {
     wI32 err = ::listen(this->fd, backlog);
     if (err == NETERROR) {
@@ -287,9 +287,9 @@ void wuk::net::WukSocket::listen(const wI32 &backlog)
     }
 }
 
-wI32 wuk::net::WukSocket::send(const std::string &buffer, wI32 flag)
+wSSize wuk::net::WukSocket::send(const std::string &buffer, wI32 flag)
 {
-    wI32 sent = ::send(this->fd, buffer.c_str(), buffer.length(), flag);
+    wSSize sent = ::send(this->fd, buffer.c_str(), buffer.length(), flag);
     if (sent == NETERROR) {
         wI32 err_code = wuk::net::SystemError::code();
         throw wuk::Exception(err_code, "wuk::net::WukSocket::send",
@@ -298,10 +298,10 @@ wI32 wuk::net::WukSocket::send(const std::string &buffer, wI32 flag)
     return sent;
 }
 
-std::string wuk::net::WukSocket::recv(const wI32 &length, wI32 flag)
+std::string wuk::net::WukSocket::recv(const socklen_t &length, wI32 flag)
 {
     std::string buffer(length, '\0');
-    wI32 received = ::recv(this->fd, buffer.data(), length, flag);
+    socklen_t received = ::recv(this->fd, buffer.data(), length, flag);
     if (received == 0) {
         throw wuk::Exception(wuk::Error::ERR, "wuk::net::WukSocket::recv",
             "Connection closed by peer.");
@@ -318,10 +318,10 @@ std::string wuk::net::WukSocket::recv(const wI32 &length, wI32 flag)
 void wuk::net::WukSocket::sendall(const std::string &buffer, wI32 flag)
 {
     const char *data_ptr = buffer.c_str();
-    wI32 data_len = static_cast<wI32>(buffer.length());
+    socklen_t data_len = static_cast<socklen_t>(buffer.length());
     while (data_len) {
-        wI32 size = wuk::min(2048, data_len);
-        wI32 sent = ::send(this->fd, data_ptr, size, flag);
+        socklen_t size = wuk::min(2048, data_len);
+        socklen_t sent = ::send(this->fd, data_ptr, size, flag);
         if (sent == NETERROR) {
             wI32 err_code = wuk::net::SystemError::code();
             throw wuk::Exception(err_code, "wuk::net::WukSocket::send",
@@ -332,11 +332,11 @@ void wuk::net::WukSocket::sendall(const std::string &buffer, wI32 flag)
     }
 }
 
-wI32 wuk::net::WukSocket::sendto(const std::string &buffer,
+wSSize wuk::net::WukSocket::sendto(const std::string &buffer,
                                       const WukSockaddr &addr,
                                       wI32 flag)
 {
-    wI32 sent = ::sendto(this->fd, buffer.c_str(), buffer.length(), flag,
+    wSSize sent = ::sendto(this->fd, buffer.c_str(), buffer.length(), flag,
                         addr.get_addr(), addr.get_addrlen());
     if (sent == NETERROR) {
         wI32 err_code = wuk::net::SystemError::code();
@@ -346,12 +346,12 @@ wI32 wuk::net::WukSocket::sendto(const std::string &buffer,
     return sent;
 }
 
-std::string wuk::net::WukSocket::recvfrom(const wI32 &length,
+std::string wuk::net::WukSocket::recvfrom(const socklen_t &length,
                                           WukSockaddr &addr,
                                           wI32 flag)
 {
     std::string buffer(length, '\0');
-    wI32 received = ::recvfrom(this->fd, buffer.data(), length, flag,
+    socklen_t received = ::recvfrom(this->fd, buffer.data(), length, flag,
                                     addr.set_addr(), addr.set_addrlen());
     if (received == 0) {
         throw wuk::Exception(wuk::Error::ERR, "wuk::net::WukSocket::recvfrom",
