@@ -301,7 +301,7 @@ wSSize wuk::net::WukSocket::send(const std::string &buffer, wI32 flag)
 std::string wuk::net::WukSocket::recv(const socklen_t &length, wI32 flag)
 {
     std::string buffer(length, '\0');
-    socklen_t received = ::recv(this->fd, buffer.data(), length, flag);
+    wSSize received = ::recv(this->fd, buffer.data(), length, flag);
     if (received == 0) {
         throw wuk::Exception(wuk::Error::ERR, "wuk::net::WukSocket::recv",
             "Connection closed by peer.");
@@ -352,7 +352,7 @@ std::string wuk::net::WukSocket::recvfrom(const socklen_t &length,
                                           wI32 flag)
 {
     std::string buffer(length, '\0');
-    socklen_t received = ::recvfrom(this->fd, buffer.data(), length, flag,
+    wSSize received = ::recvfrom(this->fd, buffer.data(), length, flag,
                                     addr.set_addr(), addr.set_addrlen());
     if (received == 0) {
         throw wuk::Exception(wuk::Error::ERR, "wuk::net::WukSocket::recvfrom",
