@@ -142,7 +142,8 @@ namespace wuk::net {
             case EADDRINUSE: return SocketError::ADDRINUSE;
             case EADDRNOTAVAIL: return SocketError::ADDRNOTAVAIL;
             case EAFNOSUPPORT: return SocketError::AFNOSUPPORT;
-            case EAGAIN: return SocketError::WOULDBLOCK;
+            case EAGAIN:
+            case EWOULDBLOCK: return SocketError::WOULDBLOCK;
             case EALREADY: return SocketError::ALREADY;
             case EBADF: return SocketError::BADF;
             case ECONNABORTED: return SocketError::CONNABORTED;
@@ -173,7 +174,6 @@ namespace wuk::net {
             case ESHUTDOWN: return SocketError::SHUTDOWN;
             case ETIMEDOUT: return SocketError::TIMEDOUT;
             case ETOOMANYREFS: return SocketError::TOOMANYREFS;
-            case EWOULDBLOCK: return SocketError::WOULDBLOCK;
             // Private
             case ENFILE: return SocketError::NFILE;
             case ENOSR: return SocketError::NOSR;
