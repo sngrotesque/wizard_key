@@ -20,11 +20,11 @@ wuk::net::WukAddrinfo &wuk::net::WukAddrinfo::resolve(const std::string &addr, c
 {
     freeaddrinfo(this->res); // 防止多次调用导致内存泄漏
 
-    wI32 err = getaddrinfo(addr.c_str(), std::to_string(port).c_str(),
+    wI32 err_code = getaddrinfo(addr.c_str(), std::to_string(port).c_str(),
             &this->hints, &this->res);
-    if (err) {
-        throw wuk::Exception(err, "WukAddrinfo::resolve",
-            wuk::net::SystemError::message(err).c_str());
+    if (err_code) {
+        throw wuk::Exception(err_code, "WukAddrinfo::resolve",
+            wuk::net::SystemError::message(err_code));
     }
 
     return *this; // 返回自身方便链式调用
@@ -116,7 +116,7 @@ const std::string wuk::net::WukSockaddr::get_address_string() const
     auto throw_error = []() -> void {
         wI32 err_code = wuk::net::SystemError::code();
         throw wuk::Exception(err_code, "WukSockaddr::get_address_string",
-            wuk::net::SystemError::message(err_code).c_str());
+            wuk::net::SystemError::message(err_code));
     };
 
     switch (sa->sa_family) {
@@ -180,7 +180,7 @@ wuk::net::WukSocket::WukSocket(wI32 family, wI32 sock_type, wI32 proto)
     if (static_cast<wI32>(this->fd) == NETERROR) {
         wI32 err_code = wuk::net::SystemError::code();
         throw wuk::Exception(err_code, "wuk::net::WukSocket::WukSocket",
-            wuk::net::SystemError::message(err_code).c_str());
+            wuk::net::SystemError::message(err_code));
     }
 }
 
@@ -188,6 +188,7 @@ wuk::net::WukSocket::WukSocket(wI32 family, wI32 sock_type, wI32 proto, wSocket 
 : m_family(family), m_sock_type(sock_type), m_proto(proto)
 {
     this->fd = cur_fd;
+    // this->m_laddr = this->getsockname();
 }
 
 wuk::net::WukSocket::~WukSocket()
@@ -202,7 +203,7 @@ const wuk::net::WukSockaddr wuk::net::WukSocket::getsockname()
     if (err == NETERROR) {
         wI32 err_code = wuk::net::SystemError::code();
         throw wuk::Exception(err_code, "wuk::net::WukSocket::getsockname",
-            wuk::net::SystemError::message(err_code).c_str());
+            wuk::net::SystemError::message(err_code));
     }
     return addr;
 }
@@ -219,7 +220,7 @@ void wuk::net::WukSocket::set_blocking(bool blocked)
     if (flag == NETERROR) {
         wI32 err_code = wuk::net::SystemError::code();
         throw wuk::Exception(err_code, "wuk::net::WukSocket::set_blocking",
-            wuk::net::SystemError::message(err_code).c_str());
+            wuk::net::SystemError::message(err_code));
     }
     if (blocked) {
         flag &= ~O_NONBLOCK;
@@ -231,7 +232,7 @@ void wuk::net::WukSocket::set_blocking(bool blocked)
     if (err == NETERROR) {
         wI32 err_code = wuk::net::SystemError::code();
         throw wuk::Exception(err_code, "wuk::net::WukSocket::set_blocking",
-            wuk::net::SystemError::message(err_code).c_str());
+            wuk::net::SystemError::message(err_code));
     }
 }
 
@@ -248,7 +249,7 @@ void wuk::net::WukSocket::connect(const std::string &addr, const wU16 &port)
     if (err == NETERROR) {
         wI32 err_code = wuk::net::SystemError::code();
         throw wuk::Exception(err_code, "wuk::net::WukSocket::connect",
-            wuk::net::SystemError::message(err_code).c_str());
+            wuk::net::SystemError::message(err_code));
     }
     this->m_raddr.set_addr(info.get_addr(), info.get_addrlen());
     this->m_laddr.set_addr(this->getsockname());
@@ -262,12 +263,12 @@ void wuk::net::WukSocket::bind(const std::string &addr, const wU16 &port)
     if (err == NETERROR) {
         wI32 err_code = wuk::net::SystemError::code();
         throw wuk::Exception(err_code, "wuk::net::WukSocket::bind",
-            wuk::net::SystemError::message(err_code).c_str());
+            wuk::net::SystemError::message(err_code));
     }
     this->m_laddr.set_addr(info.get_addr(), info.get_addrlen());
 }
 
-std::optional<wuk::net::WukSocket> wuk::net::WukSocket::accept() const
+wuk::net::WukSocket wuk::net::WukSocket::accept() const
 {
     sockaddr_storage client_addrinfo {0};
     socklen_t client_addrinfo_len = sizeof(client_addrinfo);
@@ -278,7 +279,7 @@ std::optional<wuk::net::WukSocket> wuk::net::WukSocket::accept() const
     if (static_cast<wI32>(client_sock) == NETERROR) {
         wI32 err_code = wuk::net::SystemError::code();
         throw wuk::Exception(err_code, "wuk::net::WukSocket::accept",
-            wuk::net::SystemError::message(err_code).c_str());
+            wuk::net::SystemError::message(err_code));
     }
     WukSocket new_sock(this->m_family, this->m_sock_type, this->m_proto, client_sock);
     new_sock.set_raddr(WukSockaddr(&client_addrinfo, client_addrinfo_len));
@@ -293,7 +294,7 @@ void wuk::net::WukSocket::listen(const socklen_t &backlog)
     if (err == NETERROR) {
         wI32 err_code = wuk::net::SystemError::code();
         throw wuk::Exception(err_code, "wuk::net::WukSocket::listen",
-            wuk::net::SystemError::message(err_code).c_str());
+            wuk::net::SystemError::message(err_code));
     }
 }
 
@@ -303,7 +304,7 @@ wSSize wuk::net::WukSocket::send(const std::string &buffer, wI32 flag)
     if (sent == NETERROR) {
         wI32 err_code = wuk::net::SystemError::code();
         throw wuk::Exception(err_code, "wuk::net::WukSocket::send",
-            wuk::net::SystemError::message(err_code).c_str());
+            wuk::net::SystemError::message(err_code));
     }
     return sent;
 }
@@ -313,13 +314,12 @@ std::string wuk::net::WukSocket::recv(const socklen_t &length, wI32 flag)
     std::string buffer(length, '\0');
     wSSize received = ::recv(this->fd, buffer.data(), length, flag);
     if (received == 0) {
-        throw wuk::Exception(wuk::Error::ERR, "wuk::net::WukSocket::recv",
-            "Connection closed by peer.");
+        return std::string{};
     }
     if (received == NETERROR) {
         wI32 err_code = wuk::net::SystemError::code();
         throw wuk::Exception(err_code, "wuk::net::WukSocket::recv",
-            wuk::net::SystemError::message(err_code).c_str());
+            wuk::net::SystemError::message(err_code));
     }
     buffer.resize(received);
     return buffer;
@@ -331,12 +331,12 @@ void wuk::net::WukSocket::sendall(const std::string &buffer, wI32 flag)
     const char *data_ptr = buffer.c_str();
     wSSize data_len = static_cast<socklen_t>(buffer.length());
     while (data_len) {
-        wSSize size = wuk::min(block_size, data_len);
+        wSSize size = min(block_size, data_len);
         wSSize sent = ::send(this->fd, data_ptr, size, flag);
         if (sent == NETERROR) {
             wI32 err_code = wuk::net::SystemError::code();
             throw wuk::Exception(err_code, "wuk::net::WukSocket::send",
-                wuk::net::SystemError::message(err_code).c_str());
+                wuk::net::SystemError::message(err_code));
         }
         data_ptr += sent;
         data_len -= sent;
@@ -352,7 +352,7 @@ wSSize wuk::net::WukSocket::sendto(const std::string &buffer,
     if (sent == NETERROR) {
         wI32 err_code = wuk::net::SystemError::code();
         throw wuk::Exception(err_code, "wuk::net::WukSocket::sendto",
-            wuk::net::SystemError::message(err_code).c_str());
+            wuk::net::SystemError::message(err_code));
     }
     return sent;
 }
@@ -365,13 +365,12 @@ std::string wuk::net::WukSocket::recvfrom(const socklen_t &length,
     wSSize received = ::recvfrom(this->fd, buffer.data(), length, flag,
                                     addr.set_addr(), addr.set_addrlen());
     if (received == 0) {
-        throw wuk::Exception(wuk::Error::ERR, "wuk::net::WukSocket::recvfrom",
-            "Connection closed by peer.");
+        return std::string{};
     }
     if (received == NETERROR) {
         wI32 err_code = wuk::net::SystemError::code();
         throw wuk::Exception(err_code, "wuk::net::WukSocket::recvfrom",
-            wuk::net::SystemError::message(err_code).c_str());
+            wuk::net::SystemError::message(err_code));
     }
     buffer.resize(received);
     return buffer;
@@ -383,7 +382,7 @@ void wuk::net::WukSocket::shutdown(const wI32 &how)
     if (err == NETERROR) {
         wI32 err_code = wuk::net::SystemError::code();
         throw wuk::Exception(err_code, "wuk::net::WukSocket::shutdown",
-            wuk::net::SystemError::message(err_code).c_str());
+            wuk::net::SystemError::message(err_code));
     }
 }
 
@@ -401,7 +400,7 @@ void wuk::net::WukSocket::close()
     if (err == NETERROR) {
         wI32 err_code = wuk::net::SystemError::code();
         throw wuk::Exception(err_code, "wuk::net::WukSocket::close",
-            wuk::net::SystemError::message(err_code).c_str());
+            wuk::net::SystemError::message(err_code));
     }
 
     this->is_close = true;

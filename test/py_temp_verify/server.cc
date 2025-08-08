@@ -18,8 +18,8 @@ struct ClientInfo {
 };
 
 std::unordered_map<wSocket, ClientInfo> clients;
-std::mutex clients_mutex;
 std::atomic<bool> server_active{true};
+std::mutex clients_mutex;
 
 static void log(const std::string &msg)
 {
@@ -107,19 +107,18 @@ static void handle_client(wuk::net::WukSocket server_fd, wuk::net::WukSocket fd,
 
 static void start_server(const std::string &host = "0.0.0.0", wU16 port = 47777)
 {
-    wuk::net::WukSocket fd(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+    wuk::net::WukSocket server_fd(AF_INET, SOCK_STREAM, IPPROTO_TCP);
 
-    fd.setsockopt<bool>(SOL_SOCKET, SO_REUSEADDR, true);
-    fd.bind(host, port);
-    fd.listen(5);
+    server_fd.setsockopt<bool>(SOL_SOCKET, SO_REUSEADDR, true);
+    server_fd.bind(host, port);
+    server_fd.listen(5);
 
     log("服务器已启动；监听：" + host + ":" + std::to_string(port));
 
     while (server_active) {
-        if (auto client = fd.accept()) {
-            std::string client_addr = client->get_laddr().get_address_string();
-            std::thread(handle_client, fd, client.value(), client_addr).detach();
-        }
+        auto client = server_fd.accept();
+        std::string client_addr = client.get_laddr().get_address_string();
+        std::thread(handle_client, server_fd, client, client_addr).detach();
     }
 
     log("服务器已关闭。");

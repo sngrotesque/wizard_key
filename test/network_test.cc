@@ -18,11 +18,10 @@ void server_test(const std::string &addr, const wU16 &port)
     fd.listen(5);
 
     std::cout << "waiting connecting...\n";
-    if (auto client_fd = fd.accept()) {
-        std::cout << client_fd->recv(5) << std::endl;
-        client_fd->send("hello");
-        client_fd->close();
-    }
+    auto client_fd = fd.accept();
+    std::cout << client_fd.recv(5) << std::endl;
+    client_fd.send("hello");
+    client_fd.close();
 
     fd.close();
 }

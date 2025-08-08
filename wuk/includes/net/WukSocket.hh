@@ -6,8 +6,6 @@
 #include <net/WukNetwork.hh>
 #include <net/WukError.hh>
 
-#include <optional>
-
 #ifdef WUK_PLATFORM_WINOS
 using wSocket = SOCKET;
 #else
@@ -81,6 +79,7 @@ namespace wuk::net {
         bool is_close = false;
 
     public:
+        WukSocket() = default;
         WukSocket(wI32 family, wI32 sock_type, wI32 proto);
         WukSocket(wI32 family, wI32 sock_type, wI32 proto, wSocket cur_fd);
         ~WukSocket();
@@ -124,7 +123,7 @@ namespace wuk::net {
         void connect(const std::string &addr, const wU16 &port);
         void bind(const std::string &addr, const wU16 &port);
         void listen(const socklen_t &backlog);
-        std::optional<WukSocket> accept() const;
+        WukSocket accept() const;
 
         wSSize send(const std::string &buffer, wI32 flag = 0);
         std::string recv(const socklen_t &length, wI32 flag = 0);
@@ -147,6 +146,11 @@ namespace wuk::net {
         const wSocket get_fd() const
         {
             return this->fd;
+        }
+
+        bool is_valid() const noexcept
+        {
+            return !is_close && (this->fd != static_cast<wSocket>(NETERROR));
         }
     };
 }
