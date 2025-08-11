@@ -6,13 +6,17 @@
 #include <net/WukNetwork.hh>
 #include <net/WukError.hh>
 
-#ifdef WUK_PLATFORM_WINOS
-using wSocket = SOCKET;
-#else
-using wSocket = wI32;
+#ifdef WUK_STD_CPP_20
+#   include <compare>
 #endif
 
 namespace wuk::net {
+#   ifdef WUK_PLATFORM_WINOS
+    using wSocket = SOCKET;
+#   else
+    using wSocket = wI32;
+#   endif
+
 // 类类型声明
     class LIBWUK_API WukAddrinfo;
     class LIBWUK_API WukSockaddr;
@@ -47,6 +51,7 @@ namespace wuk::net {
         WukSockaddr() = default;
         WukSockaddr(const sockaddr_storage *addr, const socklen_t &addrlen);
         WukSockaddr(const sockaddr *addr, const socklen_t &addrlen);
+        ~WukSockaddr();
 
     public:
         sockaddr *set_addr() noexcept;
@@ -77,12 +82,28 @@ namespace wuk::net {
         double m_timeout = 0;
 
         bool is_close = false;
+        bool is_blocking = true;
 
     public:
         WukSocket() = default;
         WukSocket(wI32 family, wI32 sock_type, wI32 proto);
         WukSocket(wI32 family, wI32 sock_type, wI32 proto, wSocket cur_fd);
         ~WukSocket();
+
+        WukSocket(WukSocket &&other) noexcept;
+        WukSocket &operator=(WukSocket &&other) noexcept;
+
+    public:
+#       ifdef WUK_STD_CPP_20
+        std::strong_ordering operator<=>(const WukSocket &other) const;
+#       else
+        bool operator<(const WukSocket &other) const;
+        bool operator<=(const WukSocket &other) const;
+        bool operator>(const WukSocket &other) const;
+        bool operator>=(const WukSocket &other) const;
+        bool operator==(const WukSocket &other) const;
+        bool operator!=(const WukSocket &other) const;
+#       endif
 
     public:
         template <typename T>
@@ -117,7 +138,8 @@ namespace wuk::net {
 
         void set_blocking(bool blocked);
 
-        void set_timeout(double t);
+        void set_timeout(double t) noexcept;
+        double get_timeout() const noexcept;
 
     public:
         void connect(const std::string &addr, const wU16 &port);
@@ -143,15 +165,10 @@ namespace wuk::net {
         const WukSockaddr &get_laddr() const noexcept;
     
     public:
-        const wSocket get_fd() const
-        {
-            return this->fd;
-        }
-
-        bool is_valid() const noexcept
-        {
-            return !is_close && (this->fd != static_cast<wSocket>(NETERROR));
-        }
+        wSocket get_fd() const noexcept;
+        bool is_valid() const noexcept;
+        void mark_invalid() noexcept;
     };
 }
+
 #endif

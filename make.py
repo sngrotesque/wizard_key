@@ -112,6 +112,8 @@ def main(verbose: bool = True):
         # '-Wno-unused-function',
         # '-Wno-unused-parameter',
         # '-Wno-unused-but-set-variable',
+        '--std=c++17',
+        # '--std=c++20',
     )
 
     # 额外源文件
@@ -126,7 +128,7 @@ def main(verbose: bool = True):
         # 'wuk/sources/WukBinascii.cc',
         # 'wuk/sources/WukBuffer.cc',
         # 'wuk/sources/WukHexdump.cc',
-        # 'wuk/sources/WukMisc.cc',
+        'wuk/sources/WukMisc.cc',
         # 'wuk/sources/WukPadding.cc',
         # 'wuk/sources/WukRandom.cc',
         # 'wuk/sources/WukTime.cc',

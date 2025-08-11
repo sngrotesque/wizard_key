@@ -35,22 +35,19 @@ inline void throw_exception(const std::string &func, wI32 code = 0, const std::s
 static std::string recv_data(wuk::net::WukSocket &fd)
 {
     std::string packet_length = fd.recv(4);
-
     wI32 data_length {0};
-    wI32 tmp_length = data_length;
 
     memcpy(&data_length, packet_length.data(), 4);
+    wI32 tmp_length = data_length;
 
-    printf("packet length: %u\n", data_length);
-
-    if (data_length == 0) {
-        fd.close();
+    if (tmp_length == 0) {
         return {};
     }
 
+    printf("TEST data length: %d\n", tmp_length);
+
     std::string result;
     while (tmp_length) {
-        // 此处不要做错误处理，直接让它顺到上层代码。
         std::string tmp_data = fd.recv(wuk::min(2048, tmp_length));
         if (tmp_data.empty()) {
             break;
@@ -112,11 +109,11 @@ int main()
     try {
         wn::WukSocket fd(AF_INET, SOCK_STREAM, IPPROTO_TCP);
         std::string local_addr("0.0.0.0");
-        wU16 local_port{48888};
+        constexpr wU16 local_port{48888};
 
         connect_test(fd, local_addr, local_port, 30);
 
-        // fd.close();
+        fd.close();
 
     } catch (wuk::Exception &e) {
         std::cerr << e.what() << std::endl;
