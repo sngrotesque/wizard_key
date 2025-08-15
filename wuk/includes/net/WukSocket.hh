@@ -137,22 +137,28 @@ namespace wuk::net {
         const WukSockaddr getsockname();
 
         void set_blocking(bool blocked);
+        bool get_blocking() const noexcept;
 
         void set_timeout(double t) noexcept;
         double get_timeout() const noexcept;
 
     public:
+        // 阻塞套接字
         void connect(const std::string &addr, const wU16 &port);
         void bind(const std::string &addr, const wU16 &port);
         void listen(const socklen_t &backlog);
         WukSocket accept() const;
-
         wSSize send(const std::string &buffer, wI32 flag = 0);
-        std::string recv(const socklen_t &length, wI32 flag = 0);
         void sendall(const std::string &buffer, wI32 flag = 0);
-
         wSSize sendto(const std::string &buffer, const WukSockaddr &addr, wI32 flag = 0);
+        std::string recv(const socklen_t &length, wI32 flag = 0);
         std::string recvfrom(const socklen_t &length, WukSockaddr &addr, wI32 flag = 0);
+
+        // 非阻塞套接字
+        void connect_ex(const std::string &addr, const wU16 &port);
+        WukSocket accept_ex();
+        wSSize send_ex(const std::string &buffer, wI32 flag = 0);
+        std::string recv_ex(const socklen_t &length, wI32 flag = 0);
 
         void shutdown(const wI32 &how);
         void close();

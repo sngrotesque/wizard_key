@@ -178,109 +178,6 @@ wU16 wuk::net::WukSockaddr::get_port() const
 }
 
 // ==================== WukSocket ====================
-#include <cmath>
-
-template<typename Func, typename... Args>
-auto execute_with_timeout(Func func, const std::string& func_name, wuk::net::WukSocket &fd, Args&&... args)
-{
-    auto create_timeval = [&]() -> timeval {
-        timeval tv {0};
-
-        double int_part{0};
-        double float_part{0};
-
-        float_part = modf(fd.get_fd(), &int_part);
-
-        tv.tv_sec = static_cast<time_t>(int_part);
-        tv.tv_usec = static_cast<time_t>(float_part * 1e6);
-
-        return tv;
-    };
-
-    // // 无超时直接执行
-    // if (this->m_timeout <= 0) {
-    //     return func(this->fd, std::forward<Args>(args)...);
-    // }
-
-    // // 保存原始阻塞状态
-    // bool was_blocking = this->is_blocking;
-
-    // try {
-    //     // 设置为非阻塞模式
-    //     this->set_blocking(false);
-        
-    //     // 执行非阻塞操作
-    //     auto result = func(this->fd, std::forward<Args>(args)...);
-        
-    //     if (result == NETERROR) {
-    //         wuk::net::SocketError err = wuk::net::from_code(wuk::net::SystemError::code());
-    //         if (err == wuk::net::SocketError::WOULDBLOCK ||
-    //             err == wuk::net::SocketError::AGAIN) {
-    //             // 使用select等待可读/可写状态
-    //             fd_set fds;
-    //             FD_ZERO(&fds);
-    //             FD_SET(this->fd, &fds);
-                
-    //             timeval tv {
-    //                 .tv_sec = static_cast<long>(this->m_timeout),
-    //                 .tv_usec = static_cast<long>((this->m_timeout - tv.tv_sec) * 1000000)
-    //             };
-                
-    //             int select_ret = 0;
-    //             if constexpr (std::is_same_v<decltype(func), decltype(::connect)>) {
-    //                 select_ret = select(this->fd + 1, nullptr, &fds, nullptr, &tv);
-    //             } else if constexpr (std::is_same_v<decltype(func), decltype(::accept)>) {
-    //                 select_ret = select(this->fd + 1, &fds, nullptr, nullptr, &tv);
-    //             } else if constexpr (std::is_same_v<decltype(func), decltype(::send)>) {
-    //                 select_ret = select(this->fd + 1, nullptr, &fds, nullptr, &tv);
-    //             } else if constexpr (std::is_same_v<decltype(func), decltype(::recv)>) {
-    //                 select_ret = select(this->fd + 1, &fds, nullptr, nullptr, &tv);
-    //             }
-                
-    //             if (select_ret <= 0) {
-    //                 throw wuk::Exception(ETIMEDOUT, "WukSocket::" + func_name,
-    //                     "Operation timed out");
-    //             }
-                
-    //             // 再次尝试操作
-    //             result = func(this->fd, std::forward<Args>(args)...);
-    //         }
-    //     }
-        
-    //     // 恢复原始阻塞状态
-    //     if (was_blocking) {
-    //         this->set_blocking(true);
-    //     }
-        
-    //     return result;
-    // } catch (...) {
-    //     // 确保无论如何都恢复阻塞状态
-    //     if (was_blocking) {
-    //         this->set_blocking(true);
-    //     }
-    //     throw;
-    // }
-}
-
-// void WukSocket::connect(const std::string& addr, const wU16& port) {
-//     WukAddrinfo info(this->m_family);
-//     info.resolve(addr, port);
-    
-//     auto connect_func = [](SOCKET fd, const sockaddr* addr, socklen_t addrlen) {
-//         return ::connect(fd, addr, addrlen);
-//     };
-    
-//     wI32 err = execute_with_timeout(connect_func, "connect", info.get_addr(), info.get_addrlen());
-    
-//     if (err == NETERROR) {
-//         wI32 err_code = wuk::net::SystemError::code();
-//         throw wuk::Exception(err_code, "wuk::net::WukSocket::connect",
-//             wuk::net::SystemError::message(err_code));
-//     }
-    
-//     this->m_raddr.set_addr(info.get_addr(), info.get_addrlen());
-//     this->m_laddr.set_addr(this->getsockname());
-// }
 
 wuk::net::WukSocket::WukSocket(wI32 family, wI32 sock_type, wI32 proto)
 : m_family(family), m_sock_type(sock_type), m_proto(proto)
@@ -423,9 +320,14 @@ void wuk::net::WukSocket::set_blocking(bool blocked)
     this->is_blocking = blocked;
 }
 
+bool wuk::net::WukSocket::get_blocking() const noexcept
+{
+    return this->is_blocking;
+}
+
 void wuk::net::WukSocket::set_timeout(double t) noexcept
 {
-    this->m_timeout = t;
+    this->m_timeout = (t < 0) ? 0 : t; // 超时时间不允许为负数
 }
 
 double wuk::net::WukSocket::get_timeout() const noexcept
@@ -462,20 +364,18 @@ void wuk::net::WukSocket::bind(const std::string &addr, const wU16 &port)
 
 wuk::net::WukSocket wuk::net::WukSocket::accept() const
 {
-    sockaddr_storage client_addrinfo {0};
-    socklen_t client_addrinfo_len = sizeof(client_addrinfo);
+    WukSockaddr client;
 
-    wSocket client_sock = ::accept(this->fd,
-                                reinterpret_cast<sockaddr *>(&client_addrinfo),
-                                &client_addrinfo_len);
+    wSocket client_sock = ::accept(this->fd, client.set_addr(), client.set_addrlen());
+
     if (client_sock == static_cast<wSocket>(NETERROR)) {
         wI32 err_code = wuk::net::SystemError::code();
         throw wuk::Exception(err_code, "wuk::net::WukSocket::accept",
             wuk::net::SystemError::message(err_code));
     }
+
     WukSocket new_sock(this->m_family, this->m_sock_type, this->m_proto, client_sock);
-    new_sock.set_raddr(WukSockaddr(&client_addrinfo, client_addrinfo_len));
-    new_sock.set_laddr(new_sock.getsockname());
+    new_sock.set_raddr(client);
 
     return new_sock;
 }

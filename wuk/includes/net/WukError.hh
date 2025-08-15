@@ -142,12 +142,8 @@ namespace wuk::net {
             case EADDRINUSE: return SocketError::ADDRINUSE;
             case EADDRNOTAVAIL: return SocketError::ADDRNOTAVAIL;
             case EAFNOSUPPORT: return SocketError::AFNOSUPPORT;
-#           if (EAGAIN == EWOULDBLOCK)
-            case EAGAIN: return SocketError::WOULDBLOCK;
-#           else
-            case EAGAIN: return SocketError::WOULDBLOCK;
+            // 由于在现代Linux中EAGAIN始终等于EWOULDBLOCK，所以不区分具体是哪个宏了。
             case EWOULDBLOCK: return SocketError::WOULDBLOCK;
-#           endif
             case EALREADY: return SocketError::ALREADY;
             case EBADF: return SocketError::BADF;
             case ECONNABORTED: return SocketError::CONNABORTED;
