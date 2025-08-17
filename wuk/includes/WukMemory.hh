@@ -47,9 +47,9 @@ namespace wuk {
     }
 
     template <typename T>
-    LIBWUK_API inline T m_calloc(wSize length) noexcept
+    LIBWUK_API inline T *m_calloc(wSize length) noexcept
     {
-        return static_cast<T>(calloc(sizeof(T), length));
+        return static_cast<T *>(calloc(sizeof(T), length));
     }
 
     LIBWUK_API inline void m_free(void *p) noexcept

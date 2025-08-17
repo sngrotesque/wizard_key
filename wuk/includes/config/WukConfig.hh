@@ -120,12 +120,12 @@
 #  endif
 #endif
 
-// WUK库类型定义
 #ifdef WUK_COMPILER_MSVC
 #   include <BaseTsd.h>
 using ssize_t = SSIZE_T;
 #endif
 
+// 旧版类型声明
 using wByte  = uint8_t;
 
 using wU16   = uint16_t;
@@ -139,8 +139,24 @@ using wI64   = int64_t;
 using wSize  = size_t;
 using wSSize = ssize_t;
 
-// 定义通用函数
 namespace wuk {
+// 新版类型声明
+    using byte  = uint8_t;
+
+    using u8    = uint8_t;
+    using u16   = uint16_t;
+    using u32   = uint32_t;
+    using u64   = uint64_t;
+
+    using i8    = int8_t;
+    using i16   = int16_t;
+    using i32   = int32_t;
+    using i64   = int64_t;
+
+    using ulong = size_t;
+    using ilong = ssize_t;
+
+// 定义通用函数
     template <typename T>
     inline const T &min(const T &x, const T &y)
     {

@@ -122,17 +122,20 @@ wuk::Buffer get_pwd_hash_by_uid(PGconn* conn, wI64 uid)
 
 void exec_sql(const im::UserInfo &info, const std::string &table_name)
 {
+    std::string server_ip;
     std::string password;
 
     std::cout << "Please enter password: ";
     std::cin >> password;
+    std::cout << "Please enter IP: ";
+    std::cin >> server_ip;
 
     std::stringstream conninfo;
-    conninfo    << "host="     << "47.79.146.143" << " "
-                << "port="     << "54324"         << " "
-                << "dbname="   << "im"            << " "
-                << "user="     << "postgres"      << " "
-                << "password=" << password        << " "
+    conninfo    << "host="     << server_ip  << " "
+                << "port="     << "54324"    << " "
+                << "dbname="   << "im"       << " "
+                << "user="     << "postgres" << " "
+                << "password=" << password   << " "
                 << "sslmode="  << "require";
 
     PGconn *conn = PQconnectdb(conninfo.str().c_str());
@@ -175,6 +178,93 @@ void exec_sql(const im::UserInfo &info, const std::string &table_name)
     PQclear(res);
     PQfinish(conn);
 }
+
+class PostgreSQL {
+private:
+    PGconn *m_conn = nullptr;
+    PGresult *m_res = nullptr;
+
+private:
+    void handler_error(wI32 err, const std::string &func, const std::string &msg)
+    {
+        PQclear(this->m_res);
+        PQfinish(this->m_conn);
+        throw wuk::Exception(err, func, msg);
+    }
+
+public:
+    PostgreSQL( const std::string &host,
+                const wuk::u16    &port,
+                const std::string &dbname,
+                const std::string &user,
+                const std::string &password)
+    {
+        std::stringstream conninfo;
+        conninfo << "host="     << host     << " "
+                 << "port="     << port     << " "
+                 << "dbname="   << dbname   << " "
+                 << "user="     << user     << " "
+                 << "password=" << password << " "
+                 << "sslmode="  << "require";
+
+        this->m_conn = PQconnectdb(conninfo.str().c_str());
+
+        if (PQstatus(this->m_conn) != CONNECTION_OK) {
+            this->handler_error(PQstatus(this->m_conn), "PostgreSQL::PostgreSQL",
+                PQerrorMessage(this->m_conn));
+        }
+    }
+
+    ~PostgreSQL()
+    {
+        PQclear(this->m_res);
+        PQfinish(this->m_conn);
+    }
+
+    std::string get_value(PGresult *res, wuk::i32 row, wuk::i32 column)
+    {
+        if (PQntuples(res) == 0) {
+            this->handler_error(wuk::Error::ERR, "PostgreSQL::get_value",
+                "Database record not found.");
+        }
+
+        const char *value = PQgetvalue(res, row, column);
+        const wuk::ulong length = PQgetlength(res, row, column);
+
+        return std::string(value, length);
+    }
+
+public:
+    void exec_sql(const std::string &sql, const std::vector<std::string> &params)
+    {
+        std::vector<const char *> param_values;
+        std::vector<wuk::i32> param_lengths;
+
+        for (const auto &item : params) {
+            param_values.push_back(item.c_str());
+            param_lengths.push_back(static_cast<wuk::i32>(item.length()));
+        }
+
+        this->m_res = PQexecParams(this->m_conn,
+                                   sql.c_str(),
+                                   params.size(),
+                                   nullptr,
+                                   param_values.data(),
+                                   param_lengths.data(),
+                                   nullptr,
+                                   0);
+
+        if (PQresultStatus(this->m_res) != PGRES_COMMAND_OK) {
+            this->handler_error(PQresultStatus(this->m_res), "PostgreSQL::exec_sql",
+                PQerrorMessage(this->m_conn));
+        }
+    }
+
+    std::string query_sql()
+    {
+        
+    }
+};
 
 int main()
 {

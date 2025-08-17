@@ -2,7 +2,7 @@
 #include <crypto/WukChaCha20.hh>
 // #include <WukBinascii.hh>
 #include <WukBuffer.hh>
-#include <WukRandom.hh>
+#include <WukMemory.hh>
 #include <WukTime.hh>
 #include <WukMisc.hh>
 
@@ -13,21 +13,12 @@
 #include <iomanip>
 #include <new>
 
+#include <openssl/rand.h>
 #include <openssl/evp.h>
 
 using namespace wuk::crypto;
 using namespace wuk::misc;
 namespace fs = std::filesystem;
-
-#define SPEED_TEST(func) \
-    func; \
-    double start = timer.time(); \
-    func; \
-    double stop = timer.time(); \
-    double taken_time = stop - start; \
-    double throughput = length / taken_time / (1024 * 1024); \
-    printf("Token time: %.4lf\n", taken_time); \
-    printf("Speed: %.2lf MB/s.\n", throughput);
 
 std::string sha256(const wByte *buffer, wSize length)
 {
@@ -48,38 +39,43 @@ wuk::Buffer get_key(std::string password, wuk::Buffer salt, wU32 length = 32)
     wuk::Buffer result;
 
     PKCS5_PBKDF2_HMAC(password.c_str(), password.length(), salt.get_data(), salt.get_length(),
-        501001, EVP_sha256(), length, result.append_write(length));
+        201001, EVP_sha256(), length, result.append_write(length));
 
     return result;
 }
 
-void chacha20_test()
+void op4_encryption_test()
 {
-    wuk::WukRandom random;
-    wuk::WukTime timer;
-    wByte key  [WukCC20_KL] {0};
-    wByte nonce[WukCC20_NL] {0};
+    auto keyWithNonce = get_key("12345678", {"abcdef0123456789"}, WukOP4_KL + WukOP4_NL);
+    const wByte *key = keyWithNonce.get_data();
+    const wByte *nonce = keyWithNonce.get_data() + WukOP4_KL;
 
-    random.urandom(key,   sizeof key);
-    random.urandom(nonce, sizeof nonce);
+    WukOP4 op4(key);
 
-    WukChaCha20 cc20(key);
+    const char *original = {
+        "hello, world.\n"
+        "This is testing.\n"
+    };
+    wSize length = strlen(original);
+    const wByte *plaintext = reinterpret_cast<const wByte *>(original);
+    wByte *ciphertext = wuk::m_calloc<wByte>(length);
 
-    wSize  length     = 512ULL * 1024 * 1024;
-    wByte *plaintext  = new (std::align_val_t(16), std::nothrow) wByte[length];
-    wByte *ciphertext = new (std::align_val_t(16), std::nothrow) wByte[length];
+    op4.ctr_stream(ciphertext, plaintext, length, nonce);
 
-    SPEED_TEST(cc20.crypto_stream(ciphertext, plaintext, length, nonce));
+    std::cout << "Plaintext:\t\t\t\t\t\t\tCiphertext:\n";
+    print_diff_hex(plaintext, ciphertext, length, length, 16, true);
 
-    operator delete[] (ciphertext, std::align_val_t(16));
-    operator delete[] (plaintext, std::align_val_t(16));
+    std::cout << "Plaintext: " << get_pybytes(plaintext, length, false) << std::endl;
+    std::cout << "Ciphertext: " << get_pybytes(ciphertext, length, false) << std::endl;
+
+    wuk::m_free(ciphertext);
 }
 
-// python make.py test/crypto_test.cc -DWUK_EXPORTS -lsodium -lssl -lcrypto -lbcrypt --std=c++17 -march=native -DLIBSODIUM_SUPPORT
+// python make.py test/crypto_test.cc -DWUK_EXPORTS -lssl -lcrypto -march=native
 
 int main()
 {
-    chacha20_test();
+    op4_encryption_test();
 
     return 0;
 }
