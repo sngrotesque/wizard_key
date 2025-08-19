@@ -1,5 +1,6 @@
 #include <config/WukConfig.hh>
 #include <WukBuffer.hh>
+#include <WukMemory.hh>
 #include <WukMisc.hh>
 #include <zlib.h>
 

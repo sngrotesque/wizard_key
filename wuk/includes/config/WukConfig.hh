@@ -156,6 +156,9 @@ namespace wuk {
     using ulong = size_t;
     using ilong = ssize_t;
 
+    using f32   = float;
+    using f64   = double;
+
 // 定义通用函数
     template <typename T>
     inline const T &min(const T &x, const T &y)

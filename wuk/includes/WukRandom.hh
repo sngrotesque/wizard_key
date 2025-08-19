@@ -5,18 +5,19 @@
 #include <random>
 
 namespace wuk {
-    class LIBWUK_API WukRandom {
+    class LIBWUK_API Random {
     private:
         std::mt19937 generator;
 
     public:
-        WukRandom();
+        Random() = default;
 
     public:
         wSize rand();
         wSize randint(wSize min, wSize max);
-        void urandom(wByte *buffer, wSize length);
-        std::string urandom(wU32 length);
+
+        void bytes(wByte *buffer, wSize length);
+        std::string bytes(wU32 length);
     };
 }
 

@@ -9,7 +9,7 @@ namespace wuk {
         constexpr wU32 WukCC20_NL  = 12; // Nonce length
         constexpr wU32 WukCC20_KSL = 64; // Keystream length
 
-        class LIBWUK_API WukChaCha20 {
+        class LIBWUK_API ChaCha20 {
         private:
             wByte key[WukCC20_KL]{0};
             wU32 counter = 0U;
@@ -22,9 +22,9 @@ namespace wuk {
                                        wByte nonce[WukCC20_NL]);
 
         public:
-            WukChaCha20() = default;
-            WukChaCha20(const wByte key[WukCC20_KL], wU32 counter = 0U);
-            ~WukChaCha20();
+            ChaCha20() = default;
+            ChaCha20(const wByte key[WukCC20_KL], wU32 counter = 0U);
+            ~ChaCha20();
 
             void crypto_stream(wByte *out, const wByte *in, wSize length, wByte nonce[WukCC20_NL]);
         };

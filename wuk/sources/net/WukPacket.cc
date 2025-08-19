@@ -115,7 +115,7 @@ wuk::net::WukPacket &wuk::net::WukPacket::set_recipient(wU64 id)
 wuk::net::WukPacket &wuk::net::WukPacket::set_timestamp(double time_val)
 {
     if (time_val == 0) {
-        time_val = timer.time();
+        time_val = timer.time<double>();
     }
     this->m_message.set_m_timestamp(time_val);
     RETURN;

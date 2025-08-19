@@ -16,49 +16,49 @@ alignas(16) OP4_SI(constexpr wU32) INV_MUL_COEFFS[4] = {
     0x756e9e5bU, 0xd2b5991dU, 0x8ce434adU, 0x34640c3fU
 };
 
-OP4_SI(void) xor_with_iv(wByte state[wuk::crypto::WukOP4_BL],
-                   const wByte iv[wuk::crypto::WukOP4_BL])
+OP4_SI(void) xor_with_iv(wByte state[wuk::crypto::OP4_BL],
+                   const wByte iv[wuk::crypto::OP4_BL])
 {
     sse::storeu128(state,
         sse::xor128(sse::loadu128(state), sse::loadu128(iv)));
 }
 
-OP4_SI(void) xor_with_iv(wByte state[wuk::crypto::WukOP4_BL],
-                   const wByte a[wuk::crypto::WukOP4_BL],
-                   const wByte b[wuk::crypto::WukOP4_BL])
+OP4_SI(void) xor_with_iv(wByte state[wuk::crypto::OP4_BL],
+                   const wByte a[wuk::crypto::OP4_BL],
+                   const wByte b[wuk::crypto::OP4_BL])
 {
     sse::storeu128(state,
         sse::xor128(sse::loadu128(a), sse::loadu128(b)));
 }
 
-OP4_SI(void) cipher(wByte state[wuk::crypto::WukOP4_BL],
-              const wByte input[wuk::crypto::WukOP4_BL],
-              const wByte round_key[wuk::crypto::WukOP4_RKL])
+OP4_SI(void) cipher(wByte state[wuk::crypto::OP4_BL],
+              const wByte input[wuk::crypto::OP4_BL],
+              const wByte round_key[wuk::crypto::OP4_RKL])
 {
     sse::s128 temp;
     sse::s128 rk[8] = {
-        sse::loadu128(round_key + 0 * wuk::crypto::WukOP4_BL),
-        sse::loadu128(round_key + 1 * wuk::crypto::WukOP4_BL),
-        sse::loadu128(round_key + 2 * wuk::crypto::WukOP4_BL),
-        sse::loadu128(round_key + 3 * wuk::crypto::WukOP4_BL),
-        sse::loadu128(round_key + 4 * wuk::crypto::WukOP4_BL),
-        sse::loadu128(round_key + 5 * wuk::crypto::WukOP4_BL),
-        sse::loadu128(round_key + 6 * wuk::crypto::WukOP4_BL),
-        sse::loadu128(round_key + 7 * wuk::crypto::WukOP4_BL),
+        sse::loadu128(round_key + 0 * wuk::crypto::OP4_BL),
+        sse::loadu128(round_key + 1 * wuk::crypto::OP4_BL),
+        sse::loadu128(round_key + 2 * wuk::crypto::OP4_BL),
+        sse::loadu128(round_key + 3 * wuk::crypto::OP4_BL),
+        sse::loadu128(round_key + 4 * wuk::crypto::OP4_BL),
+        sse::loadu128(round_key + 5 * wuk::crypto::OP4_BL),
+        sse::loadu128(round_key + 6 * wuk::crypto::OP4_BL),
+        sse::loadu128(round_key + 7 * wuk::crypto::OP4_BL),
     };
     sse::s128 mul = sse::loadu128(MUL_COEFFS);
 
     temp = sse::loadu128(input);
-    for (wU32 r = 0; r < wuk::crypto::WukOP4_NR; ++r) {
+    for (wU32 r = 0; r < wuk::crypto::OP4_NR; ++r) {
         // shift bit add
         wU32 v0 = sse::extract<simd_size::epi32, 0>(temp);
         wU32 v1 = sse::extract<simd_size::epi32, 1>(temp);
         wU32 v2 = sse::extract<simd_size::epi32, 2>(temp);
         wU32 v3 = sse::extract<simd_size::epi32, 3>(temp);
         v0 = wuk::crypto::rotl32(v0, 13) + v1 + v2 + v3;
-        v1 = wuk::crypto::rotl32(v1, 19) + v2 + v3 + v0;
+        v1 = wuk::crypto::rotl32(v1, 7)  + v2 + v3 + v0;
         v2 = wuk::crypto::rotl32(v2, 11) + v3 + v0 + v1;
-        v3 = wuk::crypto::rotl32(v3, 17) + v0 + v1 + v2;
+        v3 = wuk::crypto::rotl32(v3, 15) + v0 + v1 + v2;
         temp = _mm_set_epi32(v3, v2, v1, v0);
         // multiply
         temp = sse::mullo<simd_size::epi32>(temp, mul);
@@ -68,25 +68,25 @@ OP4_SI(void) cipher(wByte state[wuk::crypto::WukOP4_BL],
     sse::storeu128(state, temp);
 }
 
-OP4_SI(void) inv_cipher(wByte state[wuk::crypto::WukOP4_BL],
-                  const wByte input[wuk::crypto::WukOP4_BL],
-                  const wByte round_key[wuk::crypto::WukOP4_RKL])
+OP4_SI(void) inv_cipher(wByte state[wuk::crypto::OP4_BL],
+                  const wByte input[wuk::crypto::OP4_BL],
+                  const wByte round_key[wuk::crypto::OP4_RKL])
 {
     sse::s128 temp;
     sse::s128 rk[8] = {
-        sse::loadu128((round_key + 7 * wuk::crypto::WukOP4_BL)),
-        sse::loadu128((round_key + 6 * wuk::crypto::WukOP4_BL)),
-        sse::loadu128((round_key + 5 * wuk::crypto::WukOP4_BL)),
-        sse::loadu128((round_key + 4 * wuk::crypto::WukOP4_BL)),
-        sse::loadu128((round_key + 3 * wuk::crypto::WukOP4_BL)),
-        sse::loadu128((round_key + 2 * wuk::crypto::WukOP4_BL)),
-        sse::loadu128((round_key + 1 * wuk::crypto::WukOP4_BL)),
-        sse::loadu128((round_key + 0 * wuk::crypto::WukOP4_BL))
+        sse::loadu128((round_key + 7 * wuk::crypto::OP4_BL)),
+        sse::loadu128((round_key + 6 * wuk::crypto::OP4_BL)),
+        sse::loadu128((round_key + 5 * wuk::crypto::OP4_BL)),
+        sse::loadu128((round_key + 4 * wuk::crypto::OP4_BL)),
+        sse::loadu128((round_key + 3 * wuk::crypto::OP4_BL)),
+        sse::loadu128((round_key + 2 * wuk::crypto::OP4_BL)),
+        sse::loadu128((round_key + 1 * wuk::crypto::OP4_BL)),
+        sse::loadu128((round_key + 0 * wuk::crypto::OP4_BL))
     };
     sse::s128 inv_mul = sse::loadu128(INV_MUL_COEFFS);
 
     temp = sse::loadu128(input);
-    for (wU32 r = 0; r < wuk::crypto::WukOP4_NR; ++r) {
+    for (wU32 r = 0; r < wuk::crypto::OP4_NR; ++r) {
         // round key add
         temp = sse::xor128(temp, rk[r]);
         // inv multiply
@@ -96,27 +96,27 @@ OP4_SI(void) inv_cipher(wByte state[wuk::crypto::WukOP4_BL],
         wU32 v1 = sse::extract<simd_size::epi32, 1>(temp);
         wU32 v2 = sse::extract<simd_size::epi32, 2>(temp);
         wU32 v3 = sse::extract<simd_size::epi32, 3>(temp);
-        v3 = wuk::crypto::rotr32(v3 - v0 - v1 - v2, 17);
+        v3 = wuk::crypto::rotr32(v3 - v0 - v1 - v2, 15);
         v2 = wuk::crypto::rotr32(v2 - v3 - v0 - v1, 11);
-        v1 = wuk::crypto::rotr32(v1 - v2 - v3 - v0, 19);
+        v1 = wuk::crypto::rotr32(v1 - v2 - v3 - v0, 7);
         v0 = wuk::crypto::rotr32(v0 - v1 - v2 - v3, 13);
         temp = _mm_set_epi32(v3, v2, v1, v0);
     }
     sse::storeu128(state, temp);
 }
 
-OP4_SI(void) prevent_zero_key(wByte key[wuk::crypto::WukOP4_KL])
+OP4_SI(void) prevent_zero_key(wByte key[wuk::crypto::OP4_KL])
 {
     // Prevent weak keys
-    for (wU32 ki = 0; ki < wuk::crypto::WukOP4_KL; ++ki) {
+    for (wU32 ki = 0; ki < wuk::crypto::OP4_KL; ++ki) {
         key[ki] ^= (((key[ki] + ki) - key[ki]) ^ (key[ki] << 1) ^ (key[ki] >> 4));
     }
 }
 
-OP4_SI(void) key_obfuscation(wByte k[wuk::crypto::WukOP4_KL])
+OP4_SI(void) key_obfuscation(wByte k[wuk::crypto::OP4_KL])
 {
     // Process the 0, 4, 8, and 12 bytes each time.
-    for (wU32 i = 0; i < wuk::crypto::WukOP4_KL; i += 4) {
+    for (wU32 i = 0; i < wuk::crypto::OP4_KL; i += 4) {
         k[i] += wuk::crypto::rotl8(k[i] ^ k[i+1] ^ k[i+2] ^ k[i+3], 5);
     }
     wU32 v0, v1, v2, v3, v4, v5, v6, v7;
@@ -151,130 +151,130 @@ OP4_SI(void) key_obfuscation(wByte k[wuk::crypto::WukOP4_KL])
     wuk::crypto::pack32le(k + 28, t7);
 }
 
-OP4_SI(void) key_schedule_transformation(wByte key[wuk::crypto::WukOP4_KL])
+OP4_SI(void) key_schedule_transformation(wByte key[wuk::crypto::OP4_KL])
 {
-    for (wU32 r = 0; r < wuk::crypto::WukOP4_NR; ++r) {
+    for (wU32 r = 0; r < wuk::crypto::OP4_NR; ++r) {
         prevent_zero_key(key);
         key_obfuscation(key);
     }
 }
 
-OP4_SI(void) key_extension(const wByte key[wuk::crypto::WukOP4_KL],
-                                 wByte round_key[wuk::crypto::WukOP4_RKL])
+OP4_SI(void) key_extension(const wByte key[wuk::crypto::OP4_KL],
+                                 wByte round_key[wuk::crypto::OP4_RKL])
 {
-    wByte copy_key[wuk::crypto::WukOP4_KL]{0};
-    memcpy(copy_key, key, wuk::crypto::WukOP4_KL);
+    wByte copy_key[wuk::crypto::OP4_KL]{0};
+    memcpy(copy_key, key, wuk::crypto::OP4_KL);
 
-    for (wU32 i = 0; i < wuk::crypto::WukOP4_NK; ++i) {
+    for (wU32 i = 0; i < wuk::crypto::OP4_NK; ++i) {
         key_schedule_transformation(copy_key);
-        memcpy(round_key + i * wuk::crypto::WukOP4_KL, copy_key,
-            wuk::crypto::WukOP4_KL);
+        memcpy(round_key + i * wuk::crypto::OP4_KL, copy_key,
+            wuk::crypto::OP4_KL);
     }
 
-    wuk::memory_secure(copy_key, wuk::crypto::WukOP4_KL);
+    wuk::memory_secure(copy_key, wuk::crypto::OP4_KL);
 }
 
-wuk::crypto::WukOP4::WukOP4(const wByte key[WukOP4_KL], wU32 counter)
+wuk::crypto::OP4::OP4(const wByte key[OP4_KL], wU32 counter)
 : counter(counter)
 {
     if (!key) {
-        throw wuk::Exception(wuk::Error::NPTR, "wuk::crypto::WukOP4::WukOP4",
+        throw wuk::Exception(wuk::Error::NPTR, "wuk::crypto::OP4::OP4",
             "key is nullptr.");
     }
     key_extension(key, this->round_key);
 }
 
-void wuk::crypto::WukOP4::ecb_encrypt(wByte *out, const wByte *in, wSize length)
+void wuk::crypto::OP4::ecb_encrypt(wByte *out, const wByte *in, wSize length)
 {
     if(!out || !in) {
         throw wuk::Exception(wuk::Error::NPTR, "wuk::crypto::WukFEA::ecb_encrypt",
             "ciphertext or plaintext is nullptr.");
     }
-    if(length % WukOP4_BL) {
+    if(length % OP4_BL) {
         throw wuk::Exception(wuk::Error::ERR, "wuk::crypto::WukFEA::ecb_encrypt",
             "length must be a multiple of block length.");
     }
 
-    for (wSize i = 0; i < length; i += WukOP4_BL) {
+    for (wSize i = 0; i < length; i += OP4_BL) {
         cipher(out + i, in + i, this->round_key);
     }
 }
 
-void wuk::crypto::WukOP4::ecb_decrypt(wByte *out, const wByte *in, wSize length)
+void wuk::crypto::OP4::ecb_decrypt(wByte *out, const wByte *in, wSize length)
 {
     if(!out || !in) {
         throw wuk::Exception(wuk::Error::NPTR, "wuk::crypto::WukFEA::ecb_encrypt",
             "ciphertext or plaintext is nullptr.");
     }
-    if(length % WukOP4_BL) {
+    if(length % OP4_BL) {
         throw wuk::Exception(wuk::Error::ERR, "wuk::crypto::WukFEA::ecb_encrypt",
             "length must be a multiple of block length.");
     }
 
-    for (wSize i = 0; i < length; i += WukOP4_BL) {
+    for (wSize i = 0; i < length; i += OP4_BL) {
         inv_cipher(out + i, in + i, this->round_key);
     }
 }
 
-void wuk::crypto::WukOP4::cbc_encrypt(wByte *out, const wByte *in,
-                                      wSize length, const wByte iv[WukOP4_BL])
+void wuk::crypto::OP4::cbc_encrypt(wByte *out, const wByte *in,
+                                      wSize length, const wByte iv[OP4_BL])
 {
     if(!out || !in || !iv) {
         throw wuk::Exception(wuk::Error::NPTR, "wuk::crypto::WukFEA::cbc_encrypt",
             "out/in/iv is nullptr.");
     }
-    if(length % WukOP4_BL) {
+    if(length % OP4_BL) {
         throw wuk::Exception(wuk::Error::ERR, "wuk::crypto::WukFEA::cbc_encrypt",
             "length must be a multiple of block length.");
     }
-    wByte buffer[WukOP4_BL]{0};
-    memcpy(buffer, iv, WukOP4_BL);
+    wByte buffer[OP4_BL]{0};
+    memcpy(buffer, iv, OP4_BL);
     
-    for (wSize i = 0; i < length; i += WukOP4_BL) {
+    for (wSize i = 0; i < length; i += OP4_BL) {
         xor_with_iv(buffer, in + i);
         cipher(out + i, buffer, this->round_key);
-        memcpy(buffer, out + i, WukOP4_BL);
+        memcpy(buffer, out + i, OP4_BL);
     }
 }
 
-void wuk::crypto::WukOP4::cbc_decrypt(wByte *out, const wByte *in,
-                                      wSize length, const wByte iv[WukOP4_BL])
+void wuk::crypto::OP4::cbc_decrypt(wByte *out, const wByte *in,
+                                      wSize length, const wByte iv[OP4_BL])
 {
     if(!out || !in || !iv) {
         throw wuk::Exception(wuk::Error::NPTR, "wuk::crypto::WukFEA::cbc_decrypt",
             "out/in/iv is nullptr.");
     }
-    if(length % WukOP4_BL) {
+    if(length % OP4_BL) {
         throw wuk::Exception(wuk::Error::ERR, "wuk::crypto::WukFEA::cbc_decrypt",
             "length must be a multiple of block length.");
     }
-    wByte buffer[WukOP4_BL]{0}, prev[WukOP4_BL]{0};
-    memcpy(prev, iv, WukOP4_BL);
+    wByte buffer[OP4_BL]{0}, prev[OP4_BL]{0};
+    memcpy(prev, iv, OP4_BL);
 
-    for (wSize i = 0; i < length; i += WukOP4_BL) {
+    for (wSize i = 0; i < length; i += OP4_BL) {
         inv_cipher(buffer, in + i, this->round_key);
         xor_with_iv(out + i, buffer, prev);
-        memcpy(prev, in + i, WukOP4_BL);
+        memcpy(prev, in + i, OP4_BL);
     }
 }
 
-void wuk::crypto::WukOP4::ofb_stream(wByte *out, const wByte *in, wSize length,
-                               const wByte iv[WukOP4_NL])
+void wuk::crypto::OP4::ofb_stream(wByte *out, const wByte *in, wSize length,
+                               const wByte iv[OP4_NL])
 {
     if(!out || !in || !iv) {
         throw wuk::Exception(wuk::Error::NPTR, "wuk::crypto::WukFEA::ofb_xcrypt",
             "out/in/iv is nullptr.");
     }
-    wByte feedback[WukOP4_BL]{0};
-    memcpy(feedback, iv, WukOP4_BL);
+    wByte feedback[OP4_BL]{0};
+    memcpy(feedback, iv, OP4_BL);
 
     size_t remaining = length;
-    while (remaining >= WukOP4_BL) {
+    while (remaining >= OP4_BL) {
         cipher(feedback, feedback, this->round_key);
         xor_with_iv(out, in, feedback);
-        out += WukOP4_BL;
-        in += WukOP4_BL;
-        remaining -= WukOP4_BL;
+        out += OP4_BL;
+        in += OP4_BL;
+        remaining -= OP4_BL;
     }
     if (remaining > 0) {
         cipher(feedback, feedback, this->round_key);
@@ -284,28 +284,28 @@ void wuk::crypto::WukOP4::ofb_stream(wByte *out, const wByte *in, wSize length,
     }
 }
 
-void wuk::crypto::WukOP4::ctr_stream(wByte *out, const wByte *in, wSize length,
-                               const wByte nonce[WukOP4_NL])
+void wuk::crypto::OP4::ctr_stream(wByte *out, const wByte *in, wSize length,
+                               const wByte nonce[OP4_NL])
 {
     if(!out || !in || !nonce) {
         throw wuk::Exception(wuk::Error::NPTR, "wuk::crypto::WukFEA::ofb_xcrypt",
             "out/in/nonce is nullptr.");
     }
-    wByte keystream[WukOP4_BL]{0};
-    wByte state[WukOP4_BL]{0};
-    memcpy(keystream, nonce, WukOP4_NL);
+    wByte keystream[OP4_BL]{0};
+    wByte state[OP4_BL]{0};
+    memcpy(keystream, nonce, OP4_NL);
 
     size_t remaining = length;
-    while (remaining >= WukOP4_BL) {
-        wuk::crypto::pack32le(keystream + WukOP4_NL, this->counter++);
+    while (remaining >= OP4_BL) {
+        wuk::crypto::pack32le(keystream + OP4_NL, this->counter++);
         cipher(state, keystream, this->round_key);
         xor_with_iv(out, in, state);
-        out += WukOP4_BL;
-        in += WukOP4_BL;
-        remaining -= WukOP4_BL;
+        out += OP4_BL;
+        in += OP4_BL;
+        remaining -= OP4_BL;
     }
     if (remaining > 0) {
-        wuk::crypto::pack32le(keystream + WukOP4_NL, this->counter++);
+        wuk::crypto::pack32le(keystream + OP4_NL, this->counter++);
         cipher(state, keystream, this->round_key);
         for (size_t i = 0; i < remaining; i++) {
             out[i] = in[i] ^ state[i];

@@ -3,20 +3,26 @@
 
 #if WUK_SUPPORT
 #include <chrono>
+#include <thread>
 
 namespace wuk {
-    class LIBWUK_API WukTime {
+    class LIBWUK_API Time {
     public:
-        WukTime() = default;
-    
+        Time() = default;
+
     public:
-        void sleep(double delay);
-        
-        inline double time()
+        template <typename T>
+        inline void sleep(T delay)
         {
-            auto now = std::chrono::high_resolution_clock::now();
+            std::this_thread::sleep_for(std::chrono::duration<T>(delay));
+        }
+
+        template <typename T>
+        inline T time()
+        {
+            auto now = std::chrono::system_clock::now();
             auto duration = now.time_since_epoch();
-            return std::chrono::duration<double>(duration).count();
+            return std::chrono::duration<T>(duration).count();
         }
     };
 }

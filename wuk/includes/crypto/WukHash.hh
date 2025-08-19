@@ -9,30 +9,30 @@
 #include <openssl/evp.h>
 
 namespace wuk::crypto {
-    enum class WukHashType {
+    enum class HashlibType {
         MD5, SHA_1,
 
         SHA_224,  SHA_256,  SHA_384,  SHA_512,
         SHA3_224, SHA3_256, SHA3_384, SHA3_512
     };
 
-    template <WukHashType T> const EVP_MD* get_EVP_md();
+    template <HashlibType T> const EVP_MD* get_EVP_md();
 
-    template<> const EVP_MD* get_EVP_md<WukHashType::MD5>    () { return EVP_md5();    }
-    template<> const EVP_MD* get_EVP_md<WukHashType::SHA_1>  () { return EVP_sha1();   }
+    template<> const EVP_MD* get_EVP_md<HashlibType::MD5>    () { return EVP_md5();    }
+    template<> const EVP_MD* get_EVP_md<HashlibType::SHA_1>  () { return EVP_sha1();   }
 
-    template<> const EVP_MD* get_EVP_md<WukHashType::SHA_224>() { return EVP_sha224(); }
-    template<> const EVP_MD* get_EVP_md<WukHashType::SHA_256>() { return EVP_sha256(); }
-    template<> const EVP_MD* get_EVP_md<WukHashType::SHA_384>() { return EVP_sha384(); }
-    template<> const EVP_MD* get_EVP_md<WukHashType::SHA_512>() { return EVP_sha512(); }
+    template<> const EVP_MD* get_EVP_md<HashlibType::SHA_224>() { return EVP_sha224(); }
+    template<> const EVP_MD* get_EVP_md<HashlibType::SHA_256>() { return EVP_sha256(); }
+    template<> const EVP_MD* get_EVP_md<HashlibType::SHA_384>() { return EVP_sha384(); }
+    template<> const EVP_MD* get_EVP_md<HashlibType::SHA_512>() { return EVP_sha512(); }
 
-    template<> const EVP_MD* get_EVP_md<WukHashType::SHA3_224>() { return EVP_sha3_224(); }
-    template<> const EVP_MD* get_EVP_md<WukHashType::SHA3_256>() { return EVP_sha3_256(); }
-    template<> const EVP_MD* get_EVP_md<WukHashType::SHA3_384>() { return EVP_sha3_384(); }
-    template<> const EVP_MD* get_EVP_md<WukHashType::SHA3_512>() { return EVP_sha3_512(); }
+    template<> const EVP_MD* get_EVP_md<HashlibType::SHA3_224>() { return EVP_sha3_224(); }
+    template<> const EVP_MD* get_EVP_md<HashlibType::SHA3_256>() { return EVP_sha3_256(); }
+    template<> const EVP_MD* get_EVP_md<HashlibType::SHA3_384>() { return EVP_sha3_384(); }
+    template<> const EVP_MD* get_EVP_md<HashlibType::SHA3_512>() { return EVP_sha3_512(); }
 
-    template <WukHashType T>
-    class LIBWUK_API WukHash {
+    template <HashlibType T>
+    class LIBWUK_API Hashlib {
     private:
         EVP_MD_CTX  *ctx = nullptr;
         const EVP_MD *md = get_EVP_md<T>();
@@ -54,9 +54,9 @@ namespace wuk::crypto {
         }
 
     public:
-        WukHash()
+        Hashlib()
         {
-            static_assert(!(T == WukHashType::MD5 || T == WukHashType::SHA_1),
+            static_assert(!(T == HashlibType::MD5 || T == HashlibType::SHA_1),
                 "Insecure hash algorithm (MD5/SHA-1), use SHA-2 or SHA-3 instead");
             this->init_ctx();
             this->init_md();
@@ -64,7 +64,7 @@ namespace wuk::crypto {
             EVP_DigestInit_ex(this->ctx, this->md, nullptr);
         }
 
-        ~WukHash()
+        ~Hashlib()
         {
             this->free_ctx();
         }
@@ -89,7 +89,7 @@ namespace wuk::crypto {
             return this->digest().hex();
         }
 
-        WukHashType what_type() const noexcept
+        HashlibType what_type() const noexcept
         {
             return T;
         }

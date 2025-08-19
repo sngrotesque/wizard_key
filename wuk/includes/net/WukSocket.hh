@@ -18,47 +18,47 @@ namespace wuk::net {
 #   endif
 
 // 类类型声明
-    class LIBWUK_API WukAddrinfo;
-    class LIBWUK_API WukSockaddr;
-    class LIBWUK_API WukSocket;
+    class LIBWUK_API Addrinfo;
+    class LIBWUK_API Sockaddr;
+    class LIBWUK_API Socket;
 
-// WukAddrinfo BEGIN
-    class LIBWUK_API WukAddrinfo {
+// Addrinfo BEGIN
+    class LIBWUK_API Addrinfo {
     private:
         addrinfo hints {0};
         addrinfo *res = nullptr;
 
     public:
-        WukAddrinfo(wI32 family = AF_INET, wI32 sock_type = SOCK_STREAM, wI32 proto = IPPROTO_TCP);
-        ~WukAddrinfo();
+        Addrinfo(wI32 family = AF_INET, wI32 sock_type = SOCK_STREAM, wI32 proto = IPPROTO_TCP);
+        ~Addrinfo();
 
     public:
-        WukAddrinfo &resolve(const std::string &addr, const wU16 &port);
+        Addrinfo &resolve(const std::string &addr, const wU16 &port);
 
     public:
         const sockaddr *get_addr() const;
         socklen_t get_addrlen() const;
-        WukSockaddr get_sockaddr() const;
+        Sockaddr get_sockaddr() const;
     };
 
-// WukSockaddr BEGIN
-    class LIBWUK_API WukSockaddr {
+// Sockaddr BEGIN
+    class LIBWUK_API Sockaddr {
     private:
         sockaddr_storage addr {0};
         socklen_t addrlen = sizeof(addr);
 
     public:
-        WukSockaddr() = default;
-        WukSockaddr(const sockaddr_storage *addr, const socklen_t &addrlen);
-        WukSockaddr(const sockaddr *addr, const socklen_t &addrlen);
-        ~WukSockaddr();
+        Sockaddr() = default;
+        Sockaddr(const sockaddr_storage *addr, const socklen_t &addrlen);
+        Sockaddr(const sockaddr *addr, const socklen_t &addrlen);
+        ~Sockaddr();
 
     public:
         sockaddr *set_addr() noexcept;
         socklen_t *set_addrlen() noexcept;
 
         void set_addr(const sockaddr *addr, const socklen_t &addrlen);
-        void set_addr(const WukSockaddr &addr);
+        void set_addr(const Sockaddr &addr);
 
         const sockaddr *get_addr() const noexcept;
         socklen_t get_addrlen() const noexcept;
@@ -67,8 +67,8 @@ namespace wuk::net {
         wU16 get_port() const;
     };
 
-// WukSocket BEGIN
-    class LIBWUK_API WukSocket {
+// Socket BEGIN
+    class LIBWUK_API Socket {
     private:
         wSocket fd = static_cast<wSocket>(NETERROR);
 
@@ -76,8 +76,8 @@ namespace wuk::net {
         wI32 m_sock_type = SOCK_STREAM;
         wI32 m_proto     = IPPROTO_TCP;
 
-        WukSockaddr m_raddr;
-        WukSockaddr m_laddr;
+        Sockaddr m_raddr;
+        Sockaddr m_laddr;
 
         double m_timeout = 0;
 
@@ -85,24 +85,24 @@ namespace wuk::net {
         bool is_blocking = true;
 
     public:
-        WukSocket() = default;
-        WukSocket(wI32 family, wI32 sock_type, wI32 proto);
-        WukSocket(wI32 family, wI32 sock_type, wI32 proto, wSocket cur_fd);
-        ~WukSocket();
+        Socket() = default;
+        Socket(wI32 family, wI32 sock_type, wI32 proto);
+        Socket(wI32 family, wI32 sock_type, wI32 proto, wSocket cur_fd);
+        ~Socket();
 
-        WukSocket(WukSocket &&other) noexcept;
-        WukSocket &operator=(WukSocket &&other) noexcept;
+        Socket(Socket &&other) noexcept;
+        Socket &operator=(Socket &&other) noexcept;
 
     public:
 #       ifdef WUK_STD_CPP_20
-        std::strong_ordering operator<=>(const WukSocket &other) const;
+        std::strong_ordering operator<=>(const Socket &other) const;
 #       else
-        bool operator<(const WukSocket &other) const;
-        bool operator<=(const WukSocket &other) const;
-        bool operator>(const WukSocket &other) const;
-        bool operator>=(const WukSocket &other) const;
-        bool operator==(const WukSocket &other) const;
-        bool operator!=(const WukSocket &other) const;
+        bool operator<(const Socket &other) const;
+        bool operator<=(const Socket &other) const;
+        bool operator>(const Socket &other) const;
+        bool operator>=(const Socket &other) const;
+        bool operator==(const Socket &other) const;
+        bool operator!=(const Socket &other) const;
 #       endif
 
     public:
@@ -114,7 +114,7 @@ namespace wuk::net {
             int err = ::setsockopt(this->fd, level, opt_name, opt_ptr, opt_len);
             if (err == NETERROR) {
                 int err_code = wuk::net::SystemError::code();
-                throw wuk::Exception(err_code, "wuk::net::WukSocket::setsockopt",
+                throw wuk::Exception(err_code, "wuk::net::Socket::setsockopt",
                     wuk::net::SystemError::message(err_code).c_str());
             }
         }
@@ -128,13 +128,13 @@ namespace wuk::net {
                                 reinterpret_cast<char *>(&value), &opt_len);
             if (err == NETERROR) {
                 int err_code = wuk::net::SystemError::code();
-                throw wuk::Exception(err_code, "wuk::net::WukSocket::getsockopt",
+                throw wuk::Exception(err_code, "wuk::net::Socket::getsockopt",
                     wuk::net::SystemError::message(err_code).c_str());
             }
             return value;
         }
 
-        const WukSockaddr getsockname();
+        const Sockaddr getsockname();
 
         void set_blocking(bool blocked);
         bool get_blocking() const noexcept;
@@ -147,16 +147,16 @@ namespace wuk::net {
         void connect(const std::string &addr, const wU16 &port);
         void bind(const std::string &addr, const wU16 &port);
         void listen(const socklen_t &backlog);
-        WukSocket accept() const;
+        Socket accept() const;
         wSSize send(const std::string &buffer, wI32 flag = 0);
         void sendall(const std::string &buffer, wI32 flag = 0);
-        wSSize sendto(const std::string &buffer, const WukSockaddr &addr, wI32 flag = 0);
+        wSSize sendto(const std::string &buffer, const Sockaddr &addr, wI32 flag = 0);
         std::string recv(const socklen_t &length, wI32 flag = 0);
-        std::string recvfrom(const socklen_t &length, WukSockaddr &addr, wI32 flag = 0);
+        std::string recvfrom(const socklen_t &length, Sockaddr &addr, wI32 flag = 0);
 
         // 非阻塞套接字
         void connect_ex(const std::string &addr, const wU16 &port);
-        WukSocket accept_ex();
+        Socket accept_ex();
         wSSize send_ex(const std::string &buffer, wI32 flag = 0);
         std::string recv_ex(const socklen_t &length, wI32 flag = 0);
 
@@ -164,11 +164,11 @@ namespace wuk::net {
         void close();
 
     public:
-        void set_raddr(const WukSockaddr &addr);
-        void set_laddr(const WukSockaddr &addr);
+        void set_raddr(const Sockaddr &addr);
+        void set_laddr(const Sockaddr &addr);
 
-        const WukSockaddr &get_raddr() const noexcept;
-        const WukSockaddr &get_laddr() const noexcept;
+        const Sockaddr &get_raddr() const noexcept;
+        const Sockaddr &get_laddr() const noexcept;
     
     public:
         wSocket get_fd() const noexcept;

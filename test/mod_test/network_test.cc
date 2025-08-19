@@ -64,6 +64,8 @@ void udp_test(const std::string &addr, const wU16 &port)
     fd.close();
 }
 
+#define WUK_PACKET_TEST
+
 #ifdef WUK_PACKET_TEST
 void protobuf_test(const std::string &addr, const wU16 &port)
 {

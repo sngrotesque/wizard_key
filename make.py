@@ -114,6 +114,8 @@ def main(verbose: bool = True):
         # '-Wno-unused-but-set-variable',
         '--std=c++17',
         # '--std=c++20',
+        '-DWUK_EXPORTS',
+        '-march=native',
     )
 
     # 额外源文件
@@ -131,7 +133,7 @@ def main(verbose: bool = True):
         # 'wuk/sources/WukHexdump.cc',
         'wuk/sources/WukMisc.cc',
         # 'wuk/sources/WukPadding.cc',
-        # 'wuk/sources/WukRandom.cc',
+        'wuk/sources/WukRandom.cc',
         # 'wuk/sources/WukTime.cc',
     )
 

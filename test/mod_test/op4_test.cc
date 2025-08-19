@@ -18,9 +18,9 @@ using namespace wuk::misc;
 
 #define SPEED_TEST(func) \
     func; \
-    double start = timer.time(); \
+    double start = timer.time<double>(); \
     func; \
-    double stop = timer.time(); \
+    double stop = timer.time<double>(); \
     double taken_time = stop - start; \
     double throughput = length / taken_time / (1024 * 1024); \
     printf("Token time: %.4lf\n", taken_time); \
@@ -78,21 +78,21 @@ void weak_key_test()
 void xcryption_verification()
 {
     wByte key[WukOP4_KL]{
-        0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
-        0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
-        0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
-        0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0x7F
+        0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
     };
     wByte iv[WukOP4_BL]{
-        0xFF, 0xFF, 0xFF, 0xFF,
-        0xFF, 0xFF, 0xFF, 0xFF,
-        0xFF, 0xFF, 0xFF, 0xFF,
-        0xFF, 0xFF, 0xFF, 0xFF
+        0x00, 0x00, 0x00, 0x00,
+        0x00, 0x00, 0x00, 0x00,
+        0x00, 0x00, 0x00, 0x00,
+        0x00, 0x00, 0x00, 0x00
     };
     wByte nonce[WukOP4_NL]{
-        0xFF, 0xFF, 0xFF, 0xFF,
-        0xFF, 0xFF, 0xFF, 0xFF,
-        0xFF, 0xFF, 0xFF, 0xFF
+        0x00, 0x00, 0x00, 0x00,
+        0x00, 0x00, 0x00, 0x00,
+        0x00, 0x00, 0x00, 0x00
     };
 
     constexpr size_t length = WukOP4_BL << 1;
@@ -179,8 +179,8 @@ void file_encrypt(fs::path input_file, fs::path output_file, const char *passwor
     wByte nonce[OP4_NONCE_LEN];
     wByte key[WukOP4_KL];
 
-    random.urandom(salt, sizeof salt);
-    random.urandom(nonce, sizeof nonce);
+    random.bytes(salt, sizeof salt);
+    random.bytes(nonce, sizeof nonce);
     derive_key_pbkdf2(password, salt, key);
 
     std::ifstream fin(input_file, std::ios::binary);
@@ -491,8 +491,8 @@ void avalanche_effect_test()
     wByte nonce1[WukOP4_NL] {0};
     wByte nonce2[WukOP4_NL] {0};
 
-    random.urandom(key1,   sizeof key1);
-    random.urandom(nonce1, sizeof nonce1);
+    random.bytes(key1,   sizeof key1);
+    random.bytes(nonce1, sizeof nonce1);
 
     constexpr wByte bit = 1 << 0;
     for (wU32 i = 0; i < WukOP4_KL; ++i) {
@@ -540,10 +540,6 @@ int main()
 #   ifdef AVALANCHE_EFFECT_TEST
     avalanche_effect_test();
 #   endif
-
-    wuk::crypto::WukHash<WukHashType::SHA_256> sha256;
-    sha256.update((wByte *)"hello", 5);
-    std::cout << sha256.hexdigest() << std::endl;
 
     return 0;
 }

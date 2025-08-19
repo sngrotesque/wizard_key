@@ -29,7 +29,7 @@ int main()
           .set_proto_ver(0x0101)
           .set_segment_id(0)
           .set_sequence(random.rand())
-          .set_timestamp(timer.time())
+          .set_timestamp(timer.time<double>())
           .set_ids(random.rand(), random.rand())
           .set_message(std::string{"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"});
     std::string res = packet.serialize();

@@ -61,11 +61,11 @@ static inline void state_init(wU32  state[16],
     state_set_iv(state, nonce, ic);
 }
 
-wuk::crypto::WukChaCha20::WukChaCha20(const wByte key[WukCC20_KL], wU32 counter)
+wuk::crypto::ChaCha20::ChaCha20(const wByte key[WukCC20_KL], wU32 counter)
 : counter(counter)
 {
     if (!key) {
-        wuk::Exception(wuk::Error::NPTR, "wuk::crypto::WukChaCha20::WukChaCha20",
+        wuk::Exception(wuk::Error::NPTR, "wuk::crypto::ChaCha20::ChaCha20",
             "key is nullptr.");
     }
     memcpy(this->key, key, WukCC20_KL);
@@ -74,12 +74,12 @@ wuk::crypto::WukChaCha20::WukChaCha20(const wByte key[WukCC20_KL], wU32 counter)
 #   endif
 }
 
-wuk::crypto::WukChaCha20::~WukChaCha20()
+wuk::crypto::ChaCha20::~ChaCha20()
 {
     wuk::memory_secure(this->key, WukCC20_KL);
 }
 
-void wuk::crypto::WukChaCha20::rfc8439_crypto_stream(wByte *out, const wByte *in, wSize length,
+void wuk::crypto::ChaCha20::rfc8439_crypto_stream(wByte *out, const wByte *in, wSize length,
                            wByte nonce[WukCC20_NL])
 {
     state_init(this->state, this->key, nonce, this->counter);
@@ -114,7 +114,7 @@ void wuk::crypto::WukChaCha20::rfc8439_crypto_stream(wByte *out, const wByte *in
     this->counter += ((length + WukCC20_KSL - 1) / WukCC20_KSL);
 }
 
-void wuk::crypto::WukChaCha20::crypto_stream(wByte *out, const wByte *in, wSize length,
+void wuk::crypto::ChaCha20::crypto_stream(wByte *out, const wByte *in, wSize length,
                                              wByte nonce[WukCC20_NL])
 {
     if (this->use_libsodium) {
