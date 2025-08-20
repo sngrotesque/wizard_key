@@ -99,7 +99,16 @@ namespace wuk {
         const char *get_cstr() const noexcept;
         wSize get_length() const noexcept;
         wSize get_size() const noexcept;
+
+    public:
+        // 转为std::string类型
+        std::string to_str() const noexcept;
+        // 转为十六进制字符串
         std::string hex() const noexcept;
+
+    // 内存安全相关
+    public:
+        void clear(bool secure = false) noexcept;
     };
 }
 

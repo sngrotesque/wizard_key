@@ -19,14 +19,15 @@ namespace wuk {
             bool use_libsodium = false;
 
             void rfc8439_crypto_stream(wByte *out, const wByte *in, wSize length,
-                                       wByte nonce[WukCC20_NL]);
+                                 const wByte nonce[WukCC20_NL]);
 
         public:
             ChaCha20() = default;
             ChaCha20(const wByte key[WukCC20_KL], wU32 counter = 0U);
             ~ChaCha20();
 
-            void crypto_stream(wByte *out, const wByte *in, wSize length, wByte nonce[WukCC20_NL]);
+            void crypto_stream(wByte *out, const wByte *in, wSize length,
+                         const wByte nonce[WukCC20_NL]);
         };
     }
 }

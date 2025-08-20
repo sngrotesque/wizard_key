@@ -384,6 +384,11 @@ wSize wuk::Buffer::get_size() const noexcept
     return this->data_size;
 }
 
+std::string wuk::Buffer::to_str() const noexcept
+{
+    return std::string(this->get_cstr(), this->get_length());
+}
+
 std::string wuk::Buffer::hex() const noexcept
 {
     if (this->is_empty()) {
@@ -393,4 +398,21 @@ std::string wuk::Buffer::hex() const noexcept
     std::vector<char> output = wuk::utils::bytes_to_hex(input);
 
     return std::string(output.data(), output.size());
+}
+
+void wuk::Buffer::clear(bool secure) noexcept
+{
+    if (!this->data) {
+        return;
+    }
+    void (*mem_zero)(void *, wuk::ulong) = \
+        (secure) ? wuk::memory_secure : wuk::memory_zero;
+
+    mem_zero(this->data, this->data_size);
+
+    wuk::m_free(this->data);
+    this->data = nullptr;
+    this->data_offset = nullptr;
+    this->data_len = 0;
+    this->data_size = 0;
 }

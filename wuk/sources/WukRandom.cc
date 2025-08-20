@@ -14,13 +14,6 @@
 #   endif
 #endif
 
-wuk::Random::Random()
-{
-    std::random_device rd;
-    std::seed_seq seed{rd(), rd(), rd(), rd(), rd(), rd(), rd(), rd()};
-    this->generator = std::mt19937(seed);
-}
-
 wSize wuk::Random::rand()
 {
     return this->randint(0, ~0ULL);
@@ -56,20 +49,11 @@ void wuk::Random::bytes(wByte *buffer, wSize length)
 
 std::string wuk::Random::bytes(wU32 length)
 {
-    if(!length) {
-        return std::string();
-    }
+    if(!length) return {};
 
-    wByte *buffer = wuk::m_alloc<wByte *>(length);
-    if(!buffer) {
-        throw wuk::Exception(wuk::Error::MEMORY, "wuk::Random::bytes",
-            "Failed to allocate memory for buffer.");
-    }
+    std::string result(length, '\0');
 
-    this->bytes(buffer, length);
-
-    std::string result(reinterpret_cast<char *>(buffer), length);
-    wuk::m_free(buffer);
+    this->bytes(reinterpret_cast<wuk::byte *>(result.data()), length);
 
     return result;
 }

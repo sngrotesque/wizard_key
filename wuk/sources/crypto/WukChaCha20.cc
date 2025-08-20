@@ -80,7 +80,7 @@ wuk::crypto::ChaCha20::~ChaCha20()
 }
 
 void wuk::crypto::ChaCha20::rfc8439_crypto_stream(wByte *out, const wByte *in, wSize length,
-                           wByte nonce[WukCC20_NL])
+                                            const wByte nonce[WukCC20_NL])
 {
     state_init(this->state, this->key, nonce, this->counter);
 
@@ -115,7 +115,7 @@ void wuk::crypto::ChaCha20::rfc8439_crypto_stream(wByte *out, const wByte *in, w
 }
 
 void wuk::crypto::ChaCha20::crypto_stream(wByte *out, const wByte *in, wSize length,
-                                             wByte nonce[WukCC20_NL])
+                                    const wByte nonce[WukCC20_NL])
 {
     if (this->use_libsodium) {
 #       ifdef LIBSODIUM_SUPPORT

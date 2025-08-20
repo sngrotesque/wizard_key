@@ -14,7 +14,7 @@
 #include <mutex>
 
 namespace wuk::im {
-    class Snowflake {
+    class LIBWUK_API Snowflake {
     private:
         wuk::i64 datacenter_id = 0;
         wuk::i64 worker_id = 0;
@@ -55,11 +55,25 @@ namespace wuk::im {
         UserInfo &set_name(const std::string &name);
         UserInfo &set_salt(const wuk::Buffer &salt);
         UserInfo &set_hash(const wuk::Buffer &hash);
-        UserInfo &set_created_at_time(const wuk::f64 &timestamp);
+        UserInfo &set_cadt(const wuk::f64 &timestamp);
         UserInfo &set_active(bool status);
+
+        wuk::i64    get_uid() const noexcept;
+        std::string get_name() const noexcept;
+        wuk::Buffer get_salt() const noexcept;
+        wuk::Buffer get_hash() const noexcept;
+        wuk::f64    get_cadt() const noexcept;
+        bool        get_active() const noexcept;
+
+        std::string get_uid_str() const noexcept;
+        std::string get_name_str() const noexcept;
+        std::string get_salt_str() const noexcept;
+        std::string get_hash_str() const noexcept;
+        std::string get_cadt_str() const noexcept;
+        std::string get_active_str() const noexcept;
     };
 
-    UserInfo create_account(const std::string &name, const std::string &password)
+    inline UserInfo create_account(const std::string &name, const std::string &password)
     {
         wuk::Random random;
         wuk::Time timer;
@@ -76,12 +90,12 @@ namespace wuk::im {
                           10524, EVP_sha256(),
                           32, hash.append_write(32));
 
-        // info.uid = sf.generate_id();
-        // info.name = name;
-        // info.salt = salt;
-        // info.hash = hash;
-        // info.created = timer.time<double>();
-        // info.active = true;
+        info.set_uid(sf.generate_id() & 0xffffffff)
+            .set_name(name)
+            .set_salt(salt)
+            .set_hash(hash)
+            .set_cadt(timer.time<double>())
+            .set_active(true);
 
         return info;
     }
