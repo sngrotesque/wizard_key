@@ -1,9 +1,8 @@
 #include <WukBuffer.hh>
 
+#include <utils/bytes.hh>
 #include <WukMemory.hh>
 #include <vector>
-
-static constexpr char hex_table[] = "0123456789abcdef";
 
 //////////////////////////////////////////////////////////////////////
 /**
@@ -388,14 +387,10 @@ wSize wuk::Buffer::get_size() const noexcept
 std::string wuk::Buffer::hex() const noexcept
 {
     if (this->is_empty()) {
-        return std::string{};
+        return {};
     }
-    std::string out(this->data_len * 2, '0');
+    std::vector<wuk::byte> input(this->data, this->data_offset);
+    std::vector<char> output = wuk::utils::bytes_to_hex(input);
 
-    for (size_t i = 0; i < this->data_len; ++i) {
-        out[i * 2]     = hex_table[(this->data[i] >> 4) & 0xf];
-        out[i * 2 + 1] = hex_table[this->data[i] & 0xf];
-    }
-
-    return out;
+    return std::string(output.data(), output.size());
 }

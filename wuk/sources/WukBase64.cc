@@ -1,11 +1,16 @@
 #include <WukBase64.hh>
+#include <vector>
 
-#include <WukMemory.hh>
+constexpr char base64pad = '=';
+constexpr wuk::byte __ = 0x7f;
 
-#define BASE64PAD '='
-constexpr wByte __ = 0x7f;
+constexpr char b64en_table[65]   = {
+    "ABCDEFGHIJKLMNOP"
+    "QRSTUVWXYZabcdef"
+    "ghijklmnopqrstuv"
+    "wxyz0123456789+/"
+};
 
-constexpr char b64en_table[65] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 constexpr wByte b64de_table[256] = {
     __, __, __, __,  __, __, __, __,  __, __, __, __,  __, __, __, __,
     __, __, __, __,  __, __, __, __,  __, __, __, __,  __, __, __, __,
@@ -28,111 +33,81 @@ constexpr wByte b64de_table[256] = {
     __, __, __, __,  __, __, __, __,  __, __, __, __,  __, __, __, __
 };
 
-// Encoding, definition
-constexpr wSize wuk::Base64::get_encode_length(wSize length)
+std::vector<char> base64_encode(const std::vector<wuk::byte> &buffer)
 {
-    return (length + 2) / 3 * 4;
-}
-
-// Decoding, definition
-constexpr wSize wuk::Base64::get_decode_length(wSize length)
-{
-    return (length + 3) / 4 * 3;
-}
-
-char *wuk::Base64::encode(const wByte *buffer, wSize &length)
-{
-    if(!buffer) {
-        throw wuk::Exception(wuk::Error::NPTR, "wuk::Base64::encode",
-            "buffer is nullptr.");
+    if (buffer.empty()) {
+        return {};
     }
-    wSize new_length = this->get_encode_length(length);
+    wuk::ulong input_length = buffer.size();
+    wuk::ulong output_length = (buffer.size() + 2) / 3 * 4;
+    std::vector<char> result(output_length);
 
-    char *result = wuk::m_alloc<char *>(new_length);
-    if(!result) {
-        throw wuk::Exception(wuk::Error::MEMORY, "wuk::Base64::encode",
-            "Failed to allocate memory for result.");
-    }
-
-    wSize i = 0, j = 0;
-    for(; (i + 2) < length; i += 3, j += 4) {
-        wU32 v = (buffer[i] << 16) | (buffer[i+1] << 8) | buffer[i+2];
+    wuk::ulong i = 0, j = 0;
+    for(; (i + 2) < input_length; i += 3, j += 4) {
+        wuk::u32 v  = (buffer[i]     << 16) |
+                      (buffer[i+1]   << 8)  |
+                      (buffer[i+2]);
         result[j]   = b64en_table[(v >> 18) & 0x3f];
         result[j+1] = b64en_table[(v >> 12) & 0x3f];
         result[j+2] = b64en_table[(v >> 6 ) & 0x3f];
         result[j+3] = b64en_table[(v      ) & 0x3f];
     }
-    if (i < length) {
-        wU32 v = buffer[i] << 16;
+
+    if (i < input_length) {
+        wuk::u32 v  = buffer[i] << 16;
         result[j]   = b64en_table[(v >> 18) & 0x3f];
         result[j+1] = b64en_table[(v >> 12) & 0x3f];
-        result[j+2] = (i + 1 < length) ? b64en_table[((buffer[i+1] << 8) >> 6) & 0x3f] : '=';
-        result[j+3] = '=';
+        result[j+2] = (i+1 < input_length)\
+                    ? b64en_table[((buffer[i+1] << 8) >> 6) & 0x3f]\
+                    : base64pad;
+        result[j+3] = base64pad;
     }
 
-    length = new_length;
     return result;
 }
 
-/*
-* The original implementation of this function comes from
-* lines 387 to 522 in [Python](https://www.python.org/downloads/release/python-3124/)
-* code file `Modules/binascii.c`.
-* 
-* 由于原始代码的实现是为了针对Python使用的，其中使用了一些针对Python的调整。
-* 所以这个函数，目前的情况是最优解了，尽管它在Base64编码串被污染的情况下会占用比实际二进制数据更多的内存空间。
-* 如果要优化这个问题，三个方法：
-* 1. 使用malloc和realloc来管理内存，但是这样的话，必须调整所有代码的内存管理方式以达到统一。
-* 2. 在一开始将有效的Base64编码字符从被污染的Base64编码串中提取出来，然后进行解码，这个方法最好使用std::vector。
-* 3. https://stackoverflow.com/a/78655704/21376217
-*/
-wByte *wuk::Base64::decode(const char *buffer, wSize &length)
+std::vector<wuk::byte> base64_decode(const std::vector<char> &buffer, bool strict)
 {
-    const wByte *ascii_data = reinterpret_cast<const wByte *>(buffer);
-    const wSize  ascii_len  = length;
-    bool  padding_started   = 0;
-
-    wSize  bin_len  = this->get_decode_length(ascii_len);
-    wByte *bin_data = wuk::m_alloc<wByte *>(bin_len + 1);
-    if(!bin_data) {
-        throw wuk::Exception(wuk::Error::MEMORY, "wuk::Base64::decode",
-            "Failed to allocate memory for bin_data.");
+    if (buffer.empty()) {
+        return {};
     }
-    wByte *bin_data_start = bin_data;
+    const wuk::byte *input_data = reinterpret_cast<const wuk::byte *>(buffer.data());
+    const wuk::ulong input_length = buffer.size();
+    bool padding_started = false;
+    std::stringstream error;
 
-    std::stringstream ss;
+    wuk::ulong             result_length = (input_length + 3) / 4 * 3;
+    std::vector<wuk::byte> result_data(result_length);
 
-    wByte leftchar = 0; // 定义一个变量来存储上一次迭代中剩余的字符位
-    wU32  quad_pos = 0; // 定义一个变量来跟踪当前处理到Base64编码块中的哪个位置（0到3）
-    wU32  pads     = 0; // 定义一个变量来计数填充字符的数量
-    wByte this_ch;      // 用于储存单个传入的已编码字符
+    wuk::byte *bin_data       = result_data.data();
+    wuk::byte *bin_data_start = bin_data;
 
-    if(strict_mode && (ascii_len > 0) && (*ascii_data == BASE64PAD)) {
-        wuk::m_free(bin_data_start);
-        throw wuk::Exception(wuk::Error::ERR, "wuk::Base64::decode",
+    wuk::byte leftchar = 0; // 存储上一次迭代中剩余的字符位
+    wuk::u32  quad_pos = 0; // 跟踪当前处理到编码块的哪个位置（0-3）
+    wuk::u32  pads     = 0; // 记录填充字符的数量
+    wuk::byte this_char;
+
+    if (strict && (input_data[0] == base64pad)) {
+        throw wuk::Exception(wuk::Error::ERR, "wuk::base64::decode",
             "Leading padding not allowed.");
     }
 
-    for(wSize i = 0; i < ascii_len; ++i) {
-        this_ch = ascii_data[i];
+    for (wuk::ulong i = 0; i < input_length; ++i) {
+        this_char = input_data[i];
 
-        if(this_ch == BASE64PAD) {
+        if (this_char == base64pad) {
             padding_started = true;
 
-            if(strict_mode && (!quad_pos)) {
-                wuk::m_free(bin_data_start);
-                throw wuk::Exception(wuk::Error::ERR, "wuk::Base64::decode",
+            if (strict && !quad_pos) {
+                throw wuk::Exception(wuk::Error::ERR, "wuk::base64::decode",
                     "Excess padding not allowed.");
             }
 
-            if((quad_pos >= 2) && (quad_pos + (++pads) >= 4)) {
-                /**
-                 * pad序列意味着我们不应该解析更多的输入。在这一点上，我们已经解释了来自quad的数据。
-                 * 在严格模式下，如果填充后有多余的数据，则会引发错误。
-                 */
-                if(strict_mode && ((i + 1) < ascii_len)) {
-                    wuk::m_free(bin_data_start);
-                    throw wuk::Exception(wuk::Error::ERR, "wuk::Base64::decode",
+            if ((quad_pos > 1) && (quad_pos + (++pads) > 3)) {
+                // 填充序列意味着不应该解析更多输入。
+                // 在严格模式下如果填充符后有多余数据，将引发错误。
+                if (strict && ((i + 1) < input_length)) {
+                    throw wuk::Exception(wuk::Error::ERR, "wuk::base64::decode",
                         "Excess data after padding.");
                 }
 
@@ -142,138 +117,119 @@ wByte *wuk::Base64::decode(const char *buffer, wSize &length)
             continue;
         }
 
-        this_ch = b64de_table[this_ch];
-        if(this_ch == __) {
-            if(strict_mode) {
-                wuk::m_free(bin_data_start);
-                throw wuk::Exception(wuk::Error::ERR, "wuk::Base64::decode",
+        this_char = b64de_table[this_char];
+        if (this_char == __) {
+            if (strict) {
+                throw wuk::Exception(wuk::Error::ERR, "wuk::base64::decode",
                     "Only base64 data is allowed.");
             }
             continue;
         }
 
-        if(strict_mode && padding_started) {
-            wuk::m_free(bin_data_start);
-            throw wuk::Exception(wuk::Error::ERR, "wuk::Base64::decode",
+        if (strict && padding_started) {
+            throw wuk::Exception(wuk::Error::ERR, "wuk::base64::decode",
                 "Discontinuous padding not allowed.");
         }
 
         pads = 0;
 
-        switch(quad_pos) {
+        switch (quad_pos) {
         case 0:
             quad_pos = 1;
-            leftchar = this_ch;
+            leftchar = this_char;
             break;
         case 1:
             quad_pos = 2;
-            *bin_data++ = (leftchar << 2) | (this_ch >> 4);
-            leftchar = this_ch & 0xf;
+            *bin_data++ = (leftchar << 2) | (this_char >> 4);
+            leftchar = this_char & 0xf;
             break;
         case 2:
             quad_pos = 3;
-            *bin_data++ = (leftchar << 4) | (this_ch >> 2);
-            leftchar = this_ch & 0x3;
+            *bin_data++ = (leftchar << 4) | (this_char >> 2);
+            leftchar = this_char & 0x3;
             break;
         case 3:
             quad_pos = 0;
-            *bin_data++ = (leftchar << 6) | (this_ch);
+            *bin_data++ = (leftchar << 6) | (this_char);
             leftchar = 0;
             break;
         }
     }
 
-    if(quad_pos) {
-        if(quad_pos == 1) {
-            ss  << "Invalid base64-encoded string: "
-                << "number of data characters ("
-                << ((bin_data - bin_data_start) / 3 * 4 + 1)
-                << ") cannot be 1 more "
-                << "than a multiple of 4.";
+    if (quad_pos) {
+        if (quad_pos == 1) {
+            error   << "Invalid base64-encoded string: "
+                    << "number of data characters ("
+                    << ((bin_data - bin_data_start) / 3 * 4 + 1)
+                    << ") cannot be 1 more "
+                    << "than a multiple of 4.";
         } else {
-            ss  << "Incorrect padding.";
+            error   << "Incorrect padding.";
         }
 
-        wuk::m_free(bin_data_start);
-        throw wuk::Exception(wuk::Error::ERR, "wuk::Base64::decode",
-            ss.str().c_str());
+        throw wuk::Exception(wuk::Error::ERR, "wuk::base64::decode",
+            error.str());
     }
 
 done:
-    length = bin_data - bin_data_start;
+    result_length = bin_data - bin_data_start;
 
-    wByte *result_bin = wuk::m_realloc<wByte *>(bin_data_start, length);
-    if (!result_bin) {
-        wuk::m_free(bin_data_start);
-        throw wuk::Exception(wuk::Error::ERR, "wuk::Base64::decode",
-            "Failed to allocate memory for result_bin.");
-    }
+    result_data.resize(result_length);
 
-    return result_bin;
+    return result_data;
 }
 
-std::string wuk::Base64::encode(std::string _buffer)
+std::string wuk::base64::encode(const std::string &buffer)
 {
-    if(_buffer.empty()) {
-        return std::string{};
-    }
+    const wuk::byte *p = \
+        reinterpret_cast<const wuk::byte *>(buffer.data());
+    wuk::ulong n = buffer.length();
 
-    wByte *buffer = reinterpret_cast<wByte *>(const_cast<char *>(_buffer.data()));
-    wSize length = _buffer.size();
-    char *result = this->encode(buffer, length);
+    std::vector<wuk::byte> input(p, p + n);
+    std::vector<char> output = base64_encode(input);
 
-    std::string _result{result, length};
-    wuk::m_free(result);
+    std::string result(output.data(), output.size());
 
-    return _result;
+    return result;
 }
 
-std::string wuk::Base64::decode(std::string _buffer)
+std::string wuk::base64::decode(const std::string &buffer, bool strict)
 {
-    if(_buffer.empty()) {
-        return std::string{};
-    }
+    const char *p = buffer.c_str();
+    wuk::ulong  n = buffer.length();
 
-    const char *buffer = _buffer.c_str();
-    wSize length = _buffer.size();
-    wByte *result = this->decode(buffer, length);
+    std::vector<char> input(p, p + n);
+    std::vector<wuk::byte> output = base64_decode(input, strict);
 
-    std::string _result{reinterpret_cast<char *>(result), length};
-    wuk::m_free(result);
+    std::string result(reinterpret_cast<const char *>(output.data()),
+                       output.size());
 
-    return _result;
+    return result;
 }
 
-wuk::Buffer wuk::Base64::encode(wuk::Buffer _buffer)
+wuk::Buffer wuk::base64::encode(const wuk::Buffer &buffer)
 {
-    if (_buffer.is_empty()) {
-        return wuk::Buffer{};
-    }
+    const wuk::byte *p = buffer.get_data();
+    wuk::ulong       n = buffer.get_length();
 
-    wByte *buffer = const_cast<wByte *>(_buffer.get_data());
-    wSize length = _buffer.get_length();
-    char *result = this->encode(buffer, length);
+    std::vector<wuk::byte> input(p, p + n);
+    std::vector<char> output = base64_encode(input);
 
-    wuk::Buffer _result(length + 1);
-    _result.append(reinterpret_cast<wByte *>(result), length);
-    wuk::m_free(result);
+    wuk::Buffer result(reinterpret_cast<const wuk::byte *>(output.data()),
+                       output.size());
 
-    return _result;
+    return result;
 }
 
-wuk::Buffer wuk::Base64::decode(wuk::Buffer _buffer)
+wuk::Buffer wuk::base64::decode(const wuk::Buffer &buffer, bool strict)
 {
-    if (_buffer.is_empty()) {
-        return wuk::Buffer{};
-    }
+    const char *p = buffer.get_cstr();
+    wuk::ulong n = buffer.get_length();
 
-    const char *buffer = _buffer.get_cstr();
-    wSize length = _buffer.get_length();
-    wByte *result = this->decode(buffer, length);
+    std::vector<char> input(p, p + n);
+    std::vector<wuk::byte> output = base64_decode(input, strict);
 
-    wuk::Buffer _result(length + 1);
-    _result.append(reinterpret_cast<wByte *>(result), length);
-    wuk::m_free(result);
+    wuk::Buffer result(output.data(), output.size());
 
-    return _result;
+    return result;
 }

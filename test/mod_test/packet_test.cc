@@ -22,8 +22,8 @@ string get_fixed(double x)
 int main()
 {
     WukPacket packet;
-    WukRandom random;
-    WukTime timer;
+    Random random;
+    Time timer;
 
     packet.set_type(MessageType::MESSAGE)
           .set_proto_ver(0x0101)

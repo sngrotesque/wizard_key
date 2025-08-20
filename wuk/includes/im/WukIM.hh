@@ -16,90 +16,21 @@
 namespace wuk::im {
     class Snowflake {
     private:
-        // 各部分的位数定义
-        static constexpr wuk::i64 datacenterIdBits = 5;  // 数据中心ID位数
-        static constexpr wuk::i64 workerIdBits     = 5;  // 工作节点ID位数
-        static constexpr wuk::i64 sequenceBits     = 12; // 序列号位数
-
-        // 最大值计算
-        static constexpr wuk::i64 maxDatacenterId = (1 << datacenterIdBits) - 1;
-        static constexpr wuk::i64 maxWorkerId     = (1 << workerIdBits)     - 1;
-        static constexpr wuk::i64 sequenceMask    = (1 << sequenceBits)     - 1;
-
-        // 时间戳偏移量
-        static constexpr wuk::i64 datacenterIdShift = sequenceBits + workerIdBits;
-        static constexpr wuk::i64 workerIdShift     = sequenceBits;
-        static constexpr wuk::i64 timestampShift    = sequenceBits + workerIdBits + datacenterIdBits;
-
-        // 纪元时间(2025-07-01 00:00:00 UTC)
-        static constexpr wuk::i64 epoch = 1751299200000LL;
-
-        wuk::i64 datacenterId = 0;
-        wuk::i64 workerId = 0;
+        wuk::i64 datacenter_id = 0;
+        wuk::i64 worker_id = 0;
         wuk::i64 sequence = 0;
-        wuk::i64 lastTimestamp = -1;
+        wuk::i64 last_timestamp = -1;
         std::mutex mutex;
 
-    public:
-        Snowflake(wuk::i64 workerId, wuk::i64 datacenterId = 0) 
-        : datacenterId(datacenterId), workerId(workerId)
-        {
-            if (workerId > maxWorkerId || workerId < 0) {
-                throw wuk::Exception(wuk::Error::ERR, "wuk::im::Snowflake::Snowflake",
-                    "Worker ID is out of range.");
-            }
-            if (datacenterId > maxDatacenterId || datacenterId < 0) {
-                throw wuk::Exception(wuk::Error::ERR, "wuk::im::Snowflake::Snowflake",
-                    "Datacenter ID is out of range.");
-            }
-        }
-
-        wuk::i64 generate_id() {
-            std::lock_guard<std::mutex> lock(mutex);
-            
-            // 获取当前时间戳(毫秒)
-            auto timestamp = currentTimestamp();
-            
-            // 处理时钟回拨
-            if (timestamp < lastTimestamp) {
-                throw wuk::Exception(wuk::Error::ERR, "wuk::im::Snowflake::generate_id",
-                    "Clock callback, refusal to generate ID.");
-            }
-
-            // 同一毫秒内生成多个ID
-            if (timestamp == lastTimestamp) {
-                sequence = (sequence + 1) & sequenceMask;
-                if (sequence == 0) {
-                    timestamp = waitNextMillis(lastTimestamp);
-                }
-            } else {
-                sequence = 0;
-            }
-
-            lastTimestamp = timestamp;
-
-            // 组合各部分生成最终ID
-            return ((timestamp - epoch) << timestampShift) |
-                (datacenterId << datacenterIdShift) |
-                (workerId << workerIdShift) |
-                sequence;
-        }
-
     private:
-        wuk::i64 currentTimestamp() const
-        {
-            return std::chrono::duration_cast<std::chrono::milliseconds>(
-                std::chrono::system_clock::now().time_since_epoch()).count();
-        }
+        wuk::i64 current_timestamp() const;
+        wuk::i64 wait_next_millis(wuk::i64 last_timestamp);
 
-        wuk::i64 waitNextMillis(wuk::i64 lastTimestamp)
-        {
-            auto timestamp = currentTimestamp();
-            while (timestamp <= lastTimestamp) {
-                timestamp = currentTimestamp();
-            }
-            return timestamp;
-        }
+    public:
+        Snowflake(wuk::i64 worker_id, wuk::i64 datacenter_id = 0);
+
+    public:
+        wuk::i64 generate_id();
     };
 
     class LIBWUK_API UserInfo {
@@ -120,7 +51,12 @@ namespace wuk::im {
                  wuk::f64    cadt,
                  bool        active);
 
-
+        UserInfo &set_uid(const wuk::i64 &uid);
+        UserInfo &set_name(const std::string &name);
+        UserInfo &set_salt(const wuk::Buffer &salt);
+        UserInfo &set_hash(const wuk::Buffer &hash);
+        UserInfo &set_created_at_time(const wuk::f64 &timestamp);
+        UserInfo &set_active(bool status);
     };
 
     UserInfo create_account(const std::string &name, const std::string &password)

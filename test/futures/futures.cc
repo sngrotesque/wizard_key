@@ -79,7 +79,7 @@ static void view_fd_set(const fd_set &fds)
     print_hex_easy(&fds.fd_array, (sizeof(fds.fd_array[0]) * fds.fd_count) + sizeof(fds.fd_array[0]));
 }
 
-static std::string recv_data(wuk::net::WukSocket &fd)
+static std::string recv_data(wuk::net::Socket &fd)
 {
     std::string packet_length = fd.recv(4);
     wI32 data_length {0};
@@ -108,7 +108,7 @@ static std::string recv_data(wuk::net::WukSocket &fd)
 
 void server()
 {
-    wuk::net::WukSocket server_fd(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+    wuk::net::Socket server_fd(AF_INET, SOCK_STREAM, IPPROTO_TCP);
     fd_set read_fds {0};
 
     server_fd.set_blocking(false);
@@ -168,14 +168,14 @@ void server()
 
 void server(int)
 {
-    wuk::net::WukSocket server_fd(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+    wuk::net::Socket server_fd(AF_INET, SOCK_STREAM, IPPROTO_TCP);
     server_fd.set_blocking(false);
     server_fd.setsockopt<bool>(SOL_SOCKET, SO_REUSEADDR, true);
     server_fd.bind("0.0.0.0", 48888);
     server_fd.listen(30);
 
     constexpr int MAX_CLIENTS = FD_SETSIZE;
-    wuk::net::WukSocket client_fds[MAX_CLIENTS];
+    wuk::net::Socket client_fds[MAX_CLIENTS];
 
     for (wU32 r = 0; r < 100; ++r) {
         fd_set read_fds;

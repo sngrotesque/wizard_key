@@ -5,20 +5,12 @@
 #include <config/WukException.hh>
 #include <WukBuffer.hh>
 
-namespace wuk {
-    class LIBWUK_API Binascii {
-    public:
-        Binascii() = default;
+namespace wuk::binascii {
+    std::string b2a_hex(const std::string &buffer);
+    std::string a2b_hex(const std::string &buffer);
 
-        char *b2a_hex(const wByte *buffer, wSize &length);
-        wByte *a2b_hex(const char *buffer, wSize &length);
-
-        std::string b2a_hex(std::string buffer);
-        std::string a2b_hex(std::string buffer);
-
-        wuk::Buffer b2a_hex(wuk::Buffer buffer);
-        wuk::Buffer a2b_hex(wuk::Buffer buffer);
-    };
+    wuk::Buffer b2a_hex(const wuk::Buffer &buffer);
+    wuk::Buffer a2b_hex(const wuk::Buffer &buffer);
 }
 
 #endif /* WUK_SUPPORT */

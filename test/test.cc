@@ -1,17 +1,15 @@
 #include <crypto/WukCommon.hh>
+#include <WukBuffer.hh>
+#include <WukBase64.hh>
 
 #include <iostream>
-
-using namespace wuk::crypto;
+#include <vector>
 
 int main()
 {
-    wuk::u32 value = 395810823;
-    wuk::u32 number = 19;
+    std::cout << wuk::base64::encode("\\(UwU)/") << std::endl;
+    std::cout << wuk::base64::decode("XChVd1UpLw==") << std::endl;
 
-    std::cout << rotl32(value, number) << std::endl;
-
-    std::cout << rotr32(value, 32 - number) << std::endl;
 
     return 0;
 }

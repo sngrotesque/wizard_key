@@ -32,7 +32,7 @@ inline void throw_exception(const std::string &func, wI32 code = 0, const std::s
     throw wuk::Exception(err_code, func, err_msg);
 }
 
-static std::string recv_data(wuk::net::WukSocket &fd)
+static std::string recv_data(wuk::net::Socket &fd)
 {
     std::string packet_length = fd.recv(4);
     wI32 data_length {0};
@@ -59,7 +59,7 @@ static std::string recv_data(wuk::net::WukSocket &fd)
     return result;
 }
 
-void connect_test(wn::WukSocket &fd, const std::string &remote_addr, const wU16 &remote_port, double timeout)
+void connect_test(wn::Socket &fd, const std::string &remote_addr, const wU16 &remote_port, double timeout)
 {
     fd.set_blocking(false);
 
@@ -107,7 +107,7 @@ int main()
 #   endif
 
     try {
-        wn::WukSocket fd(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+        wn::Socket fd(AF_INET, SOCK_STREAM, IPPROTO_TCP);
         std::string local_addr("0.0.0.0");
         constexpr wU16 local_port{48888};
 

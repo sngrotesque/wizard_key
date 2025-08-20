@@ -1,146 +1,58 @@
 #include <WukBinascii.hh>
 
-#include <WukMemory.hh>
+#include <utils/bytes.hh>
 
-constexpr wByte __ = 0x1f;
-
-static constexpr wByte hexTable[256] = {
-    __, __, __, __, __, __, __, __, __, __, __, __, __, __, __, __,
-    __, __, __, __, __, __, __, __, __, __, __, __, __, __, __, __,
-    __, __, __, __, __, __, __, __, __, __, __, __, __, __, __, __,
-    0,   1,  2,  3,  4,  5,  6,  7,  8,  9, __, __, __, __, __, __,
-    __, 10, 11, 12, 13, 14, 15, __, __, __, __, __, __, __, __, __,
-    __, __, __, __, __, __, __, __, __, __, __, __, __, __, __, __,
-    __, 10, 11, 12, 13, 14, 15, __, __, __, __, __, __, __, __, __,
-    __, __, __, __, __, __, __, __, __, __, __, __, __, __, __, __,
-    __, __, __, __, __, __, __, __, __, __, __, __, __, __, __, __,
-    __, __, __, __, __, __, __, __, __, __, __, __, __, __, __, __,
-    __, __, __, __, __, __, __, __, __, __, __, __, __, __, __, __,
-    __, __, __, __, __, __, __, __, __, __, __, __, __, __, __, __,
-    __, __, __, __, __, __, __, __, __, __, __, __, __, __, __, __,
-    __, __, __, __, __, __, __, __, __, __, __, __, __, __, __, __,
-    __, __, __, __, __, __, __, __, __, __, __, __, __, __, __, __,
-    __, __, __, __, __, __, __, __, __, __, __, __, __, __, __, __
-};
-
-static inline wByte to_char(wByte c)
+std::string wuk::binascii::b2a_hex(const std::string &buffer)
 {
-    return (c + 0x57) - (-(c < 0xa) & 0x27);
-}
+    const wuk::byte *p = \
+        reinterpret_cast<const wuk::byte *>(buffer.data());
+    wuk::ulong n = buffer.length();
 
-char *wuk::Binascii::b2a_hex(const wByte *buffer, wSize &length)
-{
-    if(!buffer || !length) {
-        throw wuk::Exception(wuk::Error::NPTR, "wuk::Binascii::b2a_hex",
-            "buffer is NULL.");
-    }
+    std::vector<wuk::byte> input(p, p + n);
+    std::vector<char> output = wuk::utils::bytes_to_hex(input);
 
-    char *result = wuk::m_alloc<char *>(length * 2);
-    if(!result) {
-        throw wuk::Exception(wuk::Error::MEMORY, "wuk::Binascii::b2a_hex",
-            "Failed to allocate memory for result.");
-    }
+    std::string result(output.data(), output.size());
 
-    for(wSize i = 0; i < length; ++i) {
-        result[i * 2]     = to_char(buffer[i] >> 4);
-        result[i * 2 + 1] = to_char(buffer[i] & 0xf);
-    }
-
-    length *= 2;
     return result;
 }
 
-wByte *wuk::Binascii::a2b_hex(const char *buffer, wSize &length)
+std::string wuk::binascii::a2b_hex(const std::string &buffer)
 {
-    if(!buffer || !length) {
-        throw wuk::Exception(wuk::Error::NPTR, "wuk::Binascii::a2b_hex",
-            "buffer is NULL.");
-    }
-    if(length & 1) {
-        throw wuk::Exception(wuk::Error::ERR, "wuk::Binascii::a2b_hex",
-            "Odd length is not allowed.");
-    }
+    const char *p = buffer.c_str();
+    wuk::ulong  n = buffer.length();
 
-    const wByte *bp = reinterpret_cast<const wByte *>(buffer);
-    wByte *result = wuk::m_alloc<wByte *>(length / 2);
-    if(!result) {
-        throw wuk::Exception(wuk::Error::MEMORY, "wuk::Binascii::a2b_hex",
-            "Failed to allocate memory for result.");
-    }
+    std::vector<char> input(p, p + n);
+    std::vector<wuk::byte> output = wuk::utils::hex_to_bytes(input);
 
-    for(wSize bi = 0, ri = 0; bi < length; bi += 2, ++ri) {
-        wByte top = hexTable[bp[bi]];
-        wByte bot = hexTable[bp[bi + 1]];
-        if((top == __) || (bot == __)) {
-            wuk::m_free(result);
-            throw wuk::Exception(wuk::Error::ERR, "wuk::Binascii::a2b_hex",
-                "characters must be from 0 to f.");
-        }
-        result[ri] = (top << 4) + bot;
-    }
+    std::string result(reinterpret_cast<const char *>(output.data()),
+                       output.size());
 
-    length /= 2;
     return result;
 }
 
-std::string wuk::Binascii::b2a_hex(std::string _buffer)
+wuk::Buffer wuk::binascii::b2a_hex(const wuk::Buffer &buffer)
 {
-    if(_buffer.empty()) {
-        return std::string{};
-    }
-    wByte *buffer = reinterpret_cast<wByte *>(const_cast<char *>(_buffer.data()));
-    wSize length = _buffer.size();
-    char *result = this->b2a_hex(buffer, length);
+    const wuk::byte *p = buffer.get_data();
+    wuk::ulong       n = buffer.get_length();
 
-    std::string result_string{result, length};
-    wuk::m_free(result);
+    std::vector<wuk::byte> input(p, p + n);
+    std::vector<char> output = wuk::utils::bytes_to_hex(input);
 
-    return result_string;
+    wuk::Buffer result(reinterpret_cast<const wuk::byte *>(output.data()),
+                       output.size());
+
+    return result;
 }
 
-std::string wuk::Binascii::a2b_hex(std::string _buffer)
+wuk::Buffer wuk::binascii::a2b_hex(const wuk::Buffer &buffer)
 {
-    if(_buffer.empty()) {
-        return std::string{};
-    }
-    char *buffer = const_cast<char *>(_buffer.data());
-    wSize length = _buffer.size();
-    wByte *result = this->a2b_hex(buffer, length);
+    const char *p = buffer.get_cstr();
+    wuk::ulong n = buffer.get_length();
 
-    std::string result_string{reinterpret_cast<char *>(result), length};
-    wuk::m_free(result);
+    std::vector<char> input(p, p + n);
+    std::vector<wuk::byte> output = wuk::utils::hex_to_bytes(input);
 
-    return result_string;
-}
+    wuk::Buffer result(output.data(), output.size());
 
-wuk::Buffer wuk::Binascii::b2a_hex(wuk::Buffer _buffer)
-{
-    if (_buffer.is_empty()) {
-        return wuk::Buffer{};
-    }
-
-    wByte *buffer = const_cast<wByte *>(_buffer.get_data());
-    wSize length = _buffer.get_length();
-    char *result = this->b2a_hex(buffer, length);
-
-    wuk::Buffer _result{reinterpret_cast<wByte *>(result), length};
-    wuk::m_free(result);
-
-    return _result;
-}
-
-wuk::Buffer wuk::Binascii::a2b_hex(wuk::Buffer _buffer)
-{
-    if (_buffer.is_empty()) {
-        return wuk::Buffer{};
-    }
-
-    const char *buffer = _buffer.get_cstr();
-    wSize length = _buffer.get_length();
-    wByte *result = this->a2b_hex(buffer, length);
-
-    wuk::Buffer _result{reinterpret_cast<wByte *>(result), length};
-    wuk::m_free(result);
-
-    return _result;
+    return result;
 }

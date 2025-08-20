@@ -17,7 +17,7 @@ struct ClientInfo {
     std::string address;
 };
 
-std::unordered_map<wSocket, ClientInfo> clients;
+std::unordered_map<wuk::net::wSocket, ClientInfo> clients;
 std::atomic<bool> server_active{true};
 std::mutex clients_mutex;
 
@@ -26,7 +26,7 @@ static void log(const std::string &msg)
     std::cout << msg << std::endl;
 }
 
-static void fd_send(wuk::net::WukSocket fd, const std::string &data)
+static void fd_send(wuk::net::Socket &fd, const std::string &data)
 {
     wU32 len = htonl(static_cast<wU32>(data.size()));
     char length_array[sizeof(wU32)] = {0};
@@ -36,7 +36,7 @@ static void fd_send(wuk::net::WukSocket fd, const std::string &data)
     fd.send(data);
 }
 
-static std::optional<std::string> fd_recv(wSocket sock)
+static std::optional<std::string> fd_recv(wuk::net::wSocket sock)
 {
     uint32_t len = 0;
     int received = recv(sock, reinterpret_cast<char*>(&len), sizeof(len), 0);
@@ -53,7 +53,7 @@ static std::optional<std::string> fd_recv(wSocket sock)
     return buffer;
 }
 
-static void broadcast(wuk::net::WukSocket fd, const std::string &message)
+static void broadcast(wuk::net::Socket &fd, const std::string &message)
 {
     std::lock_guard lock(clients_mutex);
     for (const auto& [sock, _] : clients) {
@@ -63,7 +63,7 @@ static void broadcast(wuk::net::WukSocket fd, const std::string &message)
     }
 }
 
-static void handle_client(wuk::net::WukSocket server_fd, wuk::net::WukSocket fd, std::string addr_str)
+static void handle_client(wuk::net::Socket server_fd, wuk::net::Socket fd, std::string addr_str)
 {
     auto remove_client = [&]() -> void {
         std::lock_guard lock(clients_mutex);
@@ -107,7 +107,7 @@ static void handle_client(wuk::net::WukSocket server_fd, wuk::net::WukSocket fd,
 
 static void start_server(const std::string &host = "0.0.0.0", wU16 port = 47777)
 {
-    wuk::net::WukSocket server_fd(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+    wuk::net::Socket server_fd(AF_INET, SOCK_STREAM, IPPROTO_TCP);
 
     server_fd.setsockopt<bool>(SOL_SOCKET, SO_REUSEADDR, true);
     server_fd.bind(host, port);

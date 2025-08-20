@@ -46,11 +46,11 @@ wuk::Buffer get_key(std::string password, wuk::Buffer salt, wU32 length = 32)
 
 void op4_encryption_test()
 {
-    auto keyWithNonce = get_key("12345678", {"abcdef0123456789"}, WukOP4_KL + WukOP4_NL);
+    auto keyWithNonce = get_key("12345678", {"abcdef0123456789"}, OP4_KL + OP4_NL);
     const wByte *key = keyWithNonce.get_data();
-    const wByte *nonce = keyWithNonce.get_data() + WukOP4_KL;
+    const wByte *nonce = keyWithNonce.get_data() + OP4_KL;
 
-    WukOP4 op4(key);
+    OP4 op4(key);
 
     const char *original = {
         "hello, world.\n"
