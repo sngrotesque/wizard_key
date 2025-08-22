@@ -179,57 +179,59 @@ done:
     return result_data;
 }
 
-std::string wuk::base64::encode(const std::string &buffer)
-{
-    const wuk::byte *p = \
-        reinterpret_cast<const wuk::byte *>(buffer.data());
-    wuk::ulong n = buffer.length();
+namespace wuk::base64 {
+    std::string encode(const std::string &buffer)
+    {
+        const wuk::byte *p = \
+            reinterpret_cast<const wuk::byte *>(buffer.data());
+        wuk::ulong n = buffer.length();
 
-    std::vector<wuk::byte> input(p, p + n);
-    std::vector<char> output = base64_encode(input);
+        std::vector<wuk::byte> input(p, p + n);
+        std::vector<char> output = base64_encode(input);
 
-    std::string result(output.data(), output.size());
+        std::string result(output.data(), output.size());
 
-    return result;
-}
+        return result;
+    }
 
-std::string wuk::base64::decode(const std::string &buffer, bool strict)
-{
-    const char *p = buffer.c_str();
-    wuk::ulong  n = buffer.length();
+    std::string decode(const std::string &buffer, bool strict)
+    {
+        const char *p = buffer.c_str();
+        wuk::ulong  n = buffer.length();
 
-    std::vector<char> input(p, p + n);
-    std::vector<wuk::byte> output = base64_decode(input, strict);
+        std::vector<char> input(p, p + n);
+        std::vector<wuk::byte> output = base64_decode(input, strict);
 
-    std::string result(reinterpret_cast<const char *>(output.data()),
-                       output.size());
+        std::string result(reinterpret_cast<const char *>(output.data()),
+                        output.size());
 
-    return result;
-}
+        return result;
+    }
 
-wuk::Buffer wuk::base64::encode(const wuk::Buffer &buffer)
-{
-    const wuk::byte *p = buffer.get_data();
-    wuk::ulong       n = buffer.get_length();
+    wuk::Buffer encode(const wuk::Buffer &buffer)
+    {
+        const wuk::byte *p = buffer.get_data();
+        wuk::ulong       n = buffer.get_length();
 
-    std::vector<wuk::byte> input(p, p + n);
-    std::vector<char> output = base64_encode(input);
+        std::vector<wuk::byte> input(p, p + n);
+        std::vector<char> output = base64_encode(input);
 
-    wuk::Buffer result(reinterpret_cast<const wuk::byte *>(output.data()),
-                       output.size());
+        wuk::Buffer result(reinterpret_cast<const wuk::byte *>(output.data()),
+                        output.size());
 
-    return result;
-}
+        return result;
+    }
 
-wuk::Buffer wuk::base64::decode(const wuk::Buffer &buffer, bool strict)
-{
-    const char *p = buffer.get_cstr();
-    wuk::ulong n = buffer.get_length();
+    wuk::Buffer decode(const wuk::Buffer &buffer, bool strict)
+    {
+        const char *p = buffer.get_cstr();
+        wuk::ulong n = buffer.get_length();
 
-    std::vector<char> input(p, p + n);
-    std::vector<wuk::byte> output = base64_decode(input, strict);
+        std::vector<char> input(p, p + n);
+        std::vector<wuk::byte> output = base64_decode(input, strict);
 
-    wuk::Buffer result(output.data(), output.size());
+        wuk::Buffer result(output.data(), output.size());
 
-    return result;
+        return result;
+    }
 }

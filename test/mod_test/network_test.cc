@@ -12,7 +12,7 @@ namespace wn = wuk::net;
 
 void server_test(const std::string &addr, const wU16 &port)
 {
-    wuk::net::WukSocket fd(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+    wuk::net::Socket fd(AF_INET, SOCK_STREAM, IPPROTO_TCP);
 
     fd.setsockopt<bool>(SOL_SOCKET, SO_REUSEADDR, true);
     std::cout << "getsockopt: " << fd.getsockopt<bool>(SOL_SOCKET, SO_REUSEADDR) << std::endl;
@@ -30,7 +30,7 @@ void server_test(const std::string &addr, const wU16 &port)
 
 void client_test(const std::string &addr, const wU16 &port)
 {
-    wuk::net::WukSocket fd(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+    wuk::net::Socket fd(AF_INET, SOCK_STREAM, IPPROTO_TCP);
 
     fd.connect(addr, port);
 
@@ -50,9 +50,9 @@ void client_test(const std::string &addr, const wU16 &port)
 
 void udp_test(const std::string &addr, const wU16 &port)
 {
-    wuk::net::WukSocket fd(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
-    wuk::net::WukAddrinfo ainfo(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
-    wuk::net::WukSockaddr remote;
+    wuk::net::Socket fd(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
+    wuk::net::Addrinfo ainfo(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
+    wuk::net::Sockaddr remote;
 
     fd.bind("0.0.0.0", 48999);
 
@@ -64,14 +64,12 @@ void udp_test(const std::string &addr, const wU16 &port)
     fd.close();
 }
 
-#define WUK_PACKET_TEST
-
 #ifdef WUK_PACKET_TEST
 void protobuf_test(const std::string &addr, const wU16 &port)
 {
-    wuk::net::WukSocket sock(AF_INET, SOCK_STREAM, 0);
-    wuk::net::WukPacket packet;
-    wuk::WukTime time;
+    wuk::net::Socket sock(AF_INET, SOCK_STREAM, 0);
+    wuk::net::Packet packet;
+    wuk::Time time;
 
     std::cout << "Build message package...\n";
     packet.set_type(wuk::net::MessageType::MESSAGE)
@@ -93,7 +91,7 @@ void protobuf_test(const std::string &addr, const wU16 &port)
 
 void block_test(const std::string &addr, const wU16 &port)
 {
-    wuk::net::WukSocket fd(AF_INET, SOCK_STREAM, 0);
+    wuk::net::Socket fd(AF_INET, SOCK_STREAM, 0);
 
     fd.set_blocking(false);
 
@@ -115,7 +113,7 @@ void block_test(const std::string &addr, const wU16 &port)
 
 void timeout_test(const std::string &addr, const wU16 &port, double timeout = 3)
 {
-    wuk::net::WukSocket fd(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+    wuk::net::Socket fd(AF_INET, SOCK_STREAM, IPPROTO_TCP);
     fd.set_timeout(timeout);
 
     std::stringstream headers;
@@ -145,6 +143,16 @@ void timeout_test(const std::string &addr, const wU16 &port, double timeout = 3)
     fd.send_ex(headers.str());
 
     std::cout << fd.recv(4096) << std::endl;
+#   elif defined(RECV_TEST)
+    fd.connect(addr, port);
+
+    fd.send(headers.str());
+
+    std::cout << fd.recv_ex(4096) << std::endl;
+#   elif defined(ALL_TEST)
+    fd.connect_ex(addr, port);
+    fd.send_ex(headers.str());
+    std::cout << fd.recv_ex(4096) << std::endl;
 #   endif
 
     fd.close();
@@ -160,7 +168,7 @@ int main()
     std::cout << "The program starts execution.\n";
 
     try {
-        timeout_test("www.znz.cn", 80, 0.001);
+        timeout_test("klbq.idreamsky.com", 80, 0.001);
     } catch (wuk::Exception &e) {
         std::cerr << e.what() << std::endl;
     }

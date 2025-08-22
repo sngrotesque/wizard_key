@@ -1,6 +1,7 @@
 #include <crypto/WukOP4.hh>
 
 #include <config/WukEndianness.hh>
+#include <config/WukException.hh>
 #include <crypto/WukCommon.hh>
 #include <WukMemory.hh>
 
@@ -180,141 +181,143 @@ OP4_SI(void) key_extension(const wByte key[wuk::crypto::OP4_KL],
     wuk::memory_secure(copy_key, wuk::crypto::OP4_KL);
 }
 
-wuk::crypto::OP4::OP4(const wByte key[OP4_KL], wU32 counter)
-: counter(counter)
-{
-    if (!key) {
-        throw wuk::Exception(wuk::Error::NPTR, "wuk::crypto::OP4::OP4",
-            "key is nullptr.");
-    }
-    key_extension(key, this->round_key);
-}
-
-void wuk::crypto::OP4::ecb_encrypt(wByte *out, const wByte *in, wSize length)
-{
-    if(!out || !in) {
-        throw wuk::Exception(wuk::Error::NPTR, "wuk::crypto::WukFEA::ecb_encrypt",
-            "ciphertext or plaintext is nullptr.");
-    }
-    if(length % OP4_BL) {
-        throw wuk::Exception(wuk::Error::ERR, "wuk::crypto::WukFEA::ecb_encrypt",
-            "length must be a multiple of block length.");
+namespace wuk::crypto {
+    OP4::OP4(const wByte key[OP4_KL], wU32 counter)
+    : counter(counter)
+    {
+        if (!key) {
+            throw wuk::Exception(wuk::Error::NPTR, "wuk::crypto::OP4::OP4",
+                "key is nullptr.");
+        }
+        key_extension(key, this->round_key);
     }
 
-    for (wSize i = 0; i < length; i += OP4_BL) {
-        cipher(out + i, in + i, this->round_key);
-    }
-}
+    void OP4::ecb_encrypt(wByte *out, const wByte *in, wSize length)
+    {
+        if(!out || !in) {
+            throw wuk::Exception(wuk::Error::NPTR, "wuk::crypto::OP4::ecb_encrypt",
+                "out/in is nullptr.");
+        }
+        if(length % OP4_BL) {
+            throw wuk::Exception(wuk::Error::ERR, "wuk::crypto::OP4::ecb_encrypt",
+                "length must be a multiple of block length.");
+        }
 
-void wuk::crypto::OP4::ecb_decrypt(wByte *out, const wByte *in, wSize length)
-{
-    if(!out || !in) {
-        throw wuk::Exception(wuk::Error::NPTR, "wuk::crypto::WukFEA::ecb_encrypt",
-            "ciphertext or plaintext is nullptr.");
-    }
-    if(length % OP4_BL) {
-        throw wuk::Exception(wuk::Error::ERR, "wuk::crypto::WukFEA::ecb_encrypt",
-            "length must be a multiple of block length.");
-    }
-
-    for (wSize i = 0; i < length; i += OP4_BL) {
-        inv_cipher(out + i, in + i, this->round_key);
-    }
-}
-
-void wuk::crypto::OP4::cbc_encrypt(wByte *out, const wByte *in,
-                                      wSize length, const wByte iv[OP4_BL])
-{
-    if(!out || !in || !iv) {
-        throw wuk::Exception(wuk::Error::NPTR, "wuk::crypto::WukFEA::cbc_encrypt",
-            "out/in/iv is nullptr.");
-    }
-    if(length % OP4_BL) {
-        throw wuk::Exception(wuk::Error::ERR, "wuk::crypto::WukFEA::cbc_encrypt",
-            "length must be a multiple of block length.");
-    }
-    wByte buffer[OP4_BL]{0};
-    memcpy(buffer, iv, OP4_BL);
-    
-    for (wSize i = 0; i < length; i += OP4_BL) {
-        xor_with_iv(buffer, in + i);
-        cipher(out + i, buffer, this->round_key);
-        memcpy(buffer, out + i, OP4_BL);
-    }
-}
-
-void wuk::crypto::OP4::cbc_decrypt(wByte *out, const wByte *in,
-                                      wSize length, const wByte iv[OP4_BL])
-{
-    if(!out || !in || !iv) {
-        throw wuk::Exception(wuk::Error::NPTR, "wuk::crypto::WukFEA::cbc_decrypt",
-            "out/in/iv is nullptr.");
-    }
-    if(length % OP4_BL) {
-        throw wuk::Exception(wuk::Error::ERR, "wuk::crypto::WukFEA::cbc_decrypt",
-            "length must be a multiple of block length.");
-    }
-    wByte buffer[OP4_BL]{0}, prev[OP4_BL]{0};
-    memcpy(prev, iv, OP4_BL);
-
-    for (wSize i = 0; i < length; i += OP4_BL) {
-        inv_cipher(buffer, in + i, this->round_key);
-        xor_with_iv(out + i, buffer, prev);
-        memcpy(prev, in + i, OP4_BL);
-    }
-}
-
-void wuk::crypto::OP4::ofb_stream(wByte *out, const wByte *in, wSize length,
-                               const wByte iv[OP4_NL])
-{
-    if(!out || !in || !iv) {
-        throw wuk::Exception(wuk::Error::NPTR, "wuk::crypto::WukFEA::ofb_xcrypt",
-            "out/in/iv is nullptr.");
-    }
-    wByte feedback[OP4_BL]{0};
-    memcpy(feedback, iv, OP4_BL);
-
-    size_t remaining = length;
-    while (remaining >= OP4_BL) {
-        cipher(feedback, feedback, this->round_key);
-        xor_with_iv(out, in, feedback);
-        out += OP4_BL;
-        in += OP4_BL;
-        remaining -= OP4_BL;
-    }
-    if (remaining > 0) {
-        cipher(feedback, feedback, this->round_key);
-        for (size_t i = 0; i < remaining; i++) {
-            out[i] = in[i] ^ feedback[i];
+        for (wSize i = 0; i < length; i += OP4_BL) {
+            cipher(out + i, in + i, this->round_key);
         }
     }
-}
 
-void wuk::crypto::OP4::ctr_stream(wByte *out, const wByte *in, wSize length,
-                               const wByte nonce[OP4_NL])
-{
-    if(!out || !in || !nonce) {
-        throw wuk::Exception(wuk::Error::NPTR, "wuk::crypto::WukFEA::ofb_xcrypt",
-            "out/in/nonce is nullptr.");
-    }
-    wByte keystream[OP4_BL]{0};
-    wByte state[OP4_BL]{0};
-    memcpy(keystream, nonce, OP4_NL);
+    void OP4::ecb_decrypt(wByte *out, const wByte *in, wSize length)
+    {
+        if(!out || !in) {
+            throw wuk::Exception(wuk::Error::NPTR, "wuk::crypto::OP4::ecb_decrypt",
+                "out/in is nullptr.");
+        }
+        if(length % OP4_BL) {
+            throw wuk::Exception(wuk::Error::ERR, "wuk::crypto::OP4::ecb_decrypt",
+                "length must be a multiple of block length.");
+        }
 
-    size_t remaining = length;
-    while (remaining >= OP4_BL) {  // 完整块处理
-        wuk::crypto::pack32le(keystream + OP4_NL, this->counter++);
-        cipher(state, keystream, this->round_key);
-        xor_with_iv(out, in, state);
-        out += OP4_BL;
-        in += OP4_BL;
-        remaining -= OP4_BL;
+        for (wSize i = 0; i < length; i += OP4_BL) {
+            inv_cipher(out + i, in + i, this->round_key);
+        }
     }
-    if (remaining > 0) {  // 处理末尾部分块
-        wuk::crypto::pack32le(keystream + OP4_NL, this->counter++);
-        cipher(state, keystream, this->round_key);
-        for (size_t i = 0; i < remaining; i++) {  // 逐字节处理
-            out[i] = in[i] ^ state[i];
+
+    void OP4::cbc_encrypt(wByte *out, const wByte *in, wSize length,
+                    const wByte iv[OP4_BL])
+    {
+        if(!out || !in || !iv) {
+            throw wuk::Exception(wuk::Error::NPTR, "wuk::crypto::OP4::cbc_encrypt",
+                "out/in/iv is nullptr.");
+        }
+        if(length % OP4_BL) {
+            throw wuk::Exception(wuk::Error::ERR, "wuk::crypto::OP4::cbc_encrypt",
+                "length must be a multiple of block length.");
+        }
+        wByte buffer[OP4_BL]{0};
+        memcpy(buffer, iv, OP4_BL);
+        
+        for (wSize i = 0; i < length; i += OP4_BL) {
+            xor_with_iv(buffer, in + i);
+            cipher(out + i, buffer, this->round_key);
+            memcpy(buffer, out + i, OP4_BL);
+        }
+    }
+
+    void OP4::cbc_decrypt(wByte *out, const wByte *in, wSize length,
+                    const wByte iv[OP4_BL])
+    {
+        if(!out || !in || !iv) {
+            throw wuk::Exception(wuk::Error::NPTR, "wuk::crypto::OP4::cbc_decrypt",
+                "out/in/iv is nullptr.");
+        }
+        if(length % OP4_BL) {
+            throw wuk::Exception(wuk::Error::ERR, "wuk::crypto::OP4::cbc_decrypt",
+                "length must be a multiple of block length.");
+        }
+        wByte buffer[OP4_BL]{0}, prev[OP4_BL]{0};
+        memcpy(prev, iv, OP4_BL);
+
+        for (wSize i = 0; i < length; i += OP4_BL) {
+            inv_cipher(buffer, in + i, this->round_key);
+            xor_with_iv(out + i, buffer, prev);
+            memcpy(prev, in + i, OP4_BL);
+        }
+    }
+
+    void OP4::ofb_stream(wByte *out, const wByte *in, wSize length,
+                   const wByte iv[OP4_NL])
+    {
+        if(!out || !in || !iv) {
+            throw wuk::Exception(wuk::Error::NPTR, "wuk::crypto::OP4::ofb_stream",
+                "out/in/iv is nullptr.");
+        }
+        wByte feedback[OP4_BL]{0};
+        memcpy(feedback, iv, OP4_BL);
+
+        size_t remaining = length;
+        while (remaining >= OP4_BL) {
+            cipher(feedback, feedback, this->round_key);
+            xor_with_iv(out, in, feedback);
+            out += OP4_BL;
+            in += OP4_BL;
+            remaining -= OP4_BL;
+        }
+        if (remaining > 0) {
+            cipher(feedback, feedback, this->round_key);
+            for (size_t i = 0; i < remaining; i++) {
+                out[i] = in[i] ^ feedback[i];
+            }
+        }
+    }
+
+    void OP4::ctr_stream(wByte *out, const wByte *in, wSize length,
+                   const wByte nonce[OP4_NL])
+    {
+        if(!out || !in || !nonce) {
+            throw wuk::Exception(wuk::Error::NPTR, "wuk::crypto::OP4::ctr_stream",
+                "out/in/nonce is nullptr.");
+        }
+        wByte keystream[OP4_BL]{0};
+        wByte state[OP4_BL]{0};
+        memcpy(keystream, nonce, OP4_NL);
+
+        size_t remaining = length;
+        while (remaining >= OP4_BL) {
+            pack32le(keystream + OP4_NL, this->counter++);
+            cipher(state, keystream, this->round_key);
+            xor_with_iv(out, in, state);
+            out += OP4_BL;
+            in += OP4_BL;
+            remaining -= OP4_BL;
+        }
+        if (remaining > 0) {
+            pack32le(keystream + OP4_NL, this->counter++);
+            cipher(state, keystream, this->round_key);
+            for (size_t i = 0; i < remaining; i++) {
+                out[i] = in[i] ^ state[i];
+            }
         }
     }
 }

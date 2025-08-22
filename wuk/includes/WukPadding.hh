@@ -24,14 +24,6 @@ namespace wuk {
     * @return 一个指向填充后的数据的指针(new [])。
     */
     LIBWUK_API wByte *pkcs7_unpad(const wByte *data, wSize &length);
-
-    // // 若数据最后一个字节的最高位是1则填充0xff否则0x00。
-    // LIBWUK_API wByte *tbc_pad(const wByte *data, wSize &length, wU32 blockSize);
-    // LIBWUK_API wByte *tbc_unpad(const wByte *data, wSize &length);
-
-    // // 随机填充
-    // LIBWUK_API wByte *rand_pad(const wByte *data, wSize &length, wU32 blockSize);
-    // LIBWUK_API wByte *rand_unpad(const wByte *data, wSize &length);
 }
 
 #endif

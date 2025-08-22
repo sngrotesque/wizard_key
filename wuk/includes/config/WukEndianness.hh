@@ -20,7 +20,7 @@ namespace wuk {
     template <typename T>
     void reversal_array(T *buffer, wSize length)
     {
-        for (wSize i = 0; i < (length >> 1); ++i) {
+        for (wSize i = 0; i < (length / 2); ++i) {
             T tmp = buffer[i];
             buffer[i] = buffer[length - 1 - i];
             buffer[length - 1 - i] = tmp;
