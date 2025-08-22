@@ -6,46 +6,9 @@
 #include <libpq-fe.h>
 
 #include <vector>
-#include <iostream>
 
 namespace wuk::im {
-    struct PsqlConnParams {
-        std::string m_host;
-        wuk::u16    m_port;
-        std::string m_user;
-        std::string m_password;
-        std::string m_dbname;
-    };
-
-    class LIBWUK_API PsqlConnInfo {
-    private:
-        std::string m_host;
-        wuk::u16    m_port;
-        std::string m_user;
-        std::string m_password;
-        std::string m_dbname;
-
-    public:
-        PsqlConnInfo() = default;
-        PsqlConnInfo(const PsqlConnParams &params);
-
-    public:
-        PsqlConnInfo &set_host    (const std::string &value);
-        PsqlConnInfo &set_port    (const wuk::u16    &value);
-        PsqlConnInfo &set_user    (const std::string &value);
-        PsqlConnInfo &set_password(const std::string &value);
-        PsqlConnInfo &set_dbname  (const std::string &value);
-
-        void set_conninfo(const PsqlConnParams &params) noexcept;
-
-        std::string get_host()     const noexcept;
-        wuk::u16    get_port()     const noexcept;
-        std::string get_user()     const noexcept;
-        std::string get_password() const noexcept;
-        std::string get_dbname()   const noexcept;
-
-        std::string get_conninfo() const noexcept;
-    };
+    using string_table = std::vector<std::vector<std::string>>;
 
     class LIBWUK_API Psql {
     private:
@@ -61,17 +24,16 @@ namespace wuk::im {
 
     public:
         Psql() = default;
-        Psql(const PsqlConnInfo &info);
+        Psql(const std::string &conninfo);
         ~Psql();
 
     public:
-        void connect_db(const PsqlConnInfo &info);
+        void connect_db(const std::string &conninfo);
 
     public:
         void       insert(const std::string &sql, const std::vector<std::string> &params);
         std::string query(const std::string &sql, const std::vector<std::string> &params);
-        std::vector<std::vector<std::string>> query_all(const std::string& sql,
-                                                        const std::vector<std::string>& params);
+        string_table query_all(const std::string& sql, const std::vector<std::string>& params);
     };
 }
 #endif

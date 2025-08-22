@@ -13,7 +13,7 @@
 
 namespace wuk {
     class LIBWUK_API Buffer {
-    private:
+    private: // 私有成员
         wByte *data = nullptr;
 
         // 在当前已申请空间的情况下写入数据时使用（指向数据末端用于追加写入）
@@ -23,6 +23,7 @@ namespace wuk {
         wSize data_len  = 0; // 代表实际使用长度
         wSize data_size = 0; // 代表已申请的内存空间长度
 
+    private: // 私有方法
         // 用于增加可用内存大小
         void expand_memory(wSize length);
         // 用于减少可用内存大小
@@ -30,7 +31,7 @@ namespace wuk {
         // 检查当前已申请的内存空间是否足够
         bool is_memory_sufficient(wSize length);
 
-    public:
+    public: // 构造函数
         // 构造函数
         Buffer() = default;
         // 拷贝构造函数
@@ -47,7 +48,7 @@ namespace wuk {
         // 析构函数
         ~Buffer();
 
-    public:
+    public: // 运算符重载
         // 拷贝赋值运算符
         wuk::Buffer &operator=(const wuk::Buffer &other);
         // 移动赋值运算符
@@ -62,7 +63,10 @@ namespace wuk {
         bool operator==(const Buffer &other);
         bool operator!=(const Buffer &other);
 
-    public:
+        wuk::byte &operator[](const wuk::ulong &index);
+        const wuk::byte &operator[](const wuk::ulong &index) const;
+
+    public: // 公共方法
         // 判断是否为空
         bool is_empty() const noexcept;
         // 在需要写入指定长度的大小的内容且同时需要指针的情况下调用此方法
@@ -94,20 +98,20 @@ namespace wuk {
         // 将占用的内存空间与实际使用的内存空间保持同步（防止无意义的内存占用）
         void shrink_to_fit();
 
-    public:
+    public: // 取值方法
         const wByte *get_data() const noexcept;
         const char *get_cstr() const noexcept;
         wSize get_length() const noexcept;
         wSize get_size() const noexcept;
 
-    public:
         // 转为std::string类型
         std::string to_str() const noexcept;
         // 转为十六进制字符串
         std::string hex() const noexcept;
+        // 取下标（异常处理版）
+        wuk::byte &at(const wuk::ulong &index);
 
-    // 内存安全相关
-    public:
+    public: // 内存安全相关
         void clear(bool secure = false) noexcept;
     };
 }

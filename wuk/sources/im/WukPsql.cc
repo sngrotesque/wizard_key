@@ -1,86 +1,6 @@
 #include <im/WukPsql.hh>
 
-#define RETURN return *this
-
 namespace wuk::im {
-    PsqlConnInfo::PsqlConnInfo(const PsqlConnParams &params)
-    {
-        this->set_conninfo(params);
-    }
-
-    PsqlConnInfo &PsqlConnInfo::set_host(const std::string &value)
-    {
-        this->m_host = value; RETURN;
-    }
-
-    PsqlConnInfo &PsqlConnInfo::set_port(const wuk::u16 &value)
-    {
-        this->m_port = value; RETURN;
-    }
-
-    PsqlConnInfo &PsqlConnInfo::set_user(const std::string &value)
-    {
-        this->m_user = value; RETURN;
-    }
-
-    PsqlConnInfo &PsqlConnInfo::set_password(const std::string &value)
-    {
-        this->m_password = value; RETURN;
-    }
-
-    PsqlConnInfo &PsqlConnInfo::set_dbname(const std::string &value)
-    {
-        this->m_dbname = value; RETURN;
-    }
-
-    void PsqlConnInfo::set_conninfo(const PsqlConnParams &params) noexcept
-    {
-        this->set_host(params.m_host);
-        this->set_port(params.m_port);
-        this->set_user(params.m_user);
-        this->set_password(params.m_password);
-        this->set_dbname(params.m_dbname);
-    }
-
-    std::string PsqlConnInfo::get_host() const noexcept
-    {
-        return this->m_host;
-    }
-
-    wuk::u16 PsqlConnInfo::get_port() const noexcept
-    {
-        return this->m_port;
-    }
-
-    std::string PsqlConnInfo::get_user() const noexcept
-    {
-        return this->m_user;
-    }
-
-    std::string PsqlConnInfo::get_password() const noexcept
-    {
-        return this->m_password;
-    }
-
-    std::string PsqlConnInfo::get_dbname() const noexcept
-    {
-        return this->m_dbname;
-    }
-
-    std::string PsqlConnInfo::get_conninfo() const noexcept
-    {
-        std::stringstream conninfo;
-        conninfo \
-            << "host="     << this->m_host     << " "
-            << "port="     << this->m_port     << " "
-            << "user="     << this->m_user     << " "
-            << "password=" << this->m_password << " "
-            << "dbname="   << this->m_dbname;
-        return conninfo.str();
-    }
-
-    ///////////////////////////////////////////////////////////////////////////
-
     ExecStatusType Psql::get_status(const PGresult *res)
     {
         // http://postgres.cn/docs/16/libpq-exec.html#LIBPQ-PQRESULTSTATUS
@@ -109,18 +29,52 @@ namespace wuk::im {
 
     ConnStatusType Psql::get_status(const PGconn *conn)
     {
+        /**
+         * 	CONNECTION_OK,
+	     * 	CONNECTION_BAD,
+         * 	
+         * 	CONNECTION_STARTED,           正在等待连接。
+         * 	CONNECTION_MADE,              连接正常；等待发送。
+         * 	CONNECTION_AWAITING_RESPONSE, 正在等待来自数据库主进程的响应。
+         * 	CONNECTION_AUTH_OK,           已接收身份验证；等待后端启动。
+         * 	CONNECTION_SETENV,            此状态不再使用。
+         * 	CONNECTION_SSL_STARTUP,       正在执行SSL握手。
+         * 	CONNECTION_NEEDED,            内部状态：需要connect()。
+         * 	CONNECTION_CHECK_WRITABLE,    正在检查会话是否为读写。
+         * 	CONNECTION_CONSUME,           消耗任何额外的消息。
+         * 	CONNECTION_GSS_STARTUP,       正在协商GSSAPI。
+         * 	CONNECTION_CHECK_TARGET,      内部状态：正在检查目标服务器属性。
+         * 	CONNECTION_CHECK_STANDBY,     正在检查服务器是否处于待机模式。
+         * 	CONNECTION_ALLOCATED,         正在等待连接尝试启动。
+         */
         return PQstatus(conn);
     }
 
     std::string Psql::get_value(PGresult *res, wuk::i32 row, wuk::i32 column)
     {
-        if (PQntuples(res) == 0) {
-            throw wuk::Exception(wuk::Error::ERR, "wuk::im::Psql::get_value",
-                "Database record not found.");
+        wuk::i32 n_row = PQntuples(res);
+        wuk::i32 n_col = PQnfields(res);
+
+        if (n_row == 0) {
+            return {};
         }
 
-        const char *value = PQgetvalue(res, row, column);
-        const wuk::ulong length = PQgetlength(res, row, column);
+        bool row_invalidity = ((row    < 0) || (row    >= n_row));
+        bool col_invalidity = ((column < 0) || (column >= n_col));
+
+        if (row_invalidity || col_invalidity) {
+            PQclear(res);
+            throw wuk::Exception(wuk::Error::ERR, "wuk::im::Psql::get_value",
+                "Exceeding the allowed range.");
+        }
+
+        // 此项如果为空值
+        if (PQgetisnull(res, row, column)) {
+            return {};
+        }
+
+        const char     *value = PQgetvalue(res, row, column);
+        const wuk::i32 length = PQgetlength(res, row, column);
 
         return std::string(value, length);
     }
@@ -129,6 +83,9 @@ namespace wuk::im {
     {
         std::vector<const char *> param_values;
         std::vector<wuk::i32> param_lengths;
+        // std::vector<wuk::i32> param_formats(9);
+        // param_formats[2] = 1;
+        // param_formats[3] = 1;
 
         for (const auto &item : params) {
             param_values.push_back(item.c_str());
@@ -141,15 +98,16 @@ namespace wuk::im {
                                         nullptr,
                                         param_values.data(),
                                         param_lengths.data(),
+                                        // param_formats.data(),
                                         nullptr,
                                         0);
 
         return result;
     }
 
-    Psql::Psql(const PsqlConnInfo &info)
+    Psql::Psql(const std::string &conninfo)
     {
-        this->connect_db(info);
+        this->connect_db(conninfo);
     }
 
     Psql::~Psql()
@@ -157,9 +115,8 @@ namespace wuk::im {
         PQfinish(this->m_conn);
     }
 
-    void Psql::connect_db(const PsqlConnInfo &info)
+    void Psql::connect_db(const std::string &conninfo)
     {
-        std::string conninfo = info.get_conninfo();
         this->m_conn = PQconnectdb(conninfo.c_str());
 
         if (PQstatus(this->m_conn) != CONNECTION_OK) {
@@ -175,8 +132,6 @@ namespace wuk::im {
 
         ExecStatusType status = this->get_status(res);
         if (status != PGRES_COMMAND_OK) {
-            std::cerr << "SQL错误：" << PQresultErrorMessage(res) << std::endl;
-            std::cerr << "SQL错误详情：" << PQresultErrorField(res, PG_DIAG_SQLSTATE) << std::endl;
             PQclear(res);
             throw wuk::Exception(status, "Psql::insert", PQerrorMessage(this->m_conn));
         }
@@ -190,8 +145,6 @@ namespace wuk::im {
 
         ExecStatusType status = this->get_status(res);
         if (status != PGRES_TUPLES_OK) {
-            std::cerr << "SQL错误：" << PQresultErrorMessage(res) << std::endl;
-            std::cerr << "SQL错误详情：" << PQresultErrorField(res, PG_DIAG_SQLSTATE) << std::endl;
             PQclear(res);
             throw wuk::Exception(status, "Psql::query", PQerrorMessage(this->m_conn));
         }
@@ -202,27 +155,25 @@ namespace wuk::im {
         return query_res;
     }
 
-    std::vector<std::vector<std::string>> Psql::query_all(const std::string& sql,
-                                                          const std::vector<std::string>& params)
+    string_table Psql::query_all(const std::string& sql, const std::vector<std::string>& params)
     {
         PGresult* res = this->exec_params(sql, params);
 
         ExecStatusType status = this->get_status(res);
         if (status != PGRES_TUPLES_OK) {
-            std::cerr << "SQL错误：" << PQresultErrorMessage(res) << std::endl;
-            std::cerr << "SQL错误详情：" << PQresultErrorField(res, PG_DIAG_SQLSTATE) << std::endl;
             PQclear(res);
             throw wuk::Exception(status, "Psql::query", PQerrorMessage(this->m_conn));
         }
 
-        std::vector<std::vector<std::string>> rows;
+        string_table rows;
         for (int i = 0; i < PQntuples(res); i++) {
             std::vector<std::string> row;
             for (int j = 0; j < PQnfields(res); j++) {
-                row.push_back(get_value(res, i, j));
+                row.push_back(this->get_value(res, i, j));
             }
-            rows.push_back(row);
+            rows.push_back(std::move(row));
         }
+
         PQclear(res);
         return rows;
     }

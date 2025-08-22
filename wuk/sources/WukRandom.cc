@@ -34,7 +34,7 @@ void wuk::Random::bytes(wByte *buffer, wSize length)
 
 #   if defined(WUK_PLATFORM_WINOS)
     NTSTATUS status = BCryptGenRandom(nullptr, buffer, length,
-                                    BCRYPT_USE_SYSTEM_PREFERRED_RNG);
+        BCRYPT_USE_SYSTEM_PREFERRED_RNG);
     if (status != STATUS_SUCCESS) {
         throw wuk::Exception(status, "wuk::Random::bytes",
             "BCryptGenRandom function returned an error code when called.");

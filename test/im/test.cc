@@ -84,11 +84,13 @@ void psql_query_test(wuk::im::Psql &psql)
 
 void psql_insert_test(wuk::im::Psql &psql)
 {
+    wuk::im::UserInfo (*create_account)(const void *, const void *) = nullptr;
+
     std::string sql(
         "INSERT INTO users (uid, name, salt, pwd_hash, created, active)\n"
         "VALUES ($1, $2, $3, $4, $5, $6)"
     );
-    wuk::im::UserInfo info = wuk::im::create_account("我的", "12345678");
+    wuk::im::UserInfo info = create_account("我的", "12345678");
     std::vector<std::string> params{
         info.get_uid_str(),
         info.get_name_str(),
@@ -103,17 +105,23 @@ void psql_insert_test(wuk::im::Psql &psql)
 
 void psql_test()
 {
+#   ifdef A
     auto host_hex = wuk::binascii::a2b_hex("0941f1eab5cc2f2b09b10143675cef871812511d8fd29d0e73686df4ce");
     auto password_hex = wuk::binascii::a2b_hex("966fb67b33be9f22461d78203e376ca56e5b2214785945a48fd3516bcf06e6");
-
     std::string derive_password("");
     std::string host = chacha20_decrypt(host_hex, derive_password).to_str();
     std::string password = chacha20_decrypt(password_hex, derive_password).to_str();
+    wuk::u16 port = 54324;
+#   else
+    std::string host("127.0.0.1");
+    std::string password("sngrotesque");
+    wuk::u16 port = 5432;
+#   endif
 
     wuk::im::PsqlConnInfo psql_conninfo;
     wuk::im::Psql psql;
     psql_conninfo.set_host(host)
-                 .set_port(54324)
+                 .set_port(port)
                  .set_user("postgres")
                  .set_dbname("im")
                  .set_password(password);

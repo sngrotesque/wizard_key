@@ -2,15 +2,14 @@
 #include <config/WukConfig.hh>
 
 #if WUK_SUPPORT
-#include <net/WukPacket.hh>
-#include <net/WukSocket.hh>
+// #include <net/WukPacket.hh>
+// #include <net/WukSocket.hh>
 #include <WukBuffer.hh>
-#include <WukRandom.hh>
 
 #include <openssl/evp.h>
 #include <libpq-fe.h>
 
-#include <atomic>
+#include <vector>
 #include <mutex>
 
 namespace wuk::im {
@@ -33,72 +32,133 @@ namespace wuk::im {
         wuk::i64 generate_id();
     };
 
+    enum class AccountStatus {
+        NORMAL, // 正常
+        BANNED, // 封禁
+        MUTED,  // 禁言
+        DELETED // 删除
+    };
+}
+
+namespace wuk::im {
+    // 详见：[im_users.sql](test\im\im_users.sql)
     class LIBWUK_API UserInfo {
     private:
-        wuk::i64    uid;  // 用户ID
-        std::string name; // 用户名
-        wuk::Buffer salt; // 用户盐
-        wuk::Buffer hash; // 用户密码对应的哈希
-        wuk::f64    cadt; // 用户创建时间（Create Account Date）
-        bool        active; // 账户启用状态
+        wuk::i64      m_uid{0};      // 用户UID，非空且唯一
+        std::string   m_name;        // 用户名，最大32字符，非空
+        wuk::Buffer   m_salt;        // 用户账户对应的盐，16字节，非空
+        wuk::Buffer   m_hash;        // 用户账户密码对应的哈希，32字节（SHA-256），非空
+        AccountStatus m_status;      // 用户状态，非空，默认NORMAL
+        wuk::f64      m_created{0};  // 账号创建时间，非空，默认0
+        wuk::f64      m_modified{0}; // 账号修改时间，非空，默认0
+        wuk::f64      m_accessed{0}; // 账号最后访问时间，非空，默认0
+        wuk::f64      m_deleted{0};  // 账号注销时间，非空，默认0
 
-    public:
-        UserInfo() = default;
-        UserInfo(wuk::i64    uid,
-                 std::string name,
-                 wuk::Buffer salt,
-                 wuk::Buffer hash,
-                 wuk::f64    cadt,
-                 bool        active);
+        template <typename T>
+        inline std::string to_string(const char *format, const T &v) const noexcept {
+            // 出于性能和最小化依赖的考虑，不使用std::stringstream和std::to_string。
+            constexpr wuk::i32 uid_str_len = 32;
+            char uid_str[uid_str_len] {0};
+            snprintf(uid_str, uid_str_len, format, v);
+            return std::string(uid_str);
+        }
 
-        UserInfo &set_uid(const wuk::i64 &uid);
-        UserInfo &set_name(const std::string &name);
-        UserInfo &set_salt(const wuk::Buffer &salt);
-        UserInfo &set_hash(const wuk::Buffer &hash);
-        UserInfo &set_cadt(const wuk::f64 &timestamp);
-        UserInfo &set_active(bool status);
+        inline std::string double_to_string(const wuk::f64 &v) const noexcept {
+            return this->to_string((v != 0) ? "%.5lf" : "%.0lf", v);
+        }
 
-        wuk::i64    get_uid() const noexcept;
-        std::string get_name() const noexcept;
-        wuk::Buffer get_salt() const noexcept;
-        wuk::Buffer get_hash() const noexcept;
-        wuk::f64    get_cadt() const noexcept;
-        bool        get_active() const noexcept;
+    public: // Setter
+        inline UserInfo &set_uid(const wuk::i64 &uid) noexcept {
+            this->m_uid = uid; return *this;
+        }
 
-        std::string get_uid_str() const noexcept;
-        std::string get_name_str() const noexcept;
-        std::string get_salt_str() const noexcept;
-        std::string get_hash_str() const noexcept;
-        std::string get_cadt_str() const noexcept;
-        std::string get_active_str() const noexcept;
+        inline UserInfo &set_name(const std::string &name) noexcept {
+            this->m_name = name; return *this;
+        }
+
+        inline UserInfo &set_salt(const wuk::Buffer &salt) noexcept {
+            this->m_salt = salt; return *this;
+        }
+
+        inline UserInfo &set_hash(const wuk::Buffer &hash) noexcept {
+            this->m_hash = hash; return *this;
+        }
+
+        inline UserInfo &set_status(AccountStatus status) noexcept {
+            this->m_status = status; return *this;
+        }
+
+        inline UserInfo &set_created(const wuk::f64 &time_val) noexcept {
+            this->m_created = time_val; return *this;
+        }
+
+        inline UserInfo &set_modified(const wuk::f64 &time_val) noexcept {
+            this->m_modified = time_val; return *this;
+        }
+
+        inline UserInfo &set_accessed(const wuk::f64 &time_val) noexcept {
+            this->m_accessed = time_val; return *this;
+        }
+
+        inline UserInfo &set_deleted(const wuk::f64 &time_val) noexcept {
+            this->m_deleted = time_val; return *this;
+        }
+
+    public: // Getter
+        inline std::string get_uid_str() const noexcept {
+            return this->to_string("%zd", this->m_uid);
+        }
+
+        inline std::string get_name_str() const noexcept {
+            return this->m_name;
+        }
+
+        inline std::string get_salt_str() const noexcept {
+            return this->m_salt.to_str();
+        }
+
+        inline std::string get_hash_str() const noexcept {
+            return this->m_hash.to_str();
+        }
+
+        inline std::string get_status_str() const noexcept {
+            static constexpr const char *status_names[] = {
+                "NORMAL", "BANNED", "MUTED", "DELETED"
+            };
+            return std::string(status_names[static_cast<wuk::i32>(this->m_status)]);
+        }
+
+        inline std::string get_created_str() const noexcept {
+            return this->double_to_string(this->m_created);
+        }
+
+        inline std::string get_modified_str() const noexcept {
+            return this->double_to_string(this->m_modified);
+        }
+
+        inline std::string get_accessed_str() const noexcept {
+            return this->double_to_string(this->m_accessed);
+        }
+
+        inline std::string get_deleted_str() const noexcept {
+            return this->double_to_string(this->m_deleted);
+        }
+
+        inline std::vector<std::string> get_params() const noexcept {
+            std::vector<std::string> result;
+            result.reserve(9);
+            result.push_back(this->get_uid_str());
+            result.push_back(this->get_name_str());
+            result.push_back(this->get_salt_str());
+            result.push_back(this->get_hash_str());
+            result.push_back(this->get_status_str());
+            result.push_back(this->get_created_str());
+            result.push_back(this->get_modified_str());
+            result.push_back(this->get_accessed_str());
+            result.push_back(this->get_deleted_str());
+            return result;
+        }
     };
-
-    inline UserInfo create_account(const std::string &name, const std::string &password)
-    {
-        wuk::Random random;
-        wuk::Time timer;
-        Snowflake sf(1);
-
-        wuk::Buffer salt;
-        wuk::Buffer hash;
-        UserInfo info;
-
-        random.bytes(salt.append_write(16), 16);
-
-        PKCS5_PBKDF2_HMAC(password.c_str(), password.length(),
-                          salt.get_data(), salt.get_size(),
-                          10524, EVP_sha256(),
-                          32, hash.append_write(32));
-
-        info.set_uid(sf.generate_id() & 0xffffffff)
-            .set_name(name)
-            .set_salt(salt)
-            .set_hash(hash)
-            .set_cadt(timer.time<double>())
-            .set_active(true);
-
-        return info;
-    }
 }
 
 #endif

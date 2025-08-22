@@ -278,6 +278,16 @@ bool wuk::Buffer::operator!=(const wuk::Buffer &other)
     return !(*this == other);
 }
 
+wuk::byte &wuk::Buffer::operator[](const wuk::ulong &index)
+{
+    return this->data[index];
+}
+
+const wuk::byte &wuk::Buffer::operator[](const wuk::ulong &index) const
+{
+    return this->data[index];
+}
+
 //////////////////////////////////////////////////////////////////////
 bool wuk::Buffer::is_empty() const noexcept
 {
@@ -398,6 +408,15 @@ std::string wuk::Buffer::hex() const noexcept
     std::vector<char> output = wuk::utils::bytes_to_hex(input);
 
     return std::string(output.data(), output.size());
+}
+
+wuk::byte &wuk::Buffer::at(const wuk::ulong &index)
+{
+    if (index > this->data_size) {
+        throw wuk::Exception(wuk::Error::ERR, "wuk::Buffer::at",
+            "Index out of range.");
+    }
+    return this->data[index];
 }
 
 void wuk::Buffer::clear(bool secure) noexcept
