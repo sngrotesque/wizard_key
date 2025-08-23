@@ -4,16 +4,16 @@
 #if WUK_SUPPORT
 #if defined(WUK_PLATFORM_WINOS)
 #   define WUK_NATIVE_LE // Windows is little-endian by default
-#elif defined(__BYTE_ORDER__) && defined(__ORDER_LITTLE_ENDIAN__) && defined(__ORDER_BIG_ENDIAN__)
-// POSIX systems: <endian.h> provides macros
-#   if (__BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__)
-#       define WUK_NATIVE_LE
-#   elif (__BYTE_ORDER__ == __ORDER_BIG_ENDIAN__)
-#       define WUK_NATIVE_BE
-#   endif
 #else
-// #   warning "Unable to detect system endianness. Defaulting to little-endian assumptions."
-#   define WUK_NATIVE_LE
+#   include <endian.h>
+#   if defined(__BYTE_ORDER__) && \
+       defined(__ORDER_LITTLE_ENDIAN__) && defined(__ORDER_BIG_ENDIAN__)
+#       if (__BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__)
+#           define WUK_NATIVE_LE
+#       elif (__BYTE_ORDER__ == __ORDER_BIG_ENDIAN__)
+#           define WUK_NATIVE_BE
+#       endif
+#   endif
 #endif
 
 namespace wuk {
