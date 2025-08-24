@@ -1,48 +1,48 @@
 #pragma once
-#include <config/WukConfig.hh>
+#include <core/WukConfig.hh>
 
 #if WUK_SUPPORT
 #include <atomic>
 
 namespace wuk::crypto {
-    constexpr wU32 OP4_BL  = 16; // Block length
-    constexpr wU32 OP4_KL  = 32; // Key length
-    constexpr wU32 OP4_NL  = 12; // Nonce length
-    constexpr wU32 OP4_NK  = 4;  // Key word length
-    constexpr wU32 OP4_NR  = 8;  // Number of rounds
-    constexpr wU32 OP4_RKL = OP4_BL * OP4_NR; // Length of the round key
+    constexpr wuk::u32 OP4_BL  = 16; // Block length
+    constexpr wuk::u32 OP4_KL  = 32; // Key length
+    constexpr wuk::u32 OP4_NL  = 12; // Nonce length
+    constexpr wuk::u32 OP4_NK  = 4;  // Key word length
+    constexpr wuk::u32 OP4_NR  = 8;  // Number of rounds
+    constexpr wuk::u32 OP4_RKL = OP4_BL * OP4_NR; // Length of the round key
 
     class LIBWUK_API OP4 {
     private:
-        alignas(16) wByte round_key[OP4_RKL]{0};
-        std::atomic<wU32> counter = 0U;
+        alignas(16) wuk::byte round_key[OP4_RKL]{0};
+        std::atomic<wuk::u32> counter = 0U;
 
     public:
         OP4() = default;
-        OP4(const wByte key[OP4_KL], wU32 counter = 0U);
+        OP4(const wuk::byte key[OP4_KL], wuk::u32 counter = 0U);
 
     public:
-        void ecb_encrypt(wByte *out, const wByte *in, wSize length);
-        void ecb_decrypt(wByte *out, const wByte *in, wSize length);
+        void ecb_encrypt(wuk::byte *out, const wuk::byte *in, wuk::ulong length);
+        void ecb_decrypt(wuk::byte *out, const wuk::byte *in, wuk::ulong length);
 
-        void cbc_encrypt(wByte *out, const wByte *in, wSize length,
-                   const wByte iv[OP4_BL]);
-        void cbc_decrypt(wByte *out, const wByte *in, wSize length,
-                   const wByte iv[OP4_BL]);
+        void cbc_encrypt(wuk::byte *out, const wuk::byte *in, wuk::ulong length,
+                   const wuk::byte iv[OP4_BL]);
+        void cbc_decrypt(wuk::byte *out, const wuk::byte *in, wuk::ulong length,
+                   const wuk::byte iv[OP4_BL]);
 
-        void ofb_stream(wByte *out, const wByte *in, wSize length,
-                  const wByte iv[OP4_NL]);
+        void ofb_stream(wuk::byte *out, const wuk::byte *in, wuk::ulong length,
+                  const wuk::byte iv[OP4_NL]);
 
-        void ctr_stream(wByte *out, const wByte *in, wSize length,
-                  const wByte nonce[OP4_NL]);
+        void ctr_stream(wuk::byte *out, const wuk::byte *in, wuk::ulong length,
+                  const wuk::byte nonce[OP4_NL]);
 
     public:
-        void set_counter(const wU32 &counter) noexcept
+        void set_counter(const wuk::u32 &counter) noexcept
         {
             this->counter = counter;
         }
 
-        const wByte *get_roundkey() const noexcept
+        const wuk::byte *get_roundkey() const noexcept
         {
             return this->round_key;
         }

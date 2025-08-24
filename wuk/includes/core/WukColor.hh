@@ -1,12 +1,12 @@
 #pragma once
-#include <config/WukConfig.hh>
+#include <core/WukConfig.hh>
 
 #if WUK_SUPPORT
 
 namespace wuk::color {
     namespace all {
-        inline constexpr char reset[]   = "\x1b[0m";
-        inline constexpr char flicker[] = "\x1b[5m"; // 闪烁的字符
+        inline constexpr char reset[]        = "\x1b[0m";
+        inline constexpr char flicker[]      = "\x1b[5m"; // 闪烁的字符
     }
 
     namespace fore {

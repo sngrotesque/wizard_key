@@ -1,5 +1,5 @@
 #pragma once
-#include <config/WukConfig.hh>
+#include <core/WukConfig.hh>
 
 #if WUK_SUPPORT
 // #include <net/WukPacket.hh>

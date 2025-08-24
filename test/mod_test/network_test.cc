@@ -10,7 +10,7 @@
 
 namespace wn = wuk::net;
 
-void server_test(const std::string &addr, const wU16 &port)
+void server_test(const std::string &addr, const wuk::u16 &port)
 {
     wuk::net::Socket fd(AF_INET, SOCK_STREAM, IPPROTO_TCP);
 
@@ -28,7 +28,7 @@ void server_test(const std::string &addr, const wU16 &port)
     fd.close();
 }
 
-void client_test(const std::string &addr, const wU16 &port)
+void client_test(const std::string &addr, const wuk::u16 &port)
 {
     wuk::net::Socket fd(AF_INET, SOCK_STREAM, IPPROTO_TCP);
 
@@ -48,7 +48,7 @@ void client_test(const std::string &addr, const wU16 &port)
     fd.close();
 }
 
-void udp_test(const std::string &addr, const wU16 &port)
+void udp_test(const std::string &addr, const wuk::u16 &port)
 {
     wuk::net::Socket fd(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
     wuk::net::Addrinfo ainfo(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
@@ -65,7 +65,7 @@ void udp_test(const std::string &addr, const wU16 &port)
 }
 
 #ifdef WUK_PACKET_TEST
-void protobuf_test(const std::string &addr, const wU16 &port)
+void protobuf_test(const std::string &addr, const wuk::u16 &port)
 {
     wuk::net::Socket sock(AF_INET, SOCK_STREAM, 0);
     wuk::net::Packet packet;
@@ -89,7 +89,7 @@ void protobuf_test(const std::string &addr, const wU16 &port)
 }
 #endif
 
-void block_test(const std::string &addr, const wU16 &port)
+void block_test(const std::string &addr, const wuk::u16 &port)
 {
     wuk::net::Socket fd(AF_INET, SOCK_STREAM, 0);
 
@@ -111,7 +111,7 @@ void block_test(const std::string &addr, const wU16 &port)
     fd.close();
 }
 
-void timeout_test(const std::string &addr, const wU16 &port, double timeout = 3)
+void timeout_test(const std::string &addr, const wuk::u16 &port, wuk::f64 timeout = 3)
 {
     wuk::net::Socket fd(AF_INET, SOCK_STREAM, IPPROTO_TCP);
     fd.set_timeout(timeout);

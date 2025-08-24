@@ -1,5 +1,5 @@
 #pragma once
-#include <config/WukConfig.hh>
+#include <core/WukConfig.hh>
 
 #if WUK_SUPPORT
 #ifdef WUK_PLATFORM_WINOS
@@ -7,7 +7,7 @@
 #endif
 #include <malloc.h>
 
-static inline void forced_zeroing(volatile void *p, wSize length)
+static inline void forced_zeroing(volatile void *p, wuk::ulong length)
 {
     volatile char *ptr = (volatile char *)p;
     do {
@@ -16,7 +16,7 @@ static inline void forced_zeroing(volatile void *p, wSize length)
 }
 
 namespace wuk {
-    LIBWUK_API inline void memory_secure(void *buffer, wSize length)
+    LIBWUK_API inline void memory_secure(void *buffer, wuk::ulong length)
     {
 #       if defined(WUK_PLATFORM_WINOS)
         SecureZeroMemory(buffer, length);
@@ -29,25 +29,25 @@ namespace wuk {
 #       endif
     }
 
-    LIBWUK_API inline void memory_zero(void *buffer, wSize length)
+    LIBWUK_API inline void memory_zero(void *buffer, wuk::ulong length)
     {
         memset(buffer, 0x00, length);
     }
 
     template <typename T>
-    LIBWUK_API inline T m_alloc(wSize length) noexcept
+    LIBWUK_API inline T m_alloc(wuk::ulong length) noexcept
     {
         return static_cast<T>(malloc(length));
     }
 
     template <typename T>
-    LIBWUK_API inline T m_realloc(T src, wSize length) noexcept
+    LIBWUK_API inline T m_realloc(T src, wuk::ulong length) noexcept
     {
         return static_cast<T>(realloc(src, length));
     }
 
     template <typename T>
-    LIBWUK_API inline T *m_calloc(wSize length) noexcept
+    LIBWUK_API inline T *m_calloc(wuk::ulong length) noexcept
     {
         return static_cast<T *>(calloc(sizeof(T), length));
     }

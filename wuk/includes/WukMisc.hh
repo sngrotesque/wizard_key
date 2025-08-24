@@ -1,21 +1,21 @@
 #pragma once
-#include <config/WukConfig.hh>
+#include <core/WukConfig.hh>
 
 #if WUK_SUPPORT
-#include <config/WukColor.hh>
+#include <core/WukColor.hh>
 #include <string>
 
 namespace wuk::misc {
-    LIBWUK_API void print_diff_hex(const wByte *data1, const wByte *data2,
-                                wSize len1, wSize len2,
-                                wU32 hex_per_line, bool indent);
-    LIBWUK_API void print_hex(const wByte *data, wSize len, wSize num, bool newline,
+    LIBWUK_API void print_diff_hex(const wuk::byte *data1, const wuk::byte *data2,
+                                wuk::ulong len1, wuk::ulong len2,
+                                wuk::u32 hex_per_line, bool indent);
+    LIBWUK_API void print_hex(const wuk::byte *data, wuk::ulong len, wuk::ulong num, bool newline,
                             bool indent);
-    LIBWUK_API void print_number(const wByte *arr, wSize size, wU32 num, bool newline);
-    LIBWUK_API void print_box(const wByte *box, wSize size, wSize num, bool newline);
-    LIBWUK_API void print_pybytes(const wByte *buf, wSize size, bool newline);
+    LIBWUK_API void print_number(const wuk::byte *arr, wuk::ulong size, wuk::u32 num, bool newline);
+    LIBWUK_API void print_box(const wuk::byte *box, wuk::ulong size, wuk::ulong num, bool newline);
+    LIBWUK_API void print_pybytes(const wuk::byte *buf, wuk::ulong size, bool newline);
 
-    LIBWUK_API std::string get_pybytes(const wByte *buf, wSize size, bool newline);
+    LIBWUK_API std::string get_pybytes(const wuk::byte *buf, wuk::ulong size, bool newline);
 }
 
 #endif

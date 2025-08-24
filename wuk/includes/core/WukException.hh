@@ -1,12 +1,12 @@
 #pragma once
-#include <config/WukConfig.hh>
+#include <core/WukConfig.hh>
 
 #if WUK_SUPPORT
 #include <sstream>
 #include <cerrno>
 
 namespace wuk {
-    typedef enum : wI32 {
+    typedef enum : wuk::i32 {
         OK     = 0, // 一切正常，无异常
         ERR    = 1, // 一切暂时无法定义的异常
         NPTR   = 2, // 调用空指针异常
@@ -17,13 +17,13 @@ namespace wuk {
 
     class LIBWUK_API Exception {
     private:
-        wI32 code {wuk::Error::OK};
+        wuk::i32 code {wuk::Error::OK};
         std::string func;
         std::string msg;
         std::string err_msg;
 
     private:
-        void set(wI32 code, const std::string &func, const std::string &message)
+        void set(wuk::i32 code, const std::string &func, const std::string &message)
         {
             auto get_err_message = [&]() -> std::string {
                 std::stringstream ss;
@@ -43,10 +43,10 @@ namespace wuk {
         template <typename T>
         Exception(T code, const std::string &function, const std::string &message)
         {
-            this->set(static_cast<wI32>(code), function, message);
+            this->set(static_cast<wuk::i32>(code), function, message);
         }
 
-        inline const wI32 &get_err_code() const noexcept
+        inline const wuk::i32 &get_err_code() const noexcept
         {
             return this->code;
         }

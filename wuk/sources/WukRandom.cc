@@ -1,6 +1,6 @@
 #include <WukRandom.hh>
 
-#include <config/WukException.hh>
+#include <core/WukException.hh>
 #include <WukMemory.hh>
 
 #if defined(WUK_PLATFORM_LINUX)
@@ -14,18 +14,18 @@
 #   endif
 #endif
 
-wSize wuk::Random::rand()
+wuk::ulong wuk::Random::rand()
 {
     return this->randint(0, ~0ULL);
 }
 
-wSize wuk::Random::randint(wSize min, wSize max)
+wuk::ulong wuk::Random::randint(wuk::ulong min, wuk::ulong max)
 {
-    std::uniform_int_distribution<wSize> dis(min, max);
+    std::uniform_int_distribution<wuk::ulong> dis(min, max);
     return dis(this->generator);
 }
 
-void wuk::Random::bytes(wByte *buffer, wSize length)
+void wuk::Random::bytes(wuk::byte *buffer, wuk::ulong length)
 {
     if(!buffer || !length) {
         throw wuk::Exception(wuk::Error::NPTR, "wuk::Random::bytes",
@@ -47,7 +47,7 @@ void wuk::Random::bytes(wByte *buffer, wSize length)
 #   endif
 }
 
-std::string wuk::Random::bytes(wU32 length)
+std::string wuk::Random::bytes(wuk::u32 length)
 {
     if(!length) return {};
 

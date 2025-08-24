@@ -35,7 +35,7 @@ void method_1()
 
     wuk::misc::print_pybytes(buffer.get_data(), buffer.get_length(), true);
 
-    wByte *p = const_cast<wByte *>(buffer.get_data());
+    wuk::byte *p = const_cast<wuk::byte *>(buffer.get_data());
     p[0] = 0x00;
 
     printf("length: %zd\n", buffer.get_length());
@@ -78,12 +78,12 @@ void method_5()
     char _2[64] = {"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"};
     wuk::Buffer buffer{4096};
 
-    buffer.write(reinterpret_cast<wByte *>(_1), strlen(_1));
+    buffer.write(reinterpret_cast<wuk::byte *>(_1), strlen(_1));
     buffer.append("this is append method.\n");
 
-    buffer.write(reinterpret_cast<wByte *>(_2), strlen(_2));
+    buffer.write(reinterpret_cast<wuk::byte *>(_2), strlen(_2));
 
-    buffer.write(reinterpret_cast<wByte *>(_1), strlen(_1));
+    buffer.write(reinterpret_cast<wuk::byte *>(_1), strlen(_1));
 
     buffer.write("a data.");
 
@@ -108,7 +108,7 @@ void method_8()
 
 void method_9()
 {
-    wByte buf[] = {
+    wuk::byte buf[] = {
         0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06,
         0xff, 0xfe, 0xfd, 0xfc, 0xfb, 0xfa, 0x7f
     };

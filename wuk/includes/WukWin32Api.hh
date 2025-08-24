@@ -1,9 +1,9 @@
 #pragma once
-#include <config/WukConfig.hh>
+#include <core/WukConfig.hh>
 
 #ifdef WUK_PLATFORM_WINOS
 #if WUK_SUPPORT
-#include <config/WukException.hh>
+#include <core/WukException.hh>
 #include <WukMemory.hh>
 
 #include <Windows.h>
@@ -21,7 +21,7 @@ namespace wuk {
         WinApi() = default;
 
         POINT get_cursor_pos();
-        void set_cursor_pos(wI32 x, wI32 y) const noexcept;
+        void set_cursor_pos(wuk::i32 x, wuk::i32 y) const noexcept;
         void set_cursor_pos(POINT pos) const noexcept;
         void set_cursor_pos(MOUSEINPUT m) const noexcept;
 

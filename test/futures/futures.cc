@@ -48,12 +48,12 @@ using namespace wuk::misc;
  * 
 */
 
-static timeval create_timeval(double t)
+static timeval create_timeval(wuk::f64 t)
 {
     timeval tv {0};
 
-    double int_part;
-    double float_part;
+    wuk::f64 int_part;
+    wuk::f64 float_part;
 
     float_part = modf(t, &int_part);
 
@@ -65,10 +65,10 @@ static timeval create_timeval(double t)
 
 static void view_fd_set(const fd_set &fds)
 {
-    constexpr wU32 block_size = 32;
+    constexpr wuk::u32 block_size = 32;
 
-    auto print_hex_easy = [](const void *p, const wSize &n) {
-        const wByte *buffer = reinterpret_cast<const wByte *>(p);
+    auto print_hex_easy = [](const void *p, const wuk::ulong &n) {
+        const wuk::byte *buffer = reinterpret_cast<const wuk::byte *>(p);
         print_hex(buffer, n, block_size, n % block_size, true);
     };
 
@@ -82,10 +82,10 @@ static void view_fd_set(const fd_set &fds)
 static std::string recv_data(wuk::net::Socket &fd)
 {
     std::string packet_length = fd.recv(4);
-    wI32 data_length {0};
+    wuk::i32 data_length {0};
 
     memcpy(&data_length, packet_length.data(), 4);
-    wI32 tmp_length = data_length;
+    wuk::i32 tmp_length = data_length;
 
     if (tmp_length == 0) {
         return {};
@@ -117,7 +117,7 @@ void server()
     server_fd.listen(30);
 
     // 只为了测试，所以不应该让它循环太多次
-    for (wU32 r = 0; r < 10; ++r) {
+    for (wuk::u32 r = 0; r < 10; ++r) {
         FD_ZERO(&read_fds);
         FD_SET(server_fd.get_fd(), &read_fds);
 
@@ -131,7 +131,7 @@ void server()
             std::cout << "timeout, exit.\n";
             return;
         } else if (ready == NETERROR) {
-            wI32 err_code = wuk::net::SystemError::code();
+            wuk::i32 err_code = wuk::net::SystemError::code();
             throw wuk::Exception(err_code, "func",
                 wuk::net::SystemError::message(err_code));
         }
@@ -177,7 +177,7 @@ void server(int)
     constexpr int MAX_CLIENTS = FD_SETSIZE;
     wuk::net::Socket client_fds[MAX_CLIENTS];
 
-    for (wU32 r = 0; r < 100; ++r) {
+    for (wuk::u32 r = 0; r < 100; ++r) {
         fd_set read_fds;
         FD_ZERO(&read_fds);
         FD_SET(server_fd.get_fd(), &read_fds);
@@ -197,7 +197,7 @@ void server(int)
             std::cout << "timeout, exit.\n";
             break;
         } else if (ready == NETERROR) {
-            wI32 err_code = wuk::net::SystemError::code();
+            wuk::i32 err_code = wuk::net::SystemError::code();
             throw wuk::Exception(err_code, "select", wuk::net::SystemError::message(err_code));
         }
 

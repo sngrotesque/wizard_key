@@ -20,11 +20,11 @@ using namespace wuk::crypto;
 using namespace wuk::misc;
 namespace fs = std::filesystem;
 
-std::string sha256(const wByte *buffer, wSize length)
+std::string sha256(const wuk::byte *buffer, wuk::ulong length)
 {
     EVP_MD_CTX   *md_ctx = EVP_MD_CTX_new();
     const EVP_MD *md     = EVP_sha256();
-    wByte digest[32] {0};
+    wuk::byte digest[32] {0};
 
     EVP_DigestInit_ex(md_ctx, md, nullptr);
     EVP_DigestUpdate(md_ctx, buffer, length);
@@ -34,7 +34,7 @@ std::string sha256(const wByte *buffer, wSize length)
     return wuk::Buffer(digest, sizeof(digest)).hex();
 }
 
-wuk::Buffer get_key(std::string password, wuk::Buffer salt, wU32 length = 32)
+wuk::Buffer get_key(std::string password, wuk::Buffer salt, wuk::u32 length = 32)
 {
     wuk::Buffer result;
 
@@ -47,8 +47,8 @@ wuk::Buffer get_key(std::string password, wuk::Buffer salt, wU32 length = 32)
 void op4_encryption_test()
 {
     auto keyWithNonce = get_key("12345678", {"abcdef0123456789"}, OP4_KL + OP4_NL);
-    const wByte *key = keyWithNonce.get_data();
-    const wByte *nonce = keyWithNonce.get_data() + OP4_KL;
+    const wuk::byte *key = keyWithNonce.get_data();
+    const wuk::byte *nonce = keyWithNonce.get_data() + OP4_KL;
 
     OP4 op4(key);
 
@@ -56,9 +56,9 @@ void op4_encryption_test()
         "hello, world.\n"
         "This is testing.\n"
     };
-    wSize length = strlen(original);
-    const wByte *plaintext = reinterpret_cast<const wByte *>(original);
-    wByte *ciphertext = wuk::m_calloc<wByte>(length);
+    wuk::ulong length = strlen(original);
+    const wuk::byte *plaintext = reinterpret_cast<const wuk::byte *>(original);
+    wuk::byte *ciphertext = wuk::m_calloc<wuk::byte>(length);
 
     op4.ctr_stream(ciphertext, plaintext, length, nonce);
 

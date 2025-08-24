@@ -1,5 +1,5 @@
 #pragma once
-#include <config/WukConfig.hh>
+#include <core/WukConfig.hh>
 
 #if WUK_SUPPORT
 #if defined(WUK_PLATFORM_WINOS)
@@ -18,9 +18,9 @@
 
 namespace wuk {
     template <typename T>
-    void reversal_array(T *buffer, wSize length)
+    void reversal_array(T *buffer, wuk::ulong length)
     {
-        for (wSize i = 0; i < (length / 2); ++i) {
+        for (wuk::ulong i = 0; i < (length / 2); ++i) {
             T tmp = buffer[i];
             buffer[i] = buffer[length - 1 - i];
             buffer[length - 1 - i] = tmp;

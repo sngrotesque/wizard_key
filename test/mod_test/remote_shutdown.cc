@@ -92,7 +92,7 @@ void locale_check()
     }
 }
 
-void remote_shutdown_listen(std::string laddr, wU16 lport)
+void remote_shutdown_listen(std::string laddr, wuk::u16 lport)
 {
     wuk::net::Socket fd{AF_INET, SOCK_DGRAM, IPPROTO_UDP};
 

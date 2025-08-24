@@ -18,16 +18,16 @@ using namespace wuk::misc;
 
 #define SPEED_TEST(func) \
     func; \
-    double start = timer.time<double>(); \
+    wuk::f64 start = timer.time<wuk::f64>(); \
     func; \
-    double stop = timer.time<double>(); \
-    double taken_time = stop - start; \
-    double throughput = length / taken_time / (1024 * 1024); \
+    wuk::f64 stop = timer.time<wuk::f64>(); \
+    wuk::f64 taken_time = stop - start; \
+    wuk::f64 throughput = length / taken_time / (1024 * 1024); \
     printf("Token time: %.4lf\n", taken_time); \
     printf("Speed: %.2lf MB/s.\n", throughput);
-constexpr wU32 block_size = 4096;
+constexpr wuk::u32 block_size = 4096;
 
-std::string hash_sha256(const wByte *buffer, wSize length)
+std::string hash_sha256(const wuk::byte *buffer, wuk::ulong length)
 {
     Hashlib<HashlibType::SHA_256> hash;
     hash.update(buffer, length);
@@ -37,21 +37,21 @@ std::string hash_sha256(const wByte *buffer, wSize length)
 #ifdef TEST
 namespace fs = std::filesystem;
 
-constexpr wU32 OP4_SALT_LEN  = OP4_BL;
-constexpr wU32 OP4_NONCE_LEN = OP4_NL;
-constexpr wU32 PBKDF2_ROUNDS = 114514;
+constexpr wuk::u32 OP4_SALT_LEN  = OP4_BL;
+constexpr wuk::u32 OP4_NONCE_LEN = OP4_NL;
+constexpr wuk::u32 PBKDF2_ROUNDS = 114514;
 
-constexpr wU32 decryption_error = 777777777;
+constexpr wuk::u32 decryption_error = 777777777;
 
 void weak_key_test()
 {
-    wByte key_l[OP4_KL] = {
+    wuk::byte key_l[OP4_KL] = {
         0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
         0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
         0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
         0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
     };
-    wByte key_r[OP4_KL] = {
+    wuk::byte key_r[OP4_KL] = {
         0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
         0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
         0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -61,8 +61,8 @@ void weak_key_test()
     OP4 op4_l(key_l);
     OP4 op4_r(key_r);
 
-    const wByte *kl = op4_l.get_roundkey();
-    const wByte *kr = op4_r.get_roundkey();
+    const wuk::byte *kl = op4_l.get_roundkey();
+    const wuk::byte *kr = op4_r.get_roundkey();
 
     std::cout << "Round key (left):\t\t\t\t\t\tRound key (Right):\n";
     print_diff_hex(kl, kr, OP4_RKL, OP4_RKL, OP4_BL, true);
@@ -77,33 +77,33 @@ void weak_key_test()
 
 void xcryption_verification()
 {
-    wByte key[OP4_KL]{
+    wuk::byte key[OP4_KL]{
         0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
         0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
         0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
         0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
     };
-    wByte iv[OP4_BL]{
+    wuk::byte iv[OP4_BL]{
         0x00, 0x00, 0x00, 0x00,
         0x00, 0x00, 0x00, 0x00,
         0x00, 0x00, 0x00, 0x00,
         0x00, 0x00, 0x00, 0x00
     };
-    wByte nonce[OP4_NL]{
+    wuk::byte nonce[OP4_NL]{
         0x00, 0x00, 0x00, 0x00,
         0x00, 0x00, 0x00, 0x00,
         0x00, 0x00, 0x00, 0x00
     };
 
     constexpr size_t length = OP4_BL << 1;
-    wByte plaintext[length]{
+    wuk::byte plaintext[length]{
         0x00, 0x01, 0x00, 0x01, 0x00, 0x01, 0x00, 0x01,
         0x00, 0x01, 0x00, 0x01, 0x00, 0x01, 0x00, 0x01,
         0x00, 0x01, 0x00, 0x01, 0x00, 0x01, 0x00, 0x01,
         0x00, 0x01, 0x00, 0x01, 0x00, 0x01, 0x00, 0x01
     };
-    wByte ciphertext[length]{0};
-    wByte decrypted[length]{0};
+    wuk::byte ciphertext[length]{0};
+    wuk::byte decrypted[length]{0};
     OP4 op4(key);
 
     std::cout << "Master key:\n";
@@ -163,7 +163,7 @@ void xcryption_verification()
     }
 }
 
-void derive_key_pbkdf2(const char *password, const wByte salt[OP4_SALT_LEN], wByte out_key[OP4_KL])
+void derive_key_pbkdf2(const char *password, const wuk::byte salt[OP4_SALT_LEN], wuk::byte out_key[OP4_KL])
 {
     PKCS5_PBKDF2_HMAC(password, strlen(password),
                       salt, OP4_SALT_LEN,
@@ -175,9 +175,9 @@ void derive_key_pbkdf2(const char *password, const wByte salt[OP4_SALT_LEN], wBy
 void file_encrypt(fs::path input_file, fs::path output_file, const char *password)
 {
     wuk::Random random;
-    wByte salt[OP4_SALT_LEN];
-    wByte nonce[OP4_NONCE_LEN];
-    wByte key[OP4_KL];
+    wuk::byte salt[OP4_SALT_LEN];
+    wuk::byte nonce[OP4_NONCE_LEN];
+    wuk::byte key[OP4_KL];
 
     random.bytes(salt, sizeof salt);
     random.bytes(nonce, sizeof nonce);
@@ -196,8 +196,8 @@ void file_encrypt(fs::path input_file, fs::path output_file, const char *passwor
     printf("Round key:\n");
     print_hex(op4.get_roundkey(), OP4_RKL, 16, true, true);
 
-    wByte plaintext[block_size]{};
-    wByte ciphertext[block_size]{};
+    wuk::byte plaintext[block_size]{};
+    wuk::byte ciphertext[block_size]{};
     while (fin.read((char*)plaintext, block_size) || fin.gcount()) {
         size_t n = fin.gcount();
         op4.ctr_stream(ciphertext, plaintext, n, nonce);
@@ -211,9 +211,9 @@ void file_decrypt(fs::path input_file, fs::path output_file, const char *passwor
     std::ofstream fout(output_file, std::ios::binary);
     if (!fin || !fout) throw std::runtime_error("file open failed");
 
-    wByte salt[OP4_SALT_LEN];
-    wByte nonce[OP4_NONCE_LEN];
-    wByte key[OP4_KL];
+    wuk::byte salt[OP4_SALT_LEN];
+    wuk::byte nonce[OP4_NONCE_LEN];
+    wuk::byte key[OP4_KL];
 
     // 从加密文件头部读取 salt 和 nonce
     fin.read((char*)salt, OP4_SALT_LEN);
@@ -221,8 +221,8 @@ void file_decrypt(fs::path input_file, fs::path output_file, const char *passwor
     derive_key_pbkdf2(password, salt, key);
 
     OP4 op4(key);
-    wByte ciphertext[block_size]{};
-    wByte plaintext[block_size]{};
+    wuk::byte ciphertext[block_size]{};
+    wuk::byte plaintext[block_size]{};
     while (fin.read((char*)ciphertext, block_size) || fin.gcount()) {
         size_t n = fin.gcount();
         op4.ctr_stream(plaintext, ciphertext, n, nonce);
@@ -233,20 +233,20 @@ void file_decrypt(fs::path input_file, fs::path output_file, const char *passwor
 
 #ifdef THREADS_METHOD
 #if THREADS_METHOD == 1
-void op4_thread(wByte *ciphertext, const wByte *plaintext, wSize length,
-                const wByte key[OP4_KL], const wByte nonce[OP4_NL],
-                wU32 thread_count = 4)
+void op4_thread(wuk::byte *ciphertext, const wuk::byte *plaintext, wuk::ulong length,
+                const wuk::byte key[OP4_KL], const wuk::byte nonce[OP4_NL],
+                wuk::u32 thread_count = 4)
 {
     std::vector<std::thread> threads;
-    wSize chunk_size = (length / thread_count + OP4_BL - 1) / OP4_BL * OP4_BL; // 对齐到块大小
-    wSize remaining = length;
+    wuk::ulong chunk_size = (length / thread_count + OP4_BL - 1) / OP4_BL * OP4_BL; // 对齐到块大小
+    wuk::ulong remaining = length;
 
-    for (wU32 i = 0; i < thread_count && remaining > 0; ++i) {
-        wSize current_chunk = std::min(chunk_size, remaining);
-        wSize aligned_chunk = current_chunk - (current_chunk % OP4_BL); // 完整块部分
-        wSize extra_bytes = current_chunk % OP4_BL;                     // 尾部不完整块
+    for (wuk::u32 i = 0; i < thread_count && remaining > 0; ++i) {
+        wuk::ulong current_chunk = std::min(chunk_size, remaining);
+        wuk::ulong aligned_chunk = current_chunk - (current_chunk % OP4_BL); // 完整块部分
+        wuk::ulong extra_bytes = current_chunk % OP4_BL;                     // 尾部不完整块
 
-        wU32 counter = (i * chunk_size) / OP4_BL; // 精确计算counter
+        wuk::u32 counter = (i * chunk_size) / OP4_BL; // 精确计算counter
 
         threads.emplace_back([=]() {
             OP4 op4{key, counter};
@@ -258,7 +258,7 @@ void op4_thread(wByte *ciphertext, const wByte *plaintext, wSize length,
             }
             // 处理尾部不完整块（仅最后一个线程可能执行）
             if (extra_bytes > 0 && i == thread_count - 1) {
-                wByte last_block[OP4_BL]{0};
+                wuk::byte last_block[OP4_BL]{0};
                 memcpy(last_block, plaintext + i * chunk_size + aligned_chunk, extra_bytes);
                 op4.ctr_stream(last_block, last_block, OP4_BL, nonce); // 加密完整块
                 memcpy(ciphertext + i * chunk_size + aligned_chunk, last_block, extra_bytes); // 只拷贝所需部分
@@ -273,23 +273,23 @@ void op4_thread(wByte *ciphertext, const wByte *plaintext, wSize length,
 }
 
 #elif THREADS_METHOD == 2
-void op4_thread(wByte *ciphertext, const wByte *plaintext, wSize length,
-                         const wByte key[OP4_KL], const wByte nonce[OP4_NL],
-                         wU32 thread_count) {
-    wSize chunk_size = ((length / thread_count + OP4_BL - 1) / OP4_BL) * OP4_BL;
+void op4_thread(wuk::byte *ciphertext, const wuk::byte *plaintext, wuk::ulong length,
+                         const wuk::byte key[OP4_KL], const wuk::byte nonce[OP4_NL],
+                         wuk::u32 thread_count) {
+    wuk::ulong chunk_size = ((length / thread_count + OP4_BL - 1) / OP4_BL) * OP4_BL;
     std::vector<std::future<void>> futures;
 
-    for (wU32 i = 0; i < thread_count; ++i) {
-        wSize offset = i * chunk_size;
-        wSize size = (i == thread_count - 1) ? (length - offset) : chunk_size;
-        wU32 counter = offset / OP4_BL;
+    for (wuk::u32 i = 0; i < thread_count; ++i) {
+        wuk::ulong offset = i * chunk_size;
+        wuk::ulong size = (i == thread_count - 1) ? (length - offset) : chunk_size;
+        wuk::u32 counter = offset / OP4_BL;
 
         futures.emplace_back(std::async(std::launch::async, [=]() {
             OP4 op4{key, counter};
             op4.ctr_stream(ciphertext + offset, plaintext + offset, size - (size % OP4_BL), nonce);
             // 处理尾部不完整块（仅最后一个线程）
             if (i == thread_count - 1 && size % OP4_BL != 0) {
-                wByte last_block[OP4_BL]{0};
+                wuk::byte last_block[OP4_BL]{0};
                 memcpy(last_block, plaintext + offset + size - (size % OP4_BL), size % OP4_BL);
                 op4.ctr_stream(last_block, last_block, OP4_BL, nonce);
                 memcpy(ciphertext + offset + size - (size % OP4_BL), last_block, size % OP4_BL);
@@ -301,20 +301,20 @@ void op4_thread(wByte *ciphertext, const wByte *plaintext, wSize length,
 
 #elif THREADS_METHOD == 3
 struct ThreadArgs {
-    wByte* ciphertext;
-    const wByte* plaintext;
-    wSize offset;
-    wSize size;
-    const wByte* key;
-    const wByte* nonce;
-    wU32 counter;
+    wuk::byte* ciphertext;
+    const wuk::byte* plaintext;
+    wuk::ulong offset;
+    wuk::ulong size;
+    const wuk::byte* key;
+    const wuk::byte* nonce;
+    wuk::u32 counter;
 };
 
 void op4_thread_worker(const ThreadArgs* args) {
     OP4 op4(args->key, args->counter);
     
     // 处理完整块
-    wSize aligned_size = args->size - (args->size % OP4_BL);
+    wuk::ulong aligned_size = args->size - (args->size % OP4_BL);
     if (aligned_size > 0) {
         op4.ctr_stream(
             args->ciphertext + args->offset,
@@ -326,7 +326,7 @@ void op4_thread_worker(const ThreadArgs* args) {
 
     // 处理尾部不完整块（仅最后一个线程需要）
     if (args->size % OP4_BL != 0) {
-        wByte last_block[OP4_BL] = {0};
+        wuk::byte last_block[OP4_BL] = {0};
         memcpy(last_block, 
               args->plaintext + args->offset + aligned_size,
               args->size % OP4_BL);
@@ -339,18 +339,18 @@ void op4_thread_worker(const ThreadArgs* args) {
     }
 }
 
-void op4_thread(wByte* ciphertext, const wByte* plaintext, wSize length,
-            const wByte key[OP4_KL], const wByte nonce[OP4_NL],
-            wU32 thread_count = 4) 
+void op4_thread(wuk::byte* ciphertext, const wuk::byte* plaintext, wuk::ulong length,
+            const wuk::byte key[OP4_KL], const wuk::byte nonce[OP4_NL],
+            wuk::u32 thread_count = 4) 
 {
     // 1. 计算分块参数
-    wSize chunk_size = ((length / thread_count + OP4_BL - 1) / OP4_BL) * OP4_BL;
+    wuk::ulong chunk_size = ((length / thread_count + OP4_BL - 1) / OP4_BL) * OP4_BL;
     std::vector<std::thread> threads;
     std::vector<ThreadArgs> args_list(thread_count);
 
     // 2. 准备线程参数
-    wSize remaining = length;
-    for (wU32 i = 0; i < thread_count && remaining > 0; ++i) {
+    wuk::ulong remaining = length;
+    for (wuk::u32 i = 0; i < thread_count && remaining > 0; ++i) {
         ThreadArgs args;
         args.ciphertext = ciphertext;
         args.plaintext = plaintext;
@@ -365,7 +365,7 @@ void op4_thread(wByte* ciphertext, const wByte* plaintext, wSize length,
     }
 
     // 3. 启动线程
-    for (wU32 i = 0; i < thread_count; ++i) {
+    for (wuk::u32 i = 0; i < thread_count; ++i) {
         if (args_list[i].size > 0) {
             threads.emplace_back(op4_thread_worker, &args_list[i]);
         }
@@ -378,8 +378,8 @@ void op4_thread(wByte* ciphertext, const wByte* plaintext, wSize length,
 }
 #endif
 
-void op4_single_thread(wByte* ciphertext, const wByte* plaintext, wSize length,
-            const wByte key[OP4_KL], const wByte nonce[OP4_NL])
+void op4_single_thread(wuk::byte* ciphertext, const wuk::byte* plaintext, wuk::ulong length,
+            const wuk::byte key[OP4_KL], const wuk::byte nonce[OP4_NL])
 {
     // 如果不写在函数内部进行初始化的话，计数器会一直更新，导致多线程与单线程加密结果不一致、
     OP4 op4(key, 0);
@@ -389,13 +389,13 @@ void op4_single_thread(wByte* ciphertext, const wByte* plaintext, wSize length,
 void op4_threads()
 {
     // 128KB（131072 Bytes）是多线程弱于单线程性能的分水岭
-    constexpr wSize length = static_cast<wSize>(512ULL * 1024*1024);
-    wByte *plaintext = new (std::align_val_t(16), std::nothrow) wByte[length];
+    constexpr wuk::ulong length = static_cast<wuk::ulong>(512ULL * 1024*1024);
+    wuk::byte *plaintext = new (std::align_val_t(16), std::nothrow) wuk::byte[length];
     if (!plaintext) {
         throw wuk::Exception(wuk::Error::MEMORY, "op4_threads",
             "failed to allocate for plaintext.");
     }
-    wByte *ciphertext = new (std::align_val_t(16), std::nothrow) wByte[length];
+    wuk::byte *ciphertext = new (std::align_val_t(16), std::nothrow) wuk::byte[length];
     if (!ciphertext) {
         operator delete[](plaintext, std::align_val_t(16));
         throw wuk::Exception(wuk::Error::MEMORY, "op4_threads",
@@ -403,18 +403,18 @@ void op4_threads()
     }
     wuk::memory_secure(plaintext, length);
     wuk::memory_secure(ciphertext, length);
-    const wByte key[OP4_KL]{0};
-    const wByte nonce[OP4_KL]{0};
+    const wuk::byte key[OP4_KL]{0};
+    const wuk::byte nonce[OP4_KL]{0};
     wuk::Time timer;
 
     std::cout << "The length of the encrypted data is: "
               << std::fixed << std::setprecision(2)
-              << (static_cast<double>(length) / (1024*1024))
+              << (static_cast<wuk::f64>(length) / (1024*1024))
               << " MB." << std::endl;
 #   if defined(THREADS_METHOD) && ((THREADS_METHOD >= 1) && (THREADS_METHOD <= 3))
     std::cout << "Multi threaded encryption is in progress.." << std::endl;
-    wU32 thread_count = std::min(static_cast<wU32>(std::thread::hardware_concurrency()),
-                                static_cast<wU32>((length + OP4_BL - 1) / OP4_BL));
+    wuk::u32 thread_count = std::min(static_cast<wuk::u32>(std::thread::hardware_concurrency()),
+                                static_cast<wuk::u32>((length + OP4_BL - 1) / OP4_BL));
     std::cout << "threads count: " << thread_count << std::endl;
     SPEED_TEST(op4_thread(ciphertext, plaintext, length, key, nonce, thread_count));
 #   else
@@ -424,7 +424,7 @@ void op4_threads()
     std::cout << "Plaintext  hexdigest: " << hash_sha256(plaintext,  length) << std::endl;
     std::cout << "Ciphertext hexdigest: " << hash_sha256(ciphertext, length) << std::endl;
 
-    wByte *decrypted = new (std::align_val_t(16), std::nothrow) wByte[length];
+    wuk::byte *decrypted = new (std::align_val_t(16), std::nothrow) wuk::byte[length];
     if(!decrypted) {
         operator delete[](ciphertext, std::align_val_t(16));
         operator delete[](plaintext, std::align_val_t(16));
@@ -443,13 +443,13 @@ void op4_threads()
 #endif
 
 #ifdef AVALANCHE_EFFECT_TEST
-wU32 bit_diff(const wByte *a, const wByte *b, size_t length)
+wuk::u32 bit_diff(const wuk::byte *a, const wuk::byte *b, size_t length)
 {
-    wU32 diff = 0;
+    wuk::u32 diff = 0;
 
     for (size_t i = 0; i < length; ++i) {
-        diff += [](wByte x) -> wU32 {
-            wU32 count = 0;
+        diff += [](wuk::byte x) -> wuk::u32 {
+            wuk::u32 count = 0;
             while (x) {
                 count += x & 1;
                 x >>= 1;
@@ -461,41 +461,41 @@ wU32 bit_diff(const wByte *a, const wByte *b, size_t length)
     return diff;
 }
 
-void print_test_info(const wByte *ciphertext1, const wByte *ciphertext2, wSize length)
+void print_test_info(const wuk::byte *ciphertext1, const wuk::byte *ciphertext2, wuk::ulong length)
 {
     std::cout << "Ciphertext1:\t\t\t\t\t\t\tCiphertext2:" << std::endl;
-    print_diff_hex((wByte *)ciphertext1, ciphertext2, length, length, 16, false); std::cout << std::endl;
+    print_diff_hex((wuk::byte *)ciphertext1, ciphertext2, length, length, 16, false); std::cout << std::endl;
 
 #   ifdef VIEW_HEXDIGEST
     std::cout << "Ciphertext1 hexdigest: " << hash_sha256(ciphertext1, length) << std::endl;
     std::cout << "ciphertext2 hexdigest: " << hash_sha256(ciphertext2, length) << std::endl;
 #   endif
 
-    wU32 diff_bits = bit_diff(ciphertext1, (wByte *)ciphertext2, length);
-    double diff_ratio = static_cast<double>(diff_bits) / (length * 8);
+    wuk::u32 diff_bits = bit_diff(ciphertext1, (wuk::byte *)ciphertext2, length);
+    wuk::f64 diff_ratio = static_cast<wuk::f64>(diff_bits) / (length * 8);
     std::cout << "Diff ratio: " << diff_bits << " / " << (length * 8)
               << " = " << (diff_ratio * 100) << "%" << std::endl;
 }
 
 void avalanche_effect_test()
 {
-    wSize length    = OP4_BL;
-    wByte plaintext1 [OP4_BL]{0};
-    wByte plaintext2 [OP4_BL]{0};
-    wByte ciphertext1[OP4_BL]{0};
-    wByte ciphertext2[OP4_BL]{0};
+    wuk::ulong length    = OP4_BL;
+    wuk::byte plaintext1 [OP4_BL]{0};
+    wuk::byte plaintext2 [OP4_BL]{0};
+    wuk::byte ciphertext1[OP4_BL]{0};
+    wuk::byte ciphertext2[OP4_BL]{0};
     wuk::Random random;
 
-    wByte key1  [OP4_KL] {0};
-    wByte key2  [OP4_KL] {0};
-    wByte nonce1[OP4_NL] {0};
-    wByte nonce2[OP4_NL] {0};
+    wuk::byte key1  [OP4_KL] {0};
+    wuk::byte key2  [OP4_KL] {0};
+    wuk::byte nonce1[OP4_NL] {0};
+    wuk::byte nonce2[OP4_NL] {0};
 
     random.bytes(key1,   sizeof key1);
     random.bytes(nonce1, sizeof nonce1);
 
-    constexpr wByte bit = 1 << 0;
-    for (wU32 i = 0; i < OP4_KL; ++i) {
+    constexpr wuk::byte bit = 1 << 0;
+    for (wuk::u32 i = 0; i < OP4_KL; ++i) {
         std::cout << "Key test:\n";
         memcpy(key2,   key1,   OP4_KL);
         memcpy(nonce2, nonce1, OP4_NL);
@@ -509,7 +509,7 @@ void avalanche_effect_test()
         std::cout << std::endl;
     }
 
-    for (wU32 i = 0; i < OP4_NL; ++i) {
+    for (wuk::u32 i = 0; i < OP4_NL; ++i) {
         std::cout << "Nonce test:\n";
         memcpy(key2,   key1,   OP4_KL);
         memcpy(nonce2, nonce1, OP4_NL);

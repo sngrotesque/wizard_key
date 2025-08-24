@@ -5,7 +5,7 @@
 
 namespace wuk::net {
 // ==================== Addrinfo ====================
-    Addrinfo::Addrinfo(wI32 family, wI32 sock_type, wI32 proto)
+    Addrinfo::Addrinfo(wuk::i32 family, wuk::i32 sock_type, wuk::i32 proto)
     {
         this->hints.ai_family = family;
         this->hints.ai_socktype = sock_type;
@@ -17,11 +17,11 @@ namespace wuk::net {
         freeaddrinfo(this->res);
     }
 
-    Addrinfo &Addrinfo::resolve(const std::string &addr, const wU16 &port)
+    Addrinfo &Addrinfo::resolve(const std::string &addr, const wuk::u16 &port)
     {
         freeaddrinfo(this->res); // 防止多次调用导致内存泄漏
 
-        wI32 err_code = getaddrinfo(addr.c_str(), std::to_string(port).c_str(),
+        wuk::i32 err_code = getaddrinfo(addr.c_str(), std::to_string(port).c_str(),
                 &this->hints, &this->res);
         if (err_code) {
             throw wuk::Exception(err_code, "wuk::net::Addrinfo::resolve",
@@ -119,7 +119,7 @@ namespace wuk::net {
         }
 
         auto throw_error = []() -> void {
-            wI32 err_code = SystemError::code();
+            wuk::i32 err_code = SystemError::code();
             throw wuk::Exception(err_code, "wuk::net::Sockaddr::get_address_string",
                 SystemError::message(err_code));
         };
@@ -150,7 +150,7 @@ namespace wuk::net {
         return std::string(buffer);
     }
 
-    wU16 Sockaddr::get_port() const
+    wuk::u16 Sockaddr::get_port() const
     {
         const sockaddr *sa = this->get_addr();
 
@@ -177,18 +177,18 @@ namespace wuk::net {
     }
 
 // ==================== Socket ====================
-    Socket::Socket(wI32 family, wI32 sock_type, wI32 proto)
+    Socket::Socket(wuk::i32 family, wuk::i32 sock_type, wuk::i32 proto)
     : m_family(family), m_sock_type(sock_type), m_proto(proto)
     {
         this->fd = socket(family, sock_type, proto);
         if (this->fd == static_cast<wSocket>(NETERROR)) {
-            wI32 err_code = SystemError::code();
+            wuk::i32 err_code = SystemError::code();
             throw wuk::Exception(err_code, "wuk::net::Socket::Socket",
                 SystemError::message(err_code));
         }
     }
 
-    Socket::Socket(wI32 family, wI32 sock_type, wI32 proto, wSocket cur_fd)
+    Socket::Socket(wuk::i32 family, wuk::i32 sock_type, wuk::i32 proto, wSocket cur_fd)
     : m_family(family), m_sock_type(sock_type), m_proto(proto)
     {
         this->fd = cur_fd;
@@ -279,9 +279,9 @@ namespace wuk::net {
     const Sockaddr Socket::getsockname()
     {
         Sockaddr addr;
-        wI32 err = ::getsockname(this->fd, addr.set_addr(), addr.set_addrlen());
+        wuk::i32 err = ::getsockname(this->fd, addr.set_addr(), addr.set_addrlen());
         if (err == NETERROR) {
-            wI32 err_code = SystemError::code();
+            wuk::i32 err_code = SystemError::code();
             throw wuk::Exception(err_code, "wuk::net::Socket::getsockname",
                 SystemError::message(err_code));
         }
@@ -290,15 +290,15 @@ namespace wuk::net {
 
     void Socket::set_blocking(bool blocked)
     {
-        wI32 err = 0;
+        wuk::i32 err = 0;
 
 #       ifdef WUK_PLATFORM_WINOS
-        wU32 mode = static_cast<wU32>(!blocked);
+        wuk::u32 mode = static_cast<wuk::u32>(!blocked);
         err = ioctlsocket(this->fd, FIONBIO, reinterpret_cast<u_long *>(&mode));
 #       else
-        wI32 flag = fcntl(this->fd, F_GETFL, 0);
+        wuk::i32 flag = fcntl(this->fd, F_GETFL, 0);
         if (flag == NETERROR) {
-            wI32 err_code = SystemError::code();
+            wuk::i32 err_code = SystemError::code();
             throw wuk::Exception(err_code, "wuk::net::Socket::set_blocking",
                 SystemError::message(err_code));
         }
@@ -310,7 +310,7 @@ namespace wuk::net {
         err = fcntl(this->fd, F_SETFL, flag);
 #       endif
         if (err == NETERROR) {
-            wI32 err_code = SystemError::code();
+            wuk::i32 err_code = SystemError::code();
             throw wuk::Exception(err_code, "wuk::net::Socket::set_blocking",
                 SystemError::message(err_code));
         }
@@ -323,23 +323,23 @@ namespace wuk::net {
         return this->is_blocking;
     }
 
-    void Socket::set_timeout(double t) noexcept
+    void Socket::set_timeout(wuk::f64 t) noexcept
     {
         this->m_timeout = (t < 0) ? 0 : t; // 超时时间不允许为负数
     }
 
-    double Socket::get_timeout() const noexcept
+    wuk::f64 Socket::get_timeout() const noexcept
     {
         return this->m_timeout;
     }
 
-    void Socket::connect(const std::string &addr, const wU16 &port)
+    void Socket::connect(const std::string &addr, const wuk::u16 &port)
     {
         Addrinfo info(this->m_family);
         info.resolve(addr, port);
-        wI32 err = ::connect(this->fd, info.get_addr(), info.get_addrlen());
+        wuk::i32 err = ::connect(this->fd, info.get_addr(), info.get_addrlen());
         if (err == NETERROR) {
-            wI32 err_code = SystemError::code();
+            wuk::i32 err_code = SystemError::code();
             throw wuk::Exception(err_code, "wuk::net::Socket::connect",
                 SystemError::message(err_code));
         }
@@ -347,13 +347,13 @@ namespace wuk::net {
         this->m_laddr.set_addr(this->getsockname());
     }
 
-    void Socket::bind(const std::string &addr, const wU16 &port)
+    void Socket::bind(const std::string &addr, const wuk::u16 &port)
     {
         Addrinfo info(this->m_family);
         info.resolve(addr, port);
-        wI32 err = ::bind(this->fd, info.get_addr(), info.get_addrlen());
+        wuk::i32 err = ::bind(this->fd, info.get_addr(), info.get_addrlen());
         if (err == NETERROR) {
-            wI32 err_code = SystemError::code();
+            wuk::i32 err_code = SystemError::code();
             throw wuk::Exception(err_code, "wuk::net::Socket::bind",
                 SystemError::message(err_code));
         }
@@ -367,7 +367,7 @@ namespace wuk::net {
         wSocket client_sock = ::accept(this->fd, client.set_addr(), client.set_addrlen());
 
         if (client_sock == static_cast<wSocket>(NETERROR)) {
-            wI32 err_code = SystemError::code();
+            wuk::i32 err_code = SystemError::code();
             throw wuk::Exception(err_code, "wuk::net::Socket::accept",
                 SystemError::message(err_code));
         }
@@ -380,34 +380,34 @@ namespace wuk::net {
 
     void Socket::listen(const socklen_t &backlog)
     {
-        wI32 err = ::listen(this->fd, backlog);
+        wuk::i32 err = ::listen(this->fd, backlog);
         if (err == NETERROR) {
-            wI32 err_code = SystemError::code();
+            wuk::i32 err_code = SystemError::code();
             throw wuk::Exception(err_code, "wuk::net::Socket::listen",
                 SystemError::message(err_code));
         }
     }
 
-    wSSize Socket::send(const std::string &buffer, wI32 flag)
+    wuk::ilong Socket::send(const std::string &buffer, wuk::i32 flag)
     {
-        wSSize sent = ::send(this->fd, buffer.c_str(), buffer.length(), flag);
+        wuk::ilong sent = ::send(this->fd, buffer.c_str(), buffer.length(), flag);
         if (sent == NETERROR) {
-            wI32 err_code = SystemError::code();
+            wuk::i32 err_code = SystemError::code();
             throw wuk::Exception(err_code, "wuk::net::Socket::send",
                 SystemError::message(err_code));
         }
         return sent;
     }
 
-    std::string Socket::recv(const socklen_t &length, wI32 flag)
+    std::string Socket::recv(const socklen_t &length, wuk::i32 flag)
     {
         std::string buffer(length, '\0');
-        wSSize received = ::recv(this->fd, buffer.data(), length, flag);
+        wuk::ilong received = ::recv(this->fd, buffer.data(), length, flag);
         if (received == 0) {
             return std::string{};
         }
         if (received == NETERROR) {
-            wI32 err_code = SystemError::code();
+            wuk::i32 err_code = SystemError::code();
             throw wuk::Exception(err_code, "wuk::net::Socket::recv",
                 SystemError::message(err_code));
         }
@@ -415,16 +415,16 @@ namespace wuk::net {
         return buffer;
     }
 
-    void Socket::sendall(const std::string &buffer, wI32 flag)
+    void Socket::sendall(const std::string &buffer, wuk::i32 flag)
     {
-        constexpr wSSize block_size = 2048;
+        constexpr wuk::ilong block_size = 2048;
         const char *data_ptr = buffer.c_str();
-        wSSize data_len = static_cast<wSSize>(buffer.length());
+        wuk::ilong data_len = static_cast<wuk::ilong>(buffer.length());
         while (data_len) {
-            wSSize size = wuk::min(block_size, data_len);
-            wSSize sent = ::send(this->fd, data_ptr, size, flag);
+            wuk::ilong size = wuk::min(block_size, data_len);
+            wuk::ilong sent = ::send(this->fd, data_ptr, size, flag);
             if (sent == NETERROR) {
-                wI32 err_code = SystemError::code();
+                wuk::i32 err_code = SystemError::code();
                 throw wuk::Exception(err_code, "wuk::net::Socket::sendall",
                     SystemError::message(err_code));
             }
@@ -433,28 +433,28 @@ namespace wuk::net {
         }
     }
 
-    wSSize Socket::sendto(const std::string &buffer, const Sockaddr &addr, wI32 flag)
+    wuk::ilong Socket::sendto(const std::string &buffer, const Sockaddr &addr, wuk::i32 flag)
     {
-        wSSize sent = ::sendto(this->fd, buffer.c_str(), buffer.length(), flag,
+        wuk::ilong sent = ::sendto(this->fd, buffer.c_str(), buffer.length(), flag,
                             addr.get_addr(), addr.get_addrlen());
         if (sent == NETERROR) {
-            wI32 err_code = SystemError::code();
+            wuk::i32 err_code = SystemError::code();
             throw wuk::Exception(err_code, "wuk::net::Socket::sendto",
                 SystemError::message(err_code));
         }
         return sent;
     }
 
-    std::string Socket::recvfrom(const socklen_t &length, Sockaddr &addr, wI32 flag)
+    std::string Socket::recvfrom(const socklen_t &length, Sockaddr &addr, wuk::i32 flag)
     {
         std::string buffer(length, '\0');
-        wSSize received = ::recvfrom(this->fd, buffer.data(), length, flag,
+        wuk::ilong received = ::recvfrom(this->fd, buffer.data(), length, flag,
                                     addr.set_addr(), addr.set_addrlen());
         if (received == 0) {
             return std::string{};
         }
         if (received == NETERROR) {
-            wI32 err_code = SystemError::code();
+            wuk::i32 err_code = SystemError::code();
             throw wuk::Exception(err_code, "wuk::net::Socket::recvfrom",
                 SystemError::message(err_code));
         }
@@ -462,10 +462,10 @@ namespace wuk::net {
         return buffer;
     }
 
-    void Socket::shutdown(const wI32 &how)
+    void Socket::shutdown(const wuk::i32 &how)
     {
         if (::shutdown(this->fd, how) == NETERROR) {
-            wI32 err_code = SystemError::code();
+            wuk::i32 err_code = SystemError::code();
             throw wuk::Exception(err_code, "wuk::net::Socket::shutdown",
                 SystemError::message(err_code));
         }
@@ -478,12 +478,12 @@ namespace wuk::net {
         }
 
 #       if defined(WUK_PLATFORM_WINOS)
-        wI32 err = ::closesocket(this->fd);
+        wuk::i32 err = ::closesocket(this->fd);
 #       else
-        wI32 err = ::close(this->fd);
+        wuk::i32 err = ::close(this->fd);
 #       endif
         if (err == NETERROR) {
-            wI32 err_code = SystemError::code();
+            wuk::i32 err_code = SystemError::code();
             throw wuk::Exception(err_code, "wuk::net::Socket::close",
                 SystemError::message(err_code));
         }
@@ -523,7 +523,7 @@ namespace wuk::net {
             return false;
         }
 
-        wI32 error = 0;
+        wuk::i32 error = 0;
         socklen_t error_size = sizeof(error);
         if (::getsockopt(this->fd, SOL_SOCKET, SO_ERROR,
                             reinterpret_cast<char *>(&error), &error_size) != 0) {

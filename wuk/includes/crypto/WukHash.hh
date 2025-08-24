@@ -1,8 +1,8 @@
 #pragma once
-#include <config/WukConfig.hh>
+#include <core/WukConfig.hh>
 
 #if WUK_SUPPORT
-#include <config/WukException.hh>
+#include <core/WukException.hh>
 #include <WukBuffer.hh>
 #include <WukMemory.hh>
 
@@ -69,14 +69,14 @@ namespace wuk::crypto {
             this->free_ctx();
         }
 
-        void update(const wByte *buffer, wSize length)
+        void update(const wuk::byte *buffer, wuk::ulong length)
         {
             EVP_DigestUpdate(this->ctx, buffer, length);
         }
 
         const wuk::Buffer digest() const noexcept
         {
-            wU32 size = EVP_MD_size(this->md);
+            wuk::u32 size = EVP_MD_size(this->md);
             wuk::Buffer result{size};
 
             EVP_DigestFinal_ex(this->ctx, result.append_write(size), nullptr);

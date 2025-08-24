@@ -1,5 +1,5 @@
 #pragma once
-#include <config/WukConfig.hh>
+#include <core/WukConfig.hh>
 
 #if WUK_SUPPORT
 #   include <immintrin.h>
@@ -93,45 +93,45 @@ namespace wuk::simd::sse {
     }
 
     template <simd_size size>
-    s128 shl(s128 x, wU32 n);
+    s128 shl(s128 x, wuk::u32 n);
 
-    template<> inline s128 shl<simd_size::epi16>(s128 x, wU32 n)
+    template<> inline s128 shl<simd_size::epi16>(s128 x, wuk::u32 n)
     {
         return _mm_slli_epi16(x, n);
     }
 
-    template<> inline s128 shl<simd_size::epi32>(s128 x, wU32 n)
+    template<> inline s128 shl<simd_size::epi32>(s128 x, wuk::u32 n)
     {
         return _mm_slli_epi32(x, n);
     }
 
-    template<> inline s128 shl<simd_size::epi64>(s128 x, wU32 n)
+    template<> inline s128 shl<simd_size::epi64>(s128 x, wuk::u32 n)
     {
         return _mm_slli_epi64(x, n);
     }
 
     template <simd_size size>
-    s128 shr(s128 x, wU32 n);
+    s128 shr(s128 x, wuk::u32 n);
 
-    template<> inline s128 shr<simd_size::epi16>(s128 x, wU32 n)
+    template<> inline s128 shr<simd_size::epi16>(s128 x, wuk::u32 n)
     {
         return _mm_srli_epi16(x, n);
     }
 
-    template<> inline s128 shr<simd_size::epi32>(s128 x, wU32 n)
+    template<> inline s128 shr<simd_size::epi32>(s128 x, wuk::u32 n)
     {
         return _mm_srli_epi32(x, n);
     }
 
-    template<> inline s128 shr<simd_size::epi64>(s128 x, wU32 n)
+    template<> inline s128 shr<simd_size::epi64>(s128 x, wuk::u32 n)
     {
         return _mm_srli_epi64(x, n);
     }
 
     template <simd_size size>
-    s128 rotl(s128 x, wU32 n);
+    s128 rotl(s128 x, wuk::u32 n);
 
-    template<> inline s128 rotl<simd_size::epi16>(s128 x, wU32 n)
+    template<> inline s128 rotl<simd_size::epi16>(s128 x, wuk::u32 n)
     {
         return or128(
             shl<simd_size::epi16>(x, n),
@@ -139,7 +139,7 @@ namespace wuk::simd::sse {
         );
     }
 
-    template<> inline s128 rotl<simd_size::epi32>(s128 x, wU32 n)
+    template<> inline s128 rotl<simd_size::epi32>(s128 x, wuk::u32 n)
     {
         return or128(
             shl<simd_size::epi32>(x, n),
@@ -147,7 +147,7 @@ namespace wuk::simd::sse {
         );
     }
 
-    template<> inline s128 rotl<simd_size::epi64>(s128 x, wU32 n)
+    template<> inline s128 rotl<simd_size::epi64>(s128 x, wuk::u32 n)
     {
         return or128(
             shl<simd_size::epi64>(x, n),
@@ -156,9 +156,9 @@ namespace wuk::simd::sse {
     }
 
     template <simd_size size>
-    s128 rotr(s128 x, wU32 n);
+    s128 rotr(s128 x, wuk::u32 n);
 
-    template<> inline s128 rotr<simd_size::epi16>(s128 x, wU32 n)
+    template<> inline s128 rotr<simd_size::epi16>(s128 x, wuk::u32 n)
     {
         return or128(
             shr<simd_size::epi16>(x, n),
@@ -166,7 +166,7 @@ namespace wuk::simd::sse {
         );
     }
 
-    template<> inline s128 rotr<simd_size::epi32>(s128 x, wU32 n)
+    template<> inline s128 rotr<simd_size::epi32>(s128 x, wuk::u32 n)
     {
         return or128(
             shr<simd_size::epi32>(x, n),
@@ -174,7 +174,7 @@ namespace wuk::simd::sse {
         );
     }
 
-    template<> inline s128 rotr<simd_size::epi64>(s128 x, wU32 n)
+    template<> inline s128 rotr<simd_size::epi64>(s128 x, wuk::u32 n)
     {
         return or128(
             shr<simd_size::epi64>(x, n),
@@ -214,30 +214,30 @@ namespace wuk::simd::sse {
     using epi64_tag = simd_tag<simd_size::epi64>;
 
     template <int idx>
-    inline wU16 extract(s128 x, epi16_tag) {
+    inline wuk::u16 extract(s128 x, epi16_tag) {
         static_assert(idx >= 0 && idx < 8, "Index for epi16 must be in [0, 7]");
         return _mm_extract_epi16(x, idx);
     }
 
     template <int idx>
-    inline wU32 extract(s128 x, epi32_tag) {
+    inline wuk::u32 extract(s128 x, epi32_tag) {
         static_assert(idx >= 0 && idx < 4, "Index for epi32 must be in [0, 3]");
 #       ifdef __SSE4_1__
         return _mm_extract_epi32(x, idx);
 #       else
-        alignas(16) wU32 tmp[4];
+        alignas(16) wuk::u32 tmp[4];
         sse::store128(tmp, x);
         return tmp[idx];
 #       endif
     }
 
     template <int idx>
-    inline wU64 extract(s128 x, epi64_tag) {
+    inline wuk::u64 extract(s128 x, epi64_tag) {
         static_assert(idx >= 0 && idx < 2, "Index for epi64 must be in [0, 1]");
 #       if defined(__SSE4_1__)
         return _mm_extract_epi64(x, idx);
 #       else
-        alignas(16) wU64 tmp[2];
+        alignas(16) wuk::u64 tmp[2];
         sse::store128(tmp, x);
         return tmp[idx];
 #       endif
@@ -334,45 +334,45 @@ namespace wuk::simd::avx {
     }
 
     template <simd_size size>
-    s256 shl(s256 x, wU32 n);
+    s256 shl(s256 x, wuk::u32 n);
 
-    template<> inline s256 shl<simd_size::epi16>(s256 x, wU32 n)
+    template<> inline s256 shl<simd_size::epi16>(s256 x, wuk::u32 n)
     {
         return _mm256_slli_epi16(x, n);
     }
 
-    template<> inline s256 shl<simd_size::epi32>(s256 x, wU32 n)
+    template<> inline s256 shl<simd_size::epi32>(s256 x, wuk::u32 n)
     {
         return _mm256_slli_epi32(x, n);
     }
 
-    template<> inline s256 shl<simd_size::epi64>(s256 x, wU32 n)
+    template<> inline s256 shl<simd_size::epi64>(s256 x, wuk::u32 n)
     {
         return _mm256_slli_epi64(x, n);
     }
 
     template <simd_size size>
-    s256 shr(s256 x, wU32 n);
+    s256 shr(s256 x, wuk::u32 n);
 
-    template<> inline s256 shr<simd_size::epi16>(s256 x, wU32 n)
+    template<> inline s256 shr<simd_size::epi16>(s256 x, wuk::u32 n)
     {
         return _mm256_srli_epi16(x, n);
     }
 
-    template<> inline s256 shr<simd_size::epi32>(s256 x, wU32 n)
+    template<> inline s256 shr<simd_size::epi32>(s256 x, wuk::u32 n)
     {
         return _mm256_srli_epi32(x, n);
     }
 
-    template<> inline s256 shr<simd_size::epi64>(s256 x, wU32 n)
+    template<> inline s256 shr<simd_size::epi64>(s256 x, wuk::u32 n)
     {
         return _mm256_srli_epi64(x, n);
     }
 
     template <simd_size size>
-    s256 rotl(s256 x, wU32 n);
+    s256 rotl(s256 x, wuk::u32 n);
 
-    template<> inline s256 rotl<simd_size::epi16>(s256 x, wU32 n)
+    template<> inline s256 rotl<simd_size::epi16>(s256 x, wuk::u32 n)
     {
         return or256(
             shl<simd_size::epi16>(x, n),
@@ -380,7 +380,7 @@ namespace wuk::simd::avx {
         );
     }
 
-    template<> inline s256 rotl<simd_size::epi32>(s256 x, wU32 n)
+    template<> inline s256 rotl<simd_size::epi32>(s256 x, wuk::u32 n)
     {
         return or256(
             shl<simd_size::epi32>(x, n),
@@ -388,7 +388,7 @@ namespace wuk::simd::avx {
         );
     }
 
-    template<> inline s256 rotl<simd_size::epi64>(s256 x, wU32 n)
+    template<> inline s256 rotl<simd_size::epi64>(s256 x, wuk::u32 n)
     {
         return or256(
             shl<simd_size::epi64>(x, n),
@@ -397,9 +397,9 @@ namespace wuk::simd::avx {
     }
 
     template <simd_size size>
-    s256 rotr(s256 x, wU32 n);
+    s256 rotr(s256 x, wuk::u32 n);
 
-    template<> inline s256 rotr<simd_size::epi16>(s256 x, wU32 n)
+    template<> inline s256 rotr<simd_size::epi16>(s256 x, wuk::u32 n)
     {
         return or256(
             shr<simd_size::epi16>(x, n),
@@ -407,7 +407,7 @@ namespace wuk::simd::avx {
         );
     }
 
-    template<> inline s256 rotr<simd_size::epi32>(s256 x, wU32 n)
+    template<> inline s256 rotr<simd_size::epi32>(s256 x, wuk::u32 n)
     {
         return or256(
             shr<simd_size::epi32>(x, n),
@@ -415,7 +415,7 @@ namespace wuk::simd::avx {
         );
     }
 
-    template<> inline s256 rotr<simd_size::epi64>(s256 x, wU32 n)
+    template<> inline s256 rotr<simd_size::epi64>(s256 x, wuk::u32 n)
     {
         return or256(
             shr<simd_size::epi64>(x, n),
@@ -455,30 +455,30 @@ namespace wuk::simd::avx {
     using epi64_tag = simd_tag<simd_size::epi64>;
 
     template <int idx>
-    inline wU16 extract(s256 x, epi16_tag) {
+    inline wuk::u16 extract(s256 x, epi16_tag) {
         static_assert(idx >= 0 && idx < 8, "Index for epi16 must be in [0, 7]");
         return _mm256_extract_epi16(x, idx);
     }
 
     template <int idx>
-    inline wU32 extract(s256 x, epi32_tag) {
+    inline wuk::u32 extract(s256 x, epi32_tag) {
         static_assert(idx >= 0 && idx < 4, "Index for epi32 must be in [0, 3]");
 #       if defined(__SSE4_1__)
         return _mm256_extract_epi32(x, idx);
 #       else
-        alignas(16) wU32 tmp[4];
+        alignas(16) wuk::u32 tmp[4];
         store256(tmp, x);
         return tmp[idx];
 #       endif
     }
 
     template <int idx>
-    inline wU64 extract(s256 x, epi64_tag) {
+    inline wuk::u64 extract(s256 x, epi64_tag) {
         static_assert(idx >= 0 && idx < 2, "Index for epi64 must be in [0, 1]");
 #       if defined(__SSE4_1__)
         return _mm256_extract_epi64(x, idx);
 #       else
-        alignas(16) wU64 tmp[2];
+        alignas(16) wuk::u64 tmp[2];
         store256(tmp, x);
         return tmp[idx];
 #       endif

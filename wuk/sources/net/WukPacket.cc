@@ -55,19 +55,19 @@ namespace wuk::net {
 
     WukPacket &WukPacket::add_flag(MessageType flag)
     {
-        wU32 cur_flag = static_cast<int>(this->m_message.m_type());
-        wU32 new_flag = static_cast<int>(flag);
+        wuk::u32 cur_flag = static_cast<int>(this->m_message.m_type());
+        wuk::u32 new_flag = static_cast<int>(flag);
         this->m_message.set_m_type(static_cast<MessageType>(cur_flag | new_flag));
         RETURN;
     }
 
-    WukPacket &WukPacket::set_sequence(wU32 seq)
+    WukPacket &WukPacket::set_sequence(wuk::u32 seq)
     {
         this->m_message.set_m_sequence(seq);
         RETURN;
     }
 
-    WukPacket &WukPacket::set_segment_id(wU32 m_segment_id, bool is_last)
+    WukPacket &WukPacket::set_segment_id(wuk::u32 m_segment_id, bool is_last)
     {
         this->m_message.set_m_segment_id(m_segment_id);
 
@@ -82,7 +82,7 @@ namespace wuk::net {
         RETURN;
     }
 
-    WukPacket &WukPacket::set_proto_ver(wU32 version)
+    WukPacket &WukPacket::set_proto_ver(wuk::u32 version)
     {
         if (version < 0x01) {
             throw wuk::Exception(wuk::Error::ERR,
@@ -93,41 +93,41 @@ namespace wuk::net {
         RETURN;
     }
 
-    WukPacket &WukPacket::set_ids(wU64 sender, wU64 recipient)
+    WukPacket &WukPacket::set_ids(wuk::u64 sender, wuk::u64 recipient)
     {
         this->m_message.set_m_sender(sender);
         this->m_message.set_m_recipient(recipient);
         RETURN;
     }
 
-    WukPacket &WukPacket::set_sender(wU64 id)
+    WukPacket &WukPacket::set_sender(wuk::u64 id)
     {
         this->m_message.set_m_sender(id);
         RETURN;
     }
 
-    WukPacket &WukPacket::set_recipient(wU64 id)
+    WukPacket &WukPacket::set_recipient(wuk::u64 id)
     {
         this->m_message.set_m_recipient(id);
         RETURN;
     }
 
-    WukPacket &WukPacket::set_timestamp(double time_val)
+    WukPacket &WukPacket::set_timestamp(wuk::f64 time_val)
     {
         if (time_val == 0) {
-            time_val = timer.time<double>();
+            time_val = timer.time<wuk::f64>();
         }
         this->m_message.set_m_timestamp(time_val);
         RETURN;
     }
 
-    WukPacket &WukPacket::set_message_id(wU32 id)
+    WukPacket &WukPacket::set_message_id(wuk::u32 id)
     {
         this->m_message.set_m_id(id);
         RETURN;
     }
 
-    WukPacket &WukPacket::set_message(const void *buffer, wSize length)
+    WukPacket &WukPacket::set_message(const void *buffer, wuk::ulong length)
     {
         this->m_message.set_m_length(length);
         this->m_message.set_m_content(buffer, length);
@@ -136,7 +136,7 @@ namespace wuk::net {
 
     WukPacket &WukPacket::set_message(const std::string &buffer)
     {
-        return this->set_message(reinterpret_cast<const wByte *>(buffer.data()),
+        return this->set_message(reinterpret_cast<const wuk::byte *>(buffer.data()),
                                 buffer.length());
     }
 
@@ -157,42 +157,42 @@ namespace wuk::net {
         return (this->get_type() & flag) == flag;
     }
 
-    wU32 WukPacket::get_sequence() const
+    wuk::u32 WukPacket::get_sequence() const
     {
         return this->m_message.m_sequence();
     }
 
-    wU32 WukPacket::get_segment_id() const
+    wuk::u32 WukPacket::get_segment_id() const
     {
         return this->m_message.m_segment_id();
     }
 
-    wU32 WukPacket::get_proto_ver() const
+    wuk::u32 WukPacket::get_proto_ver() const
     {
         return this->m_message.m_proto_ver();
     }
 
-    wU64 WukPacket::get_sender() const
+    wuk::u64 WukPacket::get_sender() const
     {
         return this->m_message.m_sender();
     }
 
-    wU64 WukPacket::get_recipient() const
+    wuk::u64 WukPacket::get_recipient() const
     {
         return this->m_message.m_recipient();
     }
 
-    double WukPacket::get_timestamp() const
+    wuk::f64 WukPacket::get_timestamp() const
     {
         return this->m_message.m_timestamp();
     }
 
-    wU32 WukPacket::get_message_id() const
+    wuk::u32 WukPacket::get_message_id() const
     {
         return this->m_message.m_id();
     }
 
-    wSize WukPacket::get_message_size() const
+    wuk::ulong WukPacket::get_message_size() const
     {
         return this->m_message.m_content().length();
     }
@@ -205,8 +205,8 @@ namespace wuk::net {
     const wuk::Buffer WukPacket::get_message(int) const
     {
         const std::string &s = this->m_message.m_content();
-        const wByte *buffer = reinterpret_cast<const wByte *>(s.data());
-        const wSize length = s.length();
+        const wuk::byte *buffer = reinterpret_cast<const wuk::byte *>(s.data());
+        const wuk::ulong length = s.length();
         return wuk::Buffer(buffer, length);
     }
 
@@ -224,7 +224,7 @@ namespace wuk::net {
         Message tmp = this->m_message;
         if (this->m_message.m_id() == 0) {
             std::string s = tmp.SerializeAsString();
-            tmp.set_m_id(crc32(0, reinterpret_cast<wByte *>(s.data()), s.length()));
+            tmp.set_m_id(crc32(0, reinterpret_cast<wuk::byte *>(s.data()), s.length()));
         }
 
         return this->m_message.SerializeAsString();
@@ -235,7 +235,7 @@ namespace wuk::net {
         return this->parse_from(buffer.data(), buffer.length());
     }
 
-    WukPacket &WukPacket::parse_from(const void *buffer, wSize length)
+    WukPacket &WukPacket::parse_from(const void *buffer, wuk::ulong length)
     {
         this->m_message.Clear();
 

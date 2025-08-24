@@ -6,7 +6,7 @@
 
 using namespace wuk::color;
 
-void print_diff_hex_byte(wByte byte) {
+void print_diff_hex_byte(wuk::byte byte) {
 #   ifndef WUK_NOT_COLOR
     if (byte == 0x00) {
         printf("%s""%02x ""%s", fore::lightRed, byte, all::reset);
@@ -20,8 +20,8 @@ void print_diff_hex_byte(wByte byte) {
 #   endif
 }
 
-void print_diff_hex_line(const wByte *data, wSize len, wSize start, wSize hex_per_line) {
-    for (wSize j = 0; j < hex_per_line; ++j) {
+void print_diff_hex_line(const wuk::byte *data, wuk::ulong len, wuk::ulong start, wuk::ulong hex_per_line) {
+    for (wuk::ulong j = 0; j < hex_per_line; ++j) {
         if ((start + j) < len) {
             print_diff_hex_byte(data[start + j]);
         } else {
@@ -31,13 +31,13 @@ void print_diff_hex_line(const wByte *data, wSize len, wSize start, wSize hex_pe
 }
 
 namespace wuk::misc {
-    void print_diff_hex(const wByte *data1, const wByte *data2,
-                        wSize len1, wSize len2,
-                        wU32 hex_per_line, bool indent)
+    void print_diff_hex(const wuk::byte *data1, const wuk::byte *data2,
+                        wuk::ulong len1, wuk::ulong len2,
+                        wuk::u32 hex_per_line, bool indent)
     {
-        wSize max_len = len1 > len2 ? len1 : len2; // 取两个数据的最大长度
+        wuk::ulong max_len = len1 > len2 ? len1 : len2; // 取两个数据的最大长度
 
-        for (wSize i = 0; i < max_len; i += hex_per_line) {
+        for (wuk::ulong i = 0; i < max_len; i += hex_per_line) {
             if (indent) printf("\t");
 
             print_diff_hex_line(data1, len1, i, hex_per_line);
@@ -48,10 +48,10 @@ namespace wuk::misc {
         }
     }
 
-    void print_hex(const wByte *data, wSize len, wSize num, bool newline,
+    void print_hex(const wuk::byte *data, wuk::ulong len, wuk::ulong num, bool newline,
                             bool indent)
     {
-        for(wSize i = 0; i < len; ++i) {
+        for(wuk::ulong i = 0; i < len; ++i) {
             if(indent && ((i) % num == 0)) {
                 printf("\t");
             }
@@ -73,9 +73,9 @@ namespace wuk::misc {
         if(newline) printf("\n");
     }
 
-    void print_number(const wByte *arr, wSize size, wU32 num, bool newline)
+    void print_number(const wuk::byte *arr, wuk::ulong size, wuk::u32 num, bool newline)
     {
-        for (wSize i = 0; i < size; ++i) {
+        for (wuk::ulong i = 0; i < size; ++i) {
             int len = printf("%d", arr[i]);
 
             if ((i + 1) != size)
@@ -96,9 +96,9 @@ namespace wuk::misc {
             printf("\n");
     }
 
-    void print_box(const wByte *box, wSize size, wSize num, bool newline)
+    void print_box(const wuk::byte *box, wuk::ulong size, wuk::ulong num, bool newline)
     {
-        for(wSize i = 0; i < size; ++i) {
+        for(wuk::ulong i = 0; i < size; ++i) {
             printf("0x%02x", box[i]);
             printf(((i + 1) != size) ? (((i + 1) % num == 0) ? (",\n") : (", ")) : ("\n"));
         }
@@ -106,9 +106,9 @@ namespace wuk::misc {
             printf("\n");
     }
 
-    void print_pybytes(const wByte *buf, wSize size, bool newline)
+    void print_pybytes(const wuk::byte *buf, wuk::ulong size, bool newline)
     {
-        for(wSize i = 0; i < size; ++i) {
+        for(wuk::ulong i = 0; i < size; ++i) {
             if (buf[i] < 0x20) {
                 switch (buf[i]) {
                 case 0x0a:
@@ -136,11 +136,11 @@ namespace wuk::misc {
         }
     }
 
-    std::string get_pybytes(const wByte *buf, wSize size, bool newline)
+    std::string get_pybytes(const wuk::byte *buf, wuk::ulong size, bool newline)
     {
         std::stringstream ss;
 
-        for(wSize i = 0; i < size; ++i) {
+        for(wuk::ulong i = 0; i < size; ++i) {
             if (buf[i] < 0x20) {
                 switch (buf[i]) {
                     case 0x0a: ss << "\\n"; break;

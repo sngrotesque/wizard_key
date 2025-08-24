@@ -1,5 +1,5 @@
 // python make.py test\winapi_test.cc -DWUK_EXPORTS -mwindows -municode
-#include <config/WukConfig.hh>
+#include <core/WukConfig.hh>
 #include <WukRandom.hh>
 #ifdef WUK_PLATFORM_WINOS
 #include <windows.h>

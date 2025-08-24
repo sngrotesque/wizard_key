@@ -12,7 +12,7 @@ using namespace wuk::net;
 using namespace wuk::misc;
 using namespace std;
 
-string get_fixed(double x)
+string get_fixed(wuk::f64 x)
 {
     stringstream ss;
     ss << fixed << setprecision(4) << x;
@@ -29,20 +29,20 @@ int main()
           .set_proto_ver(0x0101)
           .set_segment_id(0)
           .set_sequence(random.rand())
-          .set_timestamp(timer.time<double>())
+          .set_timestamp(timer.time<wuk::f64>())
           .set_ids(random.rand(), random.rand())
           .set_message(std::string{"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"});
     std::string res = packet.serialize();
 
     cout << "Send packet buffer:\n";
-    print_hex((wByte *)res.data(), res.length(), 16, true, true);
+    print_hex((wuk::byte *)res.data(), res.length(), 16, true, true);
 
     // 读取序列化数据并显示
     cout << "Recv packet buffer:\n";
     WukPacket recv_packet;
     recv_packet.parse(res);
     std::string recv_message = recv_packet.get_message();
-    cout << "\tMessage type:         " << static_cast<wU32>(recv_packet.get_type()) << "\n"
+    cout << "\tMessage type:         " << static_cast<wuk::u32>(recv_packet.get_type()) << "\n"
          << "\tMessage seq:          " << recv_packet.get_sequence() << "\n"
          << "\tMessage seg id:       " << recv_packet.get_segment_id() << "\n"
          << "\tMessage proto ver:    " << recv_packet.get_proto_ver() << "\n"
@@ -51,7 +51,7 @@ int main()
          << "\tMessage sender id:    " << recv_packet.get_sender() << "\n"
          << "\tMessage recipient id: " << recv_packet.get_recipient() << "\n"
          << "\tMessage time stamp:   " << get_fixed(recv_packet.get_timestamp()) << "\n"
-         << "\tMessage:              " << get_pybytes((wByte *)recv_message.data(), recv_message.length(), false) << endl;
+         << "\tMessage:              " << get_pybytes((wuk::byte *)recv_message.data(), recv_message.length(), false) << endl;
 
     return 0;
 }

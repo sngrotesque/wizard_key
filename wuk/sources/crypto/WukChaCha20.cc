@@ -1,7 +1,7 @@
 #include <crypto/WukChaCha20.hh>
 
-#include <config/WukException.hh>
-#include <config/WukEndianness.hh>
+#include <core/WukException.hh>
+#include <core/WukEndianness.hh>
 #include <crypto/WukCommon.hh>
 #include <WukMemory.hh>
 
@@ -14,15 +14,15 @@
 
 
 static inline void
-state_recombination(wU32 keystream[16], const wU32 state[16])
+state_recombination(wuk::u32 keystream[16], const wuk::u32 state[16])
 {
-    for (wU32 i = 0; i < 16; ++i) {
+    for (wuk::u32 i = 0; i < 16; ++i) {
         keystream[i] += state[i];
     }
 }
 
 static inline void
-state_set_key(wU32 state[16], const wByte key[wuk::crypto::WukCC20_KL])
+state_set_key(wuk::u32 state[16], const wuk::byte key[wuk::crypto::WukCC20_KL])
 {
     state[0]  = U32C(0x61707865);
     state[1]  = U32C(0x3320646e);
@@ -40,8 +40,8 @@ state_set_key(wU32 state[16], const wByte key[wuk::crypto::WukCC20_KL])
 }
 
 static inline void
-state_set_iv(wU32 state[16], const wByte nonce[wuk::crypto::WukCC20_NL],
-      const wByte counter[4])
+state_set_iv(wuk::u32 state[16], const wuk::byte nonce[wuk::crypto::WukCC20_NL],
+      const wuk::byte counter[4])
 {
     state[12] = wuk::crypto::load32le(counter);
     state[13] = wuk::crypto::load32le(nonce);
@@ -50,12 +50,12 @@ state_set_iv(wU32 state[16], const wByte nonce[wuk::crypto::WukCC20_NL],
 }
 
 static inline void
-state_init(wU32 state[16],
-    const wByte key[wuk::crypto::WukCC20_KL],
-    const wByte nonce[wuk::crypto::WukCC20_NL],
-    const wU32 &counter)
+state_init(wuk::u32 state[16],
+    const wuk::byte key[wuk::crypto::WukCC20_KL],
+    const wuk::byte nonce[wuk::crypto::WukCC20_NL],
+    const wuk::u32 &counter)
 {
-    wByte ic[4] {0};
+    wuk::byte ic[4] {0};
 
     wuk::crypto::pack32le(ic, counter);
 
@@ -64,7 +64,7 @@ state_init(wU32 state[16],
 }
 
 namespace wuk::crypto {
-    ChaCha20::ChaCha20(const wByte key[WukCC20_KL], wU32 counter)
+    ChaCha20::ChaCha20(const wuk::byte key[WukCC20_KL], wuk::u32 counter)
     : counter(counter)
     {
         if (!key) {
@@ -83,18 +83,18 @@ namespace wuk::crypto {
         wuk::memory_secure(this->key, WukCC20_KL);
     }
 
-    void ChaCha20::rfc8439_crypto_stream(wByte *out, const wByte *in, wSize length,
-                                   const wByte nonce[WukCC20_NL])
+    void ChaCha20::rfc8439_crypto_stream(wuk::byte *out, const wuk::byte *in, wuk::ulong length,
+                                   const wuk::byte nonce[WukCC20_NL])
     {
         state_init(this->state, this->key, nonce, this->counter);
 
-        wU32 keystream[16] {0}; wByte *ksp = reinterpret_cast<wByte *>(keystream);
+        wuk::u32 keystream[16] {0}; wuk::byte *ksp = reinterpret_cast<wuk::byte *>(keystream);
 
-        for (wSize i = 0, ki = WukCC20_KSL; i < length; ++i, ++ki) {
+        for (wuk::ulong i = 0, ki = WukCC20_KSL; i < length; ++i, ++ki) {
             if (ki == WukCC20_KSL) {
                 memcpy(keystream, this->state, WukCC20_KSL);
 
-                for (wU32 r = 0; r < 10; ++r) {
+                for (wuk::u32 r = 0; r < 10; ++r) {
                     QUARTERROUND(keystream[0],  keystream[4],
                                  keystream[8],  keystream[12]);
                     QUARTERROUND(keystream[1],  keystream[5],
@@ -126,8 +126,8 @@ namespace wuk::crypto {
         this->counter += ((length + WukCC20_KSL - 1) / WukCC20_KSL);
     }
 
-    void ChaCha20::crypto_stream(wByte *out, const wByte *in, wSize length,
-                           const wByte nonce[WukCC20_NL])
+    void ChaCha20::crypto_stream(wuk::byte *out, const wuk::byte *in, wuk::ulong length,
+                           const wuk::byte nonce[WukCC20_NL])
     {
         if (this->use_libsodium) {
     #       ifdef LIBSODIUM_SUPPORT

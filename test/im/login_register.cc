@@ -70,7 +70,7 @@ public:
             .set_salt(std::move(salt))
             .set_hash(std::move(hash))
             .set_status(wuk::im::AccountStatus::NORMAL)
-            .set_created(time.time<double>());
+            .set_created(time.time<wuk::f64>());
 
         std::string uid_res = this->psql.query("SELECT uid FROM users where uid = $1",
                                               {info.get_uid_str()});

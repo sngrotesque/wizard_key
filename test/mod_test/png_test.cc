@@ -1,4 +1,4 @@
-#include <config/WukConfig.hh>
+#include <core/WukConfig.hh>
 #include <WukBuffer.hh>
 #include <WukMemory.hh>
 #include <WukMisc.hh>
@@ -10,7 +10,7 @@
 
 using namespace std;
 
-constexpr wByte png_head_bytes[8] = {0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A};
+constexpr wuk::byte png_head_bytes[8] = {0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A};
 
 void print_buffer_use(wuk::Buffer &buffer)
 {
@@ -23,12 +23,12 @@ wuk::Buffer get_chunk(string name, wuk::Buffer data)
 {
     wuk::Buffer result{4 + 4 + data.get_length() + 4};
 
-    result.append_number(static_cast<wU32>(data.get_length()));
+    result.append_number(static_cast<wuk::u32>(data.get_length()));
     result.append(name);
     result += data;
 
-    const wByte *p = result.get_data() + 4;
-    wU32 crc_val = crc32(0, p, result.get_length() - 4);
+    const wuk::byte *p = result.get_data() + 4;
+    wuk::u32 crc_val = crc32(0, p, result.get_length() - 4);
 
     result.append_number(crc_val);
     result.shrink_to_fit();
@@ -36,7 +36,7 @@ wuk::Buffer get_chunk(string name, wuk::Buffer data)
     return result;
 }
 
-wuk::Buffer get_ihdr_chunk(wU32 width, wU32 height, wByte bit_depth, wByte color_type)
+wuk::Buffer get_ihdr_chunk(wuk::u32 width, wuk::u32 height, wuk::byte bit_depth, wuk::byte color_type)
 {
     wuk::Buffer result{4 + 4 + 4 + 4 + 1 + 1 + 1 + 1 + 1 + 4};
 
@@ -53,14 +53,14 @@ wuk::Buffer get_ihdr_chunk(wU32 width, wU32 height, wByte bit_depth, wByte color
     // 颜色类型
     result.append_number(color_type);
     // 压缩方法
-    result.append_number(static_cast<wByte>(0));
+    result.append_number(static_cast<wuk::byte>(0));
     // 过滤器方法
-    result.append_number(static_cast<wByte>(0));
+    result.append_number(static_cast<wuk::byte>(0));
     // 扫描方法
-    result.append_number(static_cast<wByte>(0));
+    result.append_number(static_cast<wuk::byte>(0));
 
-    const wByte *p = result.get_data() + 4;
-    wU32 crc_val = crc32(0, p, result.get_length() - 4);
+    const wuk::byte *p = result.get_data() + 4;
+    wuk::u32 crc_val = crc32(0, p, result.get_length() - 4);
 
     result.append_number(crc_val);
     result.shrink_to_fit();
@@ -70,11 +70,11 @@ wuk::Buffer get_ihdr_chunk(wU32 width, wU32 height, wByte bit_depth, wByte color
 
 void test()
 {
-    const wByte *_pixel = (wByte *)"\x00\x00\x00\x00\xff\xff\xff\x00\xff\x00\xff\xff\x00\x00";
-    wU32 _pixel_length = 14;
+    const wuk::byte *_pixel = (wuk::byte *)"\x00\x00\x00\x00\xff\xff\xff\x00\xff\x00\xff\xff\x00\x00";
+    wuk::u32 _pixel_length = 14;
 
-    wU32 pixel_length = compressBound(_pixel_length);
-    wByte *pixel = wuk::m_alloc<wByte *>(pixel_length);
+    wuk::u32 pixel_length = compressBound(_pixel_length);
+    wuk::byte *pixel = wuk::m_alloc<wuk::byte *>(pixel_length);
 
     int err = compress2(pixel, reinterpret_cast<uLongf *>(&pixel_length),
                         _pixel, _pixel_length, 9);

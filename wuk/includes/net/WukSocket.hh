@@ -1,8 +1,8 @@
 #pragma once
-#include <config/WukConfig.hh>
+#include <core/WukConfig.hh>
 
 #if WUK_SUPPORT
-#include <config/WukException.hh>
+#include <core/WukException.hh>
 #include <net/WukNetwork.hh>
 #include <net/WukError.hh>
 
@@ -14,7 +14,7 @@ namespace wuk::net {
 #   ifdef WUK_PLATFORM_WINOS
     using wSocket = SOCKET;
 #   else
-    using wSocket = wI32;
+    using wSocket = wuk::i32;
 #   endif
 
 // 类类型声明
@@ -29,11 +29,11 @@ namespace wuk::net {
         addrinfo *res = nullptr;
 
     public:
-        Addrinfo(wI32 family = AF_INET, wI32 sock_type = SOCK_STREAM, wI32 proto = IPPROTO_TCP);
+        Addrinfo(wuk::i32 family = AF_INET, wuk::i32 sock_type = SOCK_STREAM, wuk::i32 proto = IPPROTO_TCP);
         ~Addrinfo();
 
     public:
-        Addrinfo &resolve(const std::string &addr, const wU16 &port);
+        Addrinfo &resolve(const std::string &addr, const wuk::u16 &port);
 
     public:
         const sockaddr *get_addr() const;
@@ -64,7 +64,7 @@ namespace wuk::net {
         socklen_t get_addrlen() const noexcept;
 
         const std::string get_address_string() const;
-        wU16 get_port() const;
+        wuk::u16 get_port() const;
     };
 
 // Socket BEGIN
@@ -72,22 +72,22 @@ namespace wuk::net {
     private:
         wSocket fd = static_cast<wSocket>(NETERROR);
 
-        wI32 m_family    = AF_INET;
-        wI32 m_sock_type = SOCK_STREAM;
-        wI32 m_proto     = IPPROTO_TCP;
+        wuk::i32 m_family    = AF_INET;
+        wuk::i32 m_sock_type = SOCK_STREAM;
+        wuk::i32 m_proto     = IPPROTO_TCP;
 
         Sockaddr m_raddr;
         Sockaddr m_laddr;
 
-        double m_timeout = 0;
+        wuk::f64 m_timeout = 0;
 
         bool is_close = false;
         bool is_blocking = true;
 
     public:
         Socket() = default;
-        Socket(wI32 family, wI32 sock_type, wI32 proto);
-        Socket(wI32 family, wI32 sock_type, wI32 proto, wSocket cur_fd);
+        Socket(wuk::i32 family, wuk::i32 sock_type, wuk::i32 proto);
+        Socket(wuk::i32 family, wuk::i32 sock_type, wuk::i32 proto, wSocket cur_fd);
         ~Socket();
 
         Socket(Socket &&other) noexcept;
@@ -107,7 +107,7 @@ namespace wuk::net {
 
     public:
         template <typename T>
-        inline void setsockopt(wI32 level, wI32 opt_name, const T &value)
+        inline void setsockopt(wuk::i32 level, wuk::i32 opt_name, const T &value)
         {
             const char *opt_ptr = reinterpret_cast<const char *>(&value);
             socklen_t opt_len = static_cast<socklen_t>(sizeof(T));
@@ -120,7 +120,7 @@ namespace wuk::net {
         }
 
         template <typename T>
-        inline T getsockopt(wI32 level, wI32 opt_name)
+        inline T getsockopt(wuk::i32 level, wuk::i32 opt_name)
         {
             T value {};
             socklen_t opt_len = static_cast<socklen_t>(sizeof(T));
@@ -139,28 +139,28 @@ namespace wuk::net {
         void set_blocking(bool blocked);
         bool get_blocking() const noexcept;
 
-        void set_timeout(double t) noexcept;
-        double get_timeout() const noexcept;
+        void set_timeout(wuk::f64 t) noexcept;
+        wuk::f64 get_timeout() const noexcept;
 
     public:
         // 阻塞套接字
-        void connect(const std::string &addr, const wU16 &port);
-        void bind(const std::string &addr, const wU16 &port);
+        void connect(const std::string &addr, const wuk::u16 &port);
+        void bind(const std::string &addr, const wuk::u16 &port);
         void listen(const socklen_t &backlog);
         Socket accept() const;
-        wSSize send(const std::string &buffer, wI32 flag = 0);
-        void sendall(const std::string &buffer, wI32 flag = 0);
-        wSSize sendto(const std::string &buffer, const Sockaddr &addr, wI32 flag = 0);
-        std::string recv(const socklen_t &length, wI32 flag = 0);
-        std::string recvfrom(const socklen_t &length, Sockaddr &addr, wI32 flag = 0);
+        wuk::ilong send(const std::string &buffer, wuk::i32 flag = 0);
+        void sendall(const std::string &buffer, wuk::i32 flag = 0);
+        wuk::ilong sendto(const std::string &buffer, const Sockaddr &addr, wuk::i32 flag = 0);
+        std::string recv(const socklen_t &length, wuk::i32 flag = 0);
+        std::string recvfrom(const socklen_t &length, Sockaddr &addr, wuk::i32 flag = 0);
 
         // 非阻塞套接字
-        void connect_ex(const std::string &addr, const wU16 &port);
+        void connect_ex(const std::string &addr, const wuk::u16 &port);
         Socket accept_ex();
-        wSSize send_ex(const std::string &buffer, wI32 flag = 0);
-        std::string recv_ex(const socklen_t &length, wI32 flag = 0);
+        wuk::ilong send_ex(const std::string &buffer, wuk::i32 flag = 0);
+        std::string recv_ex(const socklen_t &length, wuk::i32 flag = 0);
 
-        void shutdown(const wI32 &how);
+        void shutdown(const wuk::i32 &how);
         void close();
 
     public:

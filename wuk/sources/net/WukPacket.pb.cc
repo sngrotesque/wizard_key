@@ -286,11 +286,11 @@ const char* Message::_InternalParse(const char* ptr, ::_pbi::ParseContext* ctx) 
         } else
           goto handle_unusual;
         continue;
-      // double m_timestamp = 7;
+      // wuk::f64 m_timestamp = 7;
       case 7:
         if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 57)) {
-          _impl_.m_timestamp_ = ::PROTOBUF_NAMESPACE_ID::internal::UnalignedLoad<double>(ptr);
-          ptr += sizeof(double);
+          _impl_.m_timestamp_ = ::PROTOBUF_NAMESPACE_ID::internal::UnalignedLoad<wuk::f64>(ptr);
+          ptr += sizeof(wuk::f64);
         } else
           goto handle_unusual;
         continue;
@@ -385,9 +385,9 @@ uint8_t* Message::_InternalSerialize(
     target = ::_pbi::WireFormatLite::WriteUInt64ToArray(6, this->_internal_m_recipient(), target);
   }
 
-  // double m_timestamp = 7;
-  static_assert(sizeof(uint64_t) == sizeof(double), "Code assumes uint64_t and double are the same size.");
-  double tmp_m_timestamp = this->_internal_m_timestamp();
+  // wuk::f64 m_timestamp = 7;
+  static_assert(sizeof(uint64_t) == sizeof(wuk::f64), "Code assumes uint64_t and wuk::f64 are the same size.");
+  wuk::f64 tmp_m_timestamp = this->_internal_m_timestamp();
   uint64_t raw_m_timestamp;
   memcpy(&raw_m_timestamp, &tmp_m_timestamp, sizeof(tmp_m_timestamp));
   if (raw_m_timestamp != 0) {
@@ -467,9 +467,9 @@ size_t Message::ByteSizeLong() const {
     total_size += ::_pbi::WireFormatLite::UInt64SizePlusOne(this->_internal_m_recipient());
   }
 
-  // double m_timestamp = 7;
-  static_assert(sizeof(uint64_t) == sizeof(double), "Code assumes uint64_t and double are the same size.");
-  double tmp_m_timestamp = this->_internal_m_timestamp();
+  // wuk::f64 m_timestamp = 7;
+  static_assert(sizeof(uint64_t) == sizeof(wuk::f64), "Code assumes uint64_t and wuk::f64 are the same size.");
+  wuk::f64 tmp_m_timestamp = this->_internal_m_timestamp();
   uint64_t raw_m_timestamp;
   memcpy(&raw_m_timestamp, &tmp_m_timestamp, sizeof(tmp_m_timestamp));
   if (raw_m_timestamp != 0) {
@@ -525,8 +525,8 @@ void Message::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOB
   if (from._internal_m_recipient() != 0) {
     _this->_internal_set_m_recipient(from._internal_m_recipient());
   }
-  static_assert(sizeof(uint64_t) == sizeof(double), "Code assumes uint64_t and double are the same size.");
-  double tmp_m_timestamp = from._internal_m_timestamp();
+  static_assert(sizeof(uint64_t) == sizeof(wuk::f64), "Code assumes uint64_t and wuk::f64 are the same size.");
+  wuk::f64 tmp_m_timestamp = from._internal_m_timestamp();
   uint64_t raw_m_timestamp;
   memcpy(&raw_m_timestamp, &tmp_m_timestamp, sizeof(tmp_m_timestamp));
   if (raw_m_timestamp != 0) {

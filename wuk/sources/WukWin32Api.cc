@@ -35,7 +35,7 @@ bool SetWallpaper(const std::wstring& file, DWORD style) {
 void wuk::WinApi::get_error() noexcept
 {
     // return static_cast<wuk::Error>(GetLastError());
-    wU32 last_error_code = GetLastError();
+    wuk::u32 last_error_code = GetLastError();
 
     this->err_code = static_cast<wuk::Error>(last_error_code);
     wuk::memory_zero(this->err_msg, sizeof(this->err_msg));
@@ -62,7 +62,7 @@ POINT wuk::WinApi::get_cursor_pos()
     return m;
 }
 
-void wuk::WinApi::set_cursor_pos(wI32 x, wI32 y) const noexcept
+void wuk::WinApi::set_cursor_pos(wuk::i32 x, wuk::i32 y) const noexcept
 {
     SetCursorPos(x, y);
 }

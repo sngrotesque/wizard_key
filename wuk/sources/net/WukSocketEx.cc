@@ -8,12 +8,12 @@ enum class IOType {
     RECV
 };
 
-timeval create_timeval(double timeout)
+timeval create_timeval(wuk::f64 timeout)
 {
     timeval tv {0};
 
-    double int_part{0};
-    double float_part{0};
+    wuk::f64 int_part{0};
+    wuk::f64 float_part{0};
 
     float_part = modf(timeout, &int_part);
 
@@ -65,7 +65,7 @@ T sock_call_ex( wuk::net::Socket &fd,
                 FD_SET(fd.get_fd(), &fds);
 
                 timeval tv = create_timeval(fd.get_timeout());
-                wI32 select_ret = 0;
+                wuk::i32 select_ret = 0;
                 switch (io_type) {
                     case IOType::SEND:
                     case IOType::CONNECT:
@@ -85,7 +85,7 @@ T sock_call_ex( wuk::net::Socket &fd,
                     }
                     result = func(std::forward<Args>(args)...);
                     if (result == _res_err) {
-                        wI32 err_code = wuk::net::SystemError::code();
+                        wuk::i32 err_code = wuk::net::SystemError::code();
                         throw wuk::Exception(err_code, func_name,
                             wuk::net::SystemError::message(err_code));
                     }
@@ -93,7 +93,7 @@ T sock_call_ex( wuk::net::Socket &fd,
                     throw wuk::Exception(wuk::Error::ERR, func_name,
                         "socket timeout.");
                 } else if (select_ret == NETERROR) {
-                    wI32 err_code = wuk::net::SystemError::code();
+                    wuk::i32 err_code = wuk::net::SystemError::code();
                     throw wuk::Exception(err_code, func_name,
                         wuk::net::SystemError::message(err_code));
                 }
@@ -111,7 +111,7 @@ T sock_call_ex( wuk::net::Socket &fd,
 }
 
 namespace wuk::net {
-    void Socket::connect_ex(const std::string& addr, const wU16& port)
+    void Socket::connect_ex(const std::string& addr, const wuk::u16& port)
     {
         Addrinfo info(this->m_family, this->m_sock_type, this->m_proto);
         info.resolve(addr, port);
@@ -121,11 +121,11 @@ namespace wuk::net {
             return ::connect(this->fd, addr, addrlen);
         };
 
-        wI32 err = sock_call_ex<wI32>(*this, "wuk::net::Socket::connect_ex",
+        wuk::i32 err = sock_call_ex<wuk::i32>(*this, "wuk::net::Socket::connect_ex",
                 connect_timeout, IOType::CONNECT, info.get_addr(), info.get_addrlen());
 
         if (err == NETERROR) {
-            wI32 err_code = SystemError::code();
+            wuk::i32 err_code = SystemError::code();
             throw wuk::Exception(err_code, "wuk::net::Socket::connect_ex",
                 SystemError::message(err_code));
         }
@@ -147,7 +147,7 @@ namespace wuk::net {
                 accept_timeout, IOType::ACCEPT, client.set_addr(), client.set_addrlen());
 
         if (client_sock == static_cast<wSocket>(NETERROR)) {
-            wI32 err_code = SystemError::code();
+            wuk::i32 err_code = SystemError::code();
             throw wuk::Exception(err_code, "wuk::net::Socket::accept_ex",
                 SystemError::message(err_code));
         }
@@ -158,18 +158,18 @@ namespace wuk::net {
         return new_sock;
     }
 
-    wSSize Socket::send_ex(const std::string &buffer, wI32 flag)
+    wuk::ilong Socket::send_ex(const std::string &buffer, wuk::i32 flag)
     {
         auto send_timeout = [&](const std::string &buffer)
         {
             return ::send(this->fd, buffer.c_str(), buffer.length(), flag);
         };
 
-        wSSize sent = sock_call_ex<wSSize>(*this, "wuk::net::Socket::send_ex",
+        wuk::ilong sent = sock_call_ex<wuk::ilong>(*this, "wuk::net::Socket::send_ex",
                 send_timeout, IOType::SEND, buffer);
 
         if (sent == NETERROR) {
-            wI32 err_code = SystemError::code();
+            wuk::i32 err_code = SystemError::code();
             throw wuk::Exception(err_code, "wuk::net::Socket::send_ex",
                 SystemError::message(err_code));
         }
@@ -177,7 +177,7 @@ namespace wuk::net {
         return sent;
     }
 
-    std::string Socket::recv_ex(const socklen_t &length, wI32 flag)
+    std::string Socket::recv_ex(const socklen_t &length, wuk::i32 flag)
     {
         auto recv_timeout = [&](std::string &buffer)
         {
@@ -185,11 +185,11 @@ namespace wuk::net {
         };
 
         std::string buffer(length, '\0');
-        wSSize received = sock_call_ex<wSSize>(*this, "wuk::net::Socket::recv_ex",
+        wuk::ilong received = sock_call_ex<wuk::ilong>(*this, "wuk::net::Socket::recv_ex",
                 recv_timeout, IOType::RECV, buffer);
 
         if (received == NETERROR) {
-            wI32 err_code = SystemError::code();
+            wuk::i32 err_code = SystemError::code();
             throw wuk::Exception(err_code, "wuk::net::Socket::recv_ex",
                 SystemError::message(err_code));
         }

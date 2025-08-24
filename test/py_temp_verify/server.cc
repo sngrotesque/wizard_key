@@ -28,9 +28,9 @@ static void log(const std::string &msg)
 
 static void fd_send(wuk::net::Socket &fd, const std::string &data)
 {
-    wU32 len = htonl(static_cast<wU32>(data.size()));
-    char length_array[sizeof(wU32)] = {0};
-    memcpy(length_array, &len, sizeof(wU32));
+    wuk::u32 len = htonl(static_cast<wuk::u32>(data.size()));
+    char length_array[sizeof(wuk::u32)] = {0};
+    memcpy(length_array, &len, sizeof(wuk::u32));
 
     fd.send(std::string(length_array, 4));
     fd.send(data);
@@ -105,7 +105,7 @@ static void handle_client(wuk::net::Socket server_fd, wuk::net::Socket fd, std::
     remove_client();
 }
 
-static void start_server(const std::string &host = "0.0.0.0", wU16 port = 47777)
+static void start_server(const std::string &host = "0.0.0.0", wuk::u16 port = 47777)
 {
     wuk::net::Socket server_fd(AF_INET, SOCK_STREAM, IPPROTO_TCP);
 

@@ -1,10 +1,10 @@
 #include <WukPadding.hh>
 
-#include <config/WukException.hh>
+#include <core/WukException.hh>
 #include <WukMemory.hh>
 #include <WukRandom.hh>
 
-static inline void throw_error(const void *data, wSize length, wU32 bs, const char *fn)
+static inline void throw_error(const void *data, wuk::ulong length, wuk::u32 bs, const char *fn)
 {
     if (!data || !length) {
         throw wuk::Exception(wuk::Error::NPTR, fn,
@@ -16,7 +16,7 @@ static inline void throw_error(const void *data, wSize length, wU32 bs, const ch
     }
 }
 
-static inline wSize dynamic_align(wSize x, wSize alignment)
+static inline wuk::ulong dynamic_align(wuk::ulong x, wuk::ulong alignment)
 {
     if ((x & (alignment - 1)) == 0) {
         return x;
@@ -24,45 +24,45 @@ static inline wSize dynamic_align(wSize x, wSize alignment)
     return (x + alignment - 1) & ~(alignment - 1);
 }
 
-wByte *wuk::pkcs7_pad(const wByte *data, wSize &length, wU32 blockSize)
+wuk::byte *wuk::pkcs7_pad(const wuk::byte *data, wuk::ulong &length, wuk::u32 blockSize)
 {
     throw_error(data, length, blockSize, "wuk::pkcs7_pad");
 
-    wU32 padLen = blockSize - length % blockSize;
-    wSize totalLen = dynamic_align(length, blockSize);
+    wuk::u32 padLen = blockSize - length % blockSize;
+    wuk::ulong totalLen = dynamic_align(length, blockSize);
 
-    wByte *padded = wuk::m_alloc<wByte *>(totalLen);
+    wuk::byte *padded = wuk::m_alloc<wuk::byte *>(totalLen);
     if (!padded) {
         wuk::Exception(wuk::Error::MEMORY, "wuk::pkcs7_pad",
             "Failed to allocate memory for padded.");
     }
 
     memcpy(padded, data, length);
-    memset(padded + length, static_cast<wByte>(padLen), padLen);
+    memset(padded + length, static_cast<wuk::byte>(padLen), padLen);
 
     length = totalLen;
     return padded;
 }
 
-wByte *wuk::pkcs7_unpad(const wByte *data, wSize &length)
+wuk::byte *wuk::pkcs7_unpad(const wuk::byte *data, wuk::ulong &length)
 {
     throw_error(data, length, 0, "wuk::pkcs7_unpad");
 
-    wU32 padLen = data[length - 1];
+    wuk::u32 padLen = data[length - 1];
     if (!padLen || padLen > length) {
         throw wuk::Exception(wuk::Error::ERR, "wuk::pkcs7_unpad",
             "Incorrect padding length");
     }
 
-    for (wSize i = length - padLen; i < length; ++i) {
+    for (wuk::ulong i = length - padLen; i < length; ++i) {
         if (data[i] != padLen) {
             throw wuk::Exception(wuk::Error::ERR, "wuk::pkcs7_unpad",
                 "Invalid PKCS#7 padding");
         }
     }
 
-    wSize unpaddedLen = length - padLen;
-    wByte *unpadded = wuk::m_alloc<wByte *>(unpaddedLen);
+    wuk::ulong unpaddedLen = length - padLen;
+    wuk::byte *unpadded = wuk::m_alloc<wuk::byte *>(unpaddedLen);
     if (!unpadded) {
         wuk::Exception(wuk::Error::MEMORY, "wuk::pkcs7_pad",
             "Failed to allocate memory for padded.");

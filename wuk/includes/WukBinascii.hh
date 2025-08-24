@@ -1,8 +1,8 @@
 #pragma once
-#include <config/WukConfig.hh>
+#include <core/WukConfig.hh>
 
 #if WUK_SUPPORT
-#include <config/WukException.hh>
+#include <core/WukException.hh>
 #include <WukBuffer.hh>
 
 namespace wuk::binascii {

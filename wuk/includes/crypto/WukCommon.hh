@@ -1,77 +1,77 @@
 #pragma once
-#include <config/WukConfig.hh>
+#include <core/WukConfig.hh>
 
 #if WUK_SUPPORT
-#include <config/WukEndianness.hh>
+#include <core/WukEndianness.hh>
 
 #ifdef LIBSODIUM_SUPPORT
 #   include <sodium.h>
 #endif
 
 namespace wuk::crypto {
-    inline wU32 rotl32(const wU32 &x, const wU32 &n)
+    inline wuk::u32 rotl32(const wuk::u32 &x, const wuk::u32 &n)
     {
         return (x << n) | (x >> (32 - n));
     }
 
-    inline wU32 rotr32(const wU32 &x, const wU32 &n)
+    inline wuk::u32 rotr32(const wuk::u32 &x, const wuk::u32 &n)
     {
         return (x >> n) | (x << (32 - n));
     }
 
-    inline wByte rotl8(const wU32 &x, const wU32 &n)
+    inline wuk::byte rotl8(const wuk::u32 &x, const wuk::u32 &n)
     {
         return (x << n) | (x >> (8 - n));
     }
 
-    inline wByte rotr8(const wU32 &x, const wU32 &n)
+    inline wuk::byte rotr8(const wuk::u32 &x, const wuk::u32 &n)
     {
         return (x >> n) | (x << (8 - n));
     }
 
     // LOAD or PACK - Little endianness
-    inline wU32 load32le(const wByte dst[4])
+    inline wuk::u32 load32le(const wuk::byte dst[4])
     {
-        wU32 w;
+        wuk::u32 w;
 #       ifdef WUK_NATIVE_LE
         memcpy(&w, dst, sizeof w);
 #       else
-        w  = ((wU32)dst[0]);
-        w |= ((wU32)dst[1] <<  8);
-        w |= ((wU32)dst[2] << 16);
-        w |= ((wU32)dst[3] << 24);
+        w  = ((wuk::u32)dst[0]);
+        w |= ((wuk::u32)dst[1] <<  8);
+        w |= ((wuk::u32)dst[2] << 16);
+        w |= ((wuk::u32)dst[3] << 24);
 #       endif
         return w;
     }
 
-    inline void pack32le(wByte dst[4], wU32 w)
+    inline void pack32le(wuk::byte dst[4], wuk::u32 w)
     {
 #       ifdef WUK_NATIVE_LE
         memcpy(dst, &w, sizeof w);
 #       else
-        dst[0] = (wByte) w; w >>= 8;
-        dst[1] = (wByte) w; w >>= 8;
-        dst[2] = (wByte) w; w >>= 8;
-        dst[3] = (wByte) w;
+        dst[0] = (wuk::byte) w; w >>= 8;
+        dst[1] = (wuk::byte) w; w >>= 8;
+        dst[2] = (wuk::byte) w; w >>= 8;
+        dst[3] = (wuk::byte) w;
 #       endif
     }
 
     // LOAD or PACK - Big endianness
-    inline wU32 load32be(const wByte dst[4])
+    inline wuk::u32 load32be(const wuk::byte dst[4])
     {
-        wU32 w;
+        wuk::u32 w;
 #       ifndef WUK_NATIVE_LE
         memcpy(&w, src, sizeof w);
 #       else
-        w  = ((wU32)dst[3]);
-        w |= ((wU32)dst[2] <<  8);
-        w |= ((wU32)dst[1] << 16);
-        w |= ((wU32)dst[0] << 24);
+        w  = ((wuk::u32)dst[3]);
+        w |= ((wuk::u32)dst[2] <<  8);
+        w |= ((wuk::u32)dst[1] << 16);
+        w |= ((wuk::u32)dst[0] << 24);
 #       endif
         return w;
     }
 
-    inline void pack32be(wByte dst[4], const wU32 &w)
+    inline void pack32be(wuk::byte dst[4], const wuk::u32 &w)
     {
 #       ifndef WUK_NATIVE_LE
         memcpy(dst, &w, sizeof w);

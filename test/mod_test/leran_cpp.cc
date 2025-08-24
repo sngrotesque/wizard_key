@@ -1,4 +1,4 @@
-#include <config/WukConfig.hh>
+#include <core/WukConfig.hh>
 
 #include <iostream>
 using namespace std;
@@ -107,7 +107,7 @@ public:
         return (this->val == other.val);
     }
 
-    wU32 get_val() const
+    wuk::u32 get_val() const
     {
         return this->val;
     }

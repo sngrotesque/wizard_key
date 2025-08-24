@@ -18,11 +18,11 @@
 * data_size长度在需要扩展的情况下应该始终与最终的data_len长度同齐；
 * （指调用后，但不要在内部使用shrink_to_fit方法）
 */
-void wuk::Buffer::expand_memory(wSize length)
+void wuk::Buffer::expand_memory(wuk::ulong length)
 {
     if (!this->data) {
         // 如果指针还未使用
-        this->data = wuk::m_alloc<wByte *>(length);
+        this->data = wuk::m_alloc<wuk::byte *>(length);
         if (!this->data) {
             throw wuk::Exception(wuk::Error::MEMORY, "wuk::Buffer::expand_memory",
                 "Failed to allocate memory for this->data.");
@@ -30,8 +30,8 @@ void wuk::Buffer::expand_memory(wSize length)
         this->data_offset = this->data;
     } else {
         // 如果指针已使用
-        wSize offset_value = this->data_offset - this->data;
-        wByte *tmp_ptr = wuk::m_realloc<wByte *>(this->data, this->data_size + length);
+        wuk::ulong offset_value = this->data_offset - this->data;
+        wuk::byte *tmp_ptr = wuk::m_realloc<wuk::byte *>(this->data, this->data_size + length);
         if (!tmp_ptr) {
             throw wuk::Exception(wuk::Error::MEMORY, "wuk::Buffer::expand_memory",
                 "Expanding memory size failed.");
@@ -50,15 +50,15 @@ void wuk::Buffer::expand_memory(wSize length)
  * @param length 需要减少的长度（非总长度），比如要减16字节，就传入16。
  * @return 无
  */
-void wuk::Buffer::shrink_memory(wSize length)
+void wuk::Buffer::shrink_memory(wuk::ulong length)
 {
     if (!this->data) {
         throw wuk::Exception(wuk::Error::NPTR, "wuk::Buffer::shrink_memory",
             "Attempt to shrink the memory space of an nullptr.");
     }
 
-    wSize offset_val = this->data_offset - this->data;
-    wByte *tmp_ptr = wuk::m_realloc<wByte *>(this->data, this->data_size - length);
+    wuk::ulong offset_val = this->data_offset - this->data;
+    wuk::byte *tmp_ptr = wuk::m_realloc<wuk::byte *>(this->data, this->data_size - length);
     if (!tmp_ptr) {
         throw wuk::Exception(wuk::Error::MEMORY, "wuk::Buffer::shrink_memory",
             "shrink memory size failed.");
@@ -76,7 +76,7 @@ void wuk::Buffer::shrink_memory(wSize length)
  * @param length 新数据的长度
  * @return 如果足够就返回True，否则False
  */
-bool wuk::Buffer::is_memory_sufficient(wSize length)
+bool wuk::Buffer::is_memory_sufficient(wuk::ulong length)
 {
     return (this->data_len + length) < this->data_size;
 }
@@ -85,9 +85,9 @@ bool wuk::Buffer::is_memory_sufficient(wSize length)
 wuk::Buffer::Buffer(const wuk::Buffer &other)
 : data_len(other.data_len), data_size(other.data_size)
 {
-    wSize offset_val = other.data_offset - other.data;
+    wuk::ulong offset_val = other.data_offset - other.data;
 
-    this->data = wuk::m_alloc<wByte *>(this->data_size);
+    this->data = wuk::m_alloc<wuk::byte *>(this->data_size);
     if (!this->data) {
         throw wuk::Exception(wuk::Error::MEMORY, "wuk::Buffer::Buffer",
             "Failed to allocate memory for this->data.");
@@ -107,7 +107,7 @@ wuk::Buffer::Buffer(wuk::Buffer &&other) noexcept
     other.data_offset = nullptr;
 }
 
-wuk::Buffer::Buffer(const wByte *content, wSize length)
+wuk::Buffer::Buffer(const wuk::byte *content, wuk::ulong length)
 : data_len(length), data_size(length)
 {
     if (!content) {
@@ -115,7 +115,7 @@ wuk::Buffer::Buffer(const wByte *content, wSize length)
             "content is nullptr.");
     }
 
-    this->data = wuk::m_alloc<wByte *>(this->data_len);
+    this->data = wuk::m_alloc<wuk::byte *>(this->data_len);
     if (!this->data) {
         throw wuk::Exception(wuk::Error::MEMORY, "wuk::Buffer::Buffer",
             "Failed to allocate memory for this->data.");
@@ -125,10 +125,10 @@ wuk::Buffer::Buffer(const wByte *content, wSize length)
     this->data_offset = this->data + length;
 }
 
-wuk::Buffer::Buffer(wSize memory_size)
+wuk::Buffer::Buffer(wuk::ulong memory_size)
 : data_len(), data_size(memory_size)
 {
-    this->data = wuk::m_alloc<wByte *>(this->data_size);
+    this->data = wuk::m_alloc<wuk::byte *>(this->data_size);
     if (!this->data) {
         throw wuk::Exception(wuk::Error::MEMORY, "wuk::Buffer::Buffer",
             "Failed to allocate memory for this->data.");
@@ -140,7 +140,7 @@ wuk::Buffer::Buffer(wSize memory_size)
 }
 
 wuk::Buffer::Buffer(const std::string &content)
-: Buffer(reinterpret_cast<const wByte *>(content.c_str()), content.size())
+: Buffer(reinterpret_cast<const wuk::byte *>(content.c_str()), content.size())
 {
     
 }
@@ -159,7 +159,7 @@ wuk::Buffer &wuk::Buffer::operator=(const wuk::Buffer &other)
     this->data_len = other.data_len;
     this->data_size = other.data_size;
 
-    this->data = wuk::m_alloc<wByte *>(this->data_size);
+    this->data = wuk::m_alloc<wuk::byte *>(this->data_size);
     if (!this->data) {
         throw wuk::Exception(wuk::Error::MEMORY, "wuk::Buffer::operator=",
             "Failed to allocate memory for this->data.");
@@ -196,7 +196,7 @@ wuk::Buffer &wuk::Buffer::operator=(const std::string &other_string)
     this->data_len = other_string.length();
     this->data_size = other_string.size();
 
-    this->data = wuk::m_alloc<wByte *>(this->data_size);
+    this->data = wuk::m_alloc<wuk::byte *>(this->data_size);
     if (!this->data) {
         throw wuk::Exception(wuk::Error::MEMORY, "wuk::Buffer::operator=",
             "Failed to allocate memory for this->data.");
@@ -214,7 +214,7 @@ wuk::Buffer &wuk::Buffer::operator=(std::string &&other_string)
     this->data_len = other_string.length();
     this->data_size = other_string.size();
 
-    this->data = wuk::m_alloc<wByte *>(this->data_size);
+    this->data = wuk::m_alloc<wuk::byte *>(this->data_size);
     if (!this->data) {
         throw wuk::Exception(wuk::Error::MEMORY, "wuk::Buffer::operator=",
             "Failed to allocate memory for this->data.");
@@ -260,7 +260,7 @@ bool wuk::Buffer::operator==(const wuk::Buffer &other)
         return false;
     }
 
-    for (wSize i = 0; i < this->data_len; ++i) {
+    for (wuk::ulong i = 0; i < this->data_len; ++i) {
         if (this->data[i] != other.data[i]) {
             return false;
         }
@@ -302,7 +302,7 @@ bool wuk::Buffer::is_empty() const noexcept
  * @param length 将要写入的数据内容的长度
  * @return 指向内部数据内容结尾的指针
  */
-wByte *wuk::Buffer::append_write(wSize length)
+wuk::byte *wuk::Buffer::append_write(wuk::ulong length)
 {
     if (!this->is_memory_sufficient(length)) {
         this->expand_memory(length);
@@ -314,7 +314,7 @@ wByte *wuk::Buffer::append_write(wSize length)
     return this->data_offset - length;
 }
 
-void wuk::Buffer::write(const wByte *content, wSize length)
+void wuk::Buffer::write(const wuk::byte *content, wuk::ulong length)
 {
     if (!content) {
         throw wuk::Exception(wuk::Error::NPTR, "wuk::Buffer::write",
@@ -333,11 +333,11 @@ void wuk::Buffer::write(const wByte *content, wSize length)
 
 void wuk::Buffer::write(std::string other_string)
 {
-    this->write(reinterpret_cast<const wByte *>(other_string.c_str()),
+    this->write(reinterpret_cast<const wuk::byte *>(other_string.c_str()),
                 other_string.size());
 }
 
-void wuk::Buffer::append(const wByte *content, wSize length)
+void wuk::Buffer::append(const wuk::byte *content, wuk::ulong length)
 {
     if (!content) {
         throw wuk::Exception(wuk::Error::NPTR, "wuk::Buffer::append",
@@ -361,7 +361,7 @@ void wuk::Buffer::append(const std::string content)
             "the content is empty.");
     }
 
-    this->append(reinterpret_cast<const wByte *>(content.c_str()),
+    this->append(reinterpret_cast<const wuk::byte *>(content.c_str()),
                 content.size());
 }
 
@@ -374,7 +374,7 @@ void wuk::Buffer::shrink_to_fit()
 }
 
 //////////////////////////////////////////////////////////////////////
-const wByte *wuk::Buffer::get_data() const noexcept
+const wuk::byte *wuk::Buffer::get_data() const noexcept
 {
     return this->data;
 }
@@ -384,12 +384,12 @@ const char *wuk::Buffer::get_cstr() const noexcept
     return reinterpret_cast<const char *>(this->data);
 }
 
-wSize wuk::Buffer::get_length() const noexcept
+wuk::ulong wuk::Buffer::get_length() const noexcept
 {
     return this->data_len;
 }
 
-wSize wuk::Buffer::get_size() const noexcept
+wuk::ulong wuk::Buffer::get_size() const noexcept
 {
     return this->data_size;
 }

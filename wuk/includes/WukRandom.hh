@@ -1,5 +1,5 @@
 #pragma once
-#include <config/WukConfig.hh>
+#include <core/WukConfig.hh>
 
 #if WUK_SUPPORT
 #include <random>
@@ -18,11 +18,11 @@ namespace wuk {
         }
 
     public:
-        wSize rand();
-        wSize randint(wSize min, wSize max);
+        wuk::ulong rand();
+        wuk::ulong randint(wuk::ulong min, wuk::ulong max);
 
-        void bytes(wByte *buffer, wSize length);
-        std::string bytes(wU32 length);
+        void bytes(wuk::byte *buffer, wuk::ulong length);
+        std::string bytes(wuk::u32 length);
     };
 }
 
