@@ -52,7 +52,7 @@ python3 make.py test\test.cc
 
 ### 密码学
  - OP4 加密算法。
- - ChaCha20-Poly1305（RFC 8439）实现。
+ - ChaCha20（RFC 8439）实现。
  - SHA-2 和 SHA-3 系列哈希函数。
  - Base64 编码/解码。
 
