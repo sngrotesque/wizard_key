@@ -18,7 +18,7 @@
 
 namespace wuk {
     template <typename T>
-    void reversal_array(T *buffer, wuk::ulong length)
+    inline void reversal_array(T *buffer, wuk::ulong length)
     {
         for (wuk::ulong i = 0; i < (length / 2); ++i) {
             T tmp = buffer[i];

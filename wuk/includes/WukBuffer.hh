@@ -14,14 +14,11 @@
 namespace wuk {
     class LIBWUK_API Buffer {
     private: // 私有成员
-        wuk::byte *data = nullptr;
+        wuk::byte *data        = nullptr;
+        wuk::byte *data_offset = nullptr; // 偏移量，应永远等于data + data_len。
 
-        // 在当前已申请空间的情况下写入数据时使用（指向数据末端用于追加写入）
-        // 可以简单理解为这个指针指向的位置永远必须是`data + data_len`。
-        wuk::byte *data_offset = nullptr;
-
-        wuk::ulong data_len  = 0; // 代表实际使用长度
-        wuk::ulong data_size = 0; // 代表已申请的内存空间长度
+        wuk::ulong data_len    = 0; // 代表实际使用长度
+        wuk::ulong data_size   = 0; // 代表已申请的内存空间长度
 
     private: // 私有方法
         // 用于增加可用内存大小

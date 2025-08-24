@@ -6,18 +6,18 @@
 #include <cerrno>
 
 namespace wuk {
-    typedef enum : wuk::i32 {
+    enum class Error {
         OK     = 0, // 一切正常，无异常
         ERR    = 1, // 一切暂时无法定义的异常
         NPTR   = 2, // 调用空指针异常
         NODAT  = 3, // 空数据异常
         MEMORY = 4, // 内存管理异常
         FNOTF  = 5, // 文件未找到（File not found）
-    } Error;
+    };
 
     class LIBWUK_API Exception {
     private:
-        wuk::i32 code {wuk::Error::OK};
+        wuk::i32    code = 0;
         std::string func;
         std::string msg;
         std::string err_msg;
@@ -41,7 +41,7 @@ namespace wuk {
 
     public:
         template <typename T>
-        Exception(T code, const std::string &function, const std::string &message)
+        Exception(const T &code, const std::string &function, const std::string &message)
         {
             this->set(static_cast<wuk::i32>(code), function, message);
         }
