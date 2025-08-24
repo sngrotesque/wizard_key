@@ -7,7 +7,7 @@
  - [命名规范](#命名规范)
 
 ### ⚙️ 核心模块 (Core)
- - [WukConfig.hh](#corewukconfighh)
+ - [`WukConfig.hh`](#corewukconfighh)
    - [C++ 标准宏](#c标准宏说明)
    - [编译器宏](#编译器宏说明)
    - [操作系统宏](#操作系统宏说明)
@@ -16,35 +16,45 @@
    - [函数定义](#函数定义wukconfig)
      - [wuk::min](#wukmin)
      - [wuk::max](#wukmax)
- - [WukEndianness.hh](#corewukendiannesshh)
+ - [`WukEndianness.hh`](#corewukendiannesshh)
    - [宏说明](#端序宏说明)
    - [函数定义](#函数定义wukendianness)
      - [wuk::reversal_array](#wukreversal_array)
- - [WukException.hh](#corewukexceptionhh)
+ - [`WukException.hh`](#corewukexceptionhh)
 
 ### 🔐 加密模块 Crypto（待补充）
-- `WukOP4.hh`：OP4 算法定义
-- `WukSSC.hh`：流密码 SSC
-- `WukHash.hh`：哈希工具封装
-- `WukChaCha.hh`：ChaCha20-Poly1305 支持
+ - `WukChaCha20.hh`：ChaCha20 支持。
+ - `WukCommon.hh`：通用加密库支持。
+ - `WukHash.hh`：哈希工具封装。
+ - `WukOP4.hh`：OP4 算法定义。
+
+### 💌 IM模块（待补充）
+ - `WukIM.hh`：即时通讯软件框架。
+ - `WukPsql.hh`：`libpq`库的C++封装。FUCK LIBPQXX。
 
 ### 🌐 网络模块 Net（待补充）
-- `WukSocket.hh`：Socket 封装
-- `WukSSL.hh`：SSL 通信支持
-- `WukBuffer.hh`：网络缓冲区
+ - `WukError.hh`：网络库错误处理。
+ - `WukNetwork.hh`：网络库通用头文件。
+ - `WukPacket.hh`：网络包协议。
+ - `WukSocket.hh`：Socket 封装。
 
-### 🧩 工具模块 Utils（待补充）
-- `WukBinascii.hh`：Base64 / Hex 编码
-- `WukStruct.hh`：结构体打包工具
-- `WukColor.hh`：终端颜色宏
+### 🔧 工具模块 Utils（待补充）
+ - `bytes.hh`：二进制与十六进制串互转的底层支持。
+ - `color.hh`：终端颜色宏。
 
-### 🧪 异常与调试
-- `WukException.hh`：统一异常类
-- `WukDebug.hh`：调试辅助宏（如有）
-
-### 📦 构建与配置
-- `make.py`：构建脚本说明
-- `config/wuk.hpp`
+### 🧩 普通模块（待补充）
+ - `WukBase64.hh`：Base64 编码。
+ - `WukBinascii.hh`：Hex 编码。
+ - `WukBuffer.hh`：网络缓冲区。
+ - `WukHexdump.hh`：Hexdump 工具。
+ - `WukMemory.hh`：内存管理相关。
+ - `WukMisc.hh`：杂项工具，比如打印数据。
+ - `WukPadding.hh`：填充算法，后续考虑移除（因加密算法使用流密码算法）。
+ - `WukPng.hh`：基于PNG图像的原理而编写的一个PNG解析和处理库（不依赖于其他库，如`libpng`）。
+ - `WukRandom.hh`：随机数，提供伪随机数和密码学安全随机数。
+ - `WukSIMD.hh`：SIMD指令函数和类型的简易封装（不考虑使用如`xsimd`库）。
+ - `WukTime.hh`：时间相关。
+ - `WukWin32Api.hh`：Windows API相关，后续考虑移除或重新封装。
 
 ---
 
