@@ -1,12 +1,24 @@
 # The Wizard's Universal Key API
 > 用于安全、可扩展、跨平台开发的模块化C++框架。
 
-### 💥此库最低支持C++17标准💥
+## 目录
+### 项目概览
+ - [关于此项目](#关于)
+ - [命名规范](#命名规范)
+### 核心模块 (Core)
+ - [WukConfig.hh](#corewukconfighh)
+
+
+## 关于
+
+💥此库最低支持C++17标准💥
 
 每个模块都包含在 **wuk** 命名空间内，对于子项（如 **Crypto** ）会被包含在它自身的命名空间内（比如`wuk::crypto`）。
 
 目前还保留了如`wByte` / `wSize` / `wU32` 在内的旧类型声明，请不要在库中继续使用了，因为这些旧类型会在未来的版本中被移除。  
 请使用 `wuk::byte` / `wuk::ulong` / `wuk::u32` 等新类型替代旧类型。
+
+## 命名规范
 
 对于每个库文件的命名，应遵循`Wuk[xxx]`这样的命名方式，比如我有一个`Duck`功能，那么头文件应该是`WukDuck.hh`，源文件应该是`WukDuck.cc`。  
 这样做的目的是为了将来在引用的时候不至于导致编译器匹配了错误的头文件和源文件。
@@ -70,12 +82,9 @@
 12. **wuk::f32**   - 这是一个`float`类型，此为了简化写法和统一类型。
 13. **wuk::f64**   - 这是一个`double`类型，此为了简化写法和统一类型。
 
-### 函数定义
+### 函数定义WukConfig
 
-#### **wuk::min**
-> 用于比较两个值的大小。
-
- - 声明
+#### wuk::min
 
 ```cpp
 template <typename T>
@@ -84,6 +93,8 @@ inline const T &wuk::min(
     const T &y
 );
 ```
+
+> 用于比较两个值的大小。
 
 - 参数
 
@@ -98,9 +109,6 @@ inline const T &wuk::min(
 返回最小的那个值。
 
 #### **wuk::max**
-> 用于比较两个值的大小。
-
- - 声明
 
 ```cpp
 template <typename T>
@@ -109,6 +117,8 @@ inline const T &wuk::max(
     const T &y
 );
 ```
+
+> 用于比较两个值的大小。
 
 - 参数
 
@@ -133,12 +143,9 @@ inline const T &wuk::max(
 2. **WUK_NATIVE_BE**  
     这是一个大端序宏，如果定义了此宏，说明当前设备是大端序。
 
-### 函数定义
+### 函数定义WukEndianness
 
 #### **wuk::reversal_array**
-> 这是一个翻转序列的函数。后续考虑移除。
-
- - 声明
 
 ```cpp
 template <typename T>
@@ -147,6 +154,8 @@ void wuk::reversal_array(
     wuk::ulong length
 );
 ```
+
+> 这是一个翻转序列的函数。后续考虑移除。
 
  - 参数
 
