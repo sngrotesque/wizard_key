@@ -2,12 +2,51 @@
 > 用于安全、可扩展、跨平台开发的模块化C++框架。
 
 ## 目录
-### 项目概览
+### 🧱 项目概览
  - [关于此项目](#关于)
  - [命名规范](#命名规范)
-### 核心模块 (Core)
- - [WukConfig.hh](#corewukconfighh)
 
+### ⚙️ 核心模块 (Core)
+ - [WukConfig.hh](#corewukconfighh)
+   - [C++ 标准宏](#c标准宏说明)
+   - [编译器宏](#编译器宏说明)
+   - [操作系统宏](#操作系统宏说明)
+   - [符号接口宏](#符号接口宏)
+   - [类型定义](#类型定义)
+   - [函数定义](#函数定义wukconfig)
+     - [wuk::min](#wukmin)
+     - [wuk::max](#wukmax)
+ - [WukEndianness.hh](#corewukendiannesshh)
+   - [宏说明](#端序宏说明)
+   - [函数定义](#函数定义wukendianness)
+     - [wuk::reversal_array](#wukreversal_array)
+ - [WukException.hh](#corewukexceptionhh)
+
+### 🔐 加密模块 Crypto（待补充）
+- `WukOP4.hh`：OP4 算法定义
+- `WukSSC.hh`：流密码 SSC
+- `WukHash.hh`：哈希工具封装
+- `WukChaCha.hh`：ChaCha20-Poly1305 支持
+
+### 🌐 网络模块 Net（待补充）
+- `WukSocket.hh`：Socket 封装
+- `WukSSL.hh`：SSL 通信支持
+- `WukBuffer.hh`：网络缓冲区
+
+### 🧩 工具模块 Utils（待补充）
+- `WukBinascii.hh`：Base64 / Hex 编码
+- `WukStruct.hh`：结构体打包工具
+- `WukColor.hh`：终端颜色宏
+
+### 🧪 异常与调试
+- `WukException.hh`：统一异常类
+- `WukDebug.hh`：调试辅助宏（如有）
+
+### 📦 构建与配置
+- `make.py`：构建脚本说明
+- `config/wuk.hpp`
+
+---
 
 ## 关于
 
@@ -137,7 +176,7 @@ inline const T &wuk::max(
 描述：这是libwuk库用于检测当前环境是否为小端序的模块。
 后续可能考虑由使用者决定当前平台端序。
 
-### 宏说明
+### 端序宏说明
 1. **WUK_NATIVE_LE**  
     这是一个小端序宏，如果定义了此宏，说明当前设备是小端序。
 2. **WUK_NATIVE_BE**  
