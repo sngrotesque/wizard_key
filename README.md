@@ -33,7 +33,7 @@ python3 make.py [test_file] [complier paramater]
 python3 make.py test\test.cc
 ```
 
-对于源文件的包含，请查看[make.py](make.py)中 **main** 函数的部分。
+对于源文件的包含，请查看[make.py](make.py#L91)中 **main** 函数的部分。
 
 ## 文档
  - API参考：详细文档内容可在 [API.md](API.md) 中找到。

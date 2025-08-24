@@ -16,7 +16,7 @@
 
 # Core （核心头文件）
 
-## [WukConfig.hh](wuk/includes/core/WukConfig.hh)
+## [core/WukConfig.hh](wuk/includes/core/WukConfig.hh)
 
 描述：这是整个libwuk库的核心，包含了类型定义，编译器宏判断，操作系统宏判断，C++标准判断，以及符号接口宏。
 
@@ -122,7 +122,7 @@ inline const T &wuk::max(
 
 返回最大的那个值。
 
-## [WukEndianness.hh](wuk/includes/core/WukEndianness.hh)
+## [core/WukEndianness.hh](wuk/includes/core/WukEndianness.hh)
 
 描述：这是libwuk库用于检测当前环境是否为小端序的模块。
 后续可能考虑由使用者决定当前平台端序。
@@ -160,6 +160,6 @@ void wuk::reversal_array(
 
 无。
 
-## [WukException.hh](../wuk/includes/core/WukException.hh)
+## [core/WukException.hh](../wuk/includes/core/WukException.hh)
 
 描述：这是一个异常处理相关的头文件，覆盖整个库的异常类型。
