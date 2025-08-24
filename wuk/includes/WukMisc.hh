@@ -2,7 +2,7 @@
 #include <core/WukConfig.hh>
 
 #if WUK_SUPPORT
-#include <core/WukColor.hh>
+#include <utils/color.hh>
 #include <string>
 
 namespace wuk::misc {
