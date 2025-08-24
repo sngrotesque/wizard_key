@@ -13,6 +13,7 @@ namespace wuk {
         NODAT  = 3, // 空数据异常
         MEMORY = 4, // 内存管理异常
         FNOTF  = 5, // 文件未找到（File not found）
+        FTOFO  = 6, // 文件无法打开
     };
 
     class LIBWUK_API Exception {
