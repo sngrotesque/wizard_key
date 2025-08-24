@@ -5,12 +5,9 @@
 ## v0.9 更新内容
 
 1. 重新以现代化的方式优化了整体代码并移除了部分“远古”代码。
-
 2. 设计了 [OP4 (four fundamental operations)](wuk/includes/crypto/WukOP4.hh) 加密算法。
-
-3. 重新以现代化的标准封装了Socket类（用于未来IM的开发以及彻底替代原先`v0.8`版本时期的屎山代码）；  
-   采用 [Protobuf](https://protobuf.dev/) 实现了网络包模块；
-
+3. 重新以现代化的标准封装了Socket类（用于未来IM的开发以及彻底替代原先`v0.8`版本时期的屎山代码）。  
+   采用 [Protobuf](https://protobuf.dev/) 实现了网络包模块。
 4. 以通用方式封装了 [OpenSSL](https://www.openssl.org/) 库提供的哈希算法工具函数，用于更方便的调用哈希算法。  
    当前支持以下哈希算法：  
    | Algorithm | subdivision | Support. | Recommended |
@@ -25,11 +22,9 @@
    |           | SHA3-256    | Yes      | Yes         |
    |           | SHA3-384    | Yes      | Yes         |
    |           | SHA3-512    | Yes      | Yes         |
-
 5. 对于加密方式，未来网络传输时将采用 **OpenSSL** 库所提供的公钥密码/密钥交换算法，  
    对称加密算法将采用 **OP4** 或 **ChaCha20-Poly1305 (Base on Libsodium, Not OpenSSL)** 或 **AES-256-GCM** 。  
    目前将 **ChaCha20-Poly1305 (RFC 8439)** 作为主要加密算法。
-
 6. 在未来的版本将完全支持 **wuk::net::WukSocket** 库的IO多路复用功能；  
    将利用包括但不限于 **select / poll / epoll / IOCP** 等技术实现。
 
