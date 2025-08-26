@@ -4,7 +4,7 @@
 
 # C++标准宏说明
 1. **WUK_STD_CPP**  
-    此宏作为统一接口（因Visual Studio环境的__cplusplus宏需特别配置才生效），此宏避免了冲突的风险。
+    此宏作为统一接口（因[Visual Studio](https://learn.microsoft.com/zh-cn/cpp/preprocessor/predefined-macros?view=msvc-170)环境的`__cplusplus`宏需特别配置才生效），此宏避免了冲突的风险。
 
 ```cpp
 // 使用方式和`__cplusplus`或`_MSVC_LANG`无差别。
