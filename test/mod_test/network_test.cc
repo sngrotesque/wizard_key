@@ -116,11 +116,14 @@ void timeout_test(const std::string &addr, const wuk::u16 &port, wuk::f64 timeou
     wuk::net::Socket fd(AF_INET, SOCK_STREAM, IPPROTO_TCP);
     fd.set_timeout(timeout);
 
+    std::string useragent("Mozilla/5.0 (X11; Linux x86_64; rv:129.0) Gecko/20100101 Firefox/129.0");
     std::stringstream headers;
     headers << "GET / HTTP/1.1\r\n"
             << "Host: " << addr << ":" << port << "\r\n"
             << "Accept: */*\r\n"
-            << "User-Agent: Android\r\n\r\n";
+            << "Connection: close\r\n"
+            << "User-Agent: " << useragent << "\r\n"
+            << "\r\n";
 
 #   if defined(CONNECT_TEST)
     fd.connect_ex(addr, port);
@@ -169,7 +172,7 @@ int main()
 
     try {
         timeout_test("klbq.idreamsky.com", 80, 0.001);
-    } catch (wuk::Exception &e) {
+    } catch (const wuk::Exception &e) {
         std::cerr << e.what() << std::endl;
     }
 

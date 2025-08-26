@@ -93,7 +93,7 @@ void file_xcrypt(const fs::path &in_path, const fs::path &out_path, const std::s
     }
 }
 
-int main()
+void file_xcrypt_test()
 {
     fs::path plaintext("F:/Pitchers/二次元玉足/133343667_p0.png");
     fs::path ciphertext("133343667_p0.png.op4");
@@ -105,8 +105,13 @@ int main()
         file_xcrypt(ciphertext, decrypted, password, false);
     } catch (const wuk::Exception &e) {
         std::cerr << e.what() << std::endl;
-        return 1;
+        return;
     }
+}
+
+int main()
+{
+    
 
     return 0;
 }
