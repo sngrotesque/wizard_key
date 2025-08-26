@@ -16,7 +16,7 @@
 
 ```cpp
 template <typename T>
-void wuk::reversal_array(
+inline void wuk::reversal_array(
     T *buffer,
     wuk::ulong length
 );
@@ -35,3 +35,23 @@ void wuk::reversal_array(
 - 返回值
 
 > 无。
+
+2. **wuk::swap_endian**
+
+```cpp
+template <typename T>
+inline T swap_endian(
+    const T &val
+);
+```
+
+> 这是一个翻转数字端序的函数，用于替代`wuk::reversal_array`函数。
+
+- 参数
+
+`[in] val`
+> 这是一个数字类型的值。
+
+- 返回值
+
+> 成功返回切换端序后的数字；否则如果传入的非数字类型将直接返回其自身。

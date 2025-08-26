@@ -138,7 +138,7 @@ def main(verbose: bool = True):
         # 'wuk/sources/WukHexdump.cc',
         # 'wuk/sources/WukMisc.cc',
         # 'wuk/sources/WukPadding.cc',
-        'wuk/sources/WukRandom.cc',
+        # 'wuk/sources/WukRandom.cc',
     )
 
     start = time.time()

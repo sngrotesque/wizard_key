@@ -1,8 +1,8 @@
 #include <crypto/WukOP4.hh>
 #include <WukBuffer.hh>
-#include <WukRandom.hh>
 
 #include <openssl/evp.h>
+#include <openssl/rand.h>
 #ifdef WUK_PLATFORM_WINOS
 #   include <windows.h>
 #endif
@@ -29,8 +29,10 @@ std::string log_utf8(const std::string &utf8Str)
 
     std::string result(len, '\0');
     WideCharToMultiByte(CP_ACP, 0, wstr.data(), -1, result.data(), len, nullptr, nullptr);
-#   endif
     return result;
+#   else
+    return utf8Str;
+#   endif
 }
 
 wuk::Buffer derive_key(const std::string &password,
@@ -49,6 +51,10 @@ wuk::Buffer derive_key(const std::string &password,
 
 void file_xcrypt(const fs::path &in_path, const fs::path &out_path, const std::string &password, bool encrypt)
 {
+    if (!fs::exists(in_path)) {
+        throw wuk::Exception(wuk::Error::FNOTF, "file_encryption",
+            log_utf8("输入路径的文件不存在。"));
+    }
     std::fstream fin(in_path,   std::ios::in  | std::ios::binary);
     std::fstream fout(out_path, std::ios::out | std::ios::binary);
 
@@ -63,9 +69,7 @@ void file_xcrypt(const fs::path &in_path, const fs::path &out_path, const std::s
 
     // 初始化密码套件
     if (encrypt) {
-        wuk::Random random;
-        salt = random.bytes(salt_size);
-
+        RAND_bytes(salt.append_write(salt_size), salt_size);
         fout.write(salt.get_cstr(), salt.get_length());
     } else {
         fin.read(reinterpret_cast<char *>(salt.append_write(salt_size)), salt_size);
@@ -91,10 +95,10 @@ void file_xcrypt(const fs::path &in_path, const fs::path &out_path, const std::s
 
 int main()
 {
-    fs::path plaintext("F:/Pitchers/sn-cosplay/新/宣发/IMG_20241117_012921.png");
-    fs::path ciphertext("F:/Pitchers/sn-cosplay/新/宣发/IMG_20241117_012921.png.op4");
-    fs::path decrypted("F:/Pitchers/sn-cosplay/新/宣发/IMG_20241117_012921.png.op4.plain");
-    std::string password("12345678");
+    fs::path plaintext("F:/Pitchers/二次元玉足/133343667_p0.png");
+    fs::path ciphertext("133343667_p0.png.op4");
+    fs::path decrypted("133343667_p0.png.op4.png");
+    std::string password("1234567890");
 
     try {
         file_xcrypt(plaintext, ciphertext, password, true);
