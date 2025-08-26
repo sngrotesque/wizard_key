@@ -38,16 +38,16 @@ Exception(
 );
 ```
 
-#### 参数
+- 参数
 
-`[in] code`  
-: 这是错误代码，可为`wuk::Error`或整数。
+`[in] code`
+> 这是错误代码，可为`wuk::Error`或整数。
 
-`[in] function`  
-抛出异常的函数名。
+`[in] function`
+> 抛出异常的函数名。
 
-`[in] message`  
-具体错误描述信息。
+`[in] message`
+> 具体错误描述信息。
 
 ### **成员函数**
 
@@ -58,12 +58,10 @@ inline const wuk::i32 &get_err_code() const noexcept;
 > 获取当前已指定的错误代码的值。
 
 - 参数
-
-无。
+> 无。
 
 - 返回值
-
-一个`wuk::i32`类型整数，代表错误代码。
+> 一个`wuk::i32`类型整数，代表错误代码。
 
 2. **wuk::Exception::get_err_func**
 ```cpp
@@ -72,8 +70,31 @@ inline const std::string &get_err_func() const noexcept;
 > 获取当前已指定的抛出异常的函数名。
 
 - 参数
-
-无。
+> 无。
 
 - 返回值
-    一个`std::string`类型的字符串，表示函数名。
+> 一个`std::string`类型的字符串，表示函数名。
+
+3. **wuk::Exception::get_err_msg**
+```cpp
+inline const std::string &get_err_msg() const noexcept;
+```
+> 获取当前已指定的错误信息字符串。
+
+- 参数
+> 无。
+
+- 返回值
+> 一个`std::string`类型的字符串，表示错误信息。
+
+4. **wuk::Exception::get_err_func**
+```cpp
+inline const std::string &what() const noexcept;
+```
+> 获取当前完整的错误信息描述字符串。
+
+- 参数
+> 无。
+
+- 返回值
+> 一个`std::string`类型的字符串，表示完整的错误信息描述字符串。

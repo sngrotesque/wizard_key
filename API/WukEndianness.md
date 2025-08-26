@@ -9,9 +9,10 @@
 2. **WUK_NATIVE_BE**  
     这是一个大端序宏，如果定义了此宏，说明当前设备是大端序。
 
-## 函数定义WukEndianness
+# 函数定义
 
-### **wuk::reversal_array**
+### 函数
+1. **wuk::reversal_array**
 
 ```cpp
 template <typename T>
@@ -23,14 +24,14 @@ void wuk::reversal_array(
 
 > 这是一个翻转序列的函数。后续考虑移除。
 
- - 参数
+- 参数
 
-`[in, out] buffer`  
-这是一个含多元素的序列；如`std::vector`，`T []`等。
+`[in, out] buffer`
+> 这是一个含多元素的序列；如`std::vector`，`T []`等。
 
-`[in] length`  
-此序列的长度。
+`[in] length`
+> 此序列的长度。
 
- - 返回值
+- 返回值
 
-无。
+> 无。
