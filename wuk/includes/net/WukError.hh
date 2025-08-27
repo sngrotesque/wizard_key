@@ -2,6 +2,8 @@
 #include <core/WukConfig.hh>
 
 #if WUK_SUPPORT
+#include <core/WukException.hh>
+
 #if defined(WUK_PLATFORM_WINOS)
 #   include <WS2tcpip.h>
 #else

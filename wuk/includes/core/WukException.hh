@@ -3,6 +3,7 @@
 
 #if WUK_SUPPORT
 #include <sstream>
+#include <string>
 #include <cerrno>
 
 namespace wuk {

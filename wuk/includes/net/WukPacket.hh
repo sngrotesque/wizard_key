@@ -2,7 +2,7 @@
 #include <core/WukConfig.hh>
 
 #if WUK_SUPPORT
-#include <core/WukException.hh>
+#include <net/WukError.hh>
 #include <net/WukPacket.pb.h>
 #include <WukBuffer.hh>
 #include <WukTime.hh>

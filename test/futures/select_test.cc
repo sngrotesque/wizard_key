@@ -8,8 +8,6 @@
 #include <iostream>
 #include <functional>
 
-namespace wn = wuk::net;
-
 static timeval create_timeval(wuk::f64 t)
 {
     timeval tv {0};
@@ -25,10 +23,10 @@ static timeval create_timeval(wuk::f64 t)
     return tv;
 }
 
-inline void throw_exception(const std::string &func, wuk::i32 code = 0, const std::string &msg = std::string{})
+inline void throw_exception(const std::string &func, const wuk::i32 &code = 0, const std::string &msg = std::string{})
 {
-    wuk::i32 err_code = (code) ? code : wn::SystemError::code();
-    std::string err_msg = (msg.empty()) ? wn::SystemError::message(err_code) : msg;
+    wuk::i32 err_code = (code) ? code : wuk::net::SystemError::code();
+    std::string err_msg = (msg.empty()) ? wuk::net::SystemError::message(err_code) : msg;
     throw wuk::Exception(err_code, func, err_msg);
 }
 
@@ -59,7 +57,7 @@ static std::string recv_data(wuk::net::Socket &fd)
     return result;
 }
 
-void connect_test(wn::Socket &fd, const std::string &remote_addr, const wuk::u16 &remote_port, wuk::f64 timeout)
+void connect_test(wuk::net::Socket &fd, const std::string &remote_addr, const wuk::u16 &remote_port, wuk::f64 timeout)
 {
     fd.set_blocking(false);
 
@@ -69,9 +67,9 @@ void connect_test(wn::Socket &fd, const std::string &remote_addr, const wuk::u16
         timeval timeout_tv = create_timeval(timeout);
         fd_set my_fd_set;
 
-        wn::SocketError sock_err = wn::from_code(e.get_err_code());
-        if ((sock_err == wn::SocketError::WOULDBLOCK) /* Windows */ ||
-            (sock_err == wn::SocketError::INPROGRESS) /* Linux */ ) {
+        wuk::net::SocketError sock_err = wuk::net::from_code(e.get_err_code());
+        if ((sock_err == wuk::net::SocketError::WOULDBLOCK) /* Windows */ ||
+            (sock_err == wuk::net::SocketError::INPROGRESS) /* Linux */ ) {
             std::cout << "WSAEWOULDBLOCK in connect() - selecting.\n";
             while (true) {
                 FD_ZERO(&my_fd_set);
@@ -79,7 +77,7 @@ void connect_test(wn::Socket &fd, const std::string &remote_addr, const wuk::u16
 
                 wuk::i32 err = select(fd.get_fd() + 1, nullptr, &my_fd_set, nullptr, &timeout_tv);
 
-                if ((err == NETERROR) && (wn::from_code(wn::SystemError::code()) != wn::SocketError::INTR)) {
+                if ((err == NETERROR) && (wuk::net::from_code(wuk::net::SystemError::code()) != wuk::net::SocketError::INTR)) {
                     throw_exception("connect_test");
                 } else if (err != 0) {
                     wuk::i32 err = fd.getsockopt<wuk::i32>(SOL_SOCKET, SO_ERROR);
@@ -88,7 +86,7 @@ void connect_test(wn::Socket &fd, const std::string &remote_addr, const wuk::u16
                     }
                     break;
                 } else {
-                    throw_exception("connect_test", wuk::Error::OK, "timeout.");
+                    throw_exception("connect_test", static_cast<wuk::i32>(wuk::Error::OK), "timeout.");
                 }
             }
         } else {
@@ -107,7 +105,7 @@ int main()
 #   endif
 
     try {
-        wn::Socket fd(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+        wuk::net::Socket fd(AF_INET, SOCK_STREAM, IPPROTO_TCP);
         std::string local_addr("0.0.0.0");
         constexpr wuk::u16 local_port{48888};
 

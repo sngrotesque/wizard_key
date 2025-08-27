@@ -2,7 +2,6 @@
 #include <core/WukConfig.hh>
 
 #if WUK_SUPPORT
-#include <core/WukException.hh>
 #include <net/WukNetwork.hh>
 #include <net/WukError.hh>
 
