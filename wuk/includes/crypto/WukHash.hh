@@ -3,10 +3,8 @@
 
 #if WUK_SUPPORT
 #include <core/WukException.hh>
+#include <core/WukLIBSSL.hh>
 #include <WukBuffer.hh>
-#include <WukMemory.hh>
-
-#include <openssl/evp.h>
 
 namespace wuk::crypto {
     enum class HashlibType {
