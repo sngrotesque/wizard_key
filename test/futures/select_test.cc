@@ -25,8 +25,8 @@ static timeval create_timeval(wuk::f64 t)
 
 inline void throw_exception(const std::string &func, const wuk::i32 &code = 0, const std::string &msg = std::string{})
 {
-    wuk::i32 err_code = (code) ? code : wuk::net::SystemError::code();
-    std::string err_msg = (msg.empty()) ? wuk::net::SystemError::message(err_code) : msg;
+    wuk::i32 err_code = (code) ? code : wuk::net::err::system::code();
+    std::string err_msg = (msg.empty()) ? wuk::net::err::system::message(err_code) : msg;
     throw wuk::Exception(err_code, func, err_msg);
 }
 
@@ -67,7 +67,7 @@ void connect_test(wuk::net::Socket &fd, const std::string &remote_addr, const wu
         timeval timeout_tv = create_timeval(timeout);
         fd_set my_fd_set;
 
-        wuk::net::SocketError sock_err = wuk::net::from_code(e.get_err_code());
+        wuk::net::SocketError sock_err = wuk::net::err::from_code(e.get_err_code());
         if ((sock_err == wuk::net::SocketError::WOULDBLOCK) /* Windows */ ||
             (sock_err == wuk::net::SocketError::INPROGRESS) /* Linux */ ) {
             std::cout << "WSAEWOULDBLOCK in connect() - selecting.\n";
@@ -77,7 +77,7 @@ void connect_test(wuk::net::Socket &fd, const std::string &remote_addr, const wu
 
                 wuk::i32 err = select(fd.get_fd() + 1, nullptr, &my_fd_set, nullptr, &timeout_tv);
 
-                if ((err == NETERROR) && (wuk::net::from_code(wuk::net::SystemError::code()) != wuk::net::SocketError::INTR)) {
+                if ((err == NETERROR) && (wuk::net::err::from_code(wuk::net::err::system::code()) != wuk::net::SocketError::INTR)) {
                     throw_exception("connect_test");
                 } else if (err != 0) {
                     wuk::i32 err = fd.getsockopt<wuk::i32>(SOL_SOCKET, SO_ERROR);

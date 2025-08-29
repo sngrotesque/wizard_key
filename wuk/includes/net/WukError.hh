@@ -19,8 +19,8 @@
 #   endif
 #endif
 
-namespace wuk::net {
-    enum class SocketError {
+namespace wuk::net::err {
+    enum class SocketType {
         // 共有
         ACCES,           // 权限不足（EACCES / WSAEACCES）
         BADF,            // 无效文件描述符（EBADF / WSAEBADF）
@@ -85,149 +85,153 @@ namespace wuk::net {
         UNKNOWN          // 未知错误（默认 fallback）
     };
 
-    inline SocketError from_code(int err)
+    inline SocketType from_code(int err)
     {
         switch (err) {
 #           if defined(WUK_PLATFORM_WINOS)
             // Public
-            case WSAEACCES: return SocketError::ACCES;
-            case WSAEADDRINUSE: return SocketError::ADDRINUSE;
-            case WSAEADDRNOTAVAIL: return SocketError::ADDRNOTAVAIL;
-            case WSAEAFNOSUPPORT: return SocketError::AFNOSUPPORT;
-            case WSAEWOULDBLOCK: return SocketError::WOULDBLOCK;
-            case WSAEALREADY: return SocketError::ALREADY;
-            case WSAEBADF: return SocketError::BADF;
-            case WSAECONNABORTED: return SocketError::CONNABORTED;
-            case WSAECONNREFUSED: return SocketError::CONNREFUSED;
-            case WSAECONNRESET: return SocketError::CONNRESET;
-            case WSAEDESTADDRREQ: return SocketError::DESTADDRREQ;
-            case WSAEFAULT: return SocketError::FAULT;
-            case WSAEHOSTDOWN: return SocketError::HOSTDOWN;
-            case WSAEHOSTUNREACH: return SocketError::HOSTUNREACH;
-            case WSAEINPROGRESS: return SocketError::INPROGRESS;
-            case WSAEINTR: return SocketError::INTR;
-            case WSAEINVAL: return SocketError::INVAL;
-            case WSAEMFILE: return SocketError::MFILE;
-            case WSAEMSGSIZE: return SocketError::MSGSIZE;
-            case WSAENETDOWN: return SocketError::NETDOWN;
-            case WSAENETRESET: return SocketError::NETRESET;
-            case WSAENETUNREACH: return SocketError::NETUNREACH;
-            case WSAENOBUFS: return SocketError::NOBUFS;
-            case WSAENOPROTOOPT: return SocketError::NOPROTOOPT;
-            case WSAENOTCONN: return SocketError::NOTCONN;
-            case WSAENOTSOCK: return SocketError::NOTSOCK;
-            case WSAEOPNOTSUPP: return SocketError::OPNOTSUPP;
-            case WSAEPFNOSUPPORT: return SocketError::PFNOSUPPORT;
-            case WSAEPROTONOSUPPORT: return SocketError::PROTONOSUPPORT;
-            case WSAEPROTOTYPE: return SocketError::PROTOTYPE;
-            case WSAESHUTDOWN: return SocketError::SHUTDOWN;
-            case WSAETIMEDOUT: return SocketError::TIMEDOUT;
-            case WSAETOOMANYREFS: return SocketError::TOOMANYREFS;
-            case WSAEISCONN: return SocketError::ISCONN;
+            case WSAEACCES:            return SocketType::ACCES;
+            case WSAEADDRINUSE:        return SocketType::ADDRINUSE;
+            case WSAEADDRNOTAVAIL:     return SocketType::ADDRNOTAVAIL;
+            case WSAEAFNOSUPPORT:      return SocketType::AFNOSUPPORT;
+            case WSAEWOULDBLOCK:       return SocketType::WOULDBLOCK;
+            case WSAEALREADY:          return SocketType::ALREADY;
+            case WSAEBADF:             return SocketType::BADF;
+            case WSAECONNABORTED:      return SocketType::CONNABORTED;
+            case WSAECONNREFUSED:      return SocketType::CONNREFUSED;
+            case WSAECONNRESET:        return SocketType::CONNRESET;
+            case WSAEDESTADDRREQ:      return SocketType::DESTADDRREQ;
+            case WSAEFAULT:            return SocketType::FAULT;
+            case WSAEHOSTDOWN:         return SocketType::HOSTDOWN;
+            case WSAEHOSTUNREACH:      return SocketType::HOSTUNREACH;
+            case WSAEINPROGRESS:       return SocketType::INPROGRESS;
+            case WSAEINTR:             return SocketType::INTR;
+            case WSAEINVAL:            return SocketType::INVAL;
+            case WSAEMFILE:            return SocketType::MFILE;
+            case WSAEMSGSIZE:          return SocketType::MSGSIZE;
+            case WSAENETDOWN:          return SocketType::NETDOWN;
+            case WSAENETRESET:         return SocketType::NETRESET;
+            case WSAENETUNREACH:       return SocketType::NETUNREACH;
+            case WSAENOBUFS:           return SocketType::NOBUFS;
+            case WSAENOPROTOOPT:       return SocketType::NOPROTOOPT;
+            case WSAENOTCONN:          return SocketType::NOTCONN;
+            case WSAENOTSOCK:          return SocketType::NOTSOCK;
+            case WSAEOPNOTSUPP:        return SocketType::OPNOTSUPP;
+            case WSAEPFNOSUPPORT:      return SocketType::PFNOSUPPORT;
+            case WSAEPROTONOSUPPORT:   return SocketType::PROTONOSUPPORT;
+            case WSAEPROTOTYPE:        return SocketType::PROTOTYPE;
+            case WSAESHUTDOWN:         return SocketType::SHUTDOWN;
+            case WSAETIMEDOUT:         return SocketType::TIMEDOUT;
+            case WSAETOOMANYREFS:      return SocketType::TOOMANYREFS;
+            case WSAEISCONN:           return SocketType::ISCONN;
             // Private
-            case WSATYPE_NOT_FOUND: return SocketError::TYPENOTFOUND;
-            case WSAHOST_NOT_FOUND: return SocketError::HOSTNOTFOUND;
-            case WSATRY_AGAIN: return SocketError::TRYAGAIN;
-            case WSANO_RECOVERY: return SocketError::NORECOVERY;
-            case WSANO_DATA: return SocketError::NODATA;
-            case WSASYSNOTREADY: return SocketError::SYSNOTREADY;
-            case WSANOTINITIALISED: return SocketError::NOTINITIALISED;
-            case WSAENOMORE: return SocketError::NOMORE;
-            case WSAECANCELLED: return SocketError::CANCELLED;
-            case WSASERVICE_NOT_FOUND: return SocketError::SERVICENOTFOUND;
-            case WSAEREFUSED: return SocketError::REFUSED;
-            case WSAESOCKTNOSUPPORT: return SocketError::SOCKTNOSUPPORT;
-            case WSAEDISCON: return SocketError::DISCON;
+            case WSATYPE_NOT_FOUND:    return SocketType::TYPENOTFOUND;
+            case WSAHOST_NOT_FOUND:    return SocketType::HOSTNOTFOUND;
+            case WSATRY_AGAIN:         return SocketType::TRYAGAIN;
+            case WSANO_RECOVERY:       return SocketType::NORECOVERY;
+            case WSANO_DATA:           return SocketType::NODATA;
+            case WSASYSNOTREADY:       return SocketType::SYSNOTREADY;
+            case WSANOTINITIALISED:    return SocketType::NOTINITIALISED;
+            case WSAENOMORE:           return SocketType::NOMORE;
+            case WSAECANCELLED:        return SocketType::CANCELLED;
+            case WSASERVICE_NOT_FOUND: return SocketType::SERVICENOTFOUND;
+            case WSAEREFUSED:          return SocketType::REFUSED;
+            case WSAESOCKTNOSUPPORT:   return SocketType::SOCKTNOSUPPORT;
+            case WSAEDISCON:           return SocketType::DISCON;
 #           else
             // Public
-            case EACCES: return SocketError::ACCES;
-            case EADDRINUSE: return SocketError::ADDRINUSE;
-            case EADDRNOTAVAIL: return SocketError::ADDRNOTAVAIL;
-            case EAFNOSUPPORT: return SocketError::AFNOSUPPORT;
+            case EACCES:               return SocketType::ACCES;
+            case EADDRINUSE:           return SocketType::ADDRINUSE;
+            case EADDRNOTAVAIL:        return SocketType::ADDRNOTAVAIL;
+            case EAFNOSUPPORT:         return SocketType::AFNOSUPPORT;
             // 由于在现代Linux中EAGAIN始终等于EWOULDBLOCK，所以不区分具体是哪个宏了。
-            case EWOULDBLOCK: return SocketError::WOULDBLOCK;
-            case EALREADY: return SocketError::ALREADY;
-            case EBADF: return SocketError::BADF;
-            case ECONNABORTED: return SocketError::CONNABORTED;
-            case ECONNREFUSED: return SocketError::CONNREFUSED;
-            case ECONNRESET: return SocketError::CONNRESET;
-            case EDESTADDRREQ: return SocketError::DESTADDRREQ;
-            case EFAULT: return SocketError::FAULT;
-            case EHOSTDOWN: return SocketError::HOSTDOWN;
-            case EHOSTUNREACH: return SocketError::HOSTUNREACH;
-            case EINPROGRESS: return SocketError::INPROGRESS;
-            case EINTR: return SocketError::INTR;
-            case EINVAL: return SocketError::INVAL;
-            case EIO: return SocketError::IO;
-            case EISCONN: return SocketError::ISCONN;
-            case EMFILE: return SocketError::MFILE;
-            case EMSGSIZE: return SocketError::MSGSIZE;
-            case ENETDOWN: return SocketError::NETDOWN;
-            case ENETRESET: return SocketError::NETRESET;
-            case ENETUNREACH: return SocketError::NETUNREACH;
-            case ENOBUFS: return SocketError::NOBUFS;
-            case ENOPROTOOPT: return SocketError::NOPROTOOPT;
-            case ENOTCONN: return SocketError::NOTCONN;
-            case ENOTSOCK: return SocketError::NOTSOCK;
-            case EOPNOTSUPP: return SocketError::OPNOTSUPP;
-            case EPFNOSUPPORT: return SocketError::PFNOSUPPORT;
-            case EPROTONOSUPPORT: return SocketError::PROTONOSUPPORT;
-            case EPROTOTYPE: return SocketError::PROTOTYPE;
-            case ESHUTDOWN: return SocketError::SHUTDOWN;
-            case ETIMEDOUT: return SocketError::TIMEDOUT;
-            case ETOOMANYREFS: return SocketError::TOOMANYREFS;
+            case EWOULDBLOCK:          return SocketType::WOULDBLOCK;
+            case EALREADY:             return SocketType::ALREADY;
+            case EBADF:                return SocketType::BADF;
+            case ECONNABORTED:         return SocketType::CONNABORTED;
+            case ECONNREFUSED:         return SocketType::CONNREFUSED;
+            case ECONNRESET:           return SocketType::CONNRESET;
+            case EDESTADDRREQ:         return SocketType::DESTADDRREQ;
+            case EFAULT:               return SocketType::FAULT;
+            case EHOSTDOWN:            return SocketType::HOSTDOWN;
+            case EHOSTUNREACH:         return SocketType::HOSTUNREACH;
+            case EINPROGRESS:          return SocketType::INPROGRESS;
+            case EINTR:                return SocketType::INTR;
+            case EINVAL:               return SocketType::INVAL;
+            case EIO:                  return SocketType::IO;
+            case EISCONN:              return SocketType::ISCONN;
+            case EMFILE:               return SocketType::MFILE;
+            case EMSGSIZE:             return SocketType::MSGSIZE;
+            case ENETDOWN:             return SocketType::NETDOWN;
+            case ENETRESET:            return SocketType::NETRESET;
+            case ENETUNREACH:          return SocketType::NETUNREACH;
+            case ENOBUFS:              return SocketType::NOBUFS;
+            case ENOPROTOOPT:          return SocketType::NOPROTOOPT;
+            case ENOTCONN:             return SocketType::NOTCONN;
+            case ENOTSOCK:             return SocketType::NOTSOCK;
+            case EOPNOTSUPP:           return SocketType::OPNOTSUPP;
+            case EPFNOSUPPORT:         return SocketType::PFNOSUPPORT;
+            case EPROTONOSUPPORT:      return SocketType::PROTONOSUPPORT;
+            case EPROTOTYPE:           return SocketType::PROTOTYPE;
+            case ESHUTDOWN:            return SocketType::SHUTDOWN;
+            case ETIMEDOUT:            return SocketType::TIMEDOUT;
+            case ETOOMANYREFS:         return SocketType::TOOMANYREFS;
             // Private
-            case ENFILE: return SocketError::NFILE;
-            case ENOSR: return SocketError::NOSR;
-            case ENOSTR: return SocketError::NOSTR;
-            case ENOTTY: return SocketError::NOTTY;
-            case EPIPE: return SocketError::PIPE;
-            case ENOTEMPTY: return SocketError::NOTEMPTY;
-            case ENAMETOOLONG: return SocketError::NAMETOOLONG;
+            case ENFILE:               return SocketType::NFILE;
+            case ENOSR:                return SocketType::NOSR;
+            case ENOSTR:               return SocketType::NOSTR;
+            case ENOTTY:               return SocketType::NOTTY;
+            case EPIPE:                return SocketType::PIPE;
+            case ENOTEMPTY:            return SocketType::NOTEMPTY;
+            case ENAMETOOLONG:         return SocketType::NAMETOOLONG;
 #           endif
-            default: return SocketError::UNKNOWN;
+            default:                   return SocketType::UNKNOWN;
         }
     }
+}
 
-    class SystemError {
-    public:
-        // 获取当前错误码
-        static inline int code()
-        {
-#           if defined(WUK_PLATFORM_WINOS)
-            return WSAGetLastError();
-#           else
-            return errno;
-#           endif
+namespace wuk::net::err::system {
+    // 获取当前错误码
+    static inline int code()
+    {
+#       if defined(WUK_PLATFORM_WINOS)
+        return WSAGetLastError();
+#       else
+        return errno;
+#       endif
+    }
+
+    // 获取指定错误码的描述
+    static inline std::string message(int code)
+    {
+#       if defined(WUK_PLATFORM_WINOS)
+        char *msg_buf = nullptr;
+
+        DWORD len = FormatMessageA( FORMAT_MESSAGE_ALLOCATE_BUFFER |
+                                    FORMAT_MESSAGE_FROM_SYSTEM     |
+                                    FORMAT_MESSAGE_IGNORE_INSERTS,
+                                    nullptr,
+                                    code,
+                                    MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+                                    (LPSTR)&msg_buf,
+                                    0,
+                                    nullptr);
+
+        std::string result = (len && msg_buf) ? std::string(msg_buf) : "Unknown error";
+        if(msg_buf) {
+            LocalFree(msg_buf);
         }
+        return result;
+#       else
+        return std::string(strerror(code));
+#       endif
+    }
 
-        // 获取指定错误码的描述
-        static inline std::string message(int code)
-        {
-#           if defined(WUK_PLATFORM_WINOS)
-            char *msg_buf = nullptr;
-            DWORD flags = FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS;
-
-            DWORD len = FormatMessageA(flags,
-                nullptr, code, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
-                (LPSTR)&msg_buf, 0, nullptr);
-
-            std::string result = (len && msg_buf) ? std::string(msg_buf) : "Unknown error";
-            if(msg_buf) {
-                LocalFree(msg_buf);
-            }
-            return result;
-#           else
-            return std::string(strerror(code));
-#           endif
-        }
-
-        // 获取当前错误码的描述
-        static inline std::string last_message()
-        {
-            return message(code());
-        }
-    };
+    // 获取当前错误码的描述
+    static inline std::string last_message()
+    {
+        return message(code());
+    }
 }
 
 #endif

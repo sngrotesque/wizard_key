@@ -57,7 +57,7 @@ T sock_call_ex( wuk::net::Socket &fd,
         }
 
         if (result == _res_err) {
-            wuk::net::SocketError err = wuk::net::from_code(wuk::net::SystemError::code());
+            wuk::net::SocketError err = wuk::net::err::from_code(wuk::net::err::system::code());
             if (err == wuk::net::SocketError::WOULDBLOCK) {
                 // 设置select监听
                 fd_set fds;
@@ -85,17 +85,17 @@ T sock_call_ex( wuk::net::Socket &fd,
                     }
                     result = func(std::forward<Args>(args)...);
                     if (result == _res_err) {
-                        wuk::i32 err_code = wuk::net::SystemError::code();
+                        wuk::i32 err_code = wuk::net::err::system::code();
                         throw wuk::Exception(err_code, func_name,
-                            wuk::net::SystemError::message(err_code));
+                            wuk::net::err::system::message(err_code));
                     }
                 } else if (select_ret == 0) {
                     throw wuk::Exception(wuk::Error::ERR, func_name,
                         "socket timeout.");
                 } else if (select_ret == NETERROR) {
-                    wuk::i32 err_code = wuk::net::SystemError::code();
+                    wuk::i32 err_code = wuk::net::err::system::code();
                     throw wuk::Exception(err_code, func_name,
-                        wuk::net::SystemError::message(err_code));
+                        wuk::net::err::system::message(err_code));
                 }
             }
         }
@@ -125,9 +125,9 @@ namespace wuk::net {
                 connect_timeout, IOType::CONNECT, info.get_addr(), info.get_addrlen());
 
         if (err == NETERROR) {
-            wuk::i32 err_code = SystemError::code();
+            wuk::i32 err_code = err::system::code();
             throw wuk::Exception(err_code, "wuk::net::Socket::connect_ex",
-                SystemError::message(err_code));
+                err::system::message(err_code));
         }
 
         this->m_raddr.set_addr(info.get_addr(), info.get_addrlen());
@@ -147,9 +147,9 @@ namespace wuk::net {
                 accept_timeout, IOType::ACCEPT, client.set_addr(), client.set_addrlen());
 
         if (client_sock == static_cast<wSocket>(NETERROR)) {
-            wuk::i32 err_code = SystemError::code();
+            wuk::i32 err_code = err::system::code();
             throw wuk::Exception(err_code, "wuk::net::Socket::accept_ex",
-                SystemError::message(err_code));
+                err::system::message(err_code));
         }
 
         Socket new_sock(this->m_family, this->m_sock_type, this->m_proto, client_sock);
@@ -169,9 +169,9 @@ namespace wuk::net {
                 send_timeout, IOType::SEND, buffer);
 
         if (sent == NETERROR) {
-            wuk::i32 err_code = SystemError::code();
+            wuk::i32 err_code = err::system::code();
             throw wuk::Exception(err_code, "wuk::net::Socket::send_ex",
-                SystemError::message(err_code));
+                err::system::message(err_code));
         }
 
         return sent;
@@ -189,9 +189,9 @@ namespace wuk::net {
                 recv_timeout, IOType::RECV, buffer);
 
         if (received == NETERROR) {
-            wuk::i32 err_code = SystemError::code();
+            wuk::i32 err_code = err::system::code();
             throw wuk::Exception(err_code, "wuk::net::Socket::recv_ex",
-                SystemError::message(err_code));
+                err::system::message(err_code));
         }
 
         return buffer;

@@ -112,9 +112,9 @@ namespace wuk::net {
             socklen_t opt_len = static_cast<socklen_t>(sizeof(T));
             int err = ::setsockopt(this->fd, level, opt_name, opt_ptr, opt_len);
             if (err == NETERROR) {
-                int err_code = wuk::net::SystemError::code();
+                int err_code = wuk::net::err::system::code();
                 throw wuk::Exception(err_code, "wuk::net::Socket::setsockopt",
-                    wuk::net::SystemError::message(err_code).c_str());
+                    wuk::net::err::system::message(err_code).c_str());
             }
         }
 
@@ -126,9 +126,9 @@ namespace wuk::net {
             int err = ::getsockopt(this->fd, level, opt_name,
                                 reinterpret_cast<char *>(&value), &opt_len);
             if (err == NETERROR) {
-                int err_code = wuk::net::SystemError::code();
+                int err_code = wuk::net::err::system::code();
                 throw wuk::Exception(err_code, "wuk::net::Socket::getsockopt",
-                    wuk::net::SystemError::message(err_code).c_str());
+                    wuk::net::err::system::message(err_code).c_str());
             }
             return value;
         }

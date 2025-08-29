@@ -131,9 +131,9 @@ void server()
             std::cout << "timeout, exit.\n";
             return;
         } else if (ready == NETERROR) {
-            wuk::i32 err_code = wuk::net::SystemError::code();
+            wuk::i32 err_code = wuk::net::err::system::code();
             throw wuk::Exception(err_code, "func",
-                wuk::net::SystemError::message(err_code));
+                wuk::net::err::system::message(err_code));
         }
 
         if (FD_ISSET(server_fd.get_fd(), &read_fds) && server_fd.is_valid()) {
@@ -197,8 +197,8 @@ void server(int)
             std::cout << "timeout, exit.\n";
             break;
         } else if (ready == NETERROR) {
-            wuk::i32 err_code = wuk::net::SystemError::code();
-            throw wuk::Exception(err_code, "select", wuk::net::SystemError::message(err_code));
+            wuk::i32 err_code = wuk::net::err::system::code();
+            throw wuk::Exception(err_code, "select", wuk::net::err::system::message(err_code));
         }
 
         // 新连接
