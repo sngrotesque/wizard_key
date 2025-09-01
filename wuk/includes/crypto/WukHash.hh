@@ -84,7 +84,7 @@ namespace wuk::crypto {
 
         const std::string hexdigest() const noexcept
         {
-            return this->digest().hex();
+            return this->digest().to_hex();
         }
 
         HashlibType what_type() const noexcept

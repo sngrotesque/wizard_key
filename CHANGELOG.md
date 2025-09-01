@@ -27,6 +27,7 @@
    目前将 **ChaCha20-Poly1305 (RFC 8439)** 作为主要加密算法。
 6. 在未来的版本将完全支持 **wuk::net::WukSocket** 库的IO多路复用功能；  
    将利用包括但不限于 **select / poll / epoll / IOCP** 等技术实现。
+7. 修复了[wuk::Buffer](wuk/includes/WukBuffer.hh)中对于内存空间的使用问题（即`wuk::Buffer::expand_memory`会过多申请所需内存空间的问题）以及部分潜在的内存泄漏风险。
 
 ## v0.8
 1.  修改了代码文件的格式，以防止使用时与其他头文件冲突。

@@ -34,10 +34,8 @@ void test()
         {"User-Agent", UserAgentList[random.randint(0, UserAgentList.size() - 1)]}
     };
 
-    cpr::Proxies proxies = {
-        {"http", "http://127.0.0.1:1080"},
-        {"https", "http://127.0.0.1:1080"}
-    };
+    std::string proxy_addr("http://127.0.0.1:8081");
+    cpr::Proxies proxies = {{"http",  proxy_addr}, {"https", proxy_addr}};
 
     cpr::Response r = cpr::Get(
         cpr::Url{"https://i.pximg.net/img-original/img/2025/04/09/15/32/18/129121628_p0.jpg"},

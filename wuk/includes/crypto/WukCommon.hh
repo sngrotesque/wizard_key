@@ -60,8 +60,8 @@ namespace wuk::crypto {
     inline wuk::u32 load32be(const wuk::byte dst[4])
     {
         wuk::u32 w;
-#       ifndef WUK_NATIVE_LE
-        memcpy(&w, src, sizeof w);
+#       ifdef WUK_NATIVE_BE
+        memcpy(&w, dst, sizeof w);
 #       else
         w  = ((wuk::u32)dst[3]);
         w |= ((wuk::u32)dst[2] <<  8);
@@ -73,7 +73,7 @@ namespace wuk::crypto {
 
     inline void pack32be(wuk::byte dst[4], const wuk::u32 &w)
     {
-#       ifndef WUK_NATIVE_LE
+#       ifdef WUK_NATIVE_BE
         memcpy(dst, &w, sizeof w);
 #       else
         dst[0] = w >> 24;

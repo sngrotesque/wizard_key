@@ -1,5 +1,6 @@
 #include <crypto/WukOP4.hh>
 #include <crypto/WukChaCha20.hh>
+#include <crypto/WukHash.hh>
 // #include <WukBinascii.hh>
 #include <WukBuffer.hh>
 #include <WukMemory.hh>
@@ -20,21 +21,7 @@ using namespace wuk::crypto;
 using namespace wuk::misc;
 namespace fs = std::filesystem;
 
-std::string sha256(const wuk::byte *buffer, wuk::ulong length)
-{
-    EVP_MD_CTX   *md_ctx = EVP_MD_CTX_new();
-    const EVP_MD *md     = EVP_sha256();
-    wuk::byte digest[32] {0};
-
-    EVP_DigestInit_ex(md_ctx, md, nullptr);
-    EVP_DigestUpdate(md_ctx, buffer, length);
-    EVP_DigestFinal_ex(md_ctx, digest, nullptr);
-    EVP_MD_CTX_free(md_ctx);
-
-    return wuk::Buffer(digest, sizeof(digest)).hex();
-}
-
-wuk::Buffer get_key(std::string password, wuk::Buffer salt, wuk::u32 length = 32)
+wuk::Buffer derive_key(const std::string &password, const wuk::Buffer &salt, wuk::u32 length = 32)
 {
     wuk::Buffer result;
 
@@ -46,7 +33,7 @@ wuk::Buffer get_key(std::string password, wuk::Buffer salt, wuk::u32 length = 32
 
 void op4_encryption_test()
 {
-    auto keyWithNonce = get_key("12345678", {"abcdef0123456789"}, OP4_KL + OP4_NL);
+    auto keyWithNonce = derive_key("12345678", {"abcdef0123456789"}, OP4_KL + OP4_NL);
     const wuk::byte *key = keyWithNonce.get_data();
     const wuk::byte *nonce = keyWithNonce.get_data() + OP4_KL;
 
@@ -71,7 +58,7 @@ void op4_encryption_test()
     wuk::m_free(ciphertext);
 }
 
-// python make.py test/crypto_test.cc -DWUK_EXPORTS -lssl -lcrypto -march=native
+// python make.py test/crypto_test.cc -lssl -lcrypto
 
 int main()
 {

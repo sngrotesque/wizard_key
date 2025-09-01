@@ -1,4 +1,4 @@
-#include <WukBuffer.hh>
+#include <WukBufferEx.hh>
 #include <WukMisc.hh>
 #include <WukTime.hh>
 
@@ -6,7 +6,7 @@
 #include <iomanip>
 #include <new>
 
-void print_info(const wuk::Buffer &buffer)
+void print_info(wuk::BufferEx buffer)
 {
     printf("%s[I]%s data:   %p\n",
             wuk::color::fore::cyan,
@@ -25,9 +25,9 @@ void print_info(const wuk::Buffer &buffer)
 
 void method_1()
 {
-    // wuk::Buffer buffer{312};
-    wuk::Buffer buffer = std::string{"this is buffer test for std::string1.\n"};
-    wuk::Buffer text{"this is first.\n"};
+    // wuk::BufferEx buffer{312};
+    wuk::BufferEx buffer = std::string{"this is buffer test for std::string1.\n"};
+    wuk::BufferEx text{"this is first.\n"};
 
     buffer = text;
 
@@ -46,12 +46,12 @@ void method_1()
 
 void method_2()
 {
-    wuk::Buffer buffer{5};
+    wuk::BufferEx buffer{5};
     buffer.append("abc123456.");
 
     print_info(buffer);
 
-    buffer = buffer + wuk::Buffer{"'operator+() test.'"};
+    buffer = buffer + wuk::BufferEx{"'operator+() test.'"};
 
     print_info(buffer);
 
@@ -59,7 +59,7 @@ void method_2()
 
     print_info(buffer);
 
-    buffer += wuk::Buffer("operator+=() test.");
+    buffer += wuk::BufferEx("operator+=() test.");
 
     print_info(buffer);
 
@@ -68,8 +68,8 @@ void method_2()
 
 void method_3()
 {
-    wuk::Buffer buffer1{"123"};
-    wuk::Buffer buffer2{"1233"};
+    wuk::BufferEx buffer1{"123"};
+    wuk::BufferEx buffer2{"1233"};
 
     std::cout << ((buffer1 == buffer2) ? "Equal." : "Not equal.") << std::endl;
 }
@@ -78,7 +78,7 @@ void method_4()
 {
     char _1[32] = {"this is write method.\n"};
     char _2[64] = {"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"};
-    wuk::Buffer buffer{4096};
+    wuk::BufferEx buffer{4096};
 
     buffer.write(reinterpret_cast<wuk::byte *>(_1), strlen(_1));
     buffer.append("this is append method.\n");
@@ -94,7 +94,7 @@ void method_4()
 
 void method_5()
 {
-    wuk::Buffer a(10);
+    wuk::BufferEx a(10);
 
     std::cout << a.get_size() << std::endl;
 }
@@ -106,7 +106,7 @@ void method_6()
         0xff, 0xfe, 0xfd, 0xfc, 0xfb, 0xfa, 0x7f
     };
 
-    wuk::Buffer s(buf, sizeof buf);
+    wuk::BufferEx s(buf, sizeof buf);
     std::cout << s.to_hex() << std::endl;
 }
 
@@ -117,7 +117,7 @@ void method_7()
     wuk::Time time;
 
     wuk::f64 start = time.time<wuk::f64>();
-    wuk::Buffer buffer(p, length);
+    wuk::BufferEx buffer(p, length);
     std::string hex_res = buffer.to_hex();
     wuk::f64 stop = time.time<wuk::f64>();
 
@@ -130,7 +130,7 @@ void method_7()
 
 void method_8()
 {
-    wuk::Buffer buffer;
+    wuk::BufferEx buffer;
 
     constexpr bool has_data = true;
 
@@ -143,14 +143,6 @@ void method_8()
     print_info(buffer);
 
     buffer.append(std::string("good boy."));
-    wuk::misc::print_pybytes(buffer.get_data(), buffer.get_length(), true);
-    print_info(buffer);
-
-    memcpy(buffer.append_write(32), "abcdef0123456789abcdef0123456789", 32);
-    wuk::misc::print_pybytes(buffer.get_data(), buffer.get_length(), true);
-    print_info(buffer);
-
-    memcpy(buffer.write(5), "hello", 5);
     wuk::misc::print_pybytes(buffer.get_data(), buffer.get_length(), true);
     print_info(buffer);
 }

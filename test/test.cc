@@ -1,8 +1,8 @@
 #include <crypto/WukOP4.hh>
+#include <crypto/WukHash.hh>
 #include <WukBuffer.hh>
 
-#include <openssl/evp.h>
-#include <openssl/rand.h>
+#include <core/WukLIBSSL.hh>
 #ifdef WUK_PLATFORM_WINOS
 #   include <windows.h>
 #endif
@@ -49,7 +49,33 @@ wuk::Buffer derive_key(const std::string &password,
     return derived;
 }
 
-void file_xcrypt(const fs::path &in_path, const fs::path &out_path, const std::string &password, bool encrypt)
+template <wuk::crypto::HashlibType Algo>
+std::string file_hexdigest(const fs::path &path)
+{
+    std::fstream f(path, std::ios::in | std::ios::binary);
+    if (!f.is_open()) {
+        throw wuk::Exception(wuk::Error::FTOFO, "file_hexdigest",
+            "failed to file optn.");
+    }
+
+    wuk::crypto::Hashlib<Algo> hash;
+    wuk::Buffer buffer;
+
+    for (;;) {
+        f.read(reinterpret_cast<char *>(buffer.write(4096)), 4096);
+        wuk::ulong length = f.gcount();
+        if (length == 0) {
+            break;
+        }
+
+        hash.update(buffer.get_data(), length);
+    }
+
+    return hash.hexdigest();
+}
+
+void file_xcrypt(const fs::path    &in_path,  const fs::path &out_path,
+                 const std::string &password, bool encrypt)
 {
     if (!fs::exists(in_path)) {
         throw wuk::Exception(wuk::Error::FNOTF, "file_encryption",
@@ -81,28 +107,36 @@ void file_xcrypt(const fs::path &in_path, const fs::path &out_path, const std::s
     wuk::crypto::OP4 op4(key);
 
     // 准备缓冲区
-    wuk::byte in_buffer[buffer_size];
-    wuk::byte out_buffer[buffer_size];
+    wuk::Buffer in_buffer(buffer_size);
+    wuk::Buffer out_buffer(buffer_size);
+    wuk::ulong in_length = 0;
     for (;;) {
-        wuk::ulong in_len = fin.read(reinterpret_cast<char *>(in_buffer), buffer_size).gcount();
-        if (in_len == 0) {
+        fin.read(reinterpret_cast<char *>(in_buffer.write(buffer_size)), buffer_size);
+
+        if ((in_length = fin.gcount()) == 0) {
             break;
         }
-        op4.ctr_stream(out_buffer, in_buffer, in_len, nonce);
-        fout.write(reinterpret_cast<char *>(out_buffer), in_len);
+
+        op4.ctr_stream(out_buffer.write(in_length), in_buffer.get_data(), in_length, nonce);
+        fout.write(out_buffer.get_cstr(), in_length);
     }
 }
 
 void file_xcrypt_test()
 {
-    fs::path plaintext("F:/Pitchers/二次元玉足/133343667_p0.png");
-    fs::path ciphertext("133343667_p0.png.op4");
-    fs::path decrypted("133343667_p0.png.op4.png");
-    std::string password("1234567890");
+    using HashType = wuk::crypto::HashlibType;
+    fs::path plaintext("L:/test.bin");
+    fs::path ciphertext("L:/test.bin.op4");
+    fs::path decrypted("L:/test.bin.op4.bin");
+    std::string password("zzzzzzzzzzzzzz");
 
     try {
         file_xcrypt(plaintext, ciphertext, password, true);
         file_xcrypt(ciphertext, decrypted, password, false);
+
+        std::cout << "Plaintext  sha256: " << file_hexdigest<HashType::SHA_256>(plaintext) << std::endl;
+        std::cout << "ciphertext sha256: " << file_hexdigest<HashType::SHA_256>(ciphertext) << std::endl;
+        std::cout << "decrypted  sha256: " << file_hexdigest<HashType::SHA_256>(decrypted) << std::endl;
     } catch (const wuk::Exception &e) {
         std::cerr << e.what() << std::endl;
         return;
@@ -111,7 +145,7 @@ void file_xcrypt_test()
 
 int main()
 {
-    
+    file_xcrypt_test();
 
     return 0;
 }
