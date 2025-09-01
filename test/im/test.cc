@@ -24,7 +24,7 @@ wuk::Buffer derive_key_and_nonce(const std::string &password,
     PKCS5_PBKDF2_HMAC(password.data(), password.length(),
                       salt.get_data(), salt.get_length(),
                       102401, EVP_sha256(), dklen,
-                      derived.append_write(dklen));
+                      derived.append(dklen));
     return derived;
 }
 
@@ -38,7 +38,7 @@ wuk::Buffer chacha20_encrypt(const wuk::Buffer &data, const std::string &passwor
     wuk::crypto::ChaCha20 cipher(key);
 
     wuk::Buffer ciphertext;
-    cipher.crypto_stream(ciphertext.append_write(data.get_length()),
+    cipher.crypto_stream(ciphertext.append(data.get_length()),
                          data.get_data(),
                          data.get_length(),
                          nonce);
@@ -60,7 +60,7 @@ wuk::Buffer chacha20_decrypt(const wuk::Buffer &data, const std::string &passwor
     wuk::Buffer plaintext;
 
     wuk::crypto::ChaCha20 cipher(key);
-    cipher.crypto_stream(plaintext.append_write(ciphertext.get_length()),
+    cipher.crypto_stream(plaintext.append(ciphertext.get_length()),
                          ciphertext.get_data(),
                          ciphertext.get_length(),
                          nonce);

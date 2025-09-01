@@ -77,7 +77,7 @@ namespace wuk::crypto {
             wuk::u32 size = EVP_MD_size(this->md);
             wuk::Buffer result{size};
 
-            EVP_DigestFinal_ex(this->ctx, result.append_write(size), nullptr);
+            EVP_DigestFinal_ex(this->ctx, result.append(size), nullptr);
 
             return result;
         }

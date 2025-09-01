@@ -78,7 +78,7 @@ namespace wuk {
         void append(const wuk::byte *buffer, wuk::ulong length);
         void append(const std::string &buffer);
         // 追加写入数据（扩容逻辑与上面一致）但返回数据指针供直接写入。
-        wuk::byte *append_write(wuk::ulong length);
+        wuk::byte *append(wuk::ulong length);
 
         // 将内存占用与实际占用保持一致
         void shrink_to_fit();

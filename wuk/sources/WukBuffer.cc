@@ -419,7 +419,7 @@ namespace wuk {
                     buffer.size());
     }
 
-    wuk::byte *Buffer::append_write(wuk::ulong length)
+    wuk::byte *Buffer::append(wuk::ulong length)
     {
         if (!this->is_memory_sufficient(length)) {
             this->expand_memory(length);

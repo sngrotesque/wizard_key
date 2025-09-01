@@ -26,7 +26,7 @@ wuk::Buffer derive_key(const std::string &password, const wuk::Buffer &salt, wuk
     wuk::Buffer result;
 
     PKCS5_PBKDF2_HMAC(password.c_str(), password.length(), salt.get_data(), salt.get_length(),
-        201001, EVP_sha256(), length, result.append_write(length));
+        201001, EVP_sha256(), length, result.append(length));
 
     return result;
 }

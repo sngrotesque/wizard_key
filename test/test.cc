@@ -44,7 +44,7 @@ wuk::Buffer derive_key(const std::string &password,
     PKCS5_PBKDF2_HMAC(password.data(), password.length(),
                       salt.get_data(), salt.get_length(),
                       102401, EVP_sha256(), dklen,
-                      derived.append_write(dklen));
+                      derived.append(dklen));
 
     return derived;
 }
@@ -95,10 +95,10 @@ void file_xcrypt(const fs::path    &in_path,  const fs::path &out_path,
 
     // 初始化密码套件
     if (encrypt) {
-        RAND_bytes(salt.append_write(salt_size), salt_size);
+        RAND_bytes(salt.append(salt_size), salt_size);
         fout.write(salt.get_cstr(), salt.get_length());
     } else {
-        fin.read(reinterpret_cast<char *>(salt.append_write(salt_size)), salt_size);
+        fin.read(reinterpret_cast<char *>(salt.append(salt_size)), salt_size);
     }
     wuk::Buffer key_with_nonce = derive_key(password, salt);
     key = key_with_nonce.get_data();
