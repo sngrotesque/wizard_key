@@ -5,7 +5,6 @@
 #include <vector>
 
 namespace wuk {
-    //////////////////////////////////////////////////////////////////////
     /**
      * @brief 用于增加可用内存大小
      * @authors SN-Grotesque

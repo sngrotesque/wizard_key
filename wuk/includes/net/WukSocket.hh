@@ -24,7 +24,7 @@ namespace wuk::net {
 // Addrinfo BEGIN
     class LIBWUK_API Addrinfo {
     private:
-        addrinfo hints {0};
+        addrinfo hints {};
         addrinfo *res = nullptr;
 
     public:
@@ -43,7 +43,7 @@ namespace wuk::net {
 // Sockaddr BEGIN
     class LIBWUK_API Sockaddr {
     private:
-        sockaddr_storage addr {0};
+        sockaddr_storage addr {};
         socklen_t addrlen = sizeof(addr);
 
     public:

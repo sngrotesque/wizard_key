@@ -10,7 +10,7 @@ enum class IOType {
 
 timeval create_timeval(wuk::f64 timeout)
 {
-    timeval tv {0};
+    timeval tv {};
 
     wuk::f64 int_part{0};
     wuk::f64 float_part{0};
@@ -57,8 +57,8 @@ T sock_call_ex( wuk::net::Socket &fd,
         }
 
         if (result == _res_err) {
-            wuk::net::SocketError err = wuk::net::err::from_code(wuk::net::err::system::code());
-            if (err == wuk::net::SocketError::WOULDBLOCK) {
+            wuk::net::err::SocketType err = wuk::net::err::from_code(wuk::net::err::system::code());
+            if (err == wuk::net::err::SocketType::WOULDBLOCK) {
                 // 设置select监听
                 fd_set fds;
                 FD_ZERO(&fds);
