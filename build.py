@@ -61,7 +61,6 @@ sources = [
     'wuk/sources/WukHexdump.cc',
     'wuk/sources/WukMisc.cc',
     'wuk/sources/WukPadding.cc',
-    'wuk/sources/WukRandom.cc'
 ]
 
 if not os.path.exists(builds_dir):

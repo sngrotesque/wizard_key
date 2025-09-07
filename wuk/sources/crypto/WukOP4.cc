@@ -8,11 +8,11 @@
 #define OP4_SI(T) static inline T
 
 alignas(16) OP4_SI(constexpr wuk::u32) MUL_COEFFS[4] = {
-    0x71e961d3U, 0x47dff135U, 0x172f4f25U, 0x49c1e3bfU
+    0x71e961ddU, 0x47dff15dU, 0x172f4f2fU, 0xf9c1e3c7U
 };
 
 alignas(16) OP4_SI(constexpr wuk::u32) INV_MUL_COEFFS[4] = {
-    0x756e9e5bU, 0xd2b5991dU, 0x8ce434adU, 0x34640c3fU
+    0xf6e1fe75U, 0x185beaf5U, 0xfb0a57cfU, 0x4d82edf7U
 };
 
 OP4_SI(void) shift_bits_add(wuk::byte state[wuk::crypto::OP4_BL])
