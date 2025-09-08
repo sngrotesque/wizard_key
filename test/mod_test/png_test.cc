@@ -1,109 +1,267 @@
-#include <core/WukConfig.hh>
-#include <WukBuffer.hh>
-#include <WukMemory.hh>
-#include <WukMisc.hh>
-#include <zlib.h>
-
+#include <png.h>
 #include <iostream>
-#include <filesystem>
 #include <fstream>
+#include <vector>
+#include <random>
+#include <algorithm>
+#include <cstdint>
+#include <memory>
+#include <filesystem>
 
-using namespace std;
+namespace fs = std::filesystem;
 
-constexpr wuk::byte png_head_bytes[8] = {0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A};
-
-void print_buffer_use(wuk::Buffer &buffer)
+class FileToPngConverter
 {
-    printf("buffer length: %zd\n", buffer.get_length());
-    printf("buffer size:   %zd\n", buffer.get_size());
-    printf("==================\n");
-}
+private:
+    std::vector<uint8_t> fileData;
+    uint32_t fileSize;
+    uint32_t width;
+    uint32_t height;
+    size_t requiredPixels;
 
-wuk::Buffer get_chunk(string name, wuk::Buffer data)
-{
-    wuk::Buffer result{4 + 4 + data.get_length() + 4};
+    // 计算图像尺寸
+    void calculateDimensions()
+    {
+        width = static_cast<uint32_t>(std::sqrt(fileSize));
+        height = width;
 
-    result.append_number(static_cast<wuk::u32>(data.get_length()));
-    result.append(name);
-    result += data;
+        while(width * height < fileSize) {
+            width++;
+        }
 
-    const wuk::byte *p = result.get_data() + 4;
-    wuk::u32 crc_val = crc32(0, p, result.get_length() - 4);
-
-    result.append_number(crc_val);
-    result.shrink_to_fit();
-
-    return result;
-}
-
-wuk::Buffer get_ihdr_chunk(wuk::u32 width, wuk::u32 height, wuk::byte bit_depth, wuk::byte color_type)
-{
-    wuk::Buffer result{4 + 4 + 4 + 4 + 1 + 1 + 1 + 1 + 1 + 4};
-
-    // 长度
-    result.append_number(0x0d);
-    // 名称
-    result.append("IHDR");
-    // 宽度
-    result.append_number(width);
-    // 高度
-    result.append_number(height);
-    // 位深
-    result.append_number(bit_depth);
-    // 颜色类型
-    result.append_number(color_type);
-    // 压缩方法
-    result.append_number(static_cast<wuk::byte>(0));
-    // 过滤器方法
-    result.append_number(static_cast<wuk::byte>(0));
-    // 扫描方法
-    result.append_number(static_cast<wuk::byte>(0));
-
-    const wuk::byte *p = result.get_data() + 4;
-    wuk::u32 crc_val = crc32(0, p, result.get_length() - 4);
-
-    result.append_number(crc_val);
-    result.shrink_to_fit();
-
-    return result;
-}
-
-void test()
-{
-    const wuk::byte *_pixel = (wuk::byte *)"\x00\x00\x00\x00\xff\xff\xff\x00\xff\x00\xff\xff\x00\x00";
-    wuk::u32 _pixel_length = 14;
-
-    wuk::u32 pixel_length = compressBound(_pixel_length);
-    wuk::byte *pixel = wuk::m_alloc<wuk::byte *>(pixel_length);
-
-    int err = compress2(pixel, reinterpret_cast<uLongf *>(&pixel_length),
-                        _pixel, _pixel_length, 9);
-    if (err != Z_OK) {
-        throw wuk::Exception(err, "main", zError(err));
+        requiredPixels = width * height;
     }
 
-    wuk::Buffer ihdr = get_ihdr_chunk(2, 2, 8, 2);
-    wuk::Buffer idat = get_chunk("IDAT", {pixel, pixel_length});
-    wuk::Buffer iend = get_chunk("IEND", {});
+    // 准备图像数据
+    std::vector<uint8_t> prepareImageData()
+    {
+        std::vector<uint8_t> imageData(requiredPixels);
 
-    wuk::Buffer png{png_head_bytes, sizeof(png_head_bytes)};
-    png += ihdr;
-    png += idat;
-    png += iend;
+        // 前4个像素存储文件大小
+        imageData[0] = (fileSize >> 24) & 0xFF;
+        imageData[1] = (fileSize >> 16) & 0xFF;
+        imageData[2] = (fileSize >> 8) & 0xFF;
+        imageData[3] = fileSize & 0xFF;
 
-    wuk::misc::print_hex(png.get_data(), png.get_length(), 16, 1, 0);
-    
-    fstream f{filesystem::path{"F:/test.png"}, ios::binary | ios::out};
-    f.write(png.get_cstr(), png.get_length());
-    f.close();
-}
+        std::copy(fileData.begin(), fileData.end(), imageData.begin() + 4);
+
+        if(requiredPixels > fileSize + 4) {
+            std::random_device rd;
+            std::mt19937 gen(rd());
+            std::uniform_int_distribution<> dis(0, 255);
+
+            for(size_t i = fileSize + 4; i < requiredPixels; i++) {
+                imageData[i] = static_cast<uint8_t>(dis(gen));
+            }
+        }
+
+        return imageData;
+    }
+
+public:
+    // 读取文件数据
+    bool readFile(const fs::path &filePath)
+    {
+        std::ifstream file(filePath, std::ios::binary | std::ios::ate);
+        if(!file.is_open()) {
+            std::cerr << "无法打开文件: " << filePath << std::endl;
+            return false;
+        }
+
+        fileSize = static_cast<uint32_t>(file.tellg());
+        file.seekg(0, std::ios::beg);
+
+        fileData.resize(fileSize);
+        if(!file.read(reinterpret_cast<char *>(fileData.data()), fileSize)) {
+            std::cerr << "读取文件失败: " << filePath << std::endl;
+            return false;
+        }
+
+        calculateDimensions();
+        return true;
+    }
+
+    // 导出为PNG
+    bool exportToPng(const fs::path &outputPath)
+    {
+        auto imageData = prepareImageData();
+
+        std::ofstream file(outputPath, std::ios::binary);
+        if(!file.is_open()) {
+            std::cerr << "无法创建输出文件: " << outputPath << std::endl;
+            return false;
+        }
+
+        png_structp pngPtr = png_create_write_struct(PNG_LIBPNG_VER_STRING, nullptr, nullptr, nullptr);
+        if(!pngPtr) {
+            std::cerr << "无法创建PNG写结构" << std::endl;
+            return false;
+        }
+
+        png_infop infoPtr = png_create_info_struct(pngPtr);
+        if(!infoPtr) {
+            png_destroy_write_struct(&pngPtr, nullptr);
+            std::cerr << "无法创建PNG信息结构" << std::endl;
+            return false;
+        }
+
+        if(setjmp(png_jmpbuf(pngPtr))) {
+            png_destroy_write_struct(&pngPtr, &infoPtr);
+            std::cerr << "PNG写入过程中发生错误" << std::endl;
+            return false;
+        }
+
+        png_set_write_fn(
+            pngPtr, &file,
+            [](png_structp pngPtr, png_bytep data, png_size_t length) {
+                std::ofstream *file = static_cast<std::ofstream *>(png_get_io_ptr(pngPtr));
+                file->write(reinterpret_cast<char *>(data), length);
+            },
+            nullptr);
+
+        png_set_IHDR(pngPtr, infoPtr, width, height, 8, PNG_COLOR_TYPE_GRAY, PNG_INTERLACE_NONE,
+                     PNG_COMPRESSION_TYPE_BASE, PNG_FILTER_TYPE_BASE);
+
+        std::vector<png_bytep> rowPointers(height);
+        for(uint32_t y = 0; y < height; y++) {
+            rowPointers[y] = imageData.data() + y * width;
+        }
+
+        png_write_info(pngPtr, infoPtr);
+        png_write_image(pngPtr, rowPointers.data());
+        png_write_end(pngPtr, nullptr);
+
+        png_destroy_write_struct(&pngPtr, &infoPtr);
+        return true;
+    }
+
+    // 从PNG恢复文件
+    bool restoreFromPng(const fs::path &pngPath, const fs::path &outputPath)
+    {
+        std::ifstream file(pngPath, std::ios::binary);
+        if(!file.is_open()) {
+            std::cerr << "无法打开PNG文件: " << pngPath << std::endl;
+            return false;
+        }
+
+        // 读取PNG文件头
+        png_byte header[8];
+        file.read(reinterpret_cast<char *>(header), 8);
+        if(png_sig_cmp(header, 0, 8)) {
+            std::cerr << "不是有效的PNG文件: " << pngPath << std::endl;
+            return false;
+        }
+
+        png_structp pngPtr = png_create_read_struct(PNG_LIBPNG_VER_STRING, nullptr, nullptr, nullptr);
+        if(!pngPtr) {
+            std::cerr << "无法创建PNG读结构" << std::endl;
+            return false;
+        }
+
+        png_infop infoPtr = png_create_info_struct(pngPtr);
+        if(!infoPtr) {
+            png_destroy_read_struct(&pngPtr, nullptr, nullptr);
+            std::cerr << "无法创建PNG信息结构" << std::endl;
+            return false;
+        }
+
+        if(setjmp(png_jmpbuf(pngPtr))) {
+            png_destroy_read_struct(&pngPtr, &infoPtr, nullptr);
+            std::cerr << "PNG读取过程中发生错误" << std::endl;
+            return false;
+        }
+
+        png_set_read_fn(pngPtr, &file, [](png_structp pngPtr, png_bytep data, png_size_t length) {
+            std::ifstream *file = static_cast<std::ifstream *>(png_get_io_ptr(pngPtr));
+            file->read(reinterpret_cast<char *>(data), length);
+        });
+
+        png_read_info(pngPtr, infoPtr);
+
+        width = png_get_image_width(pngPtr, infoPtr);
+        height = png_get_image_height(pngPtr, infoPtr);
+        png_byte colorType = png_get_color_type(pngPtr, infoPtr);
+        png_byte bitDepth = png_get_bit_depth(pngPtr, infoPtr);
+
+        if(colorType != PNG_COLOR_TYPE_GRAY || bitDepth != 8) {
+            std::cerr << "不支持的PNG格式: 必须是8位灰度图像" << std::endl;
+            png_destroy_read_struct(&pngPtr, &infoPtr, nullptr);
+            return false;
+        }
+
+        std::vector<png_bytep> rowPointers(height);
+        std::vector<uint8_t> imageData(width * height);
+
+        for(uint32_t y = 0; y < height; y++) {
+            rowPointers[y] = imageData.data() + y * width;
+        }
+
+        png_read_image(pngPtr, rowPointers.data());
+        png_destroy_read_struct(&pngPtr, &infoPtr, nullptr);
+
+        // 从图像数据中提取文件大小
+        fileSize = (imageData[0] << 24) | (imageData[1] << 16) | (imageData[2] << 8) | imageData[3];
+
+        // 检查是否有足够的数据
+        if(width * height < fileSize + 4) {
+            std::cerr << "PNG文件不包含足够的原始数据" << std::endl;
+            return false;
+        }
+
+        // 写入原始文件
+        std::ofstream outFile(outputPath, std::ios::binary);
+        if(!outFile.is_open()) {
+            std::cerr << "无法创建输出文件: " << outputPath << std::endl;
+            return false;
+        }
+
+        outFile.write(reinterpret_cast<char *>(imageData.data() + 4), fileSize);
+        return true;
+    }
+
+    void printInfo() const
+    {
+        std::cout << "文件大小: " << fileSize << " 字节\n";
+        std::cout << "图像尺寸: " << width << " x " << height << "\n";
+        std::cout << "总像素数: " << requiredPixels << "\n";
+        std::cout << "填充像素: " << (requiredPixels - fileSize - 4) << "\n";
+    }
+};
 
 int main()
 {
-    try {
-        test();
-    } catch (wuk::Exception &e) {
-        cout << e.what() << endl;
+    auto encode_mode{true};
+    fs::path inputPath("");
+    fs::path outputPath("");
+
+    FileToPngConverter converter;
+
+    if(encode_mode) {
+        if(!fs::exists(inputPath)) {
+            std::cerr << "输入文件不存在: " << inputPath << std::endl;
+            return 1;
+        }
+
+        std::cout << "正在处理文件..." << std::endl;
+        if(!converter.readFile(inputPath)) {
+            return 1;
+        }
+
+        converter.printInfo();
+
+        std::cout << "正在生成PNG图像..." << std::endl;
+        if(!converter.exportToPng(outputPath)) {
+            return 1;
+        }
+
+        std::cout << "成功生成PNG图像: " << outputPath << std::endl;
+    } else {
+        std::cout << "正在从PNG恢复文件..." << std::endl;
+        if(!converter.restoreFromPng(inputPath, outputPath)) {
+            return 1;
+        }
+
+        std::cout << "成功恢复文件: " << outputPath << std::endl;
     }
 
     return 0;

@@ -125,9 +125,9 @@ void file_xcrypt(const fs::path    &in_path,  const fs::path &out_path,
 void file_xcrypt_test()
 {
     using HashType = wuk::crypto::HashlibType;
-    fs::path plaintext("L:/test.bin");
-    fs::path ciphertext("L:/test.bin.op4");
-    fs::path decrypted("L:/test.bin.op4.bin");
+    fs::path plaintext("L:/p_cookie.txt");
+    fs::path ciphertext("L:/p_cookie.txt.op4");
+    fs::path decrypted("L:/p_cookie.txt.op4.bin");
     std::string password("zzzzzzzzzzzzzz");
 
     try {

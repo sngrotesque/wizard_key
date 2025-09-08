@@ -22,12 +22,11 @@
    |           | SHA3-256    | Yes      | Yes         |
    |           | SHA3-384    | Yes      | Yes         |
    |           | SHA3-512    | Yes      | Yes         |
-5. 对于加密方式，未来网络传输时将采用 **OpenSSL** 库所提供的公钥密码/密钥交换算法，  
-   对称加密算法将采用 **OP4** 或 **ChaCha20-Poly1305 (Base on Libsodium, Not OpenSSL)** 或 **AES-256-GCM** 。  
-   目前将 **ChaCha20-Poly1305 (RFC 8439)** 作为主要加密算法。
-6. 在未来的版本将完全支持 **wuk::net::WukSocket** 库的IO多路复用功能；  
-   将利用包括但不限于 **select / poll / epoll / IOCP** 等技术实现。
+5. 对于加密算法，将主要采用 **ChaCha20-Poly1305**，将 **AES-GCM** 作为备选项，剩余场景下使用 **OP4** 加密算法。
 7. 修复了[wuk::Buffer](wuk/includes/WukBuffer.hh)中对于内存空间的使用问题（即`wuk::Buffer::expand_memory`会过多申请所需内存空间的问题）以及部分潜在的内存泄漏风险。
+8. 移除`WukWinApi32`/`WukPng`模块，未来对于图像处理将直接使用对应的库（如 **libpng** / **libjpeg** 等）。
+9. 优化了 OP4 加密算法的雪崩效应，修改了乘法常数和位移数。  
+   使其从原先需要 **3** 轮（无密钥参与）才能实现的全局扩散缩短至当前的 **2** 轮（无密钥参与），在 **1** 轮即可扩散 **75%** 的字节。
 
 ## v0.8
 1.  修改了代码文件的格式，以防止使用时与其他头文件冲突。

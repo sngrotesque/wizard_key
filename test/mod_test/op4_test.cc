@@ -1,5 +1,6 @@
 #include <crypto/WukOP4.hh>
 #include <crypto/WukHash.hh>
+#include <crypto/WukChaCha20.hh>
 #include <WukBuffer.hh>
 #include <WukRandom.hh>
 #include <WukTime.hh>
@@ -312,7 +313,7 @@ struct ThreadArgs {
 
 void op4_thread_worker(const ThreadArgs* args) {
     OP4 op4(args->key, args->counter);
-    
+
     // 处理完整块
     wuk::ulong aligned_size = args->size - (args->size % OP4_BL);
     if (aligned_size > 0) {
@@ -330,9 +331,9 @@ void op4_thread_worker(const ThreadArgs* args) {
         memcpy(last_block, 
               args->plaintext + args->offset + aligned_size,
               args->size % OP4_BL);
-        
+
         op4.ctr_stream(last_block, last_block, OP4_BL, args->nonce);
-        
+
         memcpy(args->ciphertext + args->offset + aligned_size,
               last_block,
               args->size % OP4_BL);
@@ -359,7 +360,7 @@ void op4_thread(wuk::byte* ciphertext, const wuk::byte* plaintext, wuk::ulong le
         args.key = key;
         args.nonce = nonce;
         args.counter = args.offset / OP4_BL;
-        
+
         args_list[i] = args;
         remaining -= args.size;
     }
@@ -442,7 +443,60 @@ void op4_threads()
 }
 #endif
 
-#ifdef AVALANCHE_EFFECT_TEST
+/**
+ * <-------------- 明文扰动测试 -------------->
+ * === OP4 Avalanche Effect Test Results ===
+ * Samples: 10000000
+ * Average changed bits: 64.0017 (Ideal: 64)
+ * Average ratio: 50.0013%
+ * Standard deviation: 5.65618
+ * 
+ * SAC Statistics:
+ *   Min ratio: 49.9508%
+ *   Max ratio: 50.0381%
+ *   Avg ratio: 50.0013%
+ * 
+ * SAC Test (First 10 bits):
+ * Bit 0: 49.9756%
+ * Bit 1: 50.0041%
+ * Bit 2: 50.0144%
+ * Bit 3: 49.9734%
+ * Bit 4: 50.016%
+ * Bit 5: 50.0006%
+ * Bit 6: 49.9694%
+ * Bit 7: 50.001%
+ * Bit 8: 50.0267%
+ * Bit 9: 49.9733%
+ * 
+ * 95% Confidence Interval: [63.9982, 64.0052]
+ * 
+ * <-------------- 密钥扰动测试 -------------->
+ * === OP4 Avalanche Effect Test Results ===
+ * Samples: 10000000
+ * Average changed bits: 64.0016 (Ideal: 64)
+ * Average ratio: 50.0013%
+ * Standard deviation: 5.6573
+ * 
+ * SAC Statistics:
+ *   Min ratio: 49.9567%
+ *   Max ratio: 50.039%
+ *   Avg ratio: 50.0013%
+ * 
+ * SAC Test (First 10 bits):
+ * Bit 0: 49.9771%
+ * Bit 1: 50.0103%
+ * Bit 2: 50.017%
+ * Bit 3: 50.0121%
+ * Bit 4: 49.9834%
+ * Bit 5: 50.0003%
+ * Bit 6: 49.9885%
+ * Bit 7: 49.9812%
+ * Bit 8: 49.9952%
+ * Bit 9: 50.0169%
+ * 
+ * 95% Confidence Interval: [63.9981, 64.0051]
+ */
+
 wuk::u32 bit_diff(const wuk::byte *a, const wuk::byte *b, size_t length)
 {
     wuk::u32 diff = 0;
@@ -461,71 +515,115 @@ wuk::u32 bit_diff(const wuk::byte *a, const wuk::byte *b, size_t length)
     return diff;
 }
 
-void print_test_info(const wuk::byte *ciphertext1, const wuk::byte *ciphertext2, wuk::ulong length)
+void avalanche_effect_test(wuk::u32 sample_count = 10000000)
 {
-    std::cout << "Ciphertext1:\t\t\t\t\t\t\tCiphertext2:" << std::endl;
-    print_diff_hex((wuk::byte *)ciphertext1, ciphertext2, length, length, 16, false); std::cout << std::endl;
-
-#   ifdef VIEW_HEXDIGEST
-    std::cout << "Ciphertext1 hexdigest: " << hash_sha256(ciphertext1, length) << std::endl;
-    std::cout << "ciphertext2 hexdigest: " << hash_sha256(ciphertext2, length) << std::endl;
-#   endif
-
-    wuk::u32 diff_bits = bit_diff(ciphertext1, (wuk::byte *)ciphertext2, length);
-    wuk::f64 diff_ratio = static_cast<wuk::f64>(diff_bits) / (length * 8);
-    std::cout << "Diff ratio: " << diff_bits << " / " << (length * 8)
-              << " = " << (diff_ratio * 100) << "%" << std::endl;
-}
-
-void avalanche_effect_test()
-{
-    wuk::ulong length    = OP4_BL;
-    wuk::byte plaintext1 [OP4_BL]{0};
-    wuk::byte plaintext2 [OP4_BL]{0};
-    wuk::byte ciphertext1[OP4_BL]{0};
-    wuk::byte ciphertext2[OP4_BL]{0};
     wuk::Random random;
+    wuk::byte ciphertext1[OP4_BL]{};
+    wuk::byte ciphertext2[OP4_BL]{};
 
-    wuk::byte key1  [OP4_KL] {0};
-    wuk::byte key2  [OP4_KL] {0};
-    wuk::byte nonce1[OP4_NL] {0};
-    wuk::byte nonce2[OP4_NL] {0};
+    wuk::f64 total_bit_diff = 0.0;
+    std::vector<wuk::u32> bit_change_count(OP4_BL * 8, 0);
+    std::vector<wuk::u32> bit_diff_history;
+    bit_diff_history.reserve(sample_count);
 
-    random.bytes(key1,   sizeof key1);
-    random.bytes(nonce1, sizeof nonce1);
+    for (wuk::u32 i = 0; i < sample_count; ++i) {
+#   if defined(AVALANCHE_EFFECT_PLAINTEXT)
+        wuk::byte plaintext1[OP4_BL]{};
+        wuk::byte plaintext2[OP4_BL]{};
+        wuk::byte key[OP4_KL]{};
 
-    constexpr wuk::byte bit = 1 << 0;
-    for (wuk::u32 i = 0; i < OP4_KL; ++i) {
-        std::cout << "Key test:\n";
-        memcpy(key2,   key1,   OP4_KL);
-        memcpy(nonce2, nonce1, OP4_NL);
-        key2[i] ^= bit;
+        random.bytes(plaintext1, OP4_BL);
+        random.bytes(key, OP4_KL);
+
+        memcpy(plaintext2, plaintext1, OP4_BL);
+        wuk::u32 byte_index = random.randint(0, OP4_BL - 1);
+        wuk::u32 bit_index = random.randint(0, 7);
+        plaintext2[byte_index] ^= (1 << bit_index);
+
+        OP4 cipher(key);
+        cipher.ecb_encrypt(ciphertext1, plaintext1, OP4_BL);
+        cipher.ecb_encrypt(ciphertext2, plaintext2, OP4_BL);
+#   elif defined(AVALANCHE_EFFECT_KEY)
+        wuk::byte plaintext[OP4_BL]{};
+        wuk::byte key1[OP4_KL]{};
+        wuk::byte key2[OP4_KL]{};
+
+        random.bytes(plaintext, OP4_BL);
+        random.bytes(key1, OP4_KL);
+
+        memcpy(key2, key1, OP4_KL);
+        wuk::u32 byte_index = random.randint(0, OP4_KL - 1);
+        wuk::u32 bit_index = random.randint(0, 7);
+        key2[byte_index] ^= (1 << bit_index);
 
         OP4 cipher1(key1);
-        cipher1.ctr_stream(ciphertext1, plaintext1, length, nonce1);
+        cipher1.ecb_encrypt(ciphertext1, plaintext, OP4_BL);
         OP4 cipher2(key2);
-        cipher2.ctr_stream(ciphertext2, plaintext2, length, nonce2);
-        print_test_info(ciphertext1, ciphertext2, length);
-        std::cout << std::endl;
+        cipher2.ecb_encrypt(ciphertext2, plaintext, OP4_BL);
+#       endif
+
+        wuk::u32 diff_bits = bit_diff(ciphertext1, ciphertext2, OP4_BL);
+        total_bit_diff += diff_bits;
+        bit_diff_history.push_back(diff_bits);
+
+        for (size_t byte_idx = 0; byte_idx < OP4_BL; ++byte_idx) {
+            wuk::byte diff_byte = ciphertext1[byte_idx] ^ ciphertext2[byte_idx];
+            for (int bit_idx = 0; bit_idx < 8; ++bit_idx) {
+                if (diff_byte & (1 << bit_idx)) {
+                    size_t global_bit_idx = byte_idx * 8 + bit_idx;
+                    bit_change_count[global_bit_idx]++;
+                }
+            }
+        }
     }
 
-    for (wuk::u32 i = 0; i < OP4_NL; ++i) {
-        std::cout << "Nonce test:\n";
-        memcpy(key2,   key1,   OP4_KL);
-        memcpy(nonce2, nonce1, OP4_NL);
-        nonce2[i] ^= bit;
-
-        OP4 cipher1(key1);
-        cipher1.ctr_stream(ciphertext1, plaintext1, length, nonce1);
-        OP4 cipher2(key2);
-        cipher2.ctr_stream(ciphertext2, plaintext2, length, nonce2);
-        print_test_info(ciphertext1, ciphertext2, length);
-        std::cout << std::endl;
+    // 计算统计数据
+    constexpr wuk::f64 ideal_diff_bits = OP4_BL * 8 / 2.0;
+    wuk::f64 average_diff_bits = total_bit_diff / sample_count;
+    wuk::f64 variance = 0.0;
+    for (auto diff : bit_diff_history) {
+        variance += (diff - average_diff_bits) * (diff - average_diff_bits);
     }
+    variance /= sample_count;
+    wuk::f64 std_dev = std::sqrt(variance);
+
+    // 计算SAC统计
+    wuk::f64 sac_min = 100.0, sac_max = 0.0, sac_avg = 0.0;
+    for (auto count : bit_change_count) {
+        wuk::f64 ratio = static_cast<wuk::f64>(count) / sample_count * 100.0;
+        sac_avg += ratio;
+        sac_min = std::min(sac_min, ratio);
+        sac_max = std::max(sac_max, ratio);
+    }
+    sac_avg /= bit_change_count.size();
+
+    // 输出结果
+    std::cout << "\n=== OP4 Avalanche Effect Test Results ===\n";
+    std::cout << "Samples: " << sample_count << "\n";
+    std::cout << "Average changed bits: " << average_diff_bits 
+              << " (Ideal: " << ideal_diff_bits << ")\n";
+    std::cout << "Average ratio: " << (average_diff_bits / ideal_diff_bits * 50.0) << "%\n";
+    std::cout << "Standard deviation: " << std_dev << "\n";
+
+    std::cout << "\nSAC Statistics:\n";
+    std::cout << "  Min ratio: " << sac_min << "%\n";
+    std::cout << "  Max ratio: " << sac_max << "%\n";
+    std::cout << "  Avg ratio: " << sac_avg << "%\n";
+
+    std::cout << "\nSAC Test (First 10 bits):\n";
+    for (size_t i = 0; i < 10 && i < bit_change_count.size(); ++i) {
+        double ratio = static_cast<double>(bit_change_count[i]) / sample_count * 100.0;
+        std::cout << "Bit " << i << ": " << ratio << "%\n";
+    }
+
+    // 计算置信区间(95%)
+    wuk::f64 margin_error = 1.96 * std_dev / std::sqrt(sample_count);
+    std::cout << "\n95% Confidence Interval: [" 
+              << (average_diff_bits - margin_error) << ", " 
+              << (average_diff_bits + margin_error) << "]\n";
 }
-#endif
 
-// python make.py test/op4_test.cc -DWUK_EXPORTS -lsodium -lssl -lcrypto -lbcrypt --std=c++17 -march=native -DTHREADS_METHOD=1
+// python make.py test/op4_test.cc -lsodium -lssl -lcrypto -lbcrypt
 
 int main()
 {
@@ -537,7 +635,7 @@ int main()
     op4_threads();
 #   endif
 
-#   ifdef AVALANCHE_EFFECT_TEST
+#   if defined(AVALANCHE_EFFECT_PLAINTEXT) || defined(AVALANCHE_EFFECT_KEY)
     avalanche_effect_test();
 #   endif
 
