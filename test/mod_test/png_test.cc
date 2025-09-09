@@ -226,7 +226,7 @@ public:
 
 int main()
 {
-    fs::path input_path("D:/Z_SSS/131166877_p0.png");
+    fs::path input_path("D:/Z_SSS/134542331_p0.png");
     fs::path output_path("test.png");
 
     FileToPngConverter converter;
