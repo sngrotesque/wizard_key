@@ -122,8 +122,8 @@ def main(verbose: bool = True):
     # 源文件
     compiler.add_args(
         # 'wuk/sources/crypto/WukOP4.cc',
-        'wuk/sources/crypto/WukOP4_sse4.cc',
-        'wuk/sources/crypto/WukChaCha20.cc',
+        # 'wuk/sources/crypto/WukOP4_sse4.cc',
+        # 'wuk/sources/crypto/WukChaCha20.cc',
         # 'wuk/sources/im/WukIM.cc',
         # 'wuk/sources/im/WukPsql.cc',
         # 'wuk/sources/net/WukPacket.pb.cc',
@@ -133,9 +133,9 @@ def main(verbose: bool = True):
         'wuk/sources/utils/bytes.cc',
         # 'wuk/sources/WukBase64.cc',
         # 'wuk/sources/WukBinascii.cc',
-        'wuk/sources/WukBuffer.cc',
+        # 'wuk/sources/WukBuffer.cc',
         # 'wuk/sources/WukHexdump.cc',
-        'wuk/sources/WukMisc.cc',
+        # 'wuk/sources/WukMisc.cc',
         # 'wuk/sources/WukPadding.cc',
     )
 

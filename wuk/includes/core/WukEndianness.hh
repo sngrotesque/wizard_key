@@ -20,16 +20,6 @@
 
 namespace wuk {
     template <typename T>
-    inline void reversal_array(T *buffer, wuk::ulong length)
-    {
-        for (wuk::ulong i = 0; i < (length / 2); ++i) {
-            T tmp = buffer[i];
-            buffer[i] = buffer[length - 1 - i];
-            buffer[length - 1 - i] = tmp;
-        }
-    }
-
-    template <typename T>
     inline T swap_endian(const T &val)
     {
         if (!std::is_integral_v<T> && !std::is_floating_point_v<T>) {

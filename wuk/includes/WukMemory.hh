@@ -6,6 +6,8 @@
 #   include <Windows.h>
 #endif
 #include <malloc.h>
+#include <memory>
+#include <new>
 
 static inline void forced_zeroing(volatile void *p, wuk::ulong length)
 {
@@ -16,43 +18,43 @@ static inline void forced_zeroing(volatile void *p, wuk::ulong length)
 }
 
 namespace wuk {
-    LIBWUK_API inline void memory_secure(void *buffer, wuk::ulong length)
+    inline LIBWUK_API void memory_secure(void *buffer, wuk::ulong length)
     {
 #       if defined(WUK_PLATFORM_WINOS)
         SecureZeroMemory(buffer, length);
 #       elif defined(WUK_PLATFORM_LINUX)
-#           ifdef WUK_PLATFORM_ANDROID
+#       ifdef WUK_PLATFORM_ANDROID
         forced_zeroing(buffer, length);
-#           else
+#       else
         explicit_bzero(buffer, length);
-#           endif
+#       endif
 #       endif
     }
 
-    LIBWUK_API inline void memory_zero(void *buffer, wuk::ulong length)
+    inline LIBWUK_API void memory_zero(void *buffer, wuk::ulong length)
     {
         memset(buffer, 0x00, length);
     }
 
     template <typename T>
-    LIBWUK_API inline T m_alloc(wuk::ulong length) noexcept
+    inline LIBWUK_API T m_alloc(wuk::ulong length) noexcept
     {
         return static_cast<T>(malloc(length));
     }
 
     template <typename T>
-    LIBWUK_API inline T m_realloc(T src, wuk::ulong length) noexcept
+    inline LIBWUK_API T m_realloc(T src, wuk::ulong length) noexcept
     {
         return static_cast<T>(realloc(src, length));
     }
 
     template <typename T>
-    LIBWUK_API inline T *m_calloc(wuk::ulong length) noexcept
+    inline LIBWUK_API T *m_calloc(wuk::ulong length) noexcept
     {
         return static_cast<T *>(calloc(sizeof(T), length));
     }
 
-    LIBWUK_API inline void m_free(void *p) noexcept
+    inline LIBWUK_API void m_free(void *p) noexcept
     {
         free(p);
     }

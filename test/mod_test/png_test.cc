@@ -1,142 +1,146 @@
-#include <png.h>
-#include <iostream>
-#include <fstream>
-#include <vector>
-#include <random>
+#include <core/WukConfig.hh>
+#include <utils/bytes.hh>
+#include <WukRandom.hh>
+#include <WukMemory.hh>
+
 #include <algorithm>
-#include <cstdint>
-#include <memory>
 #include <filesystem>
+#include <fstream>
+#include <iostream>
+#include <memory>
+#include <cmath>
+
+#include <png.h>
 
 namespace fs = std::filesystem;
 
-class FileToPngConverter
+// 准备图像数据
+std::vector<wuk::byte> prepare_image_data(const std::vector<wuk::byte> &file_data,
+                                        wuk::u32 &width, wuk::u32 &height)
 {
-private:
-    std::vector<uint8_t> fileData;
-    uint32_t fileSize;
-    uint32_t width;
-    uint32_t height;
-    size_t requiredPixels;
-
-    // 计算图像尺寸
-    void calculateDimensions()
-    {
-        width = static_cast<uint32_t>(std::sqrt(fileSize));
+    wuk::u32 file_size = file_data.size();
+    wuk::ulong required_pixels = [&](wuk::u32 file_size) {
+        width = static_cast<wuk::u32>(std::sqrt(file_size));
         height = width;
+        while ((width * height) < file_size) { width++; }
+        return width * height;
+    } (file_size);
 
-        while(width * height < fileSize) {
-            width++;
+    std::vector<wuk::byte> image_data(required_pixels);
+
+    wuk::utils::pack_bytes<wuk::u32, true>(image_data.data(), image_data.size(), file_size);
+
+    std::copy(file_data.begin(), file_data.end(), image_data.begin() + sizeof(file_size));
+
+    if(required_pixels > (file_size + sizeof(file_size))) {
+        std::random_device rd;
+        std::mt19937 gen(rd());
+        std::uniform_int_distribution<> dis(0, 255);
+
+        for(wuk::ulong i = file_size + sizeof(file_size); i < required_pixels; i++) {
+            image_data[i] = static_cast<wuk::byte>(dis(gen));
         }
-
-        requiredPixels = width * height;
     }
 
-    // 准备图像数据
-    std::vector<uint8_t> prepareImageData()
-    {
-        std::vector<uint8_t> imageData(requiredPixels);
+    return image_data;
+}
 
-        // 前4个像素存储文件大小
-        imageData[0] = (fileSize >> 24) & 0xFF;
-        imageData[1] = (fileSize >> 16) & 0xFF;
-        imageData[2] = (fileSize >> 8) & 0xFF;
-        imageData[3] = fileSize & 0xFF;
-
-        std::copy(fileData.begin(), fileData.end(), imageData.begin() + 4);
-
-        if(requiredPixels > fileSize + 4) {
-            std::random_device rd;
-            std::mt19937 gen(rd());
-            std::uniform_int_distribution<> dis(0, 255);
-
-            for(size_t i = fileSize + 4; i < requiredPixels; i++) {
-                imageData[i] = static_cast<uint8_t>(dis(gen));
-            }
-        }
-
-        return imageData;
+std::vector<wuk::byte> file_read(const fs::path &path)
+{
+    if (!fs::exists(path)) {
+        return {};
     }
+    wuk::ulong file_length = fs::file_size(path);
+    if (file_length == 0) {
+        return {};
+    }
+    std::fstream file(path, std::ios::binary | std::ios::in);
+    if (!file.is_open()) {
+        return {};
+    }
+
+    std::vector<wuk::byte> file_data(file_length, 0);
+
+    file.read(reinterpret_cast<char *>(file_data.data()), file_length);
+
+    return file_data;
+}
+
+class LIBWUK_API FileToPngConverter {
+private:
+    std::vector<wuk::byte> file_data;
 
 public:
-    // 读取文件数据
-    bool readFile(const fs::path &filePath)
+    bool export_to_png(const fs::path &input_path, const fs::path &output_path)
     {
-        std::ifstream file(filePath, std::ios::binary | std::ios::ate);
+        wuk::u32 width{0};
+        wuk::u32 height{0};
+
+        std::vector<wuk::byte> file_data = file_read(input_path);
+        if (file_data.empty()) {
+            std::cerr << "无法读取文件，文件不存在或文件为空或无权访问文件。" << std::endl;
+            return false;
+        }
+
+        std::ofstream file(output_path, std::ios::binary);
         if(!file.is_open()) {
-            std::cerr << "无法打开文件: " << filePath << std::endl;
+            std::cerr << "无法创建输出文件: " << output_path << std::endl;
             return false;
         }
 
-        fileSize = static_cast<uint32_t>(file.tellg());
-        file.seekg(0, std::ios::beg);
+        std::vector<wuk::byte> image_data = prepare_image_data(file_data, width, height);
 
-        fileData.resize(fileSize);
-        if(!file.read(reinterpret_cast<char *>(fileData.data()), fileSize)) {
-            std::cerr << "读取文件失败: " << filePath << std::endl;
-            return false;
-        }
-
-        calculateDimensions();
-        return true;
-    }
-
-    // 导出为PNG
-    bool exportToPng(const fs::path &outputPath)
-    {
-        auto imageData = prepareImageData();
-
-        std::ofstream file(outputPath, std::ios::binary);
-        if(!file.is_open()) {
-            std::cerr << "无法创建输出文件: " << outputPath << std::endl;
-            return false;
-        }
-
-        png_structp pngPtr = png_create_write_struct(PNG_LIBPNG_VER_STRING, nullptr, nullptr, nullptr);
-        if(!pngPtr) {
+        png_structp png_ptr = png_create_write_struct(PNG_LIBPNG_VER_STRING,
+                                                    nullptr, nullptr, nullptr);
+        if(!png_ptr) {
             std::cerr << "无法创建PNG写结构" << std::endl;
             return false;
         }
 
-        png_infop infoPtr = png_create_info_struct(pngPtr);
-        if(!infoPtr) {
-            png_destroy_write_struct(&pngPtr, nullptr);
+        png_infop info_ptr = png_create_info_struct(png_ptr);
+        if(!info_ptr) {
+            png_destroy_write_struct(&png_ptr, nullptr);
             std::cerr << "无法创建PNG信息结构" << std::endl;
             return false;
         }
 
-        if(setjmp(png_jmpbuf(pngPtr))) {
-            png_destroy_write_struct(&pngPtr, &infoPtr);
+        if(setjmp(png_jmpbuf(png_ptr))) {
+            png_destroy_write_struct(&png_ptr, &info_ptr);
             std::cerr << "PNG写入过程中发生错误" << std::endl;
             return false;
         }
 
         png_set_write_fn(
-            pngPtr, &file,
-            [](png_structp pngPtr, png_bytep data, png_size_t length) {
-                std::ofstream *file = static_cast<std::ofstream *>(png_get_io_ptr(pngPtr));
+            png_ptr, &file,
+            [](png_structp png_ptr, png_bytep data, png_size_t length) {
+                std::ofstream *file = static_cast<std::ofstream *>(png_get_io_ptr(png_ptr));
                 file->write(reinterpret_cast<char *>(data), length);
             },
             nullptr);
 
-        png_set_IHDR(pngPtr, infoPtr, width, height, 8, PNG_COLOR_TYPE_GRAY, PNG_INTERLACE_NONE,
-                     PNG_COMPRESSION_TYPE_BASE, PNG_FILTER_TYPE_BASE);
+        png_set_IHDR(
+            png_ptr, info_ptr, width, height,
+            8,
+            PNG_COLOR_TYPE_GRAY,
+            PNG_INTERLACE_NONE,
+            PNG_COMPRESSION_TYPE_BASE,
+            PNG_FILTER_TYPE_BASE
+        );
 
-        std::vector<png_bytep> rowPointers(height);
-        for(uint32_t y = 0; y < height; y++) {
-            rowPointers[y] = imageData.data() + y * width;
+        std::vector<png_bytep> row_pointers(height);
+        for(wuk::u32 y = 0; y < height; y++) {
+            row_pointers[y] = image_data.data() + y * width;
         }
 
-        png_write_info(pngPtr, infoPtr);
-        png_write_image(pngPtr, rowPointers.data());
-        png_write_end(pngPtr, nullptr);
+        png_write_info(png_ptr, info_ptr);
+        png_write_image(png_ptr, row_pointers.data());
+        png_write_end(png_ptr, nullptr);
 
-        png_destroy_write_struct(&pngPtr, &infoPtr);
+        png_destroy_write_struct(&png_ptr, &info_ptr);
         return true;
     }
 
-    // 从PNG恢复文件
-    bool restoreFromPng(const fs::path &pngPath, const fs::path &outputPath)
+    bool restore_from_png(const fs::path &pngPath, const fs::path &outputPath)
     {
         std::ifstream file(pngPath, std::ios::binary);
         if(!file.is_open()) {
@@ -178,8 +182,8 @@ public:
 
         png_read_info(pngPtr, infoPtr);
 
-        width = png_get_image_width(pngPtr, infoPtr);
-        height = png_get_image_height(pngPtr, infoPtr);
+        wuk::u32 width = png_get_image_width(pngPtr, infoPtr);
+        wuk::u32 height = png_get_image_height(pngPtr, infoPtr);
         png_byte colorType = png_get_color_type(pngPtr, infoPtr);
         png_byte bitDepth = png_get_bit_depth(pngPtr, infoPtr);
 
@@ -200,7 +204,7 @@ public:
         png_destroy_read_struct(&pngPtr, &infoPtr, nullptr);
 
         // 从图像数据中提取文件大小
-        fileSize = (imageData[0] << 24) | (imageData[1] << 16) | (imageData[2] << 8) | imageData[3];
+        wuk::u32 fileSize = (imageData[0] << 24) | (imageData[1] << 16) | (imageData[2] << 8) | imageData[3];
 
         // 检查是否有足够的数据
         if(width * height < fileSize + 4) {
@@ -218,50 +222,30 @@ public:
         outFile.write(reinterpret_cast<char *>(imageData.data() + 4), fileSize);
         return true;
     }
-
-    void printInfo() const
-    {
-        std::cout << "文件大小: " << fileSize << " 字节\n";
-        std::cout << "图像尺寸: " << width << " x " << height << "\n";
-        std::cout << "总像素数: " << requiredPixels << "\n";
-        std::cout << "填充像素: " << (requiredPixels - fileSize - 4) << "\n";
-    }
 };
 
 int main()
 {
-    auto encode_mode{true};
-    fs::path inputPath("");
-    fs::path outputPath("");
+    fs::path input_path("D:/Z_SSS/131166877_p0.png");
+    fs::path output_path("test.png");
 
     FileToPngConverter converter;
 
+    constexpr auto encode_mode{true};
     if(encode_mode) {
-        if(!fs::exists(inputPath)) {
-            std::cerr << "输入文件不存在: " << inputPath << std::endl;
-            return 1;
-        }
-
-        std::cout << "正在处理文件..." << std::endl;
-        if(!converter.readFile(inputPath)) {
-            return 1;
-        }
-
-        converter.printInfo();
-
         std::cout << "正在生成PNG图像..." << std::endl;
-        if(!converter.exportToPng(outputPath)) {
+        if(!converter.export_to_png(input_path, output_path)) {
             return 1;
         }
 
-        std::cout << "成功生成PNG图像: " << outputPath << std::endl;
+        std::cout << "成功生成PNG图像: " << output_path << std::endl;
     } else {
         std::cout << "正在从PNG恢复文件..." << std::endl;
-        if(!converter.restoreFromPng(inputPath, outputPath)) {
+        if(!converter.restore_from_png(input_path, output_path)) {
             return 1;
         }
 
-        std::cout << "成功恢复文件: " << outputPath << std::endl;
+        std::cout << "成功恢复文件: " << output_path << std::endl;
     }
 
     return 0;
