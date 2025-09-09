@@ -2,6 +2,7 @@
 #include <core/WukConfig.hh>
 
 #if WUK_SUPPORT
+#include <fmt/core.h>
 #include <sstream>
 #include <string>
 #include <cerrno>

@@ -36,7 +36,7 @@ wuk::Buffer derive_sha256_digest(const std::string &password,
     wuk::u32 dklen = 32;
 
     PKCS5_PBKDF2_HMAC(password.data(), password.length(),
-                      salt.get_data(), salt.get_length(),
+                      salt.data(), salt.get_length(),
                       102401, EVP_sha256(), dklen,
                       derived.append(dklen));
 

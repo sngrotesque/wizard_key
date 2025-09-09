@@ -48,9 +48,9 @@ namespace wuk {
 
         void bytes(wuk::byte *buffer, wuk::ulong length)
         {
-            if(!buffer || !length) {
+            if(!buffer) {
                 throw wuk::Exception(wuk::Error::NPTR, "wuk::Random::bytes",
-                    "buffer or length is NULL.");
+                    "buffer is nullptr.");
             }
 
 #           if defined(WUK_PLATFORM_WINOS)
@@ -61,7 +61,7 @@ namespace wuk {
                     "Unable to obtain a random number, BCryptGenRandom error.");
             }
 #           elif defined(WUK_PLATFORM_LINUX)
-#           if defined(WUK_PLATFORM_ANDROID)
+#           ifdef WUK_PLATFORM_ANDROID
             // Termux对getrandom函数的支持性不高，此处的代码是为了兼容它，如果后续不考虑Termux平台的话可移除此代码。
             FILE *fp = fopen("/dev/urandom", "rb");
             if (fp == nullptr) {
@@ -76,8 +76,9 @@ namespace wuk {
             fclose(fp);
 #           else
             if(getrandom(buffer, length, GRND_RANDOM) == EOF) {
-                throw wuk::Exception(static_cast<wuk::Error>(errno), "wuk::Random::bytes",
-                    "Unable to obtain a random number, getrandom error.");
+                wuk::i32 err_code = errno;
+                throw wuk::Exception(err_code, "wuk::Random::bytes",
+                    strerror(err_code));
             }
 #           endif
 #           endif
@@ -85,8 +86,9 @@ namespace wuk {
 
         std::string bytes(wuk::u32 length)
         {
-            if(!length) return {};
-
+            if(!length) {
+                return {};
+            }
             std::string result(length, '\0');
 
             this->bytes(reinterpret_cast<wuk::byte *>(result.data()), length);

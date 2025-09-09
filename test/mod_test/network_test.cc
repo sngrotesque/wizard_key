@@ -171,7 +171,7 @@ int main()
     std::cout << "The program starts execution.\n";
 
     try {
-        timeout_test("klbq.idreamsky.com", 80, 0.001);
+        timeout_test("klbq.idreamsky.com", 80, 0.001 * 1e3);
     } catch (const wuk::Exception &e) {
         std::cerr << e.what() << std::endl;
     }

@@ -42,7 +42,7 @@ wuk::Buffer derive_key(const std::string &password,
     wuk::Buffer derived;
 
     PKCS5_PBKDF2_HMAC(password.data(), password.length(),
-                      salt.get_data(), salt.get_length(),
+                      salt.data(), salt.get_length(),
                       102401, EVP_sha256(), dklen,
                       derived.append(dklen));
 
@@ -68,7 +68,7 @@ std::string file_hexdigest(const fs::path &path)
             break;
         }
 
-        hash.update(buffer.get_data(), length);
+        hash.update(buffer.data(), length);
     }
 
     return hash.hexdigest();
@@ -96,13 +96,13 @@ void file_xcrypt(const fs::path    &in_path,  const fs::path &out_path,
     // 初始化密码套件
     if (encrypt) {
         RAND_bytes(salt.append(salt_size), salt_size);
-        fout.write(salt.get_cstr(), salt.get_length());
+        fout.write(salt.c_str(), salt.get_length());
     } else {
         fin.read(reinterpret_cast<char *>(salt.append(salt_size)), salt_size);
     }
     wuk::Buffer key_with_nonce = derive_key(password, salt);
-    key = key_with_nonce.get_data();
-    nonce = key_with_nonce.get_data() + wuk::crypto::OP4_KL;
+    key = key_with_nonce.data();
+    nonce = key_with_nonce.data() + wuk::crypto::OP4_KL;
 
     wuk::crypto::OP4 op4(key);
 
@@ -117,17 +117,17 @@ void file_xcrypt(const fs::path    &in_path,  const fs::path &out_path,
             break;
         }
 
-        op4.ctr_stream(out_buffer.write(in_length), in_buffer.get_data(), in_length, nonce);
-        fout.write(out_buffer.get_cstr(), in_length);
+        op4.ctr_stream(out_buffer.write(in_length), in_buffer.data(), in_length, nonce);
+        fout.write(out_buffer.c_str(), in_length);
     }
 }
 
 void file_xcrypt_test()
 {
     using HashType = wuk::crypto::HashlibType;
-    fs::path plaintext("L:/p_cookie.txt");
-    fs::path ciphertext("L:/p_cookie.txt.op4");
-    fs::path decrypted("L:/p_cookie.txt.op4.bin");
+    fs::path plaintext("/home/sn/Desktop/sslkey.log");
+    fs::path ciphertext("/home/sn/Desktop/sslkey.log.op4");
+    fs::path decrypted("/home/sn/Desktop/sslkey.log.op4.log");
     std::string password("zzzzzzzzzzzzzz");
 
     try {

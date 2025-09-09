@@ -364,7 +364,7 @@ namespace wuk {
             throw wuk::Exception(wuk::Error::NPTR, "wuk::Buffer::write",
                 "buffer in nullptr.");
         }
-        if (!this->is_memory_sufficient(length)) {
+        if ((this->m_size < length) && !this->is_memory_sufficient(length)) {
             this->expand_memory(length);
         }
 
@@ -385,7 +385,7 @@ namespace wuk {
 
     wuk::byte *Buffer::write(wuk::ulong length)
     {
-        if (!this->is_memory_sufficient(length)) {
+        if ((this->m_size < length) && !this->is_memory_sufficient(length)) {
             this->expand_memory(length);
         }
         this->m_len = length;
@@ -445,12 +445,12 @@ namespace wuk {
 
     //////////////////////////////////////////////////////////////////////
 
-    const wuk::byte *Buffer::get_data() const noexcept
+    const wuk::byte *Buffer::data() const noexcept
     {
         return this->m_data;
     }
 
-    const char *Buffer::get_cstr() const noexcept
+    const char *Buffer::c_str() const noexcept
     {
         return reinterpret_cast<const char *>(this->m_data);
     }
@@ -467,7 +467,7 @@ namespace wuk {
 
     std::string Buffer::to_str() const noexcept
     {
-        return std::string(this->get_cstr(), this->get_length());
+        return std::string(this->c_str(), this->get_length());
     }
 
     std::string Buffer::to_hex() const noexcept

@@ -20,9 +20,6 @@ timeval create_timeval(wuk::f64 timeout)
     tv.tv_sec = static_cast<time_t>(int_part);
     tv.tv_usec = static_cast<time_t>(float_part * 1e6);
 
-    printf("tv_sec:  %ld\n", tv.tv_sec);
-    printf("tv_usec: %ld\n", tv.tv_usec);
-
     return tv;
 }
 
@@ -58,7 +55,7 @@ T sock_call_ex( wuk::net::Socket &fd,
 
         if (result == _res_err) {
             wuk::net::err::SocketType err = wuk::net::err::from_code(wuk::net::err::system::code());
-            if (err == wuk::net::err::SocketType::WOULDBLOCK) {
+            if (err == wuk::net::err::SocketType::WOULDBLOCK || err == wuk::net::err::SocketType::INPROGRESS) {
                 // 设置select监听
                 fd_set fds;
                 FD_ZERO(&fds);

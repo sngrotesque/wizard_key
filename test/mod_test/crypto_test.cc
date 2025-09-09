@@ -25,7 +25,7 @@ wuk::Buffer derive_key(const std::string &password, const wuk::Buffer &salt, wuk
 {
     wuk::Buffer result;
 
-    PKCS5_PBKDF2_HMAC(password.c_str(), password.length(), salt.get_data(), salt.get_length(),
+    PKCS5_PBKDF2_HMAC(password.c_str(), password.length(), salt.data(), salt.get_length(),
         201001, EVP_sha256(), length, result.append(length));
 
     return result;
@@ -34,8 +34,8 @@ wuk::Buffer derive_key(const std::string &password, const wuk::Buffer &salt, wuk
 void op4_encryption_test()
 {
     auto keyWithNonce = derive_key("12345678", {"abcdef0123456789"}, OP4_KL + OP4_NL);
-    const wuk::byte *key = keyWithNonce.get_data();
-    const wuk::byte *nonce = keyWithNonce.get_data() + OP4_KL;
+    const wuk::byte *key = keyWithNonce.data();
+    const wuk::byte *nonce = keyWithNonce.data() + OP4_KL;
 
     OP4 op4(key);
 

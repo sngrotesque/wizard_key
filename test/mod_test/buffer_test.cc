@@ -11,7 +11,7 @@ void print_info(const wuk::Buffer &buffer)
     printf("%s[I]%s data:   %p\n",
             wuk::color::fore::cyan,
             wuk::color::all::reset,
-            buffer.get_data());
+            buffer.data());
 
     printf("%s[I]%s length: %zd\n",
             wuk::color::fore::cyan,
@@ -33,11 +33,11 @@ void method_1()
 
     buffer.append("hello, world.\n");
     memcpy(buffer.append(13), "SN-Grotesque\n", 13);
-    memcpy(buffer.append(text.get_length()), text.get_data(), text.get_length());
+    memcpy(buffer.append(text.get_length()), text.data(), text.get_length());
 
-    wuk::misc::print_pybytes(buffer.get_data(), buffer.get_length(), true);
+    wuk::misc::print_pybytes(buffer.data(), buffer.get_length(), true);
 
-    wuk::byte *p = const_cast<wuk::byte *>(buffer.get_data());
+    wuk::byte *p = const_cast<wuk::byte *>(buffer.data());
     p[0] = 0x00;
 
     printf("length: %zd\n", buffer.get_length());
@@ -63,7 +63,7 @@ void method_2()
 
     print_info(buffer);
 
-    std::cout << buffer.get_cstr() << std::endl;
+    std::cout << buffer.c_str() << std::endl;
 }
 
 void method_3()
@@ -89,7 +89,7 @@ void method_4()
 
     buffer.write("a data.");
 
-    wuk::misc::print_pybytes(buffer.get_data(), buffer.get_length(), true);
+    wuk::misc::print_pybytes(buffer.data(), buffer.get_length(), true);
 }
 
 void method_5()
@@ -139,19 +139,19 @@ void method_8()
     }
 
     buffer.write(reinterpret_cast<const wuk::byte *>(""), 0);
-    wuk::misc::print_pybytes(buffer.get_data(), buffer.get_length(), true);
+    wuk::misc::print_pybytes(buffer.data(), buffer.get_length(), true);
     print_info(buffer);
 
     buffer.append(std::string("good boy."));
-    wuk::misc::print_pybytes(buffer.get_data(), buffer.get_length(), true);
+    wuk::misc::print_pybytes(buffer.data(), buffer.get_length(), true);
     print_info(buffer);
 
     memcpy(buffer.append(32), "abcdef0123456789abcdef0123456789", 32);
-    wuk::misc::print_pybytes(buffer.get_data(), buffer.get_length(), true);
+    wuk::misc::print_pybytes(buffer.data(), buffer.get_length(), true);
     print_info(buffer);
 
     memcpy(buffer.write(5), "hello", 5);
-    wuk::misc::print_pybytes(buffer.get_data(), buffer.get_length(), true);
+    wuk::misc::print_pybytes(buffer.data(), buffer.get_length(), true);
     print_info(buffer);
 }
 

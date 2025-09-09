@@ -84,8 +84,8 @@ namespace wuk {
         void shrink_to_fit();
 
     public:
-        const wuk::byte *get_data() const noexcept;
-        const char *get_cstr() const noexcept;
+        const wuk::byte *data() const noexcept;
+        const char *c_str() const noexcept;
         wuk::ulong get_length() const noexcept;
         wuk::ulong get_size() const noexcept;
 

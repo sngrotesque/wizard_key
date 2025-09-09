@@ -22,7 +22,7 @@ wuk::Buffer derive_key_and_nonce(const std::string &password,
     wuk::u32 dklen = WukCC20_KL + WukCC20_NL;
 
     PKCS5_PBKDF2_HMAC(password.data(), password.length(),
-                      salt.get_data(), salt.get_length(),
+                      salt.data(), salt.get_length(),
                       102401, EVP_sha256(), dklen,
                       derived.append(dklen));
     return derived;
@@ -32,14 +32,14 @@ wuk::Buffer chacha20_encrypt(const wuk::Buffer &data, const std::string &passwor
 {
     wuk::Buffer salt = random.bytes(salt_size);
     wuk::Buffer derived = derive_key_and_nonce(password, salt);
-    const wuk::byte *key = derived.get_data();
-    const wuk::byte *nonce = derived.get_data() + wuk::crypto::WukCC20_KL;
+    const wuk::byte *key = derived.data();
+    const wuk::byte *nonce = derived.data() + wuk::crypto::WukCC20_KL;
 
     wuk::crypto::ChaCha20 cipher(key);
 
     wuk::Buffer ciphertext;
     cipher.crypto_stream(ciphertext.append(data.get_length()),
-                         data.get_data(),
+                         data.data(),
                          data.get_length(),
                          nonce);
     derived.clear(true);
@@ -51,17 +51,17 @@ wuk::Buffer chacha20_encrypt(const wuk::Buffer &data, const std::string &passwor
 
 wuk::Buffer chacha20_decrypt(const wuk::Buffer &data, const std::string &password)
 {
-    wuk::Buffer salt(data.get_data(), salt_size);
+    wuk::Buffer salt(data.data(), salt_size);
     wuk::Buffer derived = derive_key_and_nonce(password, salt);
-    const wuk::byte *key = derived.get_data();
-    const wuk::byte *nonce = derived.get_data() + wuk::crypto::WukCC20_KL;
+    const wuk::byte *key = derived.data();
+    const wuk::byte *nonce = derived.data() + wuk::crypto::WukCC20_KL;
 
-    wuk::Buffer ciphertext(data.get_data() + salt_size, data.get_length() - salt_size);
+    wuk::Buffer ciphertext(data.data() + salt_size, data.get_length() - salt_size);
     wuk::Buffer plaintext;
 
     wuk::crypto::ChaCha20 cipher(key);
     cipher.crypto_stream(plaintext.append(ciphertext.get_length()),
-                         ciphertext.get_data(),
+                         ciphertext.data(),
                          ciphertext.get_length(),
                          nonce);
     derived.clear(true);

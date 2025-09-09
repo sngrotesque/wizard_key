@@ -16,9 +16,20 @@
 
 ### 先决条件
 
- -  支持 **C++17** 的编译器（GCC 7+、Clang 5+、MSVC 2017+）。
+ -  最低支持 **C++17** 的编译器（GCC 7+、Clang 5+、MSVC 2017+）。
  -  ~~CMake 3.15+（用于构建）~~，暂时还用不到 **CMake** 。
  -  Python 3.6+。不要担心，Python只是用来更方便的构建脚本所使用的，没有它你其实也可以构建。
+ -  此库部分模块依赖以下开源库：
+    1. [Libsodium](https://doc.libsodium.org/)
+    2. [Libpng](http://www.libpng.org/pub/png/libpng.html)
+    3. [Libpq](https://www.postgresql.org/)
+    4. [OpenSSL](https://www.openssl.org/)
+    5. [Protobuf](https://protobuf.dev/)
+    6. [Zlib](https://www.zlib.net/)
+
+| Library   | Website                            | Description |
+| ---       | ---                                | ---         |
+| Libsodium | [Link](https://doc.libsodium.org/) | 这是一个密码库 |
 
 ### 使用
 

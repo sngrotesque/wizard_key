@@ -210,7 +210,7 @@ namespace wuk::base64 {
 
     wuk::Buffer encode(const wuk::Buffer &buffer)
     {
-        const wuk::byte *p = buffer.get_data();
+        const wuk::byte *p = buffer.data();
         wuk::ulong       n = buffer.get_length();
 
         std::vector<wuk::byte> input(p, p + n);
@@ -224,7 +224,7 @@ namespace wuk::base64 {
 
     wuk::Buffer decode(const wuk::Buffer &buffer, bool strict)
     {
-        const char *p = buffer.get_cstr();
+        const char *p = buffer.c_str();
         wuk::ulong n = buffer.get_length();
 
         std::vector<char> input(p, p + n);
