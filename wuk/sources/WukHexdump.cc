@@ -16,7 +16,7 @@ constexpr wuk::u32 WUK_HD_BL = 16; // HexDump Block Size
  * @param size 这是一个长度，为buf指针指向的内容的长度（一般不超过32字节）。
  * @return 无
 */
-void _hexdump(wuk::ulong offset, wuk::byte *buf, wuk::u32 size)
+void _hexdump(wuk::ulong offset, wuk::byte *buf, wuk::u32 size) noexcept
 {
     printf("%012zx | ", offset);
     for(wuk::u32 i = 0; i < WUK_HD_BL; ++i) {
@@ -62,7 +62,7 @@ void wuk::hexdump(fs::path file_path)
     }
 }
 
-void wuk::hexdump(wuk::byte *data, wuk::ulong length)
+void wuk::hexdump(wuk::byte *data, wuk::ulong length) noexcept
 {
     wuk::ulong leftover = length % WUK_HD_BL;
     wuk::ulong total    = length / WUK_HD_BL;

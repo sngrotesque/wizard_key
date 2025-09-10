@@ -7,9 +7,9 @@
 
 namespace wuk::misc {
     LIBWUK_API void print_diff_hex(const wuk::byte *data1, const wuk::byte *data2,
-                                wuk::ulong len1, wuk::ulong len2,
-                                wuk::u32 hex_per_line, bool indent);
-    LIBWUK_API void print_hex(const wuk::byte *data, wuk::ulong len, wuk::ulong num, bool newline,
+                                         wuk::ulong len1, wuk::ulong len2,
+                                         wuk::u32 hex_per_line, bool indent);
+    LIBWUK_API void print_hex(const wuk::byte *data, wuk::ulong len, wuk::ulong hex_per_line, bool newline,
                             bool indent);
     LIBWUK_API void print_number(const wuk::byte *arr, wuk::ulong size, wuk::u32 num, bool newline);
     LIBWUK_API void print_box(const wuk::byte *box, wuk::ulong size, wuk::ulong num, bool newline);

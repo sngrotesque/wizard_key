@@ -26,25 +26,17 @@ namespace wuk {
         std::string err_msg;
 
     private:
-        void set(wuk::i32 code, const std::string &func, const std::string &message)
+        void set(wuk::i32 code, const std::string &func, const std::string &message) noexcept
         {
-            auto get_err_message = [&]() -> std::string {
-                std::stringstream ss;
-                ss  << func
-                    << "[" << std::to_string(code) << "]: "
-                    << message;
-                return ss.str();
-            };
-
             this->code = code;
             this->func = func;
             this->msg = message;
-            this->err_msg = get_err_message();
+            this->err_msg = fmt::format("{0}[{1}]: {2}", func, code, message);
         }
 
     public:
         template <typename T>
-        Exception(const T &code, const std::string &function, const std::string &message)
+        Exception(const T &code, const std::string &function, const std::string &message) noexcept
         {
             this->set(static_cast<wuk::i32>(code), function, message);
         }

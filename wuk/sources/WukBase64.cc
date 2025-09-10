@@ -33,7 +33,7 @@ constexpr wuk::byte b64de_table[256] = {
     __, __, __, __,  __, __, __, __,  __, __, __, __,  __, __, __, __
 };
 
-std::vector<char> base64_encode(const std::vector<wuk::byte> &buffer)
+std::vector<char> base64_encode(const std::vector<wuk::byte> &buffer) noexcept
 {
     if (buffer.empty()) {
         return {};
@@ -180,7 +180,7 @@ done:
 }
 
 namespace wuk::base64 {
-    std::string encode(const std::string &buffer)
+    std::string encode(const std::string &buffer) noexcept
     {
         const wuk::byte *p = \
             reinterpret_cast<const wuk::byte *>(buffer.data());
@@ -208,7 +208,7 @@ namespace wuk::base64 {
         return result;
     }
 
-    wuk::Buffer encode(const wuk::Buffer &buffer)
+    wuk::Buffer encode(const wuk::Buffer &buffer) noexcept
     {
         const wuk::byte *p = buffer.data();
         wuk::ulong       n = buffer.get_length();

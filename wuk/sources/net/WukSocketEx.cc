@@ -8,7 +8,7 @@ enum class IOType {
     RECV
 };
 
-timeval create_timeval(wuk::f64 timeout)
+timeval create_timeval(wuk::f64 timeout) noexcept
 {
     timeval tv {};
 

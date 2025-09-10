@@ -9,7 +9,7 @@ namespace fs = std::filesystem;
 
 namespace wuk {
     LIBWUK_API void hexdump(fs::path file_path);
-    LIBWUK_API void hexdump(wuk::byte *data, wuk::ulong length);
+    LIBWUK_API void hexdump(wuk::byte *data, wuk::ulong length) noexcept;
 }
 
 #endif /* WUK_SUPPORT */

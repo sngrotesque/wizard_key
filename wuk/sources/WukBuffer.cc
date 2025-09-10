@@ -64,7 +64,7 @@ namespace wuk {
      * @param length 新数据的长度
      * @return 如果足够就返回True，否则False
      */
-    bool Buffer::is_memory_sufficient(wuk::ulong length)
+    bool Buffer::is_memory_sufficient(wuk::ulong length) const noexcept
     {
         return (this->m_len + length) <= this->m_size;
     }
@@ -296,7 +296,7 @@ namespace wuk {
         return *this;
     }
 
-    bool Buffer::operator==(const Buffer &other)
+    bool Buffer::operator==(const Buffer &other) const noexcept
     {
         if (this == &other) {
             return true;
@@ -314,7 +314,7 @@ namespace wuk {
         return true;
     }
 
-    bool Buffer::operator!=(const Buffer &other)
+    bool Buffer::operator!=(const Buffer &other) const noexcept
     {
         if (this == &other) {
             return false;
@@ -328,7 +328,7 @@ namespace wuk {
         return this->m_data[index];
     }
 
-    const wuk::byte &Buffer::operator[](const wuk::ulong &index) const
+    const wuk::byte &Buffer::operator[](const wuk::ulong &index) const noexcept
     {
         return this->m_data[index];
     }
@@ -439,8 +439,9 @@ namespace wuk {
             this->clear();
             return;
         }
-
-        this->shrink_memory(this->m_size - this->m_len);
+        if (this->m_data) {
+            this->shrink_memory(this->m_size - this->m_len);
+        }
     }
 
     //////////////////////////////////////////////////////////////////////

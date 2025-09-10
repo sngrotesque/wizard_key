@@ -27,7 +27,7 @@ static inline wuk::byte to_char(const wuk::byte &c)
 }
 
 std::vector<char>
-wuk::utils::bytes_to_hex(const std::vector<wuk::byte> &buffer)
+wuk::utils::bytes_to_hex(const std::vector<wuk::byte> &buffer) noexcept
 {
     if (buffer.empty()) {
         return {};

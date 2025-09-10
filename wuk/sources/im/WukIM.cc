@@ -22,13 +22,13 @@ static constexpr wuk::i64 timestamp_shift     = sequence_bits + worker_id_bits +
 static constexpr wuk::i64 epoch = 1751299200000LL;
 
 namespace wuk::im {
-    wuk::i64 Snowflake::current_timestamp() const
+    wuk::i64 Snowflake::current_timestamp() const noexcept
     {
         return std::chrono::duration_cast<std::chrono::milliseconds>(
             std::chrono::system_clock::now().time_since_epoch()).count();
     }
 
-    wuk::i64 Snowflake::wait_next_millis(wuk::i64 last_timestamp)
+    wuk::i64 Snowflake::wait_next_millis(wuk::i64 last_timestamp) const noexcept
     {
         auto timestamp = current_timestamp();
         while (timestamp <= last_timestamp) {

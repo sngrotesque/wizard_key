@@ -7,7 +7,7 @@
 #include <vector>
 
 namespace wuk::utils {
-    LIBWUK_API std::vector<char> bytes_to_hex(const std::vector<wuk::byte> &buffer);
+    LIBWUK_API std::vector<char> bytes_to_hex(const std::vector<wuk::byte> &buffer) noexcept;
     LIBWUK_API std::vector<wuk::byte> hex_to_bytes(const std::vector<char> &buffer);
 
     template <typename T, bool reverse_endian = false>

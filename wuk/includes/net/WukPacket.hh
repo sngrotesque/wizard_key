@@ -14,49 +14,49 @@ namespace wuk::net {
         wuk::Time timer;
 
     private:
-        bool validate() const;
+        bool validate() const noexcept;
 
     public:
         WukPacket() = default;
 
     public: // Setter
-        WukPacket &set_type(MessageType type);
-        WukPacket &add_flag(MessageType type);
+        WukPacket &set_type(MessageType type) noexcept;
+        WukPacket &add_flag(MessageType type) noexcept;
 
-        WukPacket &set_sequence(wuk::u32 seq);
-        WukPacket &set_segment_id(wuk::u32 seg_id, bool is_last = false);
+        WukPacket &set_sequence(wuk::u32 seq) noexcept;
+        WukPacket &set_segment_id(wuk::u32 seg_id, bool is_last = false) noexcept;
         WukPacket &set_proto_ver(wuk::u32 version);
 
-        WukPacket &set_ids(wuk::u64 sender, wuk::u64 recipient);
-        WukPacket &set_sender(wuk::u64 id);
-        WukPacket &set_recipient(wuk::u64 id);
+        WukPacket &set_ids(wuk::u64 sender, wuk::u64 recipient) noexcept;
+        WukPacket &set_sender(wuk::u64 id) noexcept;
+        WukPacket &set_recipient(wuk::u64 id) noexcept;
 
-        WukPacket &set_timestamp(wuk::f64 time_val);
+        WukPacket &set_timestamp(wuk::f64 time_val) noexcept;
 
-        WukPacket &set_message_id(wuk::u32 id);
+        WukPacket &set_message_id(wuk::u32 id) noexcept;
 
-        WukPacket &set_message(const void *buffer, wuk::ulong length);
-        WukPacket &set_message(const std::string &buffer);
-        WukPacket &set_message(const wuk::Buffer &buffer);
+        WukPacket &set_message(const void *buffer, wuk::ulong length) noexcept;
+        WukPacket &set_message(const std::string &buffer) noexcept;
+        WukPacket &set_message(const wuk::Buffer &buffer) noexcept;
 
     public: // Getter
-        MessageType get_type() const;
-        bool has_flag(MessageType flag) const;
+        MessageType get_type() const noexcept;
+        bool has_flag(MessageType flag) const noexcept;
 
-        wuk::u32 get_sequence() const;
-        wuk::u32 get_segment_id() const;
-        wuk::u32 get_proto_ver() const;
+        wuk::u32 get_sequence() const noexcept;
+        wuk::u32 get_segment_id() const noexcept;
+        wuk::u32 get_proto_ver() const noexcept;
 
-        wuk::u64 get_sender() const;
-        wuk::u64 get_recipient() const;
+        wuk::u64 get_sender() const noexcept;
+        wuk::u64 get_recipient() const noexcept;
 
-        wuk::f64 get_timestamp() const;
+        wuk::f64 get_timestamp() const noexcept;
 
-        wuk::u32 get_message_id() const;
-        wuk::ulong get_message_size() const;
+        wuk::u32 get_message_id() const noexcept;
+        wuk::ulong get_message_size() const noexcept;
 
-        const std::string &get_message() const;
-        const wuk::Buffer get_message(int) const;
+        const std::string &get_message() const noexcept;
+        const wuk::Buffer get_message(int) const noexcept;
 
     public: // Function
         const std::string serialize();

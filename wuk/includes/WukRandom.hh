@@ -3,6 +3,7 @@
 
 #if WUK_SUPPORT
 #include <core/WukException.hh>
+#include <WukBuffer.hh>
 #include <WukMemory.hh>
 #include <random>
 #include <vector>
@@ -35,18 +36,31 @@ namespace wuk {
         }
 
     public:
-        wuk::ulong rand()
+        inline wuk::f64 random()
         {
-            return this->randint(0, ~0ULL);
-        }
-
-        wuk::ulong randint(wuk::ulong min, wuk::ulong max)
-        {
-            std::uniform_int_distribution<wuk::ulong> dis(min, max);
+            std::uniform_real_distribution<wuk::f64> dis(0.0, 1.0);
             return dis(this->generator);
         }
 
-        void bytes(wuk::byte *buffer, wuk::ulong length)
+        inline wuk::f64 uniform(wuk::f64 min_val, wuk::f64 max_val)
+        {
+            if (min_val > max_val) {
+                return 0;
+            }
+            std::uniform_real_distribution<wuk::f64> dis(min_val, max_val);
+            return dis(this->generator);
+        }
+
+        inline wuk::ulong randint(wuk::ulong min_val, wuk::ulong max_val)
+        {
+            if (min_val > max_val) {
+                return 0;
+            }
+            std::uniform_int_distribution<wuk::ulong> dis(min_val, max_val);
+            return dis(this->generator);
+        }
+
+        inline void bytes(wuk::byte *buffer, wuk::ulong length)
         {
             if(!buffer) {
                 throw wuk::Exception(wuk::Error::NPTR, "wuk::Random::bytes",
@@ -84,27 +98,36 @@ namespace wuk {
 #           endif
         }
 
-        std::string bytes(wuk::u32 length)
+        inline wuk::Buffer bytes(wuk::u32 length)
         {
             if(!length) {
                 return {};
             }
-            std::string result(length, '\0');
+            wuk::Buffer result(length, 0);
 
-            this->bytes(reinterpret_cast<wuk::byte *>(result.data()), length);
+            this->bytes(result.write(length), length);
 
             return result;
         }
 
         template <typename T>
-        const T &choice(const std::vector<T> &arr)
+        inline const T &choice(const std::vector<T> &arr)
         {
-            try {
-                auto i = this->randint(0, arr.size() - 1);
-                return arr.at(i);
-            } catch (const std::out_of_range &e) {
-                throw wuk::Exception(wuk::Error::ERR, "wuk::Random::choice",
-                    e.what());
+            return arr.at(this->randint(0, arr.size() - 1));
+        }
+
+        template <typename T>
+        inline void shuffle(std::vector<T> &array)
+        {
+            if (array.empty()) {
+                return;
+            }
+
+            // 使用Fisher-Yates洗牌算法
+            for (wuk::ulong i = array.size() - 1; i > 0; --i) {
+                wuk::ulong j = this->randint(0, i);
+
+                std::swap(array[i], array[j]);
             }
         }
     };

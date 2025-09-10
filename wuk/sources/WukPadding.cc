@@ -16,7 +16,7 @@ static inline void throw_error(const void *data, wuk::ulong length, wuk::u32 bs,
     }
 }
 
-static inline wuk::ulong dynamic_align(wuk::ulong x, wuk::ulong alignment)
+static inline wuk::ulong dynamic_align(wuk::ulong x, wuk::ulong alignment) noexcept
 {
     if ((x & (alignment - 1)) == 0) {
         return x;

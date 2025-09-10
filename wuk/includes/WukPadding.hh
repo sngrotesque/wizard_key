@@ -13,7 +13,7 @@ namespace wuk {
     * @param blockSize 填充的块大小
     * @return 一个指向填充后的数据的指针(new [])。
     */
-    LIBWUK_API wuk::byte *pkcs7_pad(const wuk::byte *data, wuk::ulong &length, wuk::u32 blockSize);
+    inline LIBWUK_API wuk::byte *pkcs7_pad(const wuk::byte *data, wuk::ulong &length, wuk::u32 blockSize);
 
     /**
     * @brief PKCS7填充删除
@@ -23,7 +23,6 @@ namespace wuk {
     * @param length 传入时作为源内容长度，函数调用结束后作为清除填充后的长度
     * @return 一个指向填充后的数据的指针(new [])。
     */
-    LIBWUK_API wuk::byte *pkcs7_unpad(const wuk::byte *data, wuk::ulong &length);
+    inline LIBWUK_API wuk::byte *pkcs7_unpad(const wuk::byte *data, wuk::ulong &length);
 }
-
 #endif

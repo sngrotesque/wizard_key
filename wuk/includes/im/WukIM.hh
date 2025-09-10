@@ -13,6 +13,13 @@
 #include <mutex>
 
 namespace wuk::im {
+    enum class AccountStatus {
+        NORMAL, // 正常
+        BANNED, // 封禁
+        MUTED,  // 禁言
+        DELETED // 删除
+    };
+
     class LIBWUK_API Snowflake {
     private:
         wuk::i64 datacenter_id = 0;
@@ -22,21 +29,14 @@ namespace wuk::im {
         std::mutex mutex;
 
     private:
-        wuk::i64 current_timestamp() const;
-        wuk::i64 wait_next_millis(wuk::i64 last_timestamp);
+        wuk::i64 current_timestamp() const noexcept;
+        wuk::i64 wait_next_millis(wuk::i64 last_timestamp) const noexcept;
 
     public:
         Snowflake(wuk::i64 worker_id, wuk::i64 datacenter_id = 0);
 
     public:
         wuk::i64 generate_id();
-    };
-
-    enum class AccountStatus {
-        NORMAL, // 正常
-        BANNED, // 封禁
-        MUTED,  // 禁言
-        DELETED // 删除
     };
 }
 

@@ -28,7 +28,9 @@ namespace wuk::net {
         addrinfo *res = nullptr;
 
     public:
-        Addrinfo(wuk::i32 family = AF_INET, wuk::i32 sock_type = SOCK_STREAM, wuk::i32 proto = IPPROTO_TCP);
+        Addrinfo(wuk::i32 family = AF_INET,
+                 wuk::i32 sock_type = SOCK_STREAM,
+                 wuk::i32 proto = IPPROTO_TCP) noexcept;
         ~Addrinfo();
 
     public:
@@ -94,14 +96,14 @@ namespace wuk::net {
 
     public:
 #       ifdef WUK_STD_CPP_20
-        std::strong_ordering operator<=>(const Socket &other) const;
+        std::strong_ordering operator<=>(const Socket &other) const noexcept;
 #       else
-        bool operator<(const Socket &other) const;
-        bool operator<=(const Socket &other) const;
-        bool operator>(const Socket &other) const;
-        bool operator>=(const Socket &other) const;
-        bool operator==(const Socket &other) const;
-        bool operator!=(const Socket &other) const;
+        bool operator<(const Socket &other) const noexcept;
+        bool operator<=(const Socket &other) const noexcept;
+        bool operator>(const Socket &other) const noexcept;
+        bool operator>=(const Socket &other) const noexcept;
+        bool operator==(const Socket &other) const noexcept;
+        bool operator!=(const Socket &other) const noexcept;
 #       endif
 
     public:
@@ -145,13 +147,13 @@ namespace wuk::net {
         // 阻塞套接字
         void connect(const std::string &addr, const wuk::u16 &port);
         void bind(const std::string &addr, const wuk::u16 &port);
-        void listen(const socklen_t &backlog);
+        void listen(const socklen_t &backlog) const;
         Socket accept() const;
-        wuk::ilong send(const std::string &buffer, wuk::i32 flag = 0);
-        void sendall(const std::string &buffer, wuk::i32 flag = 0);
-        wuk::ilong sendto(const std::string &buffer, const Sockaddr &addr, wuk::i32 flag = 0);
-        std::string recv(const socklen_t &length, wuk::i32 flag = 0);
-        std::string recvfrom(const socklen_t &length, Sockaddr &addr, wuk::i32 flag = 0);
+        wuk::ilong send(const std::string &buffer, wuk::i32 flag = 0) const;
+        void sendall(const std::string &buffer, wuk::i32 flag = 0) const;
+        wuk::ilong sendto(const std::string &buffer, const Sockaddr &addr, wuk::i32 flag = 0) const;
+        std::string recv(const socklen_t &length, wuk::i32 flag = 0) const;
+        std::string recvfrom(const socklen_t &length, Sockaddr &addr, wuk::i32 flag = 0) const;
 
         // 非阻塞套接字
         void connect_ex(const std::string &addr, const wuk::u16 &port);
@@ -159,7 +161,7 @@ namespace wuk::net {
         wuk::ilong send_ex(const std::string &buffer, wuk::i32 flag = 0);
         std::string recv_ex(const socklen_t &length, wuk::i32 flag = 0);
 
-        void shutdown(const wuk::i32 &how);
+        void shutdown(const wuk::i32 &how) const;
         void close();
 
     public:

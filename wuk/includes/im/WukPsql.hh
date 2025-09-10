@@ -15,12 +15,12 @@ namespace wuk::im {
         PGconn *m_conn = nullptr;
 
     private:
-        ExecStatusType get_status(const PGresult *res);
-        ConnStatusType get_status(const PGconn *conn);
+        ExecStatusType get_status(const PGresult *res) noexcept;
+        ConnStatusType get_status(const PGconn *conn) noexcept;
 
         std::string get_value(PGresult *res, wuk::i32 row, wuk::i32 column);
 
-        PGresult *exec_params(const std::string &sql, const std::vector<std::string> &params);
+        PGresult *exec_params(const std::string &sql, const std::vector<std::string> &params) noexcept;
 
     public:
         Psql() = default;

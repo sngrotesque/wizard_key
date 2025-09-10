@@ -9,7 +9,7 @@
 #include <memory>
 #include <new>
 
-static inline void forced_zeroing(volatile void *p, wuk::ulong length)
+static inline void forced_zeroing(volatile void *p, wuk::ulong length) noexcept
 {
     volatile char *ptr = (volatile char *)p;
     do {
@@ -18,7 +18,7 @@ static inline void forced_zeroing(volatile void *p, wuk::ulong length)
 }
 
 namespace wuk {
-    inline LIBWUK_API void memory_secure(void *buffer, wuk::ulong length)
+    inline LIBWUK_API void memory_secure(void *buffer, wuk::ulong length) noexcept
     {
 #       if defined(WUK_PLATFORM_WINOS)
         SecureZeroMemory(buffer, length);
@@ -31,7 +31,7 @@ namespace wuk {
 #       endif
     }
 
-    inline LIBWUK_API void memory_zero(void *buffer, wuk::ulong length)
+    inline LIBWUK_API void memory_zero(void *buffer, wuk::ulong length) noexcept
     {
         memset(buffer, 0x00, length);
     }

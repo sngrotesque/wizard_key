@@ -20,6 +20,7 @@ namespace wuk::crypto {
     public:
         OP4() = default;
         OP4(const wuk::byte key[OP4_KL], wuk::u32 counter = 0U);
+        ~OP4();
 
     public:
         void ecb_encrypt(wuk::byte *out, const wuk::byte *in, wuk::ulong length);

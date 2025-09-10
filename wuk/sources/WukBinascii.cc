@@ -3,7 +3,7 @@
 #include <utils/bytes.hh>
 
 namespace wuk::binascii {
-    std::string b2a_hex(const std::string &buffer)
+    std::string b2a_hex(const std::string &buffer) noexcept
     {
         const wuk::byte *p = \
             reinterpret_cast<const wuk::byte *>(buffer.data());
@@ -31,7 +31,7 @@ namespace wuk::binascii {
         return result;
     }
 
-    wuk::Buffer b2a_hex(const wuk::Buffer &buffer)
+    wuk::Buffer b2a_hex(const wuk::Buffer &buffer) noexcept
     {
         const wuk::byte *p = buffer.data();
         wuk::ulong       n = buffer.get_length();

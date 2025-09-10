@@ -4,33 +4,29 @@
 #if WUK_SUPPORT
 #include <core/WukEndianness.hh>
 
-#ifdef LIBSODIUM_SUPPORT
-#   include <sodium.h>
-#endif
-
 namespace wuk::crypto {
-    inline wuk::u32 rotl32(const wuk::u32 &x, const wuk::u32 &n)
+    inline LIBWUK_API wuk::u32 rotl32(const wuk::u32 &x, const wuk::u32 &n) noexcept
     {
         return (x << n) | (x >> (32 - n));
     }
 
-    inline wuk::u32 rotr32(const wuk::u32 &x, const wuk::u32 &n)
+    inline LIBWUK_API wuk::u32 rotr32(const wuk::u32 &x, const wuk::u32 &n) noexcept
     {
         return (x >> n) | (x << (32 - n));
     }
 
-    inline wuk::byte rotl8(const wuk::u32 &x, const wuk::u32 &n)
+    inline LIBWUK_API wuk::byte rotl8(const wuk::u32 &x, const wuk::u32 &n) noexcept
     {
         return (x << n) | (x >> (8 - n));
     }
 
-    inline wuk::byte rotr8(const wuk::u32 &x, const wuk::u32 &n)
+    inline LIBWUK_API wuk::byte rotr8(const wuk::u32 &x, const wuk::u32 &n) noexcept
     {
         return (x >> n) | (x << (8 - n));
     }
 
     // LOAD or PACK - Little endianness
-    inline wuk::u32 load32le(const wuk::byte dst[4])
+    inline LIBWUK_API wuk::u32 load32le(const wuk::byte dst[4]) noexcept
     {
         wuk::u32 w;
 #       ifdef WUK_NATIVE_LE
@@ -44,7 +40,7 @@ namespace wuk::crypto {
         return w;
     }
 
-    inline void pack32le(wuk::byte dst[4], wuk::u32 w)
+    inline LIBWUK_API void pack32le(wuk::byte dst[4], wuk::u32 w) noexcept
     {
 #       ifdef WUK_NATIVE_LE
         memcpy(dst, &w, sizeof w);
@@ -57,7 +53,7 @@ namespace wuk::crypto {
     }
 
     // LOAD or PACK - Big endianness
-    inline wuk::u32 load32be(const wuk::byte dst[4])
+    inline LIBWUK_API wuk::u32 load32be(const wuk::byte dst[4]) noexcept
     {
         wuk::u32 w;
 #       ifdef WUK_NATIVE_BE
@@ -71,7 +67,7 @@ namespace wuk::crypto {
         return w;
     }
 
-    inline void pack32be(wuk::byte dst[4], const wuk::u32 &w)
+    inline LIBWUK_API void pack32be(wuk::byte dst[4], const wuk::u32 &w) noexcept
     {
 #       ifdef WUK_NATIVE_BE
         memcpy(dst, &w, sizeof w);
@@ -83,5 +79,4 @@ namespace wuk::crypto {
 #       endif
     }
 }
-
 #endif

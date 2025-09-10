@@ -1,7 +1,7 @@
 #include <im/WukPsql.hh>
 
 namespace wuk::im {
-    ExecStatusType Psql::get_status(const PGresult *res)
+    ExecStatusType Psql::get_status(const PGresult *res) noexcept
     {
         // http://postgres.cn/docs/16/libpq-exec.html#LIBPQ-PQRESULTSTATUS
 
@@ -27,7 +27,7 @@ namespace wuk::im {
         return PQresultStatus(res);
     }
 
-    ConnStatusType Psql::get_status(const PGconn *conn)
+    ConnStatusType Psql::get_status(const PGconn *conn) noexcept
     {
         /**
          * 	CONNECTION_OK,
@@ -79,7 +79,7 @@ namespace wuk::im {
         return std::string(value, length);
     }
 
-    PGresult *Psql::exec_params(const std::string &sql, const std::vector<std::string> &params)
+    PGresult *Psql::exec_params(const std::string &sql, const std::vector<std::string> &params) noexcept
     {
         std::vector<const char *> param_values;
         std::vector<wuk::i32> param_lengths;

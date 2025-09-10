@@ -17,7 +17,7 @@ alignas(16) OP4_SI(constexpr wuk::u32) INV_MUL_COEFFS[4] = {
 };
 
 OP4_SI(void) xor_with_iv(wuk::byte state[wuk::crypto::OP4_BL],
-                   const wuk::byte iv[wuk::crypto::OP4_BL])
+                   const wuk::byte iv[wuk::crypto::OP4_BL]) noexcept
 {
     wuk::simd::sse::storeu128(state,
         wuk::simd::sse::xor128(
@@ -29,7 +29,7 @@ OP4_SI(void) xor_with_iv(wuk::byte state[wuk::crypto::OP4_BL],
 
 OP4_SI(void) xor_with_iv(wuk::byte state[wuk::crypto::OP4_BL],
                    const wuk::byte a[wuk::crypto::OP4_BL],
-                   const wuk::byte b[wuk::crypto::OP4_BL])
+                   const wuk::byte b[wuk::crypto::OP4_BL]) noexcept
 {
     wuk::simd::sse::storeu128(state,
         wuk::simd::sse::xor128(
@@ -41,7 +41,7 @@ OP4_SI(void) xor_with_iv(wuk::byte state[wuk::crypto::OP4_BL],
 
 OP4_SI(void) cipher(wuk::byte state[wuk::crypto::OP4_BL],
               const wuk::byte input[wuk::crypto::OP4_BL],
-              const wuk::byte round_key[wuk::crypto::OP4_RKL])
+              const wuk::byte round_key[wuk::crypto::OP4_RKL]) noexcept
 {
     wuk::simd::sse::s128 temp;
     wuk::simd::sse::s128 rk[8] = {
@@ -78,7 +78,7 @@ OP4_SI(void) cipher(wuk::byte state[wuk::crypto::OP4_BL],
 
 OP4_SI(void) inv_cipher(wuk::byte state[wuk::crypto::OP4_BL],
                   const wuk::byte input[wuk::crypto::OP4_BL],
-                  const wuk::byte round_key[wuk::crypto::OP4_RKL])
+                  const wuk::byte round_key[wuk::crypto::OP4_RKL]) noexcept
 {
     wuk::simd::sse::s128 temp;
     wuk::simd::sse::s128 rk[8] = {
@@ -113,7 +113,7 @@ OP4_SI(void) inv_cipher(wuk::byte state[wuk::crypto::OP4_BL],
     wuk::simd::sse::storeu128(state, temp);
 }
 
-OP4_SI(void) prevent_zero_key(wuk::byte key[wuk::crypto::OP4_KL])
+OP4_SI(void) prevent_zero_key(wuk::byte key[wuk::crypto::OP4_KL]) noexcept
 {
     // Prevent weak keys
     for (wuk::u32 ki = 0; ki < wuk::crypto::OP4_KL; ++ki) {
@@ -121,7 +121,7 @@ OP4_SI(void) prevent_zero_key(wuk::byte key[wuk::crypto::OP4_KL])
     }
 }
 
-OP4_SI(void) key_obfuscation(wuk::byte k[wuk::crypto::OP4_KL])
+OP4_SI(void) key_obfuscation(wuk::byte k[wuk::crypto::OP4_KL]) noexcept
 {
     // Process the 0, 4, 8, and 12 bytes each time.
     for (wuk::u32 i = 0; i < wuk::crypto::OP4_KL; i += 4) {
@@ -159,7 +159,7 @@ OP4_SI(void) key_obfuscation(wuk::byte k[wuk::crypto::OP4_KL])
     wuk::crypto::pack32le(k + 28, t7);
 }
 
-OP4_SI(void) key_schedule_transformation(wuk::byte key[wuk::crypto::OP4_KL])
+OP4_SI(void) key_schedule_transformation(wuk::byte key[wuk::crypto::OP4_KL]) noexcept
 {
     for (wuk::u32 r = 0; r < wuk::crypto::OP4_NR; ++r) {
         prevent_zero_key(key);
@@ -167,8 +167,9 @@ OP4_SI(void) key_schedule_transformation(wuk::byte key[wuk::crypto::OP4_KL])
     }
 }
 
-OP4_SI(void) key_extension(const wuk::byte key[wuk::crypto::OP4_KL],
-                                 wuk::byte round_key[wuk::crypto::OP4_RKL])
+OP4_SI(void) key_extension(
+    const wuk::byte key[wuk::crypto::OP4_KL],
+          wuk::byte round_key[wuk::crypto::OP4_RKL]) noexcept
 {
     wuk::byte copy_key[wuk::crypto::OP4_KL]{0};
     memcpy(copy_key, key, wuk::crypto::OP4_KL);
@@ -191,6 +192,11 @@ namespace wuk::crypto {
                 "key is nullptr.");
         }
         key_extension(key, this->round_key);
+    }
+
+    OP4::~OP4()
+    {
+        wuk::memory_secure(this->round_key, sizeof(this->round_key));
     }
 
     void OP4::ecb_encrypt(wuk::byte *out, const wuk::byte *in, wuk::ulong length)

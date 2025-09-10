@@ -12,13 +12,13 @@ namespace wuk {
 
     public:
         template <typename T>
-        inline void sleep(T delay)
+        inline void sleep(T delay) const noexcept
         {
             std::this_thread::sleep_for(std::chrono::duration<T>(delay));
         }
 
         template <typename T>
-        inline T time()
+        inline T time() const noexcept
         {
             auto now = std::chrono::system_clock::now();
             auto duration = now.time_since_epoch();

@@ -125,20 +125,6 @@
 using ssize_t = SSIZE_T;
 #endif
 
-// 旧版类型声明
-using wByte  = uint8_t;
-
-using wU16   = uint16_t;
-using wU32   = uint32_t;
-using wU64   = uint64_t;
-
-using wI16   = int16_t;
-using wI32   = int32_t;
-using wI64   = int64_t;
-
-using wSize  = size_t;
-using wSSize = ssize_t;
-
 namespace wuk {
 // 新版类型声明
     using byte  = uint8_t;

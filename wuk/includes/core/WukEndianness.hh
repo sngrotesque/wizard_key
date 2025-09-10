@@ -20,15 +20,15 @@
 
 namespace wuk {
     template <typename T>
-    inline T swap_endian(const T &val)
+    inline LIBWUK_API T swap_endian(const T &val)
     {
-        if (!std::is_integral_v<T> && !std::is_floating_point_v<T>) {
-            return val;
-        }
-        if constexpr (sizeof(T) < 2) {
-            return val;
-        }
+        static_assert(std::is_integral_v<T> || std::is_floating_point_v<T>, 
+            "wuk::swap_endian requires numeric type");
+
         constexpr wuk::u32 T_size = sizeof(T);
+        if constexpr (T_size < 2) {
+            return val;
+        }
         wuk::byte buffer[T_size] {0};
         memcpy(buffer, &val, T_size);
 

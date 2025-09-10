@@ -16,7 +16,7 @@ namespace wuk {
     private:
         void expand_memory(wuk::ulong length); // 用于增加可用内存大小
         void shrink_memory(wuk::ulong length); // 用于减少可用内存大小
-        bool is_memory_sufficient(wuk::ulong length); // 检查当前已申请的内存空间是否足够
+        bool is_memory_sufficient(wuk::ulong length) const noexcept; // 检查当前已申请的内存空间是否足够
 
     public:
         // 构造函数
@@ -55,11 +55,11 @@ namespace wuk {
     public:
         Buffer operator+(const Buffer &other);
         Buffer &operator+=(const Buffer &other);
-        bool operator==(const Buffer &other);
-        bool operator!=(const Buffer &other);
+        bool operator==(const Buffer &other) const noexcept;
+        bool operator!=(const Buffer &other) const noexcept;
 
         wuk::byte &operator[](const wuk::ulong &index) noexcept;
-        const wuk::byte &operator[](const wuk::ulong &index) const;
+        const wuk::byte &operator[](const wuk::ulong &index) const noexcept;
 
         wuk::byte &at(const wuk::ulong &index);
         const wuk::byte &at(const wuk::ulong &index) const;
