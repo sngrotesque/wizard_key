@@ -1,6 +1,5 @@
 #include <crypto/WukOP4.hh>
 #include <crypto/WukHash.hh>
-#include <crypto/WukChaCha20.hh>
 #include <WukBuffer.hh>
 #include <WukRandom.hh>
 #include <WukTime.hh>
@@ -14,8 +13,21 @@
 #include <vector>
 #include <future>
 
+// #define WEAK_KEY_TEST
+// #define XCRYPTION_TEST
+// #define THREADS_METHOD 3
+// #define AVALANCHE_EFFECT 1
+
+namespace fs = std::filesystem;
+
 using namespace wuk::crypto;
 using namespace wuk::misc;
+
+constexpr wuk::u32 OP4_SALT_LEN  = OP4_BL;
+constexpr wuk::u32 OP4_NONCE_LEN = OP4_NL;
+constexpr wuk::u32 PBKDF2_ROUNDS = 114514;
+
+constexpr wuk::u32 decryption_error = 777777777;
 
 #define SPEED_TEST(func) \
     func; \
@@ -28,6 +40,8 @@ using namespace wuk::misc;
     printf("Speed: %.2lf MB/s.\n", throughput);
 constexpr wuk::u32 block_size = 4096;
 
+static wuk::Random wrand;
+
 std::string hash_sha256(const wuk::byte *buffer, wuk::ulong length)
 {
     Hashlib<HashlibType::SHA_256> hash;
@@ -35,76 +49,155 @@ std::string hash_sha256(const wuk::byte *buffer, wuk::ulong length)
     return hash.hexdigest();
 }
 
-#ifdef TEST
-namespace fs = std::filesystem;
-
-constexpr wuk::u32 OP4_SALT_LEN  = OP4_BL;
-constexpr wuk::u32 OP4_NONCE_LEN = OP4_NL;
-constexpr wuk::u32 PBKDF2_ROUNDS = 114514;
-
-constexpr wuk::u32 decryption_error = 777777777;
-
-void weak_key_test()
+void derive_key_pbkdf2(const char *password, const wuk::byte salt[OP4_SALT_LEN], wuk::byte out_key[OP4_KL])
 {
-    wuk::byte key_l[OP4_KL] = {
-        0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
-    };
-    wuk::byte key_r[OP4_KL] = {
-        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
-    };
+    PKCS5_PBKDF2_HMAC(password, strlen(password),
+                      salt, OP4_SALT_LEN,
+                      PBKDF2_ROUNDS,
+                      EVP_sha256(),
+                      OP4_KL, out_key);
+}
 
-    OP4 op4_l(key_l);
-    OP4 op4_r(key_r);
+void file_encrypt(fs::path input_file, fs::path output_file, const char *password)
+{
+    wuk::byte salt[OP4_SALT_LEN];
+    wuk::byte nonce[OP4_NONCE_LEN];
+    wuk::byte key[OP4_KL];
 
-    const wuk::byte *kl = op4_l.get_roundkey();
-    const wuk::byte *kr = op4_r.get_roundkey();
+    wrand.bytes(salt, sizeof salt);
+    wrand.bytes(nonce, sizeof nonce);
+    derive_key_pbkdf2(password, salt, key);
 
-    std::cout << "Round key (left):\t\t\t\t\t\tRound key (Right):\n";
-    print_diff_hex(kl, kr, OP4_RKL, OP4_RKL, OP4_BL, true);
+    std::ifstream fin(input_file, std::ios::binary);
+    std::ofstream fout(output_file, std::ios::binary);
+    if (!fin || !fout) throw std::runtime_error("file open failed");
 
-    if (memcmp(kl, kr, OP4_RKL) == 0) {
-        std::cout << "Weak key has been formed!\n";
-        exit(decryption_error);
-    } else {
-        std::cout << "The key extension algorithm is secure.\n\n";
+    // 写入 salt 和 nonce 到输出文件头部
+    fout.write((char*)salt, OP4_SALT_LEN);
+    fout.write((char*)nonce, OP4_NONCE_LEN);
+
+    OP4 op4(key);
+
+    printf("Round key:\n");
+    print_hex(op4.get_round_key(), OP4_RKL, 16, true, true);
+
+    wuk::byte plaintext[block_size]{};
+    wuk::byte ciphertext[block_size]{};
+    while (fin.read((char*)plaintext, block_size) || fin.gcount()) {
+        size_t n = fin.gcount();
+        op4.ctr_stream(ciphertext, plaintext, n, nonce);
+        fout.write((char*)ciphertext, n);
     }
 }
 
+void file_decrypt(fs::path input_file, fs::path output_file, const char *password)
+{
+    std::ifstream fin(input_file, std::ios::binary);
+    std::ofstream fout(output_file, std::ios::binary);
+    if (!fin || !fout) throw std::runtime_error("file open failed");
+
+    wuk::byte salt[OP4_SALT_LEN];
+    wuk::byte nonce[OP4_NONCE_LEN];
+    wuk::byte key[OP4_KL];
+
+    // 从加密文件头部读取 salt 和 nonce
+    fin.read((char*)salt, OP4_SALT_LEN);
+    fin.read((char*)nonce, OP4_NONCE_LEN);
+    derive_key_pbkdf2(password, salt, key);
+
+    OP4 op4(key);
+    wuk::byte ciphertext[block_size]{};
+    wuk::byte plaintext[block_size]{};
+    while (fin.read((char*)ciphertext, block_size) || fin.gcount()) {
+        size_t n = fin.gcount();
+        op4.ctr_stream(plaintext, ciphertext, n, nonce);
+        fout.write((char*)plaintext, n);
+    }
+}
+
+wuk::u32 bit_diff(const wuk::byte *a, const wuk::byte *b, size_t length)
+{
+    wuk::u32 diff = 0;
+
+    for (size_t i = 0; i < length; ++i) {
+        diff += [](wuk::byte x) -> wuk::u32 {
+            wuk::u32 count = 0;
+            while (x) {
+                count += x & 1;
+                x >>= 1;
+            }
+            return count;
+        } (a[i] ^ b[i]);
+    }
+
+    return diff;
+}
+
+#ifdef WEAK_KEY_TEST
+void weak_key_test(wuk::u32 count = 10000000)
+{
+    wuk::byte master_key_left[OP4_KL] {0};
+    wuk::byte master_key_right[OP4_KL] {0};
+    wuk::f64 total_diff_bits{0};
+
+    for (wuk::u32 i = 0; i < count; ++i) {
+        // 初始化左边的主密钥
+        wrand.bytes(master_key_left, OP4_KL);
+        // 初始化右边的主密钥（只根据左边的主密钥随机改变1bit）
+        memcpy(master_key_right, master_key_left, OP4_KL);
+
+        wuk::u32 index = wrand.randint(0, OP4_KL - 1);
+        wuk::u32 bit = wrand.randint(0, 7);
+        master_key_right[index] ^= (1 << bit);
+
+        // std::cout << fmt::format("Made a modification to the {1} bit of the {0} byte.", index+1, 8-bit) << std::endl;
+        // std::cout << "Master key (left):\t\t\t\t\t\tMaster key (Right):\n";
+        // print_diff_hex(master_key_left, master_key_right, OP4_KL, OP4_KL, OP4_BL, true);
+
+        OP4 cipher_left(master_key_left);
+        OP4 cipher_right(master_key_right);
+
+        const wuk::byte *round_key_left  = cipher_left.get_round_key();
+        const wuk::byte *round_key_right = cipher_right.get_round_key();
+
+        // std::cout << "Round key (left):\t\t\t\t\t\tRound key (Right):\n";
+        // print_diff_hex(round_key_left, round_key_right, OP4_RKL, OP4_RKL, OP4_BL, true);
+
+        wuk::u32 bit_diff_count = bit_diff(round_key_left, round_key_right, OP4_RKL);
+        wuk::f64 bit_diff_ratio = (static_cast<wuk::f64>(bit_diff_count) / (OP4_RKL * 8));
+
+        total_diff_bits += bit_diff_ratio;
+    }
+
+    std::cout << "The number of samples used for the round key avalanche effect test: " << count << std::endl;
+    std::cout << "Avalanche effect test of round key, "
+            << "bit difference rate: "
+            << std::fixed << std::setprecision(2)
+            << ((total_diff_bits / count) * 100) << " %."
+            << "\n" << std::endl;
+}
+#endif
+
+#ifdef XCRYPTION_TEST
 void xcryption_verification()
 {
-    wuk::byte key[OP4_KL]{
-        0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
-    };
-    wuk::byte iv[OP4_BL]{
-        0x00, 0x00, 0x00, 0x00,
-        0x00, 0x00, 0x00, 0x00,
-        0x00, 0x00, 0x00, 0x00,
-        0x00, 0x00, 0x00, 0x00
-    };
-    wuk::byte nonce[OP4_NL]{
-        0x00, 0x00, 0x00, 0x00,
-        0x00, 0x00, 0x00, 0x00,
-        0x00, 0x00, 0x00, 0x00
-    };
+    wuk::byte key[OP4_KL]   {0};
+    wuk::byte iv[OP4_BL]    {0};
+    wuk::byte nonce[OP4_NL] {0};
 
-    constexpr size_t length = OP4_BL << 1;
+    constexpr size_t length = OP4_BL * 2;
     wuk::byte plaintext[length]{
-        0x00, 0x01, 0x00, 0x01, 0x00, 0x01, 0x00, 0x01,
-        0x00, 0x01, 0x00, 0x01, 0x00, 0x01, 0x00, 0x01,
-        0x00, 0x01, 0x00, 0x01, 0x00, 0x01, 0x00, 0x01,
-        0x00, 0x01, 0x00, 0x01, 0x00, 0x01, 0x00, 0x01
-    };
+        0x80, 0x01, 0x80, 0x01, 0x80, 0x01, 0x80, 0x01,
+        0x80, 0x01, 0x80, 0x01, 0x80, 0x01, 0x80, 0x01,
+        0x80, 0x01, 0x80, 0x01, 0x80, 0x01, 0x80, 0x01,
+        0x80, 0x01, 0x80, 0x01, 0x80, 0x01, 0x80, 0x01};
     wuk::byte ciphertext[length]{0};
     wuk::byte decrypted[length]{0};
+
+    wrand.bytes(key, OP4_KL);
+    wrand.bytes(iv, OP4_BL);
+    wrand.bytes(nonce, OP4_NL);
+
     OP4 op4(key);
 
     std::cout << "Master key:\n";
@@ -117,7 +210,7 @@ void xcryption_verification()
     print_hex(iv, OP4_BL, OP4_BL, true, true);
 
     std::cout << "Round key\n";
-    print_hex(op4.get_roundkey(), OP4_RKL, OP4_BL, true, true);
+    print_hex(op4.get_round_key(), OP4_RKL, OP4_BL, true, true);
 
     std::cout << "Plaintext\n";
     print_hex(plaintext, length, OP4_BL, true, true);
@@ -161,73 +254,6 @@ void xcryption_verification()
     if (memcmp(plaintext, decrypted, length) != 0) {
         std::cout << "\x1b[91m" << "[!] CTR Decryption failed! [!]\n" << "\x1b[0m";
         exit(decryption_error);
-    }
-}
-
-void derive_key_pbkdf2(const char *password, const wuk::byte salt[OP4_SALT_LEN], wuk::byte out_key[OP4_KL])
-{
-    PKCS5_PBKDF2_HMAC(password, strlen(password),
-                      salt, OP4_SALT_LEN,
-                      PBKDF2_ROUNDS,
-                      EVP_sha256(),
-                      OP4_KL, out_key);
-}
-
-void file_encrypt(fs::path input_file, fs::path output_file, const char *password)
-{
-    wuk::Random random;
-    wuk::byte salt[OP4_SALT_LEN];
-    wuk::byte nonce[OP4_NONCE_LEN];
-    wuk::byte key[OP4_KL];
-
-    random.bytes(salt, sizeof salt);
-    random.bytes(nonce, sizeof nonce);
-    derive_key_pbkdf2(password, salt, key);
-
-    std::ifstream fin(input_file, std::ios::binary);
-    std::ofstream fout(output_file, std::ios::binary);
-    if (!fin || !fout) throw std::runtime_error("file open failed");
-
-    // 写入 salt 和 nonce 到输出文件头部
-    fout.write((char*)salt, OP4_SALT_LEN);
-    fout.write((char*)nonce, OP4_NONCE_LEN);
-
-    OP4 op4(key);
-
-    printf("Round key:\n");
-    print_hex(op4.get_roundkey(), OP4_RKL, 16, true, true);
-
-    wuk::byte plaintext[block_size]{};
-    wuk::byte ciphertext[block_size]{};
-    while (fin.read((char*)plaintext, block_size) || fin.gcount()) {
-        size_t n = fin.gcount();
-        op4.ctr_stream(ciphertext, plaintext, n, nonce);
-        fout.write((char*)ciphertext, n);
-    }
-}
-
-void file_decrypt(fs::path input_file, fs::path output_file, const char *password)
-{
-    std::ifstream fin(input_file, std::ios::binary);
-    std::ofstream fout(output_file, std::ios::binary);
-    if (!fin || !fout) throw std::runtime_error("file open failed");
-
-    wuk::byte salt[OP4_SALT_LEN];
-    wuk::byte nonce[OP4_NONCE_LEN];
-    wuk::byte key[OP4_KL];
-
-    // 从加密文件头部读取 salt 和 nonce
-    fin.read((char*)salt, OP4_SALT_LEN);
-    fin.read((char*)nonce, OP4_NONCE_LEN);
-    derive_key_pbkdf2(password, salt, key);
-
-    OP4 op4(key);
-    wuk::byte ciphertext[block_size]{};
-    wuk::byte plaintext[block_size]{};
-    while (fin.read((char*)ciphertext, block_size) || fin.gcount()) {
-        size_t n = fin.gcount();
-        op4.ctr_stream(plaintext, ciphertext, n, nonce);
-        fout.write((char*)plaintext, n);
     }
 }
 #endif
@@ -496,28 +522,9 @@ void op4_threads()
  * 
  * 95% Confidence Interval: [63.9981, 64.0051]
  */
-
-wuk::u32 bit_diff(const wuk::byte *a, const wuk::byte *b, size_t length)
-{
-    wuk::u32 diff = 0;
-
-    for (size_t i = 0; i < length; ++i) {
-        diff += [](wuk::byte x) -> wuk::u32 {
-            wuk::u32 count = 0;
-            while (x) {
-                count += x & 1;
-                x >>= 1;
-            }
-            return count;
-        } (a[i] ^ b[i]);
-    }
-
-    return diff;
-}
-
+#ifdef AVALANCHE_EFFECT
 void avalanche_effect_test(wuk::u32 sample_count = 10000000)
 {
-    wuk::Random random;
     wuk::byte ciphertext1[OP4_BL]{};
     wuk::byte ciphertext2[OP4_BL]{};
 
@@ -527,33 +534,33 @@ void avalanche_effect_test(wuk::u32 sample_count = 10000000)
     bit_diff_history.reserve(sample_count);
 
     for (wuk::u32 i = 0; i < sample_count; ++i) {
-#   if defined(AVALANCHE_EFFECT_PLAINTEXT)
+#   if (AVALANCHE_EFFECT == 1)
         wuk::byte plaintext1[OP4_BL]{};
         wuk::byte plaintext2[OP4_BL]{};
         wuk::byte key[OP4_KL]{};
 
-        random.bytes(plaintext1, OP4_BL);
-        random.bytes(key, OP4_KL);
+        wrand.bytes(plaintext1, OP4_BL);
+        wrand.bytes(key, OP4_KL);
 
         memcpy(plaintext2, plaintext1, OP4_BL);
-        wuk::u32 byte_index = random.randint(0, OP4_BL - 1);
-        wuk::u32 bit_index = random.randint(0, 7);
+        wuk::u32 byte_index = wrand.randint(0, OP4_BL - 1);
+        wuk::u32 bit_index = wrand.randint(0, 7);
         plaintext2[byte_index] ^= (1 << bit_index);
 
         OP4 cipher(key);
         cipher.ecb_encrypt(ciphertext1, plaintext1, OP4_BL);
         cipher.ecb_encrypt(ciphertext2, plaintext2, OP4_BL);
-#   elif defined(AVALANCHE_EFFECT_KEY)
+#   elif (AVALANCHE_EFFECT == 2)
         wuk::byte plaintext[OP4_BL]{};
         wuk::byte key1[OP4_KL]{};
         wuk::byte key2[OP4_KL]{};
 
-        random.bytes(plaintext, OP4_BL);
-        random.bytes(key1, OP4_KL);
+        wrand.bytes(plaintext, OP4_BL);
+        wrand.bytes(key1, OP4_KL);
 
         memcpy(key2, key1, OP4_KL);
-        wuk::u32 byte_index = random.randint(0, OP4_KL - 1);
-        wuk::u32 bit_index = random.randint(0, 7);
+        wuk::u32 byte_index = wrand.randint(0, OP4_KL - 1);
+        wuk::u32 bit_index = wrand.randint(0, 7);
         key2[byte_index] ^= (1 << bit_index);
 
         OP4 cipher1(key1);
@@ -622,20 +629,35 @@ void avalanche_effect_test(wuk::u32 sample_count = 10000000)
               << (average_diff_bits - margin_error) << ", " 
               << (average_diff_bits + margin_error) << "]\n";
 }
+#endif
 
-// python make.py test/op4_test.cc -lsodium -lssl -lcrypto -lbcrypt
-
-int main()
+/*
+ *  python make.py test/mod_test/op4_test.cc -lssl -lcrypto \
+ *          [-lbcrypt \
+ *          -DWEAK_KEY_TEST \
+ *          -DXCRYPTION_TEST \
+ *          -DTHREADS_METHOD=1 \
+ *          -DAVALANCHE_EFFECT=1
+ */
+int main(int argc, char **argv)
 {
-#   ifdef TEST
+#   ifdef WEAK_KEY_TEST
+    std::cout << "================================ Weak key test ================================\n";
+    weak_key_test();
+#   endif
+
+#   ifdef XCRYPTION_TEST
+    std::cout << "================================ xcryption test ================================\n";
     xcryption_verification();
 #   endif
 
 #   ifdef THREADS_METHOD
+    std::cout << "================================ threads test ================================\n";
     op4_threads();
 #   endif
 
-#   if defined(AVALANCHE_EFFECT_PLAINTEXT) || defined(AVALANCHE_EFFECT_KEY)
+#   ifdef AVALANCHE_EFFECT
+    std::cout << "================================ avalanche effect test ================================\n";
     avalanche_effect_test();
 #   endif
 

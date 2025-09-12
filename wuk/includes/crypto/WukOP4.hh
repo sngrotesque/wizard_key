@@ -43,7 +43,7 @@ namespace wuk::crypto {
             this->counter = counter;
         }
 
-        const wuk::byte *get_roundkey() const noexcept
+        const wuk::byte *get_round_key() const noexcept
         {
             return this->round_key;
         }

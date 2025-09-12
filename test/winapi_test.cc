@@ -86,9 +86,9 @@ void transparent_window(const T1& className, const T2& windowName, wuk::f64 bAlp
 {
     BYTE alpha = static_cast<BYTE>(lerp(0, 255, bAlpha * 100));
     if (alpha == -1) {
-        return;
+        throw wuk::Exception(wuk::Error::ERR, "transparent_window",
+            "The value of 'bAlpha' must be 0 to 1.");
     }
-
     auto wClassOpt = to_wstring(className);
     auto wNameOpt  = to_wstring(windowName);
 

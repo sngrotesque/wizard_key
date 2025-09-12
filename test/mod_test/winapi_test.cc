@@ -80,7 +80,7 @@ void CreateCustomMessageBox(HINSTANCE hInstance, LPCWSTR lpText, LPCWSTR lpCapti
 
 // 在新线程中创建消息框
 void CreateMessageBoxThread(HINSTANCE hInstance) {
-    wuk::WukRandom rad;
+    wuk::Random rad;
     int x = rad.randint(1, 2560);
     int y = rad.randint(1, 1440);
     CreateCustomMessageBox(hInstance, L"捅死你喵！", L"捅死你喵！", x, y);
@@ -88,7 +88,7 @@ void CreateMessageBoxThread(HINSTANCE hInstance) {
 
 void CreateRandomCursorPos()
 {
-    wuk::WukRandom rad;
+    wuk::Random rad;
     SetCursorPos(rad.randint(1, 2560-1), rad.randint(1, 1440-1));
 }
 

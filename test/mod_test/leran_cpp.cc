@@ -107,7 +107,7 @@ public:
         return (this->val == other.val);
     }
 
-    wuk::u32 get_val() const
+    wuk::u32 get_val() const noexcept
     {
         return this->val;
     }

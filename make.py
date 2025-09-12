@@ -108,22 +108,23 @@ def main(verbose: bool = True):
         # '-Wextra',
         '-Werror',
         '-Wall',
-        
+
         # '-Wno-unused-variable',
         # '-Wno-unused-function',
         # '-Wno-unused-parameter',
         # '-Wno-unused-but-set-variable',
-        
+
         '--std=c++17',
         '-DWUK_EXPORTS',
         '-march=native',
+
+        '-lfmt', # 这个格式库现在已经作为此库的基础依赖进行使用
     )
 
     # 源文件
     compiler.add_args(
         # 'wuk/sources/crypto/WukOP4.cc',
-        'wuk/sources/crypto/WukOP4Easy.cc',
-        # 'wuk/sources/crypto/WukOP4_sse4.cc',
+        'wuk/sources/crypto/WukOP4_sse4.cc',
         # 'wuk/sources/crypto/WukChaCha20.cc',
         # 'wuk/sources/im/WukIM.cc',
         # 'wuk/sources/im/WukPsql.cc',

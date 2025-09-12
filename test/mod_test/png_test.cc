@@ -2,6 +2,7 @@
 #include <utils/bytes.hh>
 #include <WukRandom.hh>
 #include <WukMemory.hh>
+#include <WukMisc.hh>
 
 #include <algorithm>
 #include <filesystem>
@@ -9,10 +10,12 @@
 #include <iostream>
 #include <memory>
 #include <cmath>
+#include <functional>
 
 #include <png.h>
 
 namespace fs = std::filesystem;
+std::function<std::string(const std::string &)> wuk_misc_log = wuk::misc::log_utf8;
 
 // 准备图像数据
 std::vector<wuk::byte> prepare_image_data(const std::vector<wuk::byte> &file_data,
@@ -78,13 +81,13 @@ public:
 
         std::vector<wuk::byte> file_data = file_read(input_path);
         if (file_data.empty()) {
-            std::cerr << "无法读取文件，文件不存在或文件为空或无权访问文件。" << std::endl;
+            std::cerr << wuk_misc_log("无法读取文件，文件不存在或文件为空或无权访问文件。") << std::endl;
             return false;
         }
 
         std::ofstream file(output_path, std::ios::binary);
         if(!file.is_open()) {
-            std::cerr << "无法创建输出文件: " << output_path << std::endl;
+            std::cerr << wuk_misc_log(fmt::format("无法创建输出文件: {0}", output_path.string())) << std::endl;
             return false;
         }
 
@@ -93,20 +96,20 @@ public:
         png_structp png_ptr = png_create_write_struct(PNG_LIBPNG_VER_STRING,
                                                     nullptr, nullptr, nullptr);
         if(!png_ptr) {
-            std::cerr << "无法创建PNG写结构" << std::endl;
+            std::cerr << wuk_misc_log("无法创建PNG写结构") << std::endl;
             return false;
         }
 
         png_infop info_ptr = png_create_info_struct(png_ptr);
         if(!info_ptr) {
             png_destroy_write_struct(&png_ptr, nullptr);
-            std::cerr << "无法创建PNG信息结构" << std::endl;
+            std::cerr << wuk_misc_log("无法创建PNG信息结构") << std::endl;
             return false;
         }
 
         if(setjmp(png_jmpbuf(png_ptr))) {
             png_destroy_write_struct(&png_ptr, &info_ptr);
-            std::cerr << "PNG写入过程中发生错误" << std::endl;
+            std::cerr << wuk_misc_log("PNG写入过程中发生错误") << std::endl;
             return false;
         }
 
@@ -140,112 +143,123 @@ public:
         return true;
     }
 
+    /* ---------- 辅助：把 istream 包装成 libpng 能用的“读回调” ---------- */
+    struct PngIstreamWrapper {
+        std::istream &in;
+        static void readCallback(png_structp png, png_bytep dst, png_size_t size) {
+            auto *self = static_cast<PngIstreamWrapper*>(png_get_io_ptr(png));
+            if (!self->in.read(reinterpret_cast<char*>(dst), size))
+                png_error(png, "istream::read 失败（可能提前到达 EOF）");
+        }
+    };
+
+    /* -------------------------- restore_from_png -------------------------- */
     bool restore_from_png(const fs::path &pngPath, const fs::path &outputPath)
     {
-        std::ifstream file(pngPath, std::ios::binary);
-        if(!file.is_open()) {
-            std::cerr << "无法打开PNG文件: " << pngPath << std::endl;
-            return false;
+        /* 1. 打开文件 */
+        std::ifstream fin(pngPath, std::ios::binary);
+        if (!fin)
+            return [](const auto &e){ std::cerr << wuk_misc_log(e) << std::endl; return false; }
+                ("无法打开输入 PNG 文件");
+
+        /* 2. 校验 PNG 签名（8 字节） */
+        char sig[8];
+        if (!fin.read(sig, 8) || !fin.good() || png_sig_cmp(reinterpret_cast<png_bytep>(sig), 0, 8))
+            return [](const auto &e){ std::cerr << wuk_misc_log(e) << std::endl; return false; }
+                ("输入文件不是有效的 PNG");
+
+        /* 3. 创建读结构 */
+        png_structp png = png_create_read_struct(PNG_LIBPNG_VER_STRING,
+                                                nullptr, nullptr, nullptr);
+        if (!png)
+            return [](const auto &e){ std::cerr << wuk_misc_log(e) << std::endl; return false; }
+                ("png_create_read_struct 失败");
+
+        png_infop info = png_create_info_struct(png);
+        if (!info) {
+            png_destroy_read_struct(&png, nullptr, nullptr);
+            return [](const auto &e){ std::cerr << wuk_misc_log(e) << std::endl; return false; }
+                ("png_create_info_struct 失败");
         }
 
-        // 读取PNG文件头
-        png_byte header[8];
-        file.read(reinterpret_cast<char *>(header), 8);
-        if(png_sig_cmp(header, 0, 8)) {
-            std::cerr << "不是有效的PNG文件: " << pngPath << std::endl;
-            return false;
+        if (setjmp(png_jmpbuf(png))) {          /* libpng 内部错误跳转点 */
+            png_destroy_read_struct(&png, &info, nullptr);
+            return [](const auto &e){ std::cerr << wuk_misc_log(e) << std::endl; return false; }
+                ("PNG 解析过程中发生错误");
         }
 
-        png_structp pngPtr = png_create_read_struct(PNG_LIBPNG_VER_STRING, nullptr, nullptr, nullptr);
-        if(!pngPtr) {
-            std::cerr << "无法创建PNG读结构" << std::endl;
-            return false;
-        }
+        /* 4. 把自定义读回调挂到 libpng */
+        PngIstreamWrapper wrapper{fin};
+        png_set_read_fn(png, &wrapper, PngIstreamWrapper::readCallback);
 
-        png_infop infoPtr = png_create_info_struct(pngPtr);
-        if(!infoPtr) {
-            png_destroy_read_struct(&pngPtr, nullptr, nullptr);
-            std::cerr << "无法创建PNG信息结构" << std::endl;
-            return false;
-        }
+        /* 5. 读取 IHDR */
+        png_set_sig_bytes(png, 8);              /* 告诉 libpng 签名已读过 */
+        png_read_info(png, info);
 
-        if(setjmp(png_jmpbuf(pngPtr))) {
-            png_destroy_read_struct(&pngPtr, &infoPtr, nullptr);
-            std::cerr << "PNG读取过程中发生错误" << std::endl;
-            return false;
-        }
+        // png_uint_32 width  = png_get_image_width(png, info);
+        png_uint_32 height = png_get_image_height(png, info);
+        int bit_depth  = png_get_bit_depth(png, info);
+        int color_type = png_get_color_type(png, info);
 
-        png_set_read_fn(pngPtr, &file, [](png_structp pngPtr, png_bytep data, png_size_t length) {
-            std::ifstream *file = static_cast<std::ifstream *>(png_get_io_ptr(pngPtr));
-            file->read(reinterpret_cast<char *>(data), length);
-        });
+        if (bit_depth != 8 || color_type != PNG_COLOR_TYPE_GRAY)
+            png_error(png, "PNG 必须是 8bit 灰度图");
 
-        png_read_info(pngPtr, infoPtr);
+        /* 6. 读像素 */
+        std::size_t rowBytes = png_get_rowbytes(png, info);
+        std::vector<png_byte> img(rowBytes * height);
+        std::vector<png_bytep> rows(height);
+        for (png_uint_32 y = 0; y < height; ++y)
+            rows[y] = img.data() + y * rowBytes;
 
-        wuk::u32 width = png_get_image_width(pngPtr, infoPtr);
-        wuk::u32 height = png_get_image_height(pngPtr, infoPtr);
-        png_byte colorType = png_get_color_type(pngPtr, infoPtr);
-        png_byte bitDepth = png_get_bit_depth(pngPtr, infoPtr);
+        png_read_image(png, rows.data());
+        png_read_end(png, nullptr);
+        png_destroy_read_struct(&png, &info, nullptr);
+        fin.close();
 
-        if(colorType != PNG_COLOR_TYPE_GRAY || bitDepth != 8) {
-            std::cerr << "不支持的PNG格式: 必须是8位灰度图像" << std::endl;
-            png_destroy_read_struct(&pngPtr, &infoPtr, nullptr);
-            return false;
-        }
+        /* 7. 解出文件长度 */
+        if (img.size() < sizeof(wuk::u32))
+            return [](const auto &e){ std::cerr << wuk_misc_log(e) << std::endl; return false; }
+                ("像素区不足以存放文件长度");
 
-        std::vector<png_bytep> rowPointers(height);
-        std::vector<uint8_t> imageData(width * height);
+        wuk::u32 fileSize = wuk::utils::unpack_bytes<wuk::u32, true>(img.data(), sizeof(wuk::u32));
+        if (fileSize + sizeof(wuk::u32) > img.size())
+            return [](const auto &e){ std::cerr << wuk_misc_log(e) << std::endl; return false; }
+                ("文件长度字段与实际像素数据不符");
 
-        for(uint32_t y = 0; y < height; y++) {
-            rowPointers[y] = imageData.data() + y * width;
-        }
+        /* 8. 写回原始文件 */
+        std::ofstream out(outputPath, std::ios::binary);
+        if (!out)
+            return [](const auto &e){ std::cerr << wuk_misc_log(e) << std::endl; return false; }
+                ("无法创建输出文件");
 
-        png_read_image(pngPtr, rowPointers.data());
-        png_destroy_read_struct(&pngPtr, &infoPtr, nullptr);
-
-        // 从图像数据中提取文件大小
-        wuk::u32 fileSize = (imageData[0] << 24) | (imageData[1] << 16) | (imageData[2] << 8) | imageData[3];
-
-        // 检查是否有足够的数据
-        if(width * height < fileSize + 4) {
-            std::cerr << "PNG文件不包含足够的原始数据" << std::endl;
-            return false;
-        }
-
-        // 写入原始文件
-        std::ofstream outFile(outputPath, std::ios::binary);
-        if(!outFile.is_open()) {
-            std::cerr << "无法创建输出文件: " << outputPath << std::endl;
-            return false;
-        }
-
-        outFile.write(reinterpret_cast<char *>(imageData.data() + 4), fileSize);
-        return true;
+        out.write(reinterpret_cast<const char*>(img.data() + sizeof(wuk::u32)), fileSize);
+        return out.good();
     }
 };
 
 int main()
 {
-    fs::path input_path("D:/Z_SSS/134542331_p0.png");
-    fs::path output_path("test.png");
+    fs::path original_path(R"(F:\Misc\doi\VID_Full.mp4)");
+    fs::path encoded_path("L:/test测试.png");
+    fs::path restored_path("L:/test.mp4");
 
-    FileToPngConverter converter;
+    try {
+        FileToPngConverter converter;
 
-    constexpr auto encode_mode{true};
-    if(encode_mode) {
-        std::cout << "正在生成PNG图像..." << std::endl;
-        if(!converter.export_to_png(input_path, output_path)) {
+        std::cout << wuk_misc_log("正在生成PNG图像...") << std::endl;
+        if(!converter.export_to_png(original_path, encoded_path)) {
             return 1;
         }
+        std::cout << wuk_misc_log(fmt::format("成功生成PNG图像：{0}", encoded_path.string())) << std::endl;
 
-        std::cout << "成功生成PNG图像: " << output_path << std::endl;
-    } else {
-        std::cout << "正在从PNG恢复文件..." << std::endl;
-        if(!converter.restore_from_png(input_path, output_path)) {
+        std::cout << wuk_misc_log("正在从PNG恢复文件...") << std::endl;
+        if(!converter.restore_from_png(encoded_path, restored_path)) {
             return 1;
         }
-
-        std::cout << "成功恢复文件: " << output_path << std::endl;
+        std::cout << wuk_misc_log(fmt::format("成功恢复文件：{0}", restored_path.string())) << std::endl;
+    } catch (const wuk::Exception &e) {
+        std::cout << e.what() << std::endl;
+        return 1;
     }
 
     return 0;

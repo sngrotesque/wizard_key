@@ -14,7 +14,9 @@
 
 #include <openssl/rand.h>
 #include <openssl/evp.h>
-#include <windows.h>
+#ifdef WUK_PLATFORM_WINOS
+#   include <windows.h>
+#endif
 
 using namespace wuk::crypto;
 using namespace wuk::misc;
@@ -31,28 +33,6 @@ wuk::Buffer derive_key(const std::string &password, const wuk::Buffer &salt, con
                       derived.append(dklen));
 
     return derived;
-}
-
-std::string log_utf8(const std::string &utf8Str)
-{
-#   ifdef WUK_PLATFORM_WINOS
-    // Step 1: UTF-8 → UTF-16
-    wuk::i32 wlen = MultiByteToWideChar(CP_UTF8, 0, utf8Str.c_str(), -1, nullptr, 0);
-    if (wlen == 0) return {};
-
-    std::wstring wstr(wlen, L'\0');
-    MultiByteToWideChar(CP_UTF8, 0, utf8Str.c_str(), -1, wstr.data(), wlen);
-
-    // Step 2: UTF-16 → 当前代码页（如GBK）
-    wuk::i32 len = WideCharToMultiByte(CP_ACP, 0, wstr.data(), -1, nullptr, 0, nullptr, nullptr);
-    if (len == 0) return {};
-
-    std::string result(len, '\0');
-    WideCharToMultiByte(CP_ACP, 0, wstr.data(), -1, result.data(), len, nullptr, nullptr);
-    return result;
-#   else
-    return utf8Str;
-#   endif
 }
 
 template <wuk::crypto::HashlibType Algo>
