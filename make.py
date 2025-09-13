@@ -133,7 +133,7 @@ def main(verbose: bool = True):
         # 'wuk/sources/net/WukSocket.cc',
         # 'wuk/sources/net/WukSocketEx.cc',
         'wuk/sources/utils/bytes.cc',
-        'wuk/sources/WukBase64.cc',
+        # 'wuk/sources/WukBase64.cc',
         # 'wuk/sources/WukBinascii.cc',
         'wuk/sources/WukBuffer.cc',
         # 'wuk/sources/WukHexdump.cc',

@@ -22,6 +22,7 @@ using namespace wuk::crypto;
 using namespace wuk::misc;
 namespace fs = std::filesystem;
 constexpr wuk::u32 buffer_size = 4096;
+constexpr wuk::u32 PBKDF2_ROUNDS = 415411;
 
 wuk::Buffer derive_key(const std::string &password, const wuk::Buffer &salt, const wuk::u32 &dklen)
 {
@@ -29,8 +30,8 @@ wuk::Buffer derive_key(const std::string &password, const wuk::Buffer &salt, con
 
     PKCS5_PBKDF2_HMAC(password.data(), password.length(),
                       salt.data(), salt.get_length(),
-                      102401, EVP_sha256(), dklen,
-                      derived.append(dklen));
+                      PBKDF2_ROUNDS, EVP_sha256(), dklen,
+                      derived.write(dklen));
 
     return derived;
 }
@@ -60,8 +61,10 @@ std::string file_hexdigest(const fs::path &path)
     return hash.hexdigest();
 }
 
-void file_xcrypt(const fs::path    &in_path,  const fs::path &out_path,
-                 const std::string &password, bool encrypt)
+void file_xcrypt(const fs::path &in_path,
+                 const fs::path &out_path,
+                 const std::string &password,
+                 bool encrypt)
 {
     if (!fs::exists(in_path)) {
         throw wuk::Exception(wuk::Error::FNOTF, "file_encryption",
@@ -81,10 +84,10 @@ void file_xcrypt(const fs::path    &in_path,  const fs::path &out_path,
 
     // 初始化密码套件
     if (encrypt) {
-        RAND_bytes(salt.append(salt_size), salt_size);
+        RAND_bytes(salt.write(salt_size), salt_size);
         fout.write(salt.c_str(), salt.get_length());
     } else {
-        fin.read(reinterpret_cast<char *>(salt.append(salt_size)), salt_size);
+        fin.read(reinterpret_cast<char *>(salt.write(salt_size)), salt_size);
     }
     wuk::Buffer key_with_nonce = derive_key(password, salt, OP4_KL + OP4_NL);
     key = key_with_nonce.data();
@@ -128,8 +131,6 @@ void file_xcrypt_test()
         return;
     }
 }
-
-// python make.py test\mod_test\crypto_test.cc -lssl -lcrypto
 
 int main()
 {

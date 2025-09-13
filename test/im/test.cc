@@ -24,7 +24,7 @@ wuk::Buffer derive_key_and_nonce(const std::string &password,
     PKCS5_PBKDF2_HMAC(password.data(), password.length(),
                       salt.data(), salt.get_length(),
                       102401, EVP_sha256(), dklen,
-                      derived.append(dklen));
+                      derived.write(dklen));
     return derived;
 }
 

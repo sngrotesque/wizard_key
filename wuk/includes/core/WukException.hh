@@ -10,7 +10,7 @@
 namespace wuk {
     enum class Error {
         OK     = 0, // 一切正常，无异常
-        ERR    = 1, // 一切暂时无法定义的异常
+        ERR    = 1, // 通用的异常
         NPTR   = 2, // 调用空指针异常
         NODAT  = 3, // 空数据异常
         MEMORY = 4, // 内存管理异常

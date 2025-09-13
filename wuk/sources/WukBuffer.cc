@@ -439,6 +439,11 @@ namespace wuk {
             this->clear();
             return;
         }
+
+        /*
+         *  虽然前道工序和shrink_memory都会处理指针为空的情况，但
+         *  为了保险起见还是判断一遍
+         */
         if (this->m_data) {
             this->shrink_memory(this->m_size - this->m_len);
         }

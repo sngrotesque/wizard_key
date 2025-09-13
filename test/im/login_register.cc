@@ -38,7 +38,7 @@ wuk::Buffer derive_sha256_digest(const std::string &password,
     PKCS5_PBKDF2_HMAC(password.data(), password.length(),
                       salt.data(), salt.get_length(),
                       102401, EVP_sha256(), dklen,
-                      derived.append(dklen));
+                      derived.write(dklen));
 
     return derived;
 }
@@ -62,7 +62,7 @@ public:
         wuk::Buffer salt;
         wuk::Buffer hash;
 
-        RAND_bytes(salt.append(16), 16);
+        RAND_bytes(salt.write(16), 16);
         hash = derive_sha256_digest(password, salt);
 
         info.set_uid(sf.generate_id() & 0xffffffffU)

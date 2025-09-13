@@ -115,7 +115,9 @@ void transparent_window(const T1& className, const T2& windowName, wuk::f64 bAlp
 int main()
 {
     try {
-        transparent_window(L"UnrealWindow", L"卡拉彼丘  ", 0.5);
+        auto class_name = nullptr;
+        auto window_name = L"Windows 资源管理器";
+        transparent_window(class_name, window_name, 0.5);
     } catch (const wuk::Exception &e) {
         std::cerr << e.what() << std::endl;
         return 1;

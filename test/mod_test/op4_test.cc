@@ -25,7 +25,7 @@ using namespace wuk::misc;
 
 constexpr wuk::u32 OP4_SALT_LEN  = OP4_BL;
 constexpr wuk::u32 OP4_NONCE_LEN = OP4_NL;
-constexpr wuk::u32 PBKDF2_ROUNDS = 114514;
+constexpr wuk::u32 PBKDF2_ROUNDS = 415411;
 
 constexpr wuk::u32 decryption_error = 777777777;
 
@@ -631,13 +631,57 @@ void avalanche_effect_test(wuk::u32 sample_count = 10000000)
 }
 #endif
 
+#ifdef CUSTOM_TEST
+void custom_test()
+{
+    wuk::byte key[OP4_KL]{
+        0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07,
+        0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f,
+        0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17,
+        0x18, 0x19, 0x1a, 0x1b, 0x1c, 0x1d, 0x1e, 0x1f
+    };
+    // wuk::byte iv[OP4_BL]{
+    //     0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07,
+    //     0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f
+    // };
+    wuk::byte nonce[OP4_NL]{
+        0x80, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07,
+        0x08, 0x09, 0x0a, 0x0b
+    };
+
+    char _content[] = {
+        "GET / HTTP/1.1\r\n"
+        "Host: sngrotesque.com\r\n"
+        "Accept: */*\r\n"
+        "User-Agent: android\r\n\r\n"
+    };
+    constexpr wuk::ulong length = sizeof(_content) - 1;
+    wuk::byte *plaintext = reinterpret_cast<wuk::byte *>(_content);
+    wuk::byte *ciphertext = new (std::nothrow) wuk::byte[length];
+    if (!ciphertext) {
+        std::cerr << "failed to new ciphertext.\n";
+        return;
+    }
+
+    OP4 cipher(key);
+
+    cipher.ctr_stream(ciphertext, plaintext, length, nonce);
+
+    std::cout << "Plaintext:\t\t\t\t\t\t\tCiphertext:\n";
+    print_diff_hex(plaintext, ciphertext, length, length, 16, true);
+
+    delete[] ciphertext;
+}
+#endif
+
 /*
  *  python make.py test/mod_test/op4_test.cc -lssl -lcrypto \
  *          [-lbcrypt \
  *          -DWEAK_KEY_TEST \
  *          -DXCRYPTION_TEST \
  *          -DTHREADS_METHOD=1 \
- *          -DAVALANCHE_EFFECT=1
+ *          -DAVALANCHE_EFFECT=1 \
+ *          -DCUSTOM_TEST
  */
 int main(int argc, char **argv)
 {
@@ -659,6 +703,11 @@ int main(int argc, char **argv)
 #   ifdef AVALANCHE_EFFECT
     std::cout << "================================ avalanche effect test ================================\n";
     avalanche_effect_test();
+#   endif
+
+#   ifdef CUSTOM_TEST
+    std::cout << "================================ custom test ================================\n";
+    custom_test();
 #   endif
 
     return 0;
