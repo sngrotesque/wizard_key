@@ -22,12 +22,12 @@
  -  此库部分模块依赖以下开源库：  
     | Name      | Website                                                     | Description |
     | ---       | ---                                                         | ---         |
-    | Libsodium | [doc.libsodium.org](https://doc.libsodium.org/)             | 流密码库     |
-    | Libpng    | [www.libpng.org](http://www.libpng.org/pub/png/libpng.html) | 官方PNG图像库 |
-    | Libpq     | [www.postgresql.org](https://www.postgresql.org/)           | PostgreSQL C库 |
-    | OpenSSL   | [www.openssl.org](https://www.openssl.org/)                 | OpenSSL库 |
-    | Protobuf  | [protobuf.dev](https://protobuf.dev/)                       | Google研发的一款序列化全流程工具 |
-    | Zlib      | [www.zlib.net](https://www.zlib.net/)                       | 一个压缩库 |
+    | Libsodium | [doc.libsodium.org](https://doc.libsodium.org/)             | 现代加密库，提供安全加密、签名、哈希等功能 |
+    | Libpng    | [www.libpng.org](http://www.libpng.org/pub/png/libpng.html) | 处理 PNG 图片的读写官方库 |
+    | Libpq     | [www.postgresql.org](https://www.postgresql.org/)           | PostgreSQL 数据库的 C 语言客户端接口 |
+    | OpenSSL   | [www.openssl.org](https://www.openssl.org/)                 | 实现 SSL/TLS 协议及常用加密算法的库 |
+    | Protobuf  | [protobuf.dev](https://protobuf.dev/)                       | Google研发的高效的结构化数据序列化工具 |
+    | Zlib      | [www.zlib.net](https://www.zlib.net/)                       | 通用数据压缩/解压库（DEFLATE 算法） |
 
 ### 使用
 
