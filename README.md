@@ -20,6 +20,7 @@
  -  ~~CMake 3.15+（用于构建）~~，暂时还用不到 **CMake** 。
  -  Python 3.6+。不要担心，Python只是用来更方便的构建脚本所使用的，没有它你其实也可以构建。
  -  此库部分模块依赖以下开源库：
+
 | Library   | Website                                           | Description |
 | ---       | ---                                               | ---         |
 | Libsodium | [Link](https://doc.libsodium.org/)                | 流密码库     |
