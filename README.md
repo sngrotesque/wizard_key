@@ -20,14 +20,14 @@
  -  ~~CMake 3.15+（用于构建）~~，暂时还用不到 **CMake** 。
  -  Python 3.6+。不要担心，Python只是用来更方便的构建脚本所使用的，没有它你其实也可以构建。
  -  此库部分模块依赖以下开源库：  
-    | Library   | Website                                           | Description |
-    | ---       | ---                                               | ---         |
-    | Libsodium | [Link](https://doc.libsodium.org/)                | 流密码库     |
-    | Libpng    | [Link](http://www.libpng.org/pub/png/libpng.html) | 官方PNG图像库 |
-    | Libpq     | [Link](https://www.postgresql.org/)               | PostgreSQL C库 |
-    | OpenSSL   | [Link](https://www.openssl.org/)                  | OpenSSL库 |
-    | Protobuf  | [Link](https://protobuf.dev/)                     | Google研发的一款序列化全流程工具 |
-    | Zlib      | [Link](https://www.zlib.net/)                     | 一个压缩库 |
+    | Name      | Website                                                     | Description |
+    | ---       | ---                                                         | ---         |
+    | Libsodium | [doc.libsodium.org](https://doc.libsodium.org/)             | 流密码库     |
+    | Libpng    | [www.libpng.org](http://www.libpng.org/pub/png/libpng.html) | 官方PNG图像库 |
+    | Libpq     | [www.postgresql.org](https://www.postgresql.org/)           | PostgreSQL C库 |
+    | OpenSSL   | [www.openssl.org](https://www.openssl.org/)                 | OpenSSL库 |
+    | Protobuf  | [protobuf.dev](https://protobuf.dev/)                       | Google研发的一款序列化全流程工具 |
+    | Zlib      | [www.zlib.net](https://www.zlib.net/)                       | 一个压缩库 |
 
 ### 使用
 
