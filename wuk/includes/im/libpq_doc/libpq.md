@@ -419,7 +419,9 @@ char *PQresultErrorField(
 ### PQclear
 释放与PGresult相关联的存储。每个命令结果在不再需要时， 都应该通过PQclear释放。
 ```cpp
-void PQclear(PGresult *res);
+void PQclear(
+    PGresult *res
+);
 ```
 
 > 如果参数是NULL指针，则不执行任何操作。
