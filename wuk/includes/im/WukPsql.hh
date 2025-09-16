@@ -13,6 +13,7 @@ namespace wuk::im {
     class LIBWUK_API Psql {
     private:
         PGconn *m_conn = nullptr;
+        PGresult *m_res = nullptr;
 
     private:
         ExecStatusType get_status(const PGresult *res) noexcept;

@@ -1,5 +1,17 @@
 #include <im/WukPsql.hh>
 
+/*
+ *  PQstatus
+ *      ConnStatusType PQstatus(const PGconn *conn);
+ *      返回连接的状态。
+ *  PQerrorMessage
+ *      char *PQerrorMessage(const PGconn *conn);
+ *      返回最近一次对连接操作产生的错误信息。
+
+
+*/
+
+
 namespace wuk::im {
     ExecStatusType Psql::get_status(const PGresult *res) noexcept
     {
