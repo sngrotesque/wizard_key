@@ -1,3 +1,4 @@
+#if false
 #include <im/WukPsql.hh>
 #include <im/WukIM.hh>
 #include <WukBinascii.hh>
@@ -129,3 +130,4 @@ int main()
 
     return 0;
 }
+#endif

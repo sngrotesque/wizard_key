@@ -1,12 +1,12 @@
-from Crypto.Random import get_random_bytes as RAND_bytes
 from Crypto.Protocol.KDF import PBKDF2
 from Crypto.Cipher import ChaCha20
 from Crypto.Hash import SHA256
-import sys
-
 from datetime import datetime
+import os
 
-def str_to_unix_timestamp(time_str, format='%Y-%m-%d %H:%M:%S'):
+RAND_bytes = os.urandom
+
+def str_to_unix_timestamp(time_str :str, format :str = '%Y-%m-%d %H:%M:%S'):
     dt = datetime.strptime(time_str, format)  # 解析为datetime对象
     return int(dt.timestamp() * 1000)  # 乘以1000转为毫秒级
 

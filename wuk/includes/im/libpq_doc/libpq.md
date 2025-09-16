@@ -39,6 +39,8 @@
     - [PQnparams](#pqnparams)
     - [PQparamtype](#pqparamtype)
     - [PQprint](#pqprint)
+ -  [杂项函数]()
+    - [PQcopyResult]()
 
 ## 连接
 [文档链接](http://www.postgres.cn/docs/17/libpq-connect.html)
@@ -54,6 +56,28 @@ PGconn *PQconnectdb(
 > 此函数使用从字符串conninfo中获取的参数打开一个新的数据库连接。  
 > 传入的字符串可以为空，以使用所有默认参数，或者它可以包含一个或多个由空白分隔的参数设置，也可以包含一个URI。  
 > 详情请参见[参数关键词](connect_params.md)。
+
+### PQfinish
+关闭与服务器的连接。同时释放PGconn对象使用的内存。
+```cpp
+void PQfinish(
+    PGconn *conn
+);
+```
+> 注意，即使服务器连接尝试失败（如PQstatus所示），应用程序也应调用 PQfinish释放PGconn对象所使用的内存。  
+> 在调用PQfinish之后，PGconn指针不得再次使用。
+
+### PQreset
+重置与服务器的通信通道。
+```cpp
+void PQreset(
+    PGconn *conn
+);
+```
+
+> 此函数将关闭与服务器的连接，并尝试使用之前所有相同的参数 建立一个新的连接。
+> 如果工作连接丢失，这可能对错误恢复很有用。
+
 
 ## 状态
 [文档链接](http://www.postgres.cn/docs/17/libpq-status.html)
@@ -658,4 +682,25 @@ typedef struct {
 > 这个函数以前被psql用来打印查询结果，但是现在不是这样了。  
 > 注意它假定所有的数据都是文本格式。
 
+## 杂项函数
+[文档链接](http://postgres.cn/docs/17/libpq-misc.html)
 
+### PQcopyResult
+为一个PGresult对象创建一个拷贝。 这个拷贝不会以任何方式链接到源结果，并且当该拷贝不再需要时，必须调用PQclear进行清理。如果函数失败，返回NULL。
+```cpp
+PGresult *PQcopyResult(
+    // 源PGresult对象
+    const PGresult *src,
+
+    /* PG_COPYRES_ATTRS          指定复制源结果的属性（列定义）
+     * PG_COPYRES_TUPLES         指定复制源结果的元组（这也意味着复制属性）
+     * PG_COPYRES_NOTICEHOOKS    指定复制源结果的通知钩子
+     * PG_COPYRES_EVENTS         指定复制源结果的事件（但不复制与源相关的任何实例数据）
+     */
+    int flags
+);
+```
+> 这不是为了制作一个精确的副本。
+
+> 返回的结果总是放在PGRES_TUPLES_OK状态中，并且不复制源中的任何错误消息（但是会复制命令状态字符串）。  
+> flags参数确定要复制的其他内容，它是几个标志的按位或。
