@@ -1,3 +1,22 @@
+/**
+ * @file WukPsql.hh
+ * @author sngrotesque
+ * @brief libpq库的C++实现（非完全通用）
+ * 
+ * 为什么不用libpqxx？
+ * 
+ * 官网：https://pqxx.org/libpqxx/
+ * 文档写的跟屎一样，完全不理解哪些内容应该跟哪些代码组合在一起，真的是写的莫名其妙，我一眼都不想多看。
+ * 其次，我使用libpq只是为了与我的PostgreSQL服务器进行处理，不需要用到所有功能，
+ * 本身libpq库就比较大了，还引入一个libpqxx那不是更大了？
+ * 更何况它的文档写的非常糟糕，我不想引入什么莫名其妙的代码BUG。
+ * 
+ * 你要问我那哪种文档才算好文档？
+ * 请看（我将给出具体的模块文档，但这只是示例）：
+ * 1. 微软的Win32API：https://learn.microsoft.com/en-us/windows/win32/api/winsock2/nf-winsock2-connect
+ * 2. Python的类说明：https://docs.python.org/3/library/socket.html#socket.socket.connect
+ * 3. Man7的Linux文档：https://man7.org/linux/man-pages/man2/connect.2.html
+ */
 #pragma once
 #include <core/WukConfig.hh>
 
@@ -7,9 +26,6 @@
 
 #include <vector>
 
-/**
- * 目前对于此模块，移动语义似乎只是一个缓兵之计，还需要考虑最佳的实现方式来杜绝双重释放。
- */
 namespace wuk::db::psql {
 // 类类型声明
     class LIBWUK_API Connection;
