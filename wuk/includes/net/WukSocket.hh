@@ -24,8 +24,8 @@ namespace wuk::net {
 // Addrinfo BEGIN
     class LIBWUK_API Addrinfo {
     private:
-        addrinfo hints {};
-        addrinfo *res = nullptr;
+        addrinfo m_hints {};
+        addrinfo *m_res = nullptr;
 
     public:
         Addrinfo(wuk::i32 family = AF_INET,
@@ -45,8 +45,8 @@ namespace wuk::net {
 // Sockaddr BEGIN
     class LIBWUK_API Sockaddr {
     private:
-        sockaddr_storage addr {};
-        socklen_t addrlen = sizeof(addr);
+        sockaddr_storage m_addr {};
+        socklen_t m_addrlen = sizeof(addr);
 
     public:
         Sockaddr() = default;
@@ -71,7 +71,7 @@ namespace wuk::net {
 // Socket BEGIN
     class LIBWUK_API Socket {
     private:
-        wSocket fd = static_cast<wSocket>(NETERROR);
+        wSocket m_fd = static_cast<wSocket>(NETERROR);
 
         wuk::i32 m_family    = AF_INET;
         wuk::i32 m_sock_type = SOCK_STREAM;
@@ -82,8 +82,8 @@ namespace wuk::net {
 
         wuk::f64 m_timeout = 0;
 
-        bool is_close = false;
-        bool is_blocking = true;
+        bool m_is_close = false;
+        bool m_is_blocking = true;
 
     public:
         Socket() = default;

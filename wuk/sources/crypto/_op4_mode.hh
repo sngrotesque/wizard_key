@@ -70,18 +70,18 @@ OP4_SI(void) key_extension(
 
 namespace wuk::crypto {
     OP4::OP4(const wuk::byte key[OP4_KL], wuk::u32 counter)
-    : counter(counter)
+    : m_counter(counter)
     {
         if (!key) {
             throw wuk::Exception(wuk::Error::NPTR, "wuk::crypto::OP4::OP4",
                 "key is nullptr.");
         }
-        key_extension(key, this->round_key);
+        key_extension(key, this->m_round_key);
     }
 
     OP4::~OP4()
     {
-        wuk::memory_secure(this->round_key, sizeof(this->round_key));
+        wuk::memory_secure(this->m_round_key, sizeof(this->m_round_key));
     }
 
     void OP4::ecb_encrypt(wuk::byte *out, const wuk::byte *in, wuk::ulong length)
@@ -96,7 +96,7 @@ namespace wuk::crypto {
         }
 
         for (wuk::ulong i = 0; i < length; i += OP4_BL) {
-            cipher(out + i, in + i, this->round_key);
+            cipher(out + i, in + i, this->m_round_key);
         }
     }
 
@@ -112,7 +112,7 @@ namespace wuk::crypto {
         }
 
         for (wuk::ulong i = 0; i < length; i += OP4_BL) {
-            inv_cipher(out + i, in + i, this->round_key);
+            inv_cipher(out + i, in + i, this->m_round_key);
         }
     }
 
@@ -132,7 +132,7 @@ namespace wuk::crypto {
         
         for (wuk::ulong i = 0; i < length; i += OP4_BL) {
             xor_with_iv(buffer, in + i);
-            cipher(out + i, buffer, this->round_key);
+            cipher(out + i, buffer, this->m_round_key);
             memcpy(buffer, out + i, OP4_BL);
         }
     }
@@ -152,7 +152,7 @@ namespace wuk::crypto {
         memcpy(prev, iv, OP4_BL);
 
         for (wuk::ulong i = 0; i < length; i += OP4_BL) {
-            inv_cipher(buffer, in + i, this->round_key);
+            inv_cipher(buffer, in + i, this->m_round_key);
             xor_with_iv(out + i, buffer, prev);
             memcpy(prev, in + i, OP4_BL);
         }
@@ -170,14 +170,14 @@ namespace wuk::crypto {
 
         size_t remaining = length;
         while (remaining >= OP4_BL) {
-            cipher(feedback, feedback, this->round_key);
+            cipher(feedback, feedback, this->m_round_key);
             xor_with_iv(out, in, feedback);
             out += OP4_BL;
             in += OP4_BL;
             remaining -= OP4_BL;
         }
         if (remaining > 0) {
-            cipher(feedback, feedback, this->round_key);
+            cipher(feedback, feedback, this->m_round_key);
             for (size_t i = 0; i < remaining; i++) {
                 out[i] = in[i] ^ feedback[i];
             }
@@ -197,16 +197,16 @@ namespace wuk::crypto {
 
         size_t remaining = length;
         while (remaining >= OP4_BL) {
-            pack32le(keystream + OP4_NL, this->counter++);
-            cipher(state, keystream, this->round_key);
+            pack32le(keystream + OP4_NL, this->m_counter++);
+            cipher(state, keystream, this->m_round_key);
             xor_with_iv(out, in, state);
             out += OP4_BL;
             in += OP4_BL;
             remaining -= OP4_BL;
         }
         if (remaining > 0) {
-            pack32le(keystream + OP4_NL, this->counter++);
-            cipher(state, keystream, this->round_key);
+            pack32le(keystream + OP4_NL, this->m_counter++);
+            cipher(state, keystream, this->m_round_key);
             for (size_t i = 0; i < remaining; i++) {
                 out[i] = in[i] ^ state[i];
             }

@@ -115,7 +115,7 @@ namespace wuk::net {
 
         auto connect_timeout = [&](const sockaddr *addr, socklen_t addrlen)
         {
-            return ::connect(this->fd, addr, addrlen);
+            return ::connect(this->m_fd, addr, addrlen);
         };
 
         wuk::i32 err = sock_call_ex<wuk::i32>(*this, "wuk::net::Socket::connect_ex",
@@ -137,7 +137,7 @@ namespace wuk::net {
 
         auto accept_timeout = [&](sockaddr *addr, socklen_t *addrlen)
         {
-            return ::accept(this->fd, addr, addrlen);
+            return ::accept(this->m_fd, addr, addrlen);
         };
 
         wSocket client_sock = sock_call_ex<wSocket>(*this, "wuk::net::Socket::accept_ex",
@@ -159,7 +159,7 @@ namespace wuk::net {
     {
         auto send_timeout = [&](const std::string &buffer)
         {
-            return ::send(this->fd, buffer.c_str(), buffer.length(), flag);
+            return ::send(this->m_fd, buffer.c_str(), buffer.length(), flag);
         };
 
         wuk::ilong sent = sock_call_ex<wuk::ilong>(*this, "wuk::net::Socket::send_ex",
@@ -178,7 +178,7 @@ namespace wuk::net {
     {
         auto recv_timeout = [&](std::string &buffer)
         {
-            return ::recv(this->fd, buffer.data(), length, flag);
+            return ::recv(this->m_fd, buffer.data(), length, flag);
         };
 
         std::string buffer(length, '\0');

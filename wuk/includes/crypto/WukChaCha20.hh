@@ -11,12 +11,12 @@ namespace wuk::crypto {
 
     class LIBWUK_API ChaCha20 {
     private:
-        bool use_libsodium = false;
+        bool m_use_sodium = false;
 
-        alignas(16) wuk::byte key[WukCC20_KL]{0};
-        std::atomic<wuk::u32> counter = 0U;
+        alignas(16) wuk::byte m_key[WukCC20_KL]{0};
+        std::atomic<wuk::u32> m_counter = 0U;
 
-        alignas(16) wuk::u32 state[16]{0};
+        alignas(16) wuk::u32 m_state[16]{0};
 
     private:
         void rfc8439_crypto_stream(wuk::byte *out, const wuk::byte *in, wuk::ulong length,

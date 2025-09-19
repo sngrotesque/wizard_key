@@ -25,21 +25,21 @@
 namespace wuk {
     class LIBWUK_API Random {
     private:
-        std::mt19937 generator;
+        std::mt19937 m_gen;
 
     public:
         Random()
         {
             std::random_device rd;
             std::seed_seq seed{rd(), rd(), rd(), rd(), rd(), rd(), rd(), rd()};
-            this->generator = std::mt19937(seed);
+            this->m_gen = std::mt19937(seed);
         }
 
     public:
         inline wuk::f64 random()
         {
             std::uniform_real_distribution<wuk::f64> dis(0.0, 1.0);
-            return dis(this->generator);
+            return dis(this->m_gen);
         }
 
         inline wuk::f64 uniform(wuk::f64 min_val, wuk::f64 max_val)
@@ -48,7 +48,7 @@ namespace wuk {
                 return 0;
             }
             std::uniform_real_distribution<wuk::f64> dis(min_val, max_val);
-            return dis(this->generator);
+            return dis(this->m_gen);
         }
 
         inline wuk::ulong randint(wuk::ulong min_val, wuk::ulong max_val)
@@ -57,7 +57,7 @@ namespace wuk {
                 return 0;
             }
             std::uniform_int_distribution<wuk::ulong> dis(min_val, max_val);
-            return dis(this->generator);
+            return dis(this->m_gen);
         }
 
         inline void bytes(wuk::byte *buffer, wuk::ulong length)

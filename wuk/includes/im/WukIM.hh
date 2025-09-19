@@ -22,11 +22,11 @@ namespace wuk::im {
 
     class LIBWUK_API Snowflake {
     private:
-        wuk::i64 datacenter_id = 0;
-        wuk::i64 worker_id = 0;
-        wuk::i64 sequence = 0;
-        wuk::i64 last_timestamp = -1;
-        std::mutex mutex;
+        wuk::i64 m_datacenter_id = 0;
+        wuk::i64 m_worker_id = 0;
+        wuk::i64 m_sequence = 0;
+        wuk::i64 m_last_timestamp = -1;
+        std::mutex m_mutex;
 
     private:
         wuk::i64 current_timestamp() const noexcept;

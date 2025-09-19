@@ -14,8 +14,8 @@ namespace wuk::crypto {
 
     class LIBWUK_API OP4 {
     private:
-        alignas(16) wuk::byte round_key[OP4_RKL]{0};
-        std::atomic<wuk::u32> counter = 0U;
+        alignas(16) wuk::byte m_round_key[OP4_RKL]{0};
+        std::atomic<wuk::u32> m_counter = 0U;
 
     public:
         OP4() = default;
@@ -40,12 +40,12 @@ namespace wuk::crypto {
     public:
         void set_counter(const wuk::u32 &counter) noexcept
         {
-            this->counter = counter;
+            this->m_counter = counter;
         }
 
         const wuk::byte *get_round_key() const noexcept
         {
-            return this->round_key;
+            return this->m_round_key;
         }
     };
 }

@@ -115,7 +115,7 @@ namespace wuk::net {
     WukPacket &WukPacket::set_timestamp(wuk::f64 time_val) noexcept
     {
         if (time_val == 0) {
-            time_val = timer.time<wuk::f64>();
+            time_val = this->m_time.time<wuk::f64>();
         }
         this->m_message.set_m_timestamp(time_val);
         RETURN;

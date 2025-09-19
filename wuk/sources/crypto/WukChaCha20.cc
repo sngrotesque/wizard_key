@@ -70,13 +70,13 @@ state_init(wuk::u32 state[16],
 
 namespace wuk::crypto {
     ChaCha20::ChaCha20(const wuk::byte key[WukCC20_KL], wuk::u32 counter)
-    : counter(counter)
+    : m_counter(counter)
     {
         if (!key) {
             wuk::Exception(wuk::Error::NPTR, "ChaCha20::ChaCha20",
                 "key is nullptr.");
         }
-        memcpy(this->key, key, WukCC20_KL);
+        memcpy(this->m_key, key, WukCC20_KL);
     #   ifdef LIBSODIUM_SUPPORT
         this->use_libsodium = (sodium_init() >= 0);
     #   endif
@@ -84,21 +84,21 @@ namespace wuk::crypto {
 
     ChaCha20::~ChaCha20()
     {
-        wuk::memory_secure(this->state, WukCC20_KSL);
-        wuk::memory_secure(this->key, WukCC20_KL);
+        wuk::memory_secure(this->m_state, WukCC20_KSL);
+        wuk::memory_secure(this->m_key, WukCC20_KL);
     }
 
     void ChaCha20::rfc8439_crypto_stream(wuk::byte *out, const wuk::byte *in, wuk::ulong length,
                                    const wuk::byte nonce[WukCC20_NL]) noexcept
     {
-        state_init(this->state, this->key, nonce, this->counter);
+        state_init(this->m_state, this->m_key, nonce, this->m_counter);
 
         wuk::u32 keystream[16] {0};
         wuk::byte *ksp = reinterpret_cast<wuk::byte *>(keystream);
 
         for (wuk::ulong i = 0, ki = WukCC20_KSL; i < length; ++i, ++ki) {
             if (ki == WukCC20_KSL) {
-                memcpy(keystream, this->state, WukCC20_KSL);
+                memcpy(keystream, this->m_state, WukCC20_KSL);
 
                 for (wuk::u32 r = 0; r < 10; ++r) {
                     QUARTERROUND(keystream[0],  keystream[4],
@@ -119,9 +119,9 @@ namespace wuk::crypto {
                     QUARTERROUND(keystream[3],  keystream[4],
                                  keystream[9],  keystream[14]);
                 }
-                state_recombination(keystream, this->state);
+                state_recombination(keystream, this->m_state);
 
-                this->state[12]++;
+                this->m_state[12]++;
 
                 ki = 0;
             }
@@ -129,21 +129,21 @@ namespace wuk::crypto {
             out[i] = in[i] ^ ksp[ki];
         }
 
-        this->counter += ((length + WukCC20_KSL - 1) / WukCC20_KSL);
+        this->m_counter += ((length + WukCC20_KSL - 1) / WukCC20_KSL);
     }
 
     void ChaCha20::crypto_stream(wuk::byte *out, const wuk::byte *in, wuk::ulong length,
                            const wuk::byte nonce[WukCC20_NL]) noexcept
     {
-        if (this->use_libsodium) {
+        if (this->m_use_sodium) {
     #       ifdef LIBSODIUM_SUPPORT
             // 此处的宏仅仅是为了避免在未使用Libsodium库时出现此函数未定义的情况
             crypto_stream_chacha20_ietf_xor_ic(out, in, length,
-                nonce, this->counter, this->key);
+                nonce, this->m_counter, this->m_key);
     #       endif
         } else {
             this->rfc8439_crypto_stream(out, in, length, nonce);
         }
-        this->counter += ((length + WukCC20_KSL - 1) / WukCC20_KSL);
+        this->m_counter += ((length + WukCC20_KSL - 1) / WukCC20_KSL);
     }
 }

@@ -11,7 +11,7 @@ namespace wuk::net {
     class LIBWUK_API WukPacket {
     private:
         Message m_message;
-        wuk::Time timer;
+        wuk::Time m_time;
 
     private:
         bool validate() const noexcept;

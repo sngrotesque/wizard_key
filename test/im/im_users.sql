@@ -5,10 +5,10 @@ CREATE DATABASE im;
 
 -- 创建枚举类型（用于账号状态）
 CREATE TYPE ACCOUNT_STATUS AS ENUM (
-    'NORMAL',
-    'BANNED',
-    'MUTED',
-    'DELETED'
+    'NORMAL',  -- 正常状态
+    'BANNED',  -- 封禁状态
+    'MUTED',   -- 禁言状态
+    'DELETED'  -- 删除状态
 );
 
 -- 创建数据表

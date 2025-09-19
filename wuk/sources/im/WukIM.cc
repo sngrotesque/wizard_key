@@ -48,39 +48,39 @@ namespace wuk::im {
                 "Datacenter ID is out of range.");
         }
 
-        this->datacenter_id = datacenter_id;
-        this->worker_id = worker_id;
+        this->m_datacenter_id = datacenter_id;
+        this->m_worker_id = worker_id;
     }
 
     wuk::i64 Snowflake::generate_id()
     {
-        std::lock_guard<std::mutex> lock(mutex);
+        std::lock_guard<std::mutex> lock(this->m_mutex);
 
         // 获取当前时间戳(毫秒)
         auto timestamp = current_timestamp();
 
         // 处理时钟回拨
-        if (timestamp < last_timestamp) {
+        if (timestamp < this->m_last_timestamp) {
             throw wuk::Exception(wuk::Error::ERR, "wuk::im::Snowflake::generate_id",
                 "Clock callback, refusal to generate ID.");
         }
 
         // 同一毫秒内生成多个ID
-        if (timestamp == last_timestamp) {
-            sequence = (sequence + 1) & sequence_mask;
-            if (sequence == 0) {
-                timestamp = wait_next_millis(last_timestamp);
+        if (timestamp == this->m_last_timestamp) {
+            this->m_sequence = (this->m_sequence + 1) & sequence_mask;
+            if (this->m_sequence == 0) {
+                timestamp = wait_next_millis(this->m_last_timestamp);
             }
         } else {
-            sequence = 0;
+            this->m_sequence = 0;
         }
 
-        last_timestamp = timestamp;
+        this->m_last_timestamp = timestamp;
 
         // 组合各部分生成最终ID
         return ((timestamp - epoch) << timestamp_shift) |
-            (datacenter_id << datacenter_id_shift) |
-            (worker_id << worker_id_shift) |
-            sequence;
+            (this->m_datacenter_id << datacenter_id_shift) |
+            (this->m_worker_id << worker_id_shift) |
+            this->m_sequence;
     }
 }
