@@ -4,7 +4,7 @@
 
 ## v1.0.0
 
-1. 重新封装了libpq库于[im/WukPsql.hh](wuk/includes/im/WukPsql.hh)，并提供了简要[文档](wuk/includes/im/libpq_doc/libpq.md)。  
+1. 重新封装了libpq库于[db/WukPsql.hh](wuk/includes/db/WukPsql.hh)，并提供了简要[文档](wuk/includes/db/libpq_doc/libpq.md)。  
    虽然目前还没写完。FUCK LIBPQXX！
 
 ## v0.9 更新内容
