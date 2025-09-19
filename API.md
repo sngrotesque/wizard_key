@@ -5,6 +5,7 @@
 ### 🧱 项目概览
  - [关于此项目](#关于)
  - [编码与命名规范](#编码与命名规范)
+ - [禁忌（特别写给跨语言程序员）](#禁忌)
 
 ### ⚙️ 核心模块 (Core)
  - [WukConfig.hh](API/WukConfig.md)
@@ -98,3 +99,114 @@
     };
     ```
 
+## 禁忌
+
+### 1. Java/C#的垃圾回收依赖
+**问题**：C++没有自动垃圾回收，必须显式管理内存或使用智能指针
+
+```cpp
+// 反模式：假设存在自动垃圾回收
+void createObjects()
+{
+    for(int i = 0; i < 1000000; ++i) {
+        auto obj = new HeavyObject();  // 不释放！
+        obj->process();
+    }
+}
+```
+
+### 2. Python的动态类型滥用
+**问题**：C++是静态类型语言，应优先使用明确接口和概念约束
+
+```cpp
+// 反模式：试图模仿Python的鸭子类型
+void process(auto arg) // C++20概念滥用
+{
+    arg.fly();  // 编译期才检查，可能引发复杂错误
+    arg.swim();
+}
+```
+
+### 3. JavaScript的回调地狱
+**问题**：C++应使用 `future`/`promise` 或协程管理异步
+
+```cpp
+// 反模式：深层嵌套lambda
+fetchData(Data d{
+    process(d, Result r{
+        save(r, Status s{
+            if(s.ok) log("Done");  // 难以维护的控制流
+        });
+    });
+});
+```
+
+### 4. Ruby的元编程狂热
+**问题**：C++元编程应限于编译期( `constexpr`/`template` )
+
+```cpp
+// 反模式：运行时动态修改类
+struct Widget {
+    void draw() { /*...*/ }
+};
+
+auto hack = []{
+    auto mptr = &Widget::draw;
+    // 尝试修改成员函数指针——未定义行为！
+};
+```
+
+### 5. Go的错误处理忽略
+**问题**：C++应使用 **异常处理** 或 **错误代码** 等方式明确处理错误
+
+```cpp
+// 反模式：忽略错误返回值
+void loadConfig() {
+    auto file = fopen("config.ini", "r");  // 不检查返回值！
+    parse(file);  // 可能解引用空指针
+}
+```
+
+### 6. Rust的所有权直接移植
+**问题**：C++应依赖 **RAII** 和 **智能指针** 体系
+
+```cpp
+// 反模式：试图手动实现借用检查器
+template<typename T>
+class RustLikeRef {
+    T* ptr;
+    ~RustLikeRef() { ptr=nullptr; }  // 假的"生命周期结束"
+};  // C++编译器不会真正阻止use-after-free
+```
+
+### 7. Perl的隐式上下文
+**问题**：C++需要保持强类型系统
+
+```cpp
+// 反模式：函数行为依赖调用上下文
+auto getData() { 
+    if(/* 神秘条件 */) return 42;
+    else return "answer";  // 类型系统被破坏
+}
+```
+
+### 8. Kotlin的空安全误用
+**问题**：C++17后应使用 `std::optional` 明确表达可选值
+
+```cpp
+// 反模式：用运算符模拟空安全
+template<typename T>
+struct Nullable {
+    T value;
+    operator bool() { return !!value; }  // 危险的类型转换
+};
+```
+
+### 关键原则总结
+1. **内存管理**：C++需要显式资源管理（RAII）
+2. **类型系统**：保持静态类型安全
+3. **错误处理**：避免静默忽略错误
+4. **元编程**：限制在编译期操作
+5. **范式匹配**：选择符合语言特性的范式（如C++适合值语义而非纯OOP）
+
+每个语言都有其哲学，跨语言编程时应遵循目标语言的最佳实践而非生搬硬套。
