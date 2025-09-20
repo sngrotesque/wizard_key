@@ -66,10 +66,11 @@ namespace wuk::db::psql {
 
     public:
         void connect(const std::string &conninfo);
-        void reconnect(const std::string &conninfo = nullptr);
+        void reconnect();
         void disconnect() noexcept;
 
     public:
+        bool is_connected() const noexcept;
         const PGconn *get_conn() const noexcept;
         PGconn *get_conn() noexcept;
     };
@@ -118,6 +119,13 @@ namespace wuk::db::psql {
         Work(Connection &&conn) noexcept;
         ~Work();
 
+    public:
+        Work(const Work &other) = default;
+        Work(Work &&other) = default;
+        Work &operator=(const Work &other) = default;
+        Work &operator=(Work &&other) = default;
+
+    public:
         /* 如果执行的是例如 INSERT 这种操作，那么Result内部不会有任何值。调用者应该明白这一点。
          * 我不想去做像是 libpqxx 库那样的区分有数据和无数据的类。
          * 当然后期也可以添加一个模板来让用户指定此操作是否会有返回数据。

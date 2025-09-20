@@ -152,8 +152,7 @@ void wuk_psql_test()
         psql::Result res;
 
         // 查询操作
-        // res = work.exec("SELECT * FROM test;");
-        res = work.exec<psql::ExecType::READ>("SELECT * FROM test;");
+        res = work.exec("SELECT * FROM test;");
 
         wuk::i32 n_rows = res.get_row_count();
         wuk::i32 n_cols = res.get_col_count();
@@ -169,16 +168,21 @@ void wuk_psql_test()
         }
 
         // 插入操作
-        std::vector<psql::Param> params;
-        std::string uid = std::to_string(rd.randint(4000, 5000));
-        std::string name = random_string(4, 12);
-        std::string created = fmt::format("{0:.5f}", tm.time<double>());
-        params.push_back(psql::Param{uid, 0});
-        params.push_back(psql::Param{name, 0});
+        for (wuk::i32 count = 0; count < 16; ++count) {
+            std::vector<psql::Param> params;
+            std::string uid = fmt::format("{0}", rd.randint(4e3, 5e3));
+            std::string name = random_string(4, 12);
+            std::string created = fmt::format("{0:.5f}", tm.time<double>());
+            params.push_back(psql::Param{uid, 0});
+            params.push_back(psql::Param{name, 0});
+            params.push_back(psql::Param{created, 0});
 
-        res = work.exec("INSERT INTO test (uid, name) VALUES ($1, $2);",
-                        params,
-                        psql::ResultFormat::TEXT);
+            res = work.exec(
+                "INSERT INTO test (uid, name, created) VALUES ($1, $2, $3);",
+                params,
+                psql::ResultFormat::TEXT
+            );
+        }
     } catch (const wuk::Exception &e) {
         std::cerr << e.what() << std::endl;
         return;
