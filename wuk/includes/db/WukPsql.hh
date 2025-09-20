@@ -130,7 +130,10 @@ namespace wuk::db::psql {
         Result exec(const char *sql);
         Result exec(const char *sql, std::vector<Param> params, ResultFormat f);
 
-        
+        template <ExecType Type>
+        Result exec(const char *sql);
+        template <ExecType Type>
+        Result exec(const char *sql, std::vector<Param> params, ResultFormat f);
     };
 }
 #endif

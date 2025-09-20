@@ -117,8 +117,6 @@ def main(verbose: bool = True):
         '--std=c++17',
         '-DWUK_EXPORTS',
         '-march=native',
-
-        '-lfmt', # 这个格式库现在已经作为此库的基础依赖进行使用
     )
 
     # 源文件
@@ -139,6 +137,11 @@ def main(verbose: bool = True):
         # 'wuk/sources/WukHexdump.cc',
         'wuk/sources/WukMisc.cc',
         # 'wuk/sources/WukPadding.cc',
+    )
+
+    # 库链接
+    compiler.add_args(
+        '-lfmt',
     )
 
     start = time.time()
