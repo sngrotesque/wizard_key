@@ -11,7 +11,7 @@
 #include <windows.h>
 #include <iostream>
 
-wuk::Buffer derive_sha256_digest(const std::string &password,
+static wuk::Buffer derive_sha256_digest(const std::string &password,
                                  const wuk::Buffer &salt)
 {
     wuk::Buffer derived;
@@ -52,8 +52,8 @@ public:
         wuk::Buffer salt;
         wuk::Buffer hash;
 
-        RAND_bytes(salt.write(16), 16);
-        hash = derive_sha256_digest(password, salt);
+        // RAND_bytes(salt.write(16), 16);
+        // hash = derive_sha256_digest(password, salt);
 
         info.set_uid(sf.generate_id() & 0xffffffffU)
             .set_name(name)

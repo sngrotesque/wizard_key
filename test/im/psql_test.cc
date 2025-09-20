@@ -38,8 +38,12 @@ std::string create_conninfo()
 
 std::string random_string(wuk::i32 min_size, wuk::i32 max_size)
 {
-    const char _charset[] = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
-    std::vector<char> charset(_charset, _charset + (sizeof(_charset) - 1));
+    const char _charset[] = {
+        "0123456789"
+        "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+        "abcdefghijklmnopqrstuvwxyz"
+    };
+    std::vector<char> charset(_charset, _charset + strlen(_charset));
 
     wuk::ulong length = rd.randint(min_size, max_size);
 
