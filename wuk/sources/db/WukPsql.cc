@@ -294,50 +294,6 @@ namespace wuk::db::psql {
 
         return Result(result);
     }
-
-    template <>
-    Result Work::exec<ExecType::READ>(const char *sql)
-    {
-        PGresult *res = PQexec(this->m_conn.get_conn(), sql);
-        wuk::i32 err_code = get_status(res);
-        if (err_code != PGRES_TUPLES_OK) {
-            std::string err_message = PQresultErrorMessage(res);
-            free_res(res);
-            throw wuk::Exception(err_code,
-                "wuk::db::psql::Work::exec<ExecType::READ>",
-                err_message);
-        }
-        Result result(res);
-        return result;
-    }
-
-    template <>
-    Result Work::exec<ExecType::WRITE>(const char *sql)
-    {
-        PGresult *res = PQexec(this->m_conn.get_conn(), sql);
-        wuk::i32 err_code = get_status(res);
-        if (err_code != PGRES_COMMAND_OK) {
-            std::string err_message = PQresultErrorMessage(res);
-            free_res(res);
-            throw wuk::Exception(err_code,
-                "wuk::db::psql::Work::exec<ExecType::WRITE>",
-                err_message);
-        }
-        Result result(res);
-        return result;
-    }
-
-    template <>
-    Result Work::exec<ExecType::READ>(const char *sql, std::vector<Param> params, ResultFormat f)
-    {
-        return {};
-    }
-
-    template <>
-    Result Work::exec<ExecType::WRITE>(const char *sql, std::vector<Param> params, ResultFormat f)
-    {
-        return {};
-    }
 }
 
 

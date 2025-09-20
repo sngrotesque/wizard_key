@@ -38,11 +38,6 @@ namespace wuk::db::psql {
         wuk::i32 is_binary;
     };
 
-    enum class ExecType {
-        WRITE, // 写入操作
-        READ,  // 读取操作
-    };
-
     enum class ResultFormat : wuk::i32 {
         TEXT   = 0,
         BINARY = 1,
@@ -128,11 +123,6 @@ namespace wuk::db::psql {
          * 当然后期也可以添加一个模板来让用户指定此操作是否会有返回数据。
          */
         Result exec(const char *sql);
-        Result exec(const char *sql, std::vector<Param> params, ResultFormat f);
-
-        template <ExecType Type>
-        Result exec(const char *sql);
-        template <ExecType Type>
         Result exec(const char *sql, std::vector<Param> params, ResultFormat f);
     };
 }
