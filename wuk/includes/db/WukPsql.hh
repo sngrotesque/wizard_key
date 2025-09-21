@@ -55,13 +55,9 @@ namespace wuk::db::psql {
         ~Connection();
 
     public:
-        // 拷贝构造
         Connection(const Connection &other) = delete;
-        // 移动构造
         Connection(Connection &&other) noexcept;
-        // 拷贝赋值
         Connection &operator=(const Connection &other) = delete;
-        // 移动赋值
         Connection &operator=(Connection &&other) noexcept;
 
     public:
@@ -88,13 +84,9 @@ namespace wuk::db::psql {
         ~Result();
 
     public:
-        // 拷贝构造
         Result(const Result &other) noexcept;
-        // 移动构造
         Result(Result &&other) noexcept;
-        // 拷贝赋值
         Result &operator=(const Result &other) noexcept;
-        // 移动赋值
         Result &operator=(Result &&other) noexcept;
 
     public:
@@ -126,10 +118,6 @@ namespace wuk::db::psql {
         Work &operator=(Work &&other) = default;
 
     public:
-        /* 如果执行的是例如 INSERT 这种操作，那么Result内部不会有任何值。调用者应该明白这一点。
-         * 我不想去做像是 libpqxx 库那样的区分有数据和无数据的类。
-         * 当然后期也可以添加一个模板来让用户指定此操作是否会有返回数据。
-         */
         Result exec(const char *sql);
         Result exec(const char *sql, std::vector<Param> params, ResultFormat f);
     };

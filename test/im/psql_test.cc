@@ -7,6 +7,7 @@
 #include <iomanip>
 
 using namespace wuk::misc;
+using namespace wuk::db;
 
 wuk::Random rd;
 wuk::Time tm;
@@ -147,56 +148,76 @@ void libpq_test()
 
 void wuk_psql_test()
 {
-    using namespace wuk::db;
+    std::string conninfo = create_conninfo();
+    psql::Connection conn(conninfo);
+    psql::Work work(std::move(conn));
+    psql::Result res;
 
-    try {
-        std::string conninfo = create_conninfo();
-        psql::Connection conn(conninfo);
-        psql::Work work(std::move(conn));
-        psql::Result res;
+    // 查询操作
+    res = work.exec("SELECT * FROM test;");
 
-        // 查询操作
-        res = work.exec("SELECT * FROM test;");
+    wuk::i32 n_rows = res.get_row_count();
+    wuk::i32 n_cols = res.get_col_count();
 
-        wuk::i32 n_rows = res.get_row_count();
-        wuk::i32 n_cols = res.get_col_count();
+    std::cout << fmt::format("获取到的结果列数量：{0}。", n_cols) << std::endl;
+    for (wuk::i32 row = 0; row < n_rows; ++row) {
+        std::vector<std::string> rows = res[row];
 
-        std::cout << fmt::format("获取到的结果列数量：{0}。", n_cols) << std::endl;
-        for (wuk::i32 row = 0; row < n_rows; ++row) {
-            std::vector<std::string> rows = res[row];
+        for (auto &item : rows) {
+            std::cout << fmt::format("{0:<15s}", item) << "\t";
+        }
+        std::cout << std::endl;
+    }
 
-            for (auto &item : rows) {
-                std::cout << fmt::format("{0:<15s}", item) << "\t";
-            }
-            std::cout << std::endl;
+    // 插入操作
+    for (wuk::i32 count = 0; count < 16; ++count) {
+        std::vector<psql::Param> params;
+        std::string uid = fmt::format("{0}", rd.randint(4e3, 5e3));
+        std::string name = random_string(4, 12);
+        std::string created = fmt::format("{0:.5f}", tm.time<double>());
+        params.push_back(psql::Param{uid, 0});
+        params.push_back(psql::Param{name, 0});
+        params.push_back(psql::Param{created, 0});
+
+        res = work.exec(
+            "INSERT INTO test (uid, name, created) VALUES ($1, $2, $3);",
+            params,
+            psql::ResultFormat::TEXT
+        );
+    }
+}
+
+void interaction_test()
+{
+    psql::Connection conn(create_conninfo());
+    psql::Work work(std::move(conn));
+    psql::Result result;
+
+    while (true) {
+        std::string sql;
+
+        std::cout << "Please enter sql: ";
+        std::getline(std::cin, sql);
+
+        if (sql == "exit") {
+            std::cout << "exit...\n";
+            break;
         }
 
-        // 插入操作
-        for (wuk::i32 count = 0; count < 16; ++count) {
-            std::vector<psql::Param> params;
-            std::string uid = fmt::format("{0}", rd.randint(4e3, 5e3));
-            std::string name = random_string(4, 12);
-            std::string created = fmt::format("{0:.5f}", tm.time<double>());
-            params.push_back(psql::Param{uid, 0});
-            params.push_back(psql::Param{name, 0});
-            params.push_back(psql::Param{created, 0});
-
-            res = work.exec(
-                "INSERT INTO test (uid, name, created) VALUES ($1, $2, $3);",
-                params,
-                psql::ResultFormat::TEXT
-            );
-        }
-    } catch (const wuk::Exception &e) {
-        std::cerr << e.what() << std::endl;
-        return;
+        result = work.exec(sql.c_str());
     }
 }
 
 int main()
 {
-    // libpq_test();
-    wuk_psql_test();
+    try {
+        // libpq_test();
+        // wuk_psql_test();
+        interaction_test();
+    } catch (const wuk::Exception &e) {
+        std::cerr << e.what() << std::endl;
+        return 1;
+    }
 
     return 0;
 }
