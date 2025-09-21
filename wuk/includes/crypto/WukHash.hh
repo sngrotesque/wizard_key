@@ -54,7 +54,7 @@ namespace wuk::crypto {
     public:
         Hashlib()
         {
-            static_assert(!(T == HashlibType::MD5 || T == HashlibType::SHA_1),
+            static_assert((T != HashlibType::MD5) && (T != HashlibType::SHA_1),
                 "Insecure hash algorithm (MD5/SHA-1), use SHA-2 or SHA-3 instead");
             this->init_ctx();
             this->init_md();
@@ -70,6 +70,16 @@ namespace wuk::crypto {
         void update(const wuk::byte *buffer, wuk::ulong length)
         {
             EVP_DigestUpdate(this->ctx, buffer, length);
+        }
+
+        void update(const std::string &buffer)
+        {
+            this->update(reinterpret_cast<const wuk::byte *>(buffer.data()), buffer.size());
+        }
+
+        void update(const wuk::Buffer &buffer)
+        {
+            this->update(buffer.data(), buffer.get_length());
         }
 
         const wuk::Buffer digest() const noexcept
