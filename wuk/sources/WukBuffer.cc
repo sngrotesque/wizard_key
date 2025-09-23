@@ -461,19 +461,24 @@ namespace wuk {
         return reinterpret_cast<const char *>(this->m_data);
     }
 
-    wuk::ulong Buffer::get_length() const noexcept
+    wuk::ulong Buffer::size() const noexcept
     {
         return this->m_len;
     }
 
-    wuk::ulong Buffer::get_size() const noexcept
+    wuk::ulong Buffer::length() const noexcept
+    {
+        return this->m_len;
+    }
+
+    wuk::ulong Buffer::capacity() const noexcept
     {
         return this->m_size;
     }
 
     std::string Buffer::to_str() const noexcept
     {
-        return std::string(this->c_str(), this->get_length());
+        return std::string(this->c_str(), this->size());
     }
 
     std::string Buffer::to_hex() const noexcept

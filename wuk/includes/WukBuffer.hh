@@ -87,9 +87,10 @@ namespace wuk {
         const wuk::byte *data() const noexcept;
         const char *c_str() const noexcept;
         // 获取当前已使用的缓冲区的长度
-        wuk::ulong get_length() const noexcept;
+        wuk::ulong size() const noexcept;
+        wuk::ulong length() const noexcept;
         // 获取当前已申请的缓冲区的内存长度
-        wuk::ulong get_size() const noexcept;
+        wuk::ulong capacity() const noexcept;
 
         std::string to_str() const noexcept;
         std::string to_hex() const noexcept;

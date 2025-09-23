@@ -4,15 +4,18 @@
 
 ## v1.0.0
 
-1. 重新封装了libpq库于[db/WukPsql.hh](wuk/includes/db/WukPsql.hh)，并提供了简要[文档](wuk/includes/db/libpq_doc/libpq.md)。  
-   虽然目前还没写完。FUCK LIBPQXX！
+1. 在业务层面完全封装了libpq库于[db/WukPsql.hh](wuk/includes/db/WukPsql.hh)，并提供了[简要文档](wuk/includes/db/libpq_doc/libpq.md)。
+2. 重命名了 [wuk::Buffer](wuk/includes/WukBuffer.hh) 中的方法，  
+   如`get_length`改为`length`、`get_size`改为`size`，`get_size`改为`capacity`；  
+   与标准库对齐。预计下次推送添加`insert`方法。
+3. 对 [OP4 (four fundamental operations)](wuk/includes/crypto/WukOP4.hh) 的类方法添加了`const`修饰。
 
 ## v0.9 更新内容
 
 1. 重新以现代化的方式优化了整体代码并移除了部分“远古”代码。
 2. 设计了 [OP4 (four fundamental operations)](wuk/includes/crypto/WukOP4.hh) 加密算法。
 3. 重新以现代化的标准封装了Socket类（用于未来IM的开发以及彻底替代原先`v0.8`版本时期的屎山代码）。  
-   采用 [Protobuf](https://protobuf.dev/) 实现了网络包模块。
+   采用 [Protobuf](https://protobuf.dev/) 实现网络包模块。
 4. 以通用方式封装了 [OpenSSL](https://www.openssl.org/) 库提供的哈希算法工具函数，用于更方便的调用哈希算法。  
    当前支持以下哈希算法：  
    | Algorithm | subdivision | Support. | Recommended |

@@ -118,8 +118,8 @@ namespace wuk::db::psql {
         Work &operator=(Work &&other) = default;
 
     public:
-        Result exec(const char *sql);
-        Result exec(const char *sql, std::vector<Param> params, ResultFormat f);
+        Result exec(const std::string &sql);
+        Result exec(const std::string &sql, std::vector<Param> params, ResultFormat f);
     };
 }
 #endif

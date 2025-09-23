@@ -16,11 +16,11 @@ void print_info(const wuk::Buffer &buffer)
     printf("%s[I]%s length: %zd\n",
             wuk::color::fore::cyan,
             wuk::color::all::reset,
-            buffer.get_length());
+            buffer.size());
     printf("%s[I]%s sizeof: %zd\n",
             wuk::color::fore::cyan,
             wuk::color::all::reset,
-            buffer.get_size());
+            buffer.capacity());
 }
 
 void method_1()
@@ -33,15 +33,15 @@ void method_1()
 
     buffer.append("hello, world.\n");
     memcpy(buffer.append(13), "SN-Grotesque\n", 13);
-    memcpy(buffer.append(text.get_length()), text.data(), text.get_length());
+    memcpy(buffer.append(text.size()), text.data(), text.size());
 
-    wuk::misc::print_pybytes(buffer.data(), buffer.get_length(), true);
+    wuk::misc::print_pybytes(buffer.data(), buffer.size(), true);
 
     wuk::byte *p = const_cast<wuk::byte *>(buffer.data());
     p[0] = 0x00;
 
-    printf("length: %zd\n", buffer.get_length());
-    printf("sizeof: %zd\n", buffer.get_size());
+    printf("length: %zd\n", buffer.size());
+    printf("sizeof: %zd\n", buffer.capacity());
 }
 
 void method_2()
@@ -89,14 +89,14 @@ void method_4()
 
     buffer.write("a data.");
 
-    wuk::misc::print_pybytes(buffer.data(), buffer.get_length(), true);
+    wuk::misc::print_pybytes(buffer.data(), buffer.size(), true);
 }
 
 void method_5()
 {
     wuk::Buffer a(10);
 
-    std::cout << a.get_size() << std::endl;
+    std::cout << a.capacity() << std::endl;
 }
 
 void method_6()
@@ -139,19 +139,19 @@ void method_8()
     }
 
     buffer.write(reinterpret_cast<const wuk::byte *>(""), 0);
-    wuk::misc::print_pybytes(buffer.data(), buffer.get_length(), true);
+    wuk::misc::print_pybytes(buffer.data(), buffer.size(), true);
     print_info(buffer);
 
     buffer.append(std::string("good boy."));
-    wuk::misc::print_pybytes(buffer.data(), buffer.get_length(), true);
+    wuk::misc::print_pybytes(buffer.data(), buffer.size(), true);
     print_info(buffer);
 
     memcpy(buffer.append(32), "abcdef0123456789abcdef0123456789", 32);
-    wuk::misc::print_pybytes(buffer.data(), buffer.get_length(), true);
+    wuk::misc::print_pybytes(buffer.data(), buffer.size(), true);
     print_info(buffer);
 
     memcpy(buffer.write(5), "hello", 5);
-    wuk::misc::print_pybytes(buffer.data(), buffer.get_length(), true);
+    wuk::misc::print_pybytes(buffer.data(), buffer.size(), true);
     print_info(buffer);
 }
 

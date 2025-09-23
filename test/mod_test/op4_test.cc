@@ -134,11 +134,19 @@ wuk::u32 bit_diff(const wuk::byte *a, const wuk::byte *b, size_t length)
 }
 
 #ifdef WEAK_KEY_TEST
+template <bool timer>
 void weak_key_test(wuk::u32 count = 10000000)
 {
     wuk::byte master_key_left[OP4_KL] {0};
     wuk::byte master_key_right[OP4_KL] {0};
     wuk::f64 total_diff_bits{0};
+
+    wuk::Time time;
+    double start{0}, stop{0};
+
+    if constexpr (timer) {
+        start = time.time<double>();
+    }
 
     for (wuk::u32 i = 0; i < count; ++i) {
         // 初始化左边的主密钥
@@ -169,12 +177,16 @@ void weak_key_test(wuk::u32 count = 10000000)
         total_diff_bits += bit_diff_ratio;
     }
 
-    std::cout << "The number of samples used for the round key avalanche effect test: " << count << std::endl;
-    std::cout << "Avalanche effect test of round key, "
-            << "bit difference rate: "
-            << std::fixed << std::setprecision(2)
-            << ((total_diff_bits / count) * 100) << " %."
-            << "\n" << std::endl;
+    if constexpr (timer) {
+        stop = time.time<double>();
+        std::cout << fmt::format("Time taken: {0:.4f}", (stop-start)) << std::endl;
+    }
+
+    std::cout << fmt::format(
+        "The number of samples used for the round key avalanche effect test: {0}.", count) << std::endl;
+    std::cout << fmt::format(
+        "Avalanche effect test of round key, bit difference rate: {0:.4f} %.",
+        ((total_diff_bits / count) * 100)) << std::endl;
 }
 #endif
 
@@ -185,12 +197,15 @@ void xcryption_verification()
     wuk::byte iv[OP4_BL]    {0};
     wuk::byte nonce[OP4_NL] {0};
 
-    constexpr size_t length = OP4_BL * 2;
+    constexpr size_t length = OP4_BL * 3;
     wuk::byte plaintext[length]{
         0x80, 0x01, 0x80, 0x01, 0x80, 0x01, 0x80, 0x01,
         0x80, 0x01, 0x80, 0x01, 0x80, 0x01, 0x80, 0x01,
         0x80, 0x01, 0x80, 0x01, 0x80, 0x01, 0x80, 0x01,
-        0x80, 0x01, 0x80, 0x01, 0x80, 0x01, 0x80, 0x01};
+        0x80, 0x01, 0x80, 0x01, 0x80, 0x01, 0x80, 0x01,
+        0x00, 0x01, 0x80, 0x01, 0x80, 0x01, 0x80, 0x01,
+        0x80, 0x01, 0x80, 0x01, 0x80, 0x01, 0x80, 0x01,
+    };
     wuk::byte ciphertext[length]{0};
     wuk::byte decrypted[length]{0};
 
@@ -687,7 +702,7 @@ int main(int argc, char **argv)
 {
 #   ifdef WEAK_KEY_TEST
     std::cout << "================================ Weak key test ================================\n";
-    weak_key_test();
+    weak_key_test<true>();
 #   endif
 
 #   ifdef XCRYPTION_TEST

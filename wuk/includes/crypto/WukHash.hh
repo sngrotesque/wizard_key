@@ -79,7 +79,7 @@ namespace wuk::crypto {
 
         void update(const wuk::Buffer &buffer)
         {
-            this->update(buffer.data(), buffer.get_length());
+            this->update(buffer.data(), buffer.size());
         }
 
         const wuk::Buffer digest() const noexcept

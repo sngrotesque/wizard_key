@@ -12,36 +12,36 @@ OP4_SI(void) key_obfuscation(wuk::byte k[wuk::crypto::OP4_KL]) noexcept
     for (wuk::u32 i = 0; i < wuk::crypto::OP4_KL; i += 4) {
         k[i] += wuk::crypto::rotl8(k[i] ^ k[i+1] ^ k[i+2] ^ k[i+3], 5);
     }
-    wuk::u32 v0, v1, v2, v3, v4, v5, v6, v7;
-    wuk::u32 t0, t1, t2, t3, t4, t5, t6, t7;
+    wuk::u32 v[8]{};
+    wuk::u32 t[8]{};
 
     // Introduce a diffusion mechanism for key
-    t0 = (v0 = wuk::crypto::load32le(k     ));
-    t1 = (v1 = wuk::crypto::load32le(k +  4));
-    t2 = (v2 = wuk::crypto::load32le(k +  8));
-    t3 = (v3 = wuk::crypto::load32le(k + 12));
-    t4 = (v4 = wuk::crypto::load32le(k + 16));
-    t5 = (v5 = wuk::crypto::load32le(k + 20));
-    t6 = (v6 = wuk::crypto::load32le(k + 24));
-    t7 = (v7 = wuk::crypto::load32le(k + 28));
+    t[0] = (v[0] = wuk::crypto::load32le(k     ));
+    t[1] = (v[1] = wuk::crypto::load32le(k +  4));
+    t[2] = (v[2] = wuk::crypto::load32le(k +  8));
+    t[3] = (v[3] = wuk::crypto::load32le(k + 12));
+    t[4] = (v[4] = wuk::crypto::load32le(k + 16));
+    t[5] = (v[5] = wuk::crypto::load32le(k + 20));
+    t[6] = (v[6] = wuk::crypto::load32le(k + 24));
+    t[7] = (v[7] = wuk::crypto::load32le(k + 28));
 
-    t7 += wuk::crypto::rotl32((v0 ^ v7) + v6, 15);
-    t6 += wuk::crypto::rotl32((v7 ^ v6) + v5, 19);
-    t5 += wuk::crypto::rotl32((v6 ^ v5) + v4, 21);
-    t4 += wuk::crypto::rotl32((v5 ^ v4) + v3, 29);
-    t3 += wuk::crypto::rotl32((v4 ^ v3) + v2, 13);
-    t2 += wuk::crypto::rotl32((v3 ^ v2) + v1, 7);
-    t1 += wuk::crypto::rotl32((v2 ^ v1) + v0, 23);
-    t0 += wuk::crypto::rotl32((v1 ^ v0) + v7, 17);
+    t[7] += wuk::crypto::rotl32((v[0] ^ v[7]) + v[6], 15);
+    t[6] += wuk::crypto::rotl32((v[7] ^ v[6]) + v[5], 19);
+    t[5] += wuk::crypto::rotl32((v[6] ^ v[5]) + v[4], 21);
+    t[4] += wuk::crypto::rotl32((v[5] ^ v[4]) + v[3], 29);
+    t[3] += wuk::crypto::rotl32((v[4] ^ v[3]) + v[2], 13);
+    t[2] += wuk::crypto::rotl32((v[3] ^ v[2]) + v[1], 7);
+    t[1] += wuk::crypto::rotl32((v[2] ^ v[1]) + v[0], 23);
+    t[0] += wuk::crypto::rotl32((v[1] ^ v[0]) + v[7], 17);
 
-    wuk::crypto::pack32le(k,      t0);
-    wuk::crypto::pack32le(k + 4,  t1);
-    wuk::crypto::pack32le(k + 8,  t2);
-    wuk::crypto::pack32le(k + 12, t3);
-    wuk::crypto::pack32le(k + 16, t4);
-    wuk::crypto::pack32le(k + 20, t5);
-    wuk::crypto::pack32le(k + 24, t6);
-    wuk::crypto::pack32le(k + 28, t7);
+    wuk::crypto::pack32le(k,      t[0]);
+    wuk::crypto::pack32le(k + 4,  t[1]);
+    wuk::crypto::pack32le(k + 8,  t[2]);
+    wuk::crypto::pack32le(k + 12, t[3]);
+    wuk::crypto::pack32le(k + 16, t[4]);
+    wuk::crypto::pack32le(k + 20, t[5]);
+    wuk::crypto::pack32le(k + 24, t[6]);
+    wuk::crypto::pack32le(k + 28, t[7]);
 }
 
 OP4_SI(void) key_schedule_transformation(wuk::byte key[wuk::crypto::OP4_KL]) noexcept
@@ -84,7 +84,7 @@ namespace wuk::crypto {
         wuk::memory_secure(this->m_round_key, sizeof(this->m_round_key));
     }
 
-    void OP4::ecb_encrypt(wuk::byte *out, const wuk::byte *in, wuk::ulong length)
+    void OP4::ecb_encrypt(wuk::byte *out, const wuk::byte *in, wuk::ulong length) const
     {
         if(!out || !in) {
             throw wuk::Exception(wuk::Error::NPTR, "wuk::crypto::OP4::ecb_encrypt",
@@ -100,7 +100,7 @@ namespace wuk::crypto {
         }
     }
 
-    void OP4::ecb_decrypt(wuk::byte *out, const wuk::byte *in, wuk::ulong length)
+    void OP4::ecb_decrypt(wuk::byte *out, const wuk::byte *in, wuk::ulong length) const
     {
         if(!out || !in) {
             throw wuk::Exception(wuk::Error::NPTR, "wuk::crypto::OP4::ecb_decrypt",
@@ -116,8 +116,8 @@ namespace wuk::crypto {
         }
     }
 
-    void OP4::cbc_encrypt(wuk::byte *out, const wuk::byte *in, wuk::ulong length,
-                    const wuk::byte iv[OP4_BL])
+    void OP4::cbc_encrypt(wuk::byte *out, const wuk::byte *in,
+                          wuk::ulong length, const wuk::byte iv[OP4_BL]) const
     {
         if(!out || !in || !iv) {
             throw wuk::Exception(wuk::Error::NPTR, "wuk::crypto::OP4::cbc_encrypt",
@@ -137,8 +137,8 @@ namespace wuk::crypto {
         }
     }
 
-    void OP4::cbc_decrypt(wuk::byte *out, const wuk::byte *in, wuk::ulong length,
-                    const wuk::byte iv[OP4_BL])
+    void OP4::cbc_decrypt(wuk::byte *out, const wuk::byte *in,
+                          wuk::ulong length, const wuk::byte iv[OP4_BL]) const
     {
         if(!out || !in || !iv) {
             throw wuk::Exception(wuk::Error::NPTR, "wuk::crypto::OP4::cbc_decrypt",
@@ -158,8 +158,8 @@ namespace wuk::crypto {
         }
     }
 
-    void OP4::ofb_stream(wuk::byte *out, const wuk::byte *in, wuk::ulong length,
-                   const wuk::byte iv[OP4_NL])
+    void OP4::ofb_stream(wuk::byte *out, const wuk::byte *in,
+                         wuk::ulong length, const wuk::byte iv[OP4_BL]) const
     {
         if(!out || !in || !iv) {
             throw wuk::Exception(wuk::Error::NPTR, "wuk::crypto::OP4::ofb_stream",
@@ -184,8 +184,8 @@ namespace wuk::crypto {
         }
     }
 
-    void OP4::ctr_stream(wuk::byte *out, const wuk::byte *in, wuk::ulong length,
-                   const wuk::byte nonce[OP4_NL])
+    void OP4::ctr_stream(wuk::byte *out, const wuk::byte *in,
+                         wuk::ulong length, const wuk::byte nonce[OP4_NL])
     {
         if(!out || !in || !nonce) {
             throw wuk::Exception(wuk::Error::NPTR, "wuk::crypto::OP4::ctr_stream",

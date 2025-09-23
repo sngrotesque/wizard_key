@@ -34,7 +34,7 @@ namespace wuk::binascii {
     wuk::Buffer b2a_hex(const wuk::Buffer &buffer) noexcept
     {
         const wuk::byte *p = buffer.data();
-        wuk::ulong       n = buffer.get_length();
+        wuk::ulong       n = buffer.size();
 
         std::vector<wuk::byte> input(p, p + n);
         std::vector<char> output = wuk::utils::bytes_to_hex(input);
@@ -48,7 +48,7 @@ namespace wuk::binascii {
     wuk::Buffer a2b_hex(const wuk::Buffer &buffer)
     {
         const char *p = buffer.c_str();
-        wuk::ulong n = buffer.get_length();
+        wuk::ulong n = buffer.size();
 
         std::vector<char> input(p, p + n);
         std::vector<wuk::byte> output = wuk::utils::hex_to_bytes(input);

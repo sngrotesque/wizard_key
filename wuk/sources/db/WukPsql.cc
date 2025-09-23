@@ -288,13 +288,13 @@ namespace wuk::db::psql {
         this->m_conn.disconnect();
     }
 
-    Result Work::exec(const char *sql)
+    Result Work::exec(const std::string &sql)
     {
         if (!this->m_conn.is_connected()) {
             throw wuk::Exception(wuk::Error::ERR, "wuk::db::psql::Work::exec",
                 "No active database connection.");
         }
-        PGresult *exec_res = PQexec(this->m_conn.get_conn(), sql);
+        PGresult *exec_res = PQexec(this->m_conn.get_conn(), sql.c_str());
 
         auto status = get_status(exec_res);
         if (!is_result_success(status)) {
@@ -307,7 +307,7 @@ namespace wuk::db::psql {
         return Result(exec_res);
     }
 
-    Result Work::exec(const char *sql, std::vector<Param> params, ResultFormat f)
+    Result Work::exec(const std::string &sql, std::vector<Param> params, ResultFormat f)
     {
         if (!this->m_conn.is_connected()) {
             throw wuk::Exception(wuk::Error::ERR, "wuk::db::psql::Work::exec",
@@ -325,7 +325,7 @@ namespace wuk::db::psql {
 
         PGresult *exec_res = PQexecParams(
             this->m_conn.get_conn(),
-            sql,
+            sql.c_str(),
             params.size(),
             nullptr,
             param_values.data(),

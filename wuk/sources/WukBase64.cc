@@ -211,7 +211,7 @@ namespace wuk::base64 {
     wuk::Buffer encode(const wuk::Buffer &buffer) noexcept
     {
         const wuk::byte *p = buffer.data();
-        wuk::ulong       n = buffer.get_length();
+        wuk::ulong       n = buffer.size();
 
         std::vector<wuk::byte> input(p, p + n);
         std::vector<char> output = base64_encode(input);
@@ -225,7 +225,7 @@ namespace wuk::base64 {
     wuk::Buffer decode(const wuk::Buffer &buffer, bool strict)
     {
         const char *p = buffer.c_str();
-        wuk::ulong n = buffer.get_length();
+        wuk::ulong n = buffer.size();
 
         std::vector<char> input(p, p + n);
         std::vector<wuk::byte> output = base64_decode(input, strict);

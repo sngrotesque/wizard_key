@@ -1,7 +1,7 @@
 #include <crypto/WukOP4.hh>
 #include <crypto/WukChaCha20.hh>
 #include <crypto/WukHash.hh>
-// #include <WukBinascii.hh>
+#include <WukBinascii.hh>
 #include <WukBuffer.hh>
 #include <WukMisc.hh>
 
@@ -29,7 +29,7 @@ wuk::Buffer derive_key(const std::string &password, const wuk::Buffer &salt, con
     wuk::Buffer derived;
 
     PKCS5_PBKDF2_HMAC(password.data(), password.length(),
-                      salt.data(), salt.get_length(),
+                      salt.data(), salt.size(),
                       PBKDF2_ROUNDS, EVP_sha256(), dklen,
                       derived.write(dklen));
 
@@ -85,7 +85,7 @@ void file_xcrypt(const fs::path &in_path,
     // 初始化密码套件
     if (encrypt) {
         RAND_bytes(salt.write(salt_size), salt_size);
-        fout.write(salt.c_str(), salt.get_length());
+        fout.write(salt.c_str(), salt.size());
     } else {
         fin.read(reinterpret_cast<char *>(salt.write(salt_size)), salt_size);
     }

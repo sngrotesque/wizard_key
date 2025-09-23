@@ -6,9 +6,6 @@
 // #include <net/WukSocket.hh>
 #include <WukBuffer.hh>
 
-#include <openssl/evp.h>
-#include <libpq-fe.h>
-
 #include <vector>
 #include <mutex>
 
@@ -42,6 +39,7 @@ namespace wuk::im {
 
 namespace wuk::im {
     // 详见：[im_users.sql](test\im\im_users.sql)
+    // 此类需要重新设计
     class LIBWUK_API UserInfo {
     private:
         wuk::i64      m_uid{0};      // 用户UID，非空且唯一

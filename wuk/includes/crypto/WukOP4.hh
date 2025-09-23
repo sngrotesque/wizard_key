@@ -23,24 +23,31 @@ namespace wuk::crypto {
         ~OP4();
 
     public:
-        void ecb_encrypt(wuk::byte *out, const wuk::byte *in, wuk::ulong length);
-        void ecb_decrypt(wuk::byte *out, const wuk::byte *in, wuk::ulong length);
+        void ecb_encrypt(wuk::byte *out, const wuk::byte *in,
+                         wuk::ulong length) const;
+        void ecb_decrypt(wuk::byte *out, const wuk::byte *in,
+                         wuk::ulong length) const;
 
-        void cbc_encrypt(wuk::byte *out, const wuk::byte *in, wuk::ulong length,
-                   const wuk::byte iv[OP4_BL]);
-        void cbc_decrypt(wuk::byte *out, const wuk::byte *in, wuk::ulong length,
-                   const wuk::byte iv[OP4_BL]);
+        void cbc_encrypt(wuk::byte *out, const wuk::byte *in,
+                         wuk::ulong length, const wuk::byte iv[OP4_BL]) const;
+        void cbc_decrypt(wuk::byte *out, const wuk::byte *in,
+                         wuk::ulong length, const wuk::byte iv[OP4_BL]) const;
 
-        void ofb_stream(wuk::byte *out, const wuk::byte *in, wuk::ulong length,
-                  const wuk::byte iv[OP4_NL]);
+        void ofb_stream(wuk::byte *out, const wuk::byte *in,
+                        wuk::ulong length, const wuk::byte iv[OP4_BL]) const;
 
-        void ctr_stream(wuk::byte *out, const wuk::byte *in, wuk::ulong length,
-                  const wuk::byte nonce[OP4_NL]);
+        void ctr_stream(wuk::byte *out, const wuk::byte *in,
+                        wuk::ulong length, const wuk::byte nonce[OP4_NL]);
 
     public:
         void set_counter(const wuk::u32 &counter) noexcept
         {
             this->m_counter = counter;
+        }
+
+        wuk::u32 get_counter() const noexcept
+        {
+            return this->m_counter;
         }
 
         const wuk::byte *get_round_key() const noexcept

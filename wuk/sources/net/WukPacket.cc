@@ -142,7 +142,7 @@ namespace wuk::net {
 
     WukPacket &WukPacket::set_message(const wuk::Buffer &buffer) noexcept
     {
-        return this->set_message(buffer.data(), buffer.get_length());
+        return this->set_message(buffer.data(), buffer.size());
     }
 
     // PUBLIC: Getter
