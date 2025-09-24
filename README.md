@@ -30,6 +30,38 @@
     | Protobuf  | [protobuf.dev](https://protobuf.dev/)                       | No        | Google研发的高效的结构化数据序列化工具 |
     | Zlib      | [www.zlib.net](https://www.zlib.net/)                       | No        | 通用数据压缩/解压库（DEFLATE 算法） |
 
+##### 安装必要依赖（Linux、Termux）
+
+```bash
+# 更新本地包列表
+apt update && apt upgrade -y
+# 安装必要的程序
+apt install git cmake make gcc g++ -y # 或clang
+# 克隆官方仓库
+git clone --single-branch git@github.com:fmtlib/fmt.git
+# 进入目录
+cd fmt
+# 编译并安装
+mkdir build && cd build
+cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=$PREFIX
+make -j$(nproc)
+make install
+```
+
+```cpp
+// 最小化测试代码
+#include <fmt/core.h>
+int main() {
+    fmt::print("Hello, {0}!\n", "World");
+    return 0;
+}
+```
+
+```bash
+# 编译执行
+g++ test.cpp -lfmt -o test && ./test # 或替换为clang
+```
+
 ### 使用
 
 ```bash
@@ -70,3 +102,4 @@ python3 make.py test\test.cc
  - 现代套接字封装：`wuk::net::Socket`。
  - 用于网络数据包协议的 **Protobuf**。
  - IO多路复用支持：select/poll/epoll/IOCP。
+
