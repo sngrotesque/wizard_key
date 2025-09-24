@@ -12,9 +12,9 @@
  - 安全重点：实现行业标准和符合行业标准的自研加密算法。
  - 网络：强大的套接字处理和协议支持。
 
-## 快速入门
+## 🍻快速入门
 
-🍻目前此库代码已在以下环境完全通过测试，意味着此库完全支持以下环境编译运行。
+目前此库代码已在以下环境完全通过测试，意味着此库完全支持以下环境编译运行。
 
  - MSVC (Visual Studio 2019-2022)
  - MinGW (GCC on Windows)
@@ -84,7 +84,7 @@ python3 make.py test/test.cc
 python3 make.py test/im/user.cc -lssl -lcrypto -lpq
 ```
 
-对于源文件的包含，请查看[make.py](make.py#L91)中 **main** 函数的部分。
+对于源文件的包含，请查看[make.py](make.py#L105)中 **main** 函数的部分。
 
 ## 文档
  - API参考：详细文档内容可在 [API.md](API.md) 中找到。
@@ -111,5 +111,6 @@ python3 make.py test/im/user.cc -lssl -lcrypto -lpq
  - 现代套接字封装：`wuk::net::Socket`。
  - 用于网络数据包协议的 **Protobuf**。
  - IO多路复用支持：select/poll/epoll/IOCP。
+
 
 
