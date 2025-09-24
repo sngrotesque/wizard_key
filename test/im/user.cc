@@ -118,7 +118,7 @@ private:
     }
 
 public:
-    Account() : work(psql::Work(std::move(this->create_conninfo()))) {}
+    Account() : work(psql::Work(this->create_conninfo())) {}
 
     bool query_uid_exists(psql::Work &work, const std::string &col_name, const std::string &uid)
     {
@@ -147,11 +147,11 @@ public:
         std::string name;
         std::string password;
 
-        // std::cout << LOG_UTF8("请输入用户名：");
-        // std::getline(std::cin, name);
+        std::cout << LOG_UTF8("请输入用户名：");
+        std::getline(std::cin, name);
 
-        // std::cout << LOG_UTF8("请输入密码：");
-        // std::getline(std::cin, password);
+        std::cout << LOG_UTF8("请输入密码：");
+        std::getline(std::cin, password);
 
         if (name.empty()) {
             name = "rand_" + userinfo::generate_name();
@@ -218,8 +218,9 @@ public:
 int main()
 {
     try {
+        wuk::i32 count = 1;
         Account acc;
-        for (wuk::i32 r = 0; r < 14; ++r) {
+        for (wuk::i32 r = 0; r < count; ++r) {
             acc.create<false>();
         }
     } catch (const wuk::Exception &e) {

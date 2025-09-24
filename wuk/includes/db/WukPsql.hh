@@ -112,9 +112,9 @@ namespace wuk::db::psql {
         ~Work();
 
     public:
-        Work(const Work &other) = default;
+        Work(const Work &other) = delete;
         Work(Work &&other) = default;
-        Work &operator=(const Work &other) = default;
+        Work &operator=(const Work &other) = delete;
         Work &operator=(Work &&other) = default;
 
     public:

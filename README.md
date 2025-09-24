@@ -14,6 +14,13 @@
 
 ## 快速入门
 
+🍻目前此库代码已在以下环境完全通过测试，意味着此库完全支持以下环境编译运行。
+
+ - MSVC (Visual Studio 2019-2022)
+ - MinGW (GCC on Windows)
+ - Linux GCC/Clang
+ - Clang (Termux/Android)
+
 ### 先决条件
 
  -  最低支持 **C++17** 的编译器（GCC 7+、Clang 5+、MSVC 2017+）。
