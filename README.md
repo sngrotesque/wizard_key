@@ -79,7 +79,9 @@ cd wizard_key/
 python3 make.py [test_file] [complier paramater]
 
 # 比如
-python3 make.py test\test.cc
+python3 make.py test/test.cc
+# 再比如
+python3 make.py test/im/user.cc -lssl -lcrypto -lpq
 ```
 
 对于源文件的包含，请查看[make.py](make.py#L91)中 **main** 函数的部分。
@@ -109,4 +111,5 @@ python3 make.py test\test.cc
  - 现代套接字封装：`wuk::net::Socket`。
  - 用于网络数据包协议的 **Protobuf**。
  - IO多路复用支持：select/poll/epoll/IOCP。
+
 
