@@ -1,3 +1,15 @@
+'''
+后续修改一下路径逻辑，用户传入的源文件应使用pathlib库切分后再使用os组合。
+这样是避免一些可能存在的路径分隔符出现问题。
+
+>>> from pathlib import Path
+>>> import os
+>>> p = Path('E:/code/projects/cpp/make.py')
+>>> p.parts
+('E:\\', 'code', 'projects', 'cpp', 'make.py')
+>>> os.path.join(*a.parts)
+'E:\\code\\projects\\cpp\\make.py'
+'''
 import os
 import re
 import sys
@@ -155,3 +167,4 @@ if __name__ == '__main__':
     COLOR = process_color_arg('--color')
     RESET = COLOR_TABLE['reset']
     main()
+
