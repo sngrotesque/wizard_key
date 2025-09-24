@@ -218,7 +218,7 @@ public:
 int main()
 {
     try {
-        wuk::i32 count = 1;
+        constexpr wuk::i32 count = 1;
         Account acc;
         for (wuk::i32 r = 0; r < count; ++r) {
             acc.create<false>();
@@ -230,3 +230,4 @@ int main()
 
     return 0;
 }
+
