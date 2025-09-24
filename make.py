@@ -10,12 +10,13 @@
 >>> os.path.join(*a.parts)
 'E:\\code\\projects\\cpp\\make.py'
 '''
+from pathlib import Path
+import subprocess
+import logging
+import time
+import sys
 import os
 import re
-import sys
-import time
-import logging
-import subprocess
 
 # === 配置区 ===
 # OUTPUT_DIR = '_compiled'
@@ -167,4 +168,5 @@ if __name__ == '__main__':
     COLOR = process_color_arg('--color')
     RESET = COLOR_TABLE['reset']
     main()
+
 
