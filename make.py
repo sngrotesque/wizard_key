@@ -19,8 +19,8 @@ import os
 import re
 
 # === 配置区 ===
-# OUTPUT_DIR = '_compiled'
-OUTPUT_DIR = '/data/data/com.termux/files/home'
+OUTPUT_DIR = '_compiled'
+# OUTPUT_DIR = '/data/data/com.termux/files/home'
 C_CPP_EXTENSIONS = ['c', 'cc', 'cpp', 'cxx']
 COLOR_TABLE = {
     'black':   '\x1b[90m',
