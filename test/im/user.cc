@@ -8,8 +8,6 @@
 
 #include <iostream>
 
-// #define USE_LOG
-
 #ifdef USE_LOG
 #   define LOG_UTF8(x) wuk::misc::log_utf8(x)
 #else
@@ -111,8 +109,7 @@ private:
             "host=47.79.146.143 "
             "port=54324 "
             "dbname=im "
-            // "user=test password=psql_test_user"
-            "user=postgres password=sngrotesque_sql"
+            "user=test password=psql_test_user"
         );
         return psql::Connection(conninfo);
     }
@@ -120,13 +117,13 @@ private:
 public:
     Account() : work(psql::Work(this->create_conninfo())) {}
 
-    bool query_uid_exists(psql::Work &work, const std::string &col_name, const std::string &uid)
+    bool query_exists(psql::Work &work, const std::string &col_name, const std::string &item)
     {
         std::string sql = fmt::format(
             "SELECT EXISTS(SELECT NULL FROM test WHERE {0} = $1);",
             col_name
         );
-        std::vector<psql::Param> params{psql::Param{uid, 0}};
+        std::vector<psql::Param> params{psql::Param{item, 0}};
         psql::Result result = work.exec(sql, params, psql::ResultFormat::TEXT);
         return result[0][0][0] == 't';
     }
@@ -138,7 +135,7 @@ public:
 
         while (true) {
             uid = userinfo::generate_uid();
-            if (this->query_uid_exists(this->work, "uid", uid)) {
+            if (this->query_exists(this->work, "uid", uid)) {
                 std::cout << LOG_UTF8("UID已存在，重新生成。") << std::endl;
                 continue;
             }
@@ -202,7 +199,7 @@ public:
         this->work.exec(sql, params, psql::ResultFormat::TEXT);
 
         if constexpr (check_succ) {
-            if (this->query_uid_exists(this->work, "uid", uid)) {
+            if (this->query_exists(this->work, "uid", uid)) {
                 std::cout << LOG_UTF8("数据写入数据库成功。") << std::endl;
             } else {
                 std::cout << LOG_UTF8("数据写入数据库失败，请重试。") << std::endl;
@@ -213,16 +210,47 @@ public:
 
         return true;
     }
+
+    bool login()
+    {
+        std::string name;
+        std::string password;
+
+        std::cout << LOG_UTF8("请输入用户名：");
+        std::getline(std::cin, name);
+
+        std::cout << LOG_UTF8("请输入密码：");
+        std::getline(std::cin, password);
+
+        if (name.empty()) {
+            std::cerr << LOG_UTF8("未输入用户名，退出。") << std::endl;
+            return false;
+        }
+        if (password.empty()) {
+            std::cerr << LOG_UTF8("未输入密码，退出。") << std::endl;
+            return false;
+        }
+
+        if (!this->query_exists(this->work, "name", name)) {
+            std::cerr << LOG_UTF8("用户不存在，退出。") << std::endl;
+            return false;
+        }
+
+        return true;
+    }
 };
 
 int main()
 {
     try {
-        constexpr wuk::i32 count = 1;
         Account acc;
-        for (wuk::i32 r = 0; r < count; ++r) {
-            acc.create<false>();
-        }
+
+        // constexpr wuk::i32 count = 1;
+        // for (wuk::i32 r = 0; r < count; ++r) {
+        //     acc.create<false>();
+        // }
+
+        acc.login();
     } catch (const wuk::Exception &e) {
         std::cerr << e.what() << std::endl;
         return 1;
@@ -230,4 +258,3 @@ int main()
 
     return 0;
 }
-
