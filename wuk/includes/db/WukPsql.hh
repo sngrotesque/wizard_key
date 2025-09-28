@@ -90,10 +90,6 @@ namespace wuk::db::psql {
         Result &operator=(Result &&other) noexcept;
 
     public:
-        /* 有效性检查，同时初始化行列数
-         * 后续可以考虑在此方法中添加一个对于 m_res 是否有错误（get_status）的判断，但这
-         * 需要Work类的配合，否则无法实现。
-         */
         bool is_validity() noexcept;
         wuk::i32 get_row_count() const noexcept;
         wuk::i32 get_col_count() const noexcept;

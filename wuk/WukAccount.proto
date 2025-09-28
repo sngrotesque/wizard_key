@@ -1,0 +1,47 @@
+// 详情见 im_users.sql
+syntax = "proto3";
+
+package wuk.im;
+
+enum ACCOUNT_STATUS {
+    UNDEFINED = 0; // 未定义
+
+    NORMAL    = 1; // 正常账号
+    BANNED    = 2; // 封禁账号
+    MUTED     = 3; // 禁言账号
+    DELETED   = 4; // 注销账号（已删除）
+}
+
+/* users 注意事项
+ * uid
+ *      由客户端发送时，服务器永远不应使用此属性。
+ * 
+ * name
+ *      服务器正常响应。
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ * status
+ *      客户端应始终发送 ACCOUNT_STATUS::UNDEFINED，
+ *      服务器永远不应发送 ACCOUNT_STATUS::UNDEFINED。
+ *      由客户端发送时，服务器永远不应使用此属性。
+ */
+message Message {
+    // 和 im_users.sql 定义一致
+    int64         m_uid      = 1;
+    string        m_name     = 2;
+    bytes         m_salt     = 3;
+    bytes         m_hash     = 4;
+
+    ACCOUNT_STATUS m_status  = 5;
+
+    double        m_created  = 6;
+    double        m_modified = 7;
+    double        m_accessed = 8;
+    double        m_deleted  = 9;
+}

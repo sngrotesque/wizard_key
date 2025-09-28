@@ -8,7 +8,13 @@ enum class IOType {
     RECV
 };
 
-timeval create_timeval(wuk::f64 timeout) noexcept
+static inline void throw_error(const std::string &func_name)
+{
+    wuk::i32 err_code = wuk::net::err::system::code();
+    throw wuk::Exception(err_code, func_name, wuk::net::err::system::message(err_code));
+}
+
+static inline timeval create_timeval(wuk::f64 timeout) noexcept
 {
     timeval tv {};
 
@@ -24,21 +30,17 @@ timeval create_timeval(wuk::f64 timeout) noexcept
 }
 
 template<typename T, typename call_function, typename... Args>
-T sock_call_ex( wuk::net::Socket &fd,
-                const std::string &func_name,
-                call_function func,
-                IOType io_type,
-                Args&&... args)
+static T sock_call_ex(
+    wuk::net::Socket  &fd,
+    const std::string &func_name,
+    call_function      func,
+    IOType             io_type,
+    Args&&...          args
+)
 {
     if (fd.get_timeout() == 0) {
-#       ifdef ALLOW_UNSET_TIMEOUT
         return func(std::forward<Args>(args)...);
-#       else
-        throw wuk::Exception(wuk::Error::ERR, func_name,
-            "This function is not allowed to be called with a timeout of 0.");
-#       endif
     }
-
     bool was_blocking = fd.get_blocking(); // 保存原始阻塞状态
 
     try {
@@ -82,17 +84,13 @@ T sock_call_ex( wuk::net::Socket &fd,
                     }
                     result = func(std::forward<Args>(args)...);
                     if (result == _res_err) {
-                        wuk::i32 err_code = wuk::net::err::system::code();
-                        throw wuk::Exception(err_code, func_name,
-                            wuk::net::err::system::message(err_code));
+                        throw_error(func_name);
                     }
                 } else if (select_ret == 0) {
                     throw wuk::Exception(wuk::Error::ERR, func_name,
                         "socket timeout.");
                 } else if (select_ret == NETERROR) {
-                    wuk::i32 err_code = wuk::net::err::system::code();
-                    throw wuk::Exception(err_code, func_name,
-                        wuk::net::err::system::message(err_code));
+                    throw_error(func_name);
                 }
             }
         }
@@ -118,13 +116,17 @@ namespace wuk::net {
             return ::connect(this->m_fd, addr, addrlen);
         };
 
-        wuk::i32 err = sock_call_ex<wuk::i32>(*this, "wuk::net::Socket::connect_ex",
-                connect_timeout, IOType::CONNECT, info.get_addr(), info.get_addrlen());
+        wuk::i32 err = sock_call_ex<wuk::i32>(
+                                            *this,
+                                            "wuk::net::Socket::connect_ex",
+                                            connect_timeout,
+                                            IOType::CONNECT,
+                                            info.get_addr(),
+                                            info.get_addrlen()
+                                            );
 
         if (err == NETERROR) {
-            wuk::i32 err_code = err::system::code();
-            throw wuk::Exception(err_code, "wuk::net::Socket::connect_ex",
-                err::system::message(err_code));
+            throw_error("wuk::net::Socket::connect_ex");
         }
 
         this->m_raddr.set_addr(info.get_addr(), info.get_addrlen());
@@ -144,9 +146,7 @@ namespace wuk::net {
                 accept_timeout, IOType::ACCEPT, client.set_addr(), client.set_addrlen());
 
         if (client_sock == static_cast<wSocket>(NETERROR)) {
-            wuk::i32 err_code = err::system::code();
-            throw wuk::Exception(err_code, "wuk::net::Socket::accept_ex",
-                err::system::message(err_code));
+            throw_error("wuk::net::Socket::accept_ex");
         }
 
         Socket new_sock(this->m_family, this->m_sock_type, this->m_proto, client_sock);
@@ -166,9 +166,7 @@ namespace wuk::net {
                 send_timeout, IOType::SEND, buffer);
 
         if (sent == NETERROR) {
-            wuk::i32 err_code = err::system::code();
-            throw wuk::Exception(err_code, "wuk::net::Socket::send_ex",
-                err::system::message(err_code));
+            throw_error("wuk::net::Socket::send_ex");
         }
 
         return sent;
@@ -186,9 +184,7 @@ namespace wuk::net {
                 recv_timeout, IOType::RECV, buffer);
 
         if (received == NETERROR) {
-            wuk::i32 err_code = err::system::code();
-            throw wuk::Exception(err_code, "wuk::net::Socket::recv_ex",
-                err::system::message(err_code));
+            throw_error("wuk::net::Socket::recv_ex");
         }
 
         return buffer;

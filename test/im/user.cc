@@ -18,6 +18,8 @@ using namespace wuk::db;
 constexpr wuk::u32 ITER_COUNT = 0x656b3U;
 
 namespace userinfo {
+    wuk::Random rnd;
+
     enum class ACCOUNT_STATUS {
         NORMAL,  // 正常
         BANNED,  // 封禁
@@ -28,11 +30,10 @@ namespace userinfo {
     std::string random_string(const std::vector<char> &set,
                               wuk::i32 min_size, wuk::i32 max_size)
     {
-        wuk::Random random;
-        wuk::ulong result_size = random.randint(min_size, max_size);
+        wuk::ulong result_size = rnd.randint(min_size, max_size);
         std::string result(result_size, '\0');
         for (auto &item : result) {
-            item = random.choice(set);
+            item = rnd.choice(set);
         }
         return result;
     }
@@ -66,8 +67,7 @@ namespace userinfo {
 
     wuk::Buffer generate_salt()
     {
-        wuk::Random random;
-        return random.bytes(16);
+        return rnd.bytes(16);
     }
 
     wuk::Buffer generate_hash(const std::string &password, const wuk::Buffer &salt)
@@ -215,6 +215,7 @@ public:
     {
         std::string name;
         std::string password;
+        psql::Result res;
 
         std::cout << LOG_UTF8("请输入用户名：");
         std::getline(std::cin, name);
@@ -235,6 +236,49 @@ public:
             std::cerr << LOG_UTF8("用户不存在，退出。") << std::endl;
             return false;
         }
+
+        res = this->work.exec(
+            "SELECT salt FROM test WHERE name = $1",
+            {
+                psql::Param{name, 0}
+            },
+            psql::ResultFormat::BINARY
+        );
+        if (!res.is_validity()) {
+            std::cerr << LOG_UTF8("盐结果无效，退出。") << std::endl;
+            return false;
+        }
+
+        wuk::Buffer salt = res[0][0];
+        wuk::Buffer local_hash = userinfo::generate_hash(password, salt);
+
+        res = this->work.exec(
+            "SELECT hash FROM test WHERE name = $1",
+            {
+                psql::Param{name, 0}
+            },
+            psql::ResultFormat::BINARY
+        );
+        if (!res.is_validity()) {
+            std::cerr << LOG_UTF8("哈希结果无效，退出。") << std::endl;
+            return false;
+        }
+
+        wuk::Buffer remote_hash = res[0][0];
+        if (remote_hash != local_hash) {
+            std::cerr << LOG_UTF8("密码错误，退出。") << std::endl;
+            return false;
+        }
+
+        res = this->work.exec(
+            "SELECT uid FROM test WHERE name = $1",
+            {
+                psql::Param{name, 0}
+            },
+            psql::ResultFormat::TEXT
+        );
+        std::string uid = res[0][0];
+        std::cout << LOG_UTF8(fmt::format("成功登录，你的UID是：{0}。\n欢迎回来。", uid)) << std::endl;
 
         return true;
     }
