@@ -2,8 +2,8 @@
 #include <core/WukConfig.hh>
 
 #if WUK_SUPPORT
-#include <net/WukError.hh>
-#include <net/WukPacket.pb.h>
+#include <net/WukPacket.pb.hh>
+
 #include <WukBuffer.hh>
 #include <WukTime.hh>
 
