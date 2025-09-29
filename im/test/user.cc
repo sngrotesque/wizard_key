@@ -1,6 +1,6 @@
+#include <server/includes/WukIM.hh>
 #include <core/WukLIBSSL.hh>
 #include <db/WukPsql.hh>
-#include <im/WukIM.hh>
 #include <WukBuffer.hh>
 #include <WukRandom.hh>
 #include <WukTime.hh>
@@ -40,7 +40,7 @@ namespace userinfo {
 
     std::string generate_uid()
     {
-        wuk::im::Snowflake sf(0);
+        wuk::im::server::Snowflake sf(0);
         return fmt::format("{0}", sf.generate_id() & 0xffffffff);
     }
 

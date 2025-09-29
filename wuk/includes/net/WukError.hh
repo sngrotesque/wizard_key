@@ -85,7 +85,7 @@ namespace wuk::net::err {
         UNKNOWN          // 未知错误（默认 fallback）
     };
 
-    inline LIBWUK_API SocketType from_code(int err) noexcept
+    inline SocketType from_code(int err) noexcept
     {
         switch (err) {
 #           if defined(WUK_PLATFORM_WINOS)
@@ -192,7 +192,7 @@ namespace wuk::net::err {
 
 namespace wuk::net::err::system {
     // 获取当前错误码
-    static inline LIBWUK_API int code() noexcept
+    inline int code() noexcept
     {
 #       if defined(WUK_PLATFORM_WINOS)
         return WSAGetLastError();
@@ -202,7 +202,7 @@ namespace wuk::net::err::system {
     }
 
     // 获取指定错误码的描述
-    static inline LIBWUK_API std::string message(int code) noexcept
+    inline std::string message(int code) noexcept
     {
 #       if defined(WUK_PLATFORM_WINOS)
         char *msg_buf = nullptr;
@@ -228,7 +228,7 @@ namespace wuk::net::err::system {
     }
 
     // 获取当前错误码的描述
-    static inline LIBWUK_API std::string last_message() noexcept
+    inline std::string last_message() noexcept
     {
         return message(code());
     }

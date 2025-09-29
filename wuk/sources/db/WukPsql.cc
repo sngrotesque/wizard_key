@@ -52,8 +52,9 @@ static inline bool is_result_success(ExecStatusType status) noexcept
 
 namespace wuk::db::psql {
     Connection::Connection(PGconn *conn) noexcept
+        : m_conn(conn)
     {
-        this->m_conn = conn;
+
     }
 
     Connection::Connection(const std::string &conninfo)
@@ -67,11 +68,8 @@ namespace wuk::db::psql {
     }
 
     Connection::Connection(Connection &&other) noexcept
+        : m_conn(other.m_conn)
     {
-        if (this == &other) {
-            return;
-        }
-        this->m_conn = other.m_conn;
         other.m_conn = nullptr;
     }
 
@@ -145,8 +143,9 @@ namespace wuk::db::psql {
     //////////////////////////////////////////////////////////
 
     Result::Result(PGresult *result) noexcept
+        : m_res(result)
     {
-        this->m_res = result;
+
     }
 
     Result::~Result()
@@ -164,9 +163,8 @@ namespace wuk::db::psql {
     }
 
     Result::Result(Result &&other) noexcept
+        : m_res(other.m_res)
     {
-        free_res(this->m_res);
-        this->m_res = other.m_res;
         other.m_res = nullptr;
     }
 
@@ -279,8 +277,9 @@ namespace wuk::db::psql {
     //////////////////////////////////////////////////////////
 
     Work::Work(Connection &&conn) noexcept
+        : m_conn(std::move(conn))
     {
-        this->m_conn = std::move(conn);
+
     }
 
     Work::~Work()

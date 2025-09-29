@@ -1,4 +1,4 @@
-#include "WukIM.hh"
+#include <server/includes/WukIM.hh>
 #include <WukTime.hh>
 
 ////////////////////////////////////////////////////////////////////
@@ -18,14 +18,13 @@ static constexpr wuk::i64 datacenter_id_shift = sequence_bits + worker_id_bits;
 static constexpr wuk::i64 worker_id_shift     = sequence_bits;
 static constexpr wuk::i64 timestamp_shift     = sequence_bits + worker_id_bits + datacenter_id_bits;
 
-// 纪元时间(2025-07-01 00:00:00 UTC)
+// 纪元时间(2025-07-01 00:00:00 UTC) 毫秒
 static constexpr wuk::i64 epoch = 1751299200000LL;
 
-namespace wuk::im {
+namespace wuk::im::server {
     wuk::i64 Snowflake::current_timestamp() const noexcept
     {
-        return std::chrono::duration_cast<std::chrono::milliseconds>(
-            std::chrono::system_clock::now().time_since_epoch()).count();
+        return static_cast<wuk::i64>(this->m_time.time<wuk::f64>() * 1000);
     }
 
     wuk::i64 Snowflake::wait_next_millis(wuk::i64 last_timestamp) const noexcept
@@ -39,11 +38,11 @@ namespace wuk::im {
 
     Snowflake::Snowflake(wuk::i64 worker_id, wuk::i64 datacenter_id)
     {
-        if (worker_id > max_worker_id || worker_id < 0) {
+        if ((worker_id > max_worker_id) || (worker_id < 0)) {
             throw wuk::Exception(wuk::Error::ERR, "wuk::im::Snowflake::Snowflake",
                 "Worker ID is out of range.");
         }
-        if (datacenter_id > max_datacenter_id || datacenter_id < 0) {
+        if ((datacenter_id > max_datacenter_id) || (datacenter_id < 0)) {
             throw wuk::Exception(wuk::Error::ERR, "wuk::im::Snowflake::Snowflake",
                 "Datacenter ID is out of range.");
         }

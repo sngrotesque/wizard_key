@@ -38,7 +38,7 @@ namespace wuk::db::psql {
         wuk::i32 is_binary;
     };
 
-    enum class ResultFormat : wuk::i32 {
+    enum class ResultFormat {
         TEXT   = 0,
         BINARY = 1,
     };

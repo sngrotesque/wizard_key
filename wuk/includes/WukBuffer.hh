@@ -25,24 +25,24 @@ namespace wuk {
         ~Buffer();
 
     public:
-        // 拷贝构造函数（BufferEx）
+        // 拷贝构造函数
         Buffer(const Buffer &other);
-        // 移动构造函数（BufferEx）
+        // 移动构造函数
         Buffer(Buffer &&other) noexcept;
-        // 拷贝赋值运算符（BufferEx）
+        // 拷贝赋值运算符
         Buffer &operator=(const Buffer &other);
-        // 移动赋值运算符（BufferEx）
+        // 移动赋值运算符
         Buffer &operator=(Buffer &&other) noexcept;
 
     public:
         // 拷贝构造函数（std::string）
-        Buffer(const std::string &buffer);
+        Buffer(const std::string &other);
         // 移动构造函数（std::string）
-        Buffer(std::string &&buffer);
+        Buffer(std::string &&other);
         // 拷贝赋值运算符（std::string）
-        Buffer &operator=(const std::string &other_string);
+        Buffer &operator=(const std::string &other);
         // 移动赋值运算符（std::string）
-        Buffer &operator=(std::string &&other_string);
+        Buffer &operator=(std::string &&other);
 
     public:
         // 申请一个length大小的内存空间，不显式初始化内存空间。

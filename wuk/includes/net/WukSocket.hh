@@ -28,9 +28,9 @@ namespace wuk::net {
         addrinfo *m_res = nullptr;
 
     public:
-        Addrinfo(wuk::i32 family = AF_INET,
+        Addrinfo(wuk::i32 family    = AF_INET,
                  wuk::i32 sock_type = SOCK_STREAM,
-                 wuk::i32 proto = IPPROTO_TCP) noexcept;
+                 wuk::i32 proto     = IPPROTO_TCP) noexcept;
         ~Addrinfo();
 
     public:
@@ -46,7 +46,7 @@ namespace wuk::net {
     class LIBWUK_API Sockaddr {
     private:
         sockaddr_storage m_addr {};
-        socklen_t m_addrlen = sizeof(addr);
+        socklen_t m_addrlen = sizeof(m_addr);
 
     public:
         Sockaddr() = default;
@@ -88,10 +88,12 @@ namespace wuk::net {
     public:
         Socket() = default;
         Socket(wuk::i32 family, wuk::i32 sock_type, wuk::i32 proto);
-        Socket(wuk::i32 family, wuk::i32 sock_type, wuk::i32 proto, wSocket cur_fd);
+        Socket(wuk::i32 family, wuk::i32 sock_type, wuk::i32 proto, wSocket other_fd);
         ~Socket();
 
+        Socket(const Socket &other) = default;
         Socket(Socket &&other) noexcept;
+        Socket &operator=(const Socket &other) = default;
         Socket &operator=(Socket &&other) noexcept;
 
     public:
@@ -112,7 +114,7 @@ namespace wuk::net {
         {
             const char *opt_ptr = reinterpret_cast<const char *>(&value);
             socklen_t opt_len = static_cast<socklen_t>(sizeof(T));
-            int err = ::setsockopt(this->fd, level, opt_name, opt_ptr, opt_len);
+            int err = ::setsockopt(this->m_fd, level, opt_name, opt_ptr, opt_len);
             if (err == NETERROR) {
                 int err_code = wuk::net::err::system::code();
                 throw wuk::Exception(err_code, "wuk::net::Socket::setsockopt",
@@ -125,7 +127,7 @@ namespace wuk::net {
         {
             T value {};
             socklen_t opt_len = static_cast<socklen_t>(sizeof(T));
-            int err = ::getsockopt(this->fd, level, opt_name,
+            int err = ::getsockopt(this->m_fd, level, opt_name,
                                 reinterpret_cast<char *>(&value), &opt_len);
             if (err == NETERROR) {
                 int err_code = wuk::net::err::system::code();

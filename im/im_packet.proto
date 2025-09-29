@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package wuk.net;
+package wuk.im;
 
 // 消息类型标志位（Bit map）
 enum MessageType {

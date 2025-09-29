@@ -1,12 +1,12 @@
-#include <net/WukPacket.hh>
+#include <common/includes/WukPacket.hh>
 
 #include <zlib.h>
 
 #define RETURN return *this
 
-namespace wuk::net {
+namespace wuk::im {
 // PRIVATE: Function
-    bool WukPacket::validate() const noexcept
+    bool Packet::validate() const noexcept
     {
         MessageType m_type_flag = this->m_message.m_type();
 
@@ -47,13 +47,13 @@ namespace wuk::net {
     }
 
 // PUBLIC: Setter
-    WukPacket &WukPacket::set_type(MessageType type) noexcept
+    Packet &Packet::set_type(MessageType type) noexcept
     {
         this->m_message.set_m_type(type);
         RETURN;
     }
 
-    WukPacket &WukPacket::add_flag(MessageType flag) noexcept
+    Packet &Packet::add_flag(MessageType flag) noexcept
     {
         wuk::u32 cur_flag = static_cast<int>(this->m_message.m_type());
         wuk::u32 new_flag = static_cast<int>(flag);
@@ -61,13 +61,13 @@ namespace wuk::net {
         RETURN;
     }
 
-    WukPacket &WukPacket::set_sequence(wuk::u32 seq) noexcept
+    Packet &Packet::set_sequence(wuk::u32 seq) noexcept
     {
         this->m_message.set_m_sequence(seq);
         RETURN;
     }
 
-    WukPacket &WukPacket::set_segment_id(wuk::u32 m_segment_id, bool is_last) noexcept
+    Packet &Packet::set_segment_id(wuk::u32 m_segment_id, bool is_last) noexcept
     {
         this->m_message.set_m_segment_id(m_segment_id);
 
@@ -82,37 +82,37 @@ namespace wuk::net {
         RETURN;
     }
 
-    WukPacket &WukPacket::set_proto_ver(wuk::u32 version)
+    Packet &Packet::set_proto_ver(wuk::u32 version)
     {
         if (version < 0x01) {
             throw wuk::Exception(wuk::Error::ERR,
-                "wuk::net::WukPacket::set_proto_ver",
+                "wuk::net::Packet::set_proto_ver",
                 "Protocol version too low.");
         }
         this->m_message.set_m_proto_ver(version);
         RETURN;
     }
 
-    WukPacket &WukPacket::set_ids(wuk::u64 sender, wuk::u64 recipient) noexcept
+    Packet &Packet::set_ids(wuk::u64 sender, wuk::u64 recipient) noexcept
     {
         this->m_message.set_m_sender(sender);
         this->m_message.set_m_recipient(recipient);
         RETURN;
     }
 
-    WukPacket &WukPacket::set_sender(wuk::u64 id) noexcept
+    Packet &Packet::set_sender(wuk::u64 id) noexcept
     {
         this->m_message.set_m_sender(id);
         RETURN;
     }
 
-    WukPacket &WukPacket::set_recipient(wuk::u64 id) noexcept
+    Packet &Packet::set_recipient(wuk::u64 id) noexcept
     {
         this->m_message.set_m_recipient(id);
         RETURN;
     }
 
-    WukPacket &WukPacket::set_timestamp(wuk::f64 time_val) noexcept
+    Packet &Packet::set_timestamp(wuk::f64 time_val) noexcept
     {
         if (time_val == 0) {
             time_val = this->m_time.time<wuk::f64>();
@@ -121,88 +121,88 @@ namespace wuk::net {
         RETURN;
     }
 
-    WukPacket &WukPacket::set_message_id(wuk::u32 id) noexcept
+    Packet &Packet::set_message_id(wuk::u32 id) noexcept
     {
         this->m_message.set_m_id(id);
         RETURN;
     }
 
-    WukPacket &WukPacket::set_message(const void *buffer, wuk::ulong length) noexcept
+    Packet &Packet::set_message(const void *buffer, wuk::ulong length) noexcept
     {
         this->m_message.set_m_length(length);
         this->m_message.set_m_content(buffer, length);
         RETURN;
     }
 
-    WukPacket &WukPacket::set_message(const std::string &buffer) noexcept
+    Packet &Packet::set_message(const std::string &buffer) noexcept
     {
         return this->set_message(reinterpret_cast<const wuk::byte *>(buffer.data()),
                                 buffer.length());
     }
 
-    WukPacket &WukPacket::set_message(const wuk::Buffer &buffer) noexcept
+    Packet &Packet::set_message(const wuk::Buffer &buffer) noexcept
     {
         return this->set_message(buffer.data(), buffer.size());
     }
 
     // PUBLIC: Getter
 
-    MessageType WukPacket::get_type() const noexcept
+    MessageType Packet::get_type() const noexcept
     {
         return this->m_message.m_type();
     }
 
-    bool WukPacket::has_flag(MessageType flag) const noexcept
+    bool Packet::has_flag(MessageType flag) const noexcept
     {
         return (this->get_type() & flag) == flag;
     }
 
-    wuk::u32 WukPacket::get_sequence() const noexcept
+    wuk::u32 Packet::get_sequence() const noexcept
     {
         return this->m_message.m_sequence();
     }
 
-    wuk::u32 WukPacket::get_segment_id() const noexcept
+    wuk::u32 Packet::get_segment_id() const noexcept
     {
         return this->m_message.m_segment_id();
     }
 
-    wuk::u32 WukPacket::get_proto_ver() const noexcept
+    wuk::u32 Packet::get_proto_ver() const noexcept
     {
         return this->m_message.m_proto_ver();
     }
 
-    wuk::u64 WukPacket::get_sender() const noexcept
+    wuk::u64 Packet::get_sender() const noexcept
     {
         return this->m_message.m_sender();
     }
 
-    wuk::u64 WukPacket::get_recipient() const noexcept
+    wuk::u64 Packet::get_recipient() const noexcept
     {
         return this->m_message.m_recipient();
     }
 
-    wuk::f64 WukPacket::get_timestamp() const noexcept
+    wuk::f64 Packet::get_timestamp() const noexcept
     {
         return this->m_message.m_timestamp();
     }
 
-    wuk::u32 WukPacket::get_message_id() const noexcept
+    wuk::u32 Packet::get_message_id() const noexcept
     {
         return this->m_message.m_id();
     }
 
-    wuk::ulong WukPacket::get_message_size() const noexcept
+    wuk::ulong Packet::get_message_size() const noexcept
     {
         return this->m_message.m_content().length();
     }
 
-    const std::string &WukPacket::get_message() const noexcept
+    const std::string &Packet::get_message() const noexcept
     {
         return this->m_message.m_content();
     }
 
-    const wuk::Buffer WukPacket::get_message(int) const noexcept
+    const wuk::Buffer Packet::get_message(int) const noexcept
     {
         const std::string &s = this->m_message.m_content();
         const wuk::byte *buffer = reinterpret_cast<const wuk::byte *>(s.data());
@@ -212,11 +212,11 @@ namespace wuk::net {
 
     // PUBLIC: Function
 
-    const std::string WukPacket::serialize()
+    const std::string Packet::serialize()
     {
         if (this->validate() == false) {
             throw wuk::Exception(wuk::Error::ERR,
-                "wuk::net::WukPacket::serialize",
+                "wuk::net::Packet::serialize",
                 "Data member validation failed.");
         }
 
@@ -230,25 +230,25 @@ namespace wuk::net {
         return this->m_message.SerializeAsString();
     }
 
-    WukPacket &WukPacket::parse(const std::string &buffer)
+    Packet &Packet::parse(const std::string &buffer)
     {
         return this->parse_from(buffer.data(), buffer.length());
     }
 
-    WukPacket &WukPacket::parse_from(const void *buffer, wuk::ulong length)
+    Packet &Packet::parse_from(const void *buffer, wuk::ulong length)
     {
         this->m_message.Clear();
 
         if (!this->m_message.ParseFromArray(buffer, static_cast<int>(length))) {
             throw wuk::Exception(wuk::Error::ERR,
-                "wuk::net::WukPacket::parse_from",
+                "wuk::net::Packet::parse_from",
                 "Invalid binary data");
         }
 
         if (!this->validate()) {
             this->m_message.Clear();
             throw wuk::Exception(wuk::Error::ERR,
-                "wuk::net::WukPacket::parse",
+                "wuk::net::Packet::parse",
                 "Parsed data validation failed");
         }
 

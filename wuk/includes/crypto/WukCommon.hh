@@ -5,7 +5,8 @@
 #include <core/WukEndianness.hh>
 
 namespace wuk::crypto {
-    inline LIBWUK_API wuk::u32 rotl32(const wuk::u32 &x, const wuk::u32 &n) noexcept
+    inline LIBWUK_API wuk::u32
+    rotl32(const wuk::u32 &x, const wuk::u32 &n) noexcept
     {
         return (x << n) | (x >> (32 - n));
     }

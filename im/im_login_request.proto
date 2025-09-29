@@ -1,8 +1,8 @@
 syntax = "proto3";
 
-package wuk.im.client;
+package wuk.im;
 
-message Message {
+message LoginRequest {
     string m_name     = 1;
     string m_password = 2;
 }

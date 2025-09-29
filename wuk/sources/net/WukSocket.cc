@@ -188,10 +188,10 @@ namespace wuk::net {
         }
     }
 
-    Socket::Socket(wuk::i32 family, wuk::i32 sock_type, wuk::i32 proto, wSocket cur_fd)
+    Socket::Socket(wuk::i32 family, wuk::i32 sock_type, wuk::i32 proto, wSocket other_fd)
     : m_family(family), m_sock_type(sock_type), m_proto(proto)
     {
-        this->m_fd = cur_fd;
+        this->m_fd = other_fd;
         this->m_laddr = this->getsockname();
     }
 
@@ -221,21 +221,22 @@ namespace wuk::net {
 
     Socket &Socket::operator=(Socket &&other) noexcept
     {
-        if (this != &other) {
-            this->close();
-            
-            this->m_fd = other.m_fd;
-            this->m_family = other.m_family;
-            this->m_sock_type = other.m_sock_type;
-            this->m_proto = other.m_proto;
-            this->m_raddr = other.m_raddr;
-            this->m_laddr = other.m_laddr;
-            this->m_timeout = other.m_timeout;
-            this->m_is_close = other.m_is_close;
-            this->m_is_blocking = other.m_is_blocking;
-
-            other.mark_invalid();
+        if (this == &other) {
+            return *this;
         }
+        this->close();
+
+        this->m_fd = other.m_fd;
+        this->m_family = other.m_family;
+        this->m_sock_type = other.m_sock_type;
+        this->m_proto = other.m_proto;
+        this->m_raddr = other.m_raddr;
+        this->m_laddr = other.m_laddr;
+        this->m_timeout = other.m_timeout;
+        this->m_is_close = other.m_is_close;
+        this->m_is_blocking = other.m_is_blocking;
+
+        other.mark_invalid();
         return *this;
     }
 

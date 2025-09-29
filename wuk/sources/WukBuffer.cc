@@ -79,10 +79,9 @@ namespace wuk {
     //////////////////////////////////////////////////////////////////////
 
     Buffer::Buffer(const Buffer &other)
+        : m_len(other.m_len)
+        , m_size(other.m_size)
     {
-        this->m_len = other.m_len;
-        this->m_size = other.m_size;
-
         this->m_data = wuk::m_alloc<wuk::byte *>(this->m_size);
         if (!this->m_data) {
             throw wuk::Exception(wuk::Error::MEMORY, "wuk::Buffer::Buffer",
@@ -94,12 +93,11 @@ namespace wuk {
     }
 
     Buffer::Buffer(Buffer &&other) noexcept
+        : m_data(other.m_data)
+        , m_offset(other.m_offset)
+        , m_len(other.m_len)
+        , m_size(other.m_size)
     {
-        this->m_data = other.m_data;
-        this->m_offset = other.m_offset;
-        this->m_len = other.m_len;
-        this->m_size = other.m_size;
-
         other.m_data = nullptr;
         other.m_offset = nullptr;
         other.m_len = 0;
@@ -147,35 +145,33 @@ namespace wuk {
 
     //////////////////////////////////////////////////////////////////////
 
-    Buffer::Buffer(const std::string &buffer)
+    Buffer::Buffer(const std::string &other)
+        : m_len(other.length())
+        , m_size(other.capacity())
     {
-        this->m_len = buffer.length();
-        this->m_size = buffer.capacity();
-
         this->m_data = wuk::m_alloc<wuk::byte *>(this->m_size);
         if (!this->m_data) {
             throw wuk::Exception(wuk::Error::MEMORY, "wuk::Buffer::Buffer",
                 "Failed to allocate memory for this->m_data.");
         }
-        memcpy(this->m_data, buffer.data(), buffer.length());
-        this->m_offset = this->m_data + buffer.length();
+        memcpy(this->m_data, other.data(), other.length());
+        this->m_offset = this->m_data + other.length();
     }
 
-    Buffer::Buffer(std::string &&buffer)
+    Buffer::Buffer(std::string &&other)
+        : m_len(other.length())
+        , m_size(other.capacity())
     {
-        this->m_len = buffer.length();
-        this->m_size = buffer.capacity();
-
         this->m_data = wuk::m_alloc<wuk::byte *>(this->m_size);
         if (!this->m_data) {
             throw wuk::Exception(wuk::Error::MEMORY, "wuk::Buffer::Buffer",
                 "Failed to allocate memory for this->m_data.");
         }
-        memcpy(this->m_data, buffer.data(), buffer.length());
-        this->m_offset = this->m_data + buffer.length();
+        memcpy(this->m_data, other.data(), other.length());
+        this->m_offset = this->m_data + other.length();
 
-        buffer.clear();
-        buffer.shrink_to_fit();
+        other.clear();
+        other.shrink_to_fit();
     }
 
     Buffer &Buffer::operator=(const std::string &other)
@@ -219,9 +215,8 @@ namespace wuk {
     //////////////////////////////////////////////////////////////////////
 
     Buffer::Buffer(wuk::ulong length)
+        : m_size(length)
     {
-        this->m_size = length;
-
         this->m_data = wuk::m_alloc<wuk::byte *>(this->m_size);
         if (!this->m_data) {
             throw wuk::Exception(wuk::Error::MEMORY, "wuk::Buffer::Buffer",
@@ -232,9 +227,8 @@ namespace wuk {
     }
 
     Buffer::Buffer(wuk::ulong length, wuk::byte ch)
+        : m_size(length)
     {
-        this->m_size = length;
-
         this->m_data = wuk::m_alloc<wuk::byte *>(this->m_size);
         if (!this->m_data) {
             throw wuk::Exception(wuk::Error::MEMORY, "wuk::Buffer::Buffer",
@@ -335,7 +329,7 @@ namespace wuk {
 
     wuk::byte &Buffer::at(const wuk::ulong &index)
     {
-        if (index > this->m_size) {
+        if (index > this->m_len) {
             throw wuk::Exception(wuk::Error::ERR, "wuk::Buffer::at",
                 "Index out of range.");
         }
@@ -344,7 +338,7 @@ namespace wuk {
 
     const wuk::byte &Buffer::at(const wuk::ulong &index) const
     {
-        if (index > this->m_size) {
+        if (index > this->m_len) {
             throw wuk::Exception(wuk::Error::ERR, "wuk::Buffer::at",
                 "Index out of range.");
         }

@@ -117,13 +117,13 @@ namespace wuk::net {
         };
 
         wuk::i32 err = sock_call_ex<wuk::i32>(
-                                            *this,
-                                            "wuk::net::Socket::connect_ex",
-                                            connect_timeout,
-                                            IOType::CONNECT,
-                                            info.get_addr(),
-                                            info.get_addrlen()
-                                            );
+            *this,
+            "wuk::net::Socket::connect_ex",
+            connect_timeout,
+            IOType::CONNECT,
+            info.get_addr(),
+            info.get_addrlen()
+        );
 
         if (err == NETERROR) {
             throw_error("wuk::net::Socket::connect_ex");
@@ -142,8 +142,14 @@ namespace wuk::net {
             return ::accept(this->m_fd, addr, addrlen);
         };
 
-        wSocket client_sock = sock_call_ex<wSocket>(*this, "wuk::net::Socket::accept_ex",
-                accept_timeout, IOType::ACCEPT, client.set_addr(), client.set_addrlen());
+        wSocket client_sock = sock_call_ex<wSocket>(
+            *this,
+            "wuk::net::Socket::accept_ex",
+            accept_timeout,
+            IOType::ACCEPT,
+            client.set_addr(),
+            client.set_addrlen()
+        );
 
         if (client_sock == static_cast<wSocket>(NETERROR)) {
             throw_error("wuk::net::Socket::accept_ex");
@@ -162,8 +168,13 @@ namespace wuk::net {
             return ::send(this->m_fd, buffer.c_str(), buffer.length(), flag);
         };
 
-        wuk::ilong sent = sock_call_ex<wuk::ilong>(*this, "wuk::net::Socket::send_ex",
-                send_timeout, IOType::SEND, buffer);
+        wuk::ilong sent = sock_call_ex<wuk::ilong>(
+            *this,
+            "wuk::net::Socket::send_ex",
+            send_timeout,
+            IOType::SEND,
+            buffer
+        );
 
         if (sent == NETERROR) {
             throw_error("wuk::net::Socket::send_ex");
@@ -180,8 +191,13 @@ namespace wuk::net {
         };
 
         std::string buffer(length, '\0');
-        wuk::ilong received = sock_call_ex<wuk::ilong>(*this, "wuk::net::Socket::recv_ex",
-                recv_timeout, IOType::RECV, buffer);
+        wuk::ilong received = sock_call_ex<wuk::ilong>(
+            *this,
+            "wuk::net::Socket::recv_ex",
+            recv_timeout,
+            IOType::RECV,
+            buffer
+        );
 
         if (received == NETERROR) {
             throw_error("wuk::net::Socket::recv_ex");

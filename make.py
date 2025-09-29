@@ -111,17 +111,24 @@ def main(verbose: bool = True):
 
     compiler = Compiler(sys.argv[1], sys.argv[2:], verbose)
 
-    # 源文件
+    # im源文件
+    compiler.add_args(
+        'im/client/sources/WukAccount.cc',
+        'im/common/sources/WukLoginRequest.pb.cc',
+        'im/common/sources/WukPacket.pb.cc',
+        'im/common/sources/WukPacket.cc',
+        'im/server/sources/WukAccount.cc',
+        'im/server/sources/WukIM.cc',
+    )
+
+    # wuk源文件
     compiler.add_args(
         # 'wuk/sources/crypto/WukOP4.cc',
         # 'wuk/sources/crypto/WukOP4_sse4.cc',
         # 'wuk/sources/crypto/WukChaCha20.cc',
-        'wuk/sources/im/WukIM.cc',
         'wuk/sources/db/WukPsql.cc',
-        # 'wuk/sources/net/WukPacket.pb.cc',
-        # 'wuk/sources/net/WukPacket.cc',
-        # 'wuk/sources/net/WukSocket.cc',
-        # 'wuk/sources/net/WukSocketEx.cc',
+        'wuk/sources/net/WukSocket.cc',
+        'wuk/sources/net/WukSocketEx.cc',
         'wuk/sources/utils/bytes.cc',
         # 'wuk/sources/WukBase64.cc',
         # 'wuk/sources/WukBinascii.cc',
@@ -134,12 +141,13 @@ def main(verbose: bool = True):
     # 编译参数
     compiler.add_args(
         '-I wuk/includes',
-        # '-I wuk/sources',
+        '-I im',
+
         '-O2',
         # '-Wcast-align',
         # '-Wpedantic',
         # '-Wformat',
-        # '-Wextra',
+        '-Wextra',
         '-Werror',
         '-Wall',
 
