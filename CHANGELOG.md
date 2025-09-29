@@ -9,6 +9,7 @@
    如`get_length`改为`length`、`get_size`改为`size`，`get_size`改为`capacity`；  
    与标准库对齐。预计下次推送添加`insert`方法。
 3. 对 [OP4 (four fundamental operations)](wuk/includes/crypto/WukOP4.hh) 的类方法添加了`const`修饰。
+4. 重新调整了代码的文件结构。
 
 ## v0.9 更新内容
 
