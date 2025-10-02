@@ -1,56 +1,21 @@
 #include <net/WukSocket.hh>
+#include <utils/bytes.hh>
 #include <WukMisc.hh>
 
 #include <functional>
 #include <iostream>
 #include <cmath>
-#include <zlib.h>
+#include <mutex>
+#include <atomic>
+#include <memory>
+#include <algorithm>
 
 using namespace wuk::misc;
 
-/** 说明 ********************
- * -- 函数声明 ---------------------------------------------------------------
- * 
- * int select(int nfds, fd_set *readfds, fd_set *writefds, fd_set *exceptfds, const TIMEVAL *timeout);
- * 
- * -- 参数 ---------------------------------------------------------------
- * 
- * Platform:           Windows
- * Reference: https://learn.microsoft.com/zh-cn/windows/win32/api/winsock2/nf-winsock2-select
- * 
- * [in] nfds           已忽略。 包含 nfds 参数只是为了与 Berkeley 套接字兼容。
- * [in, out] readfds   一个可选指针，指向要检查的一组套接字的可读性。
- * [in, out] writefds  指向要检查可写性的一组套接字的可选指针。
- * [in, out] exceptfds 指向要检查错误的一组套接字的可选指针。
- * [in] timeout        选择等待的最长时间，以 TIMEVAL 结构的形式提供。 将阻止操作的 超时 参数设置为 null 。
- * 
- * Platform:           Linux
- * Reference: https://man7.org/linux/man-pages/man2/select.2.html
- * 
- * [in] nfds           需要监视的最大文件描述符加1，即待监视的文件描述符的最大值加1。
- * [in, out] readfds   一个可选指针，指向要检查的一组套接字的可读性。
- * [in, out] writefds  指向要检查可写性的一组套接字的可选指针。
- * [in, out] exceptfds 指向要检查错误的一组套接字的可选指针。
- * [in] timeout        选择等待的最长时间，以 TIMEVAL 结构的形式提供。 将阻止操作的 超时 参数设置为 null 。
- * 
- * -- 返回值 ---------------------------------------------------------------
- * 
- * >=0：返回当前有事件发生的文件描述符的总数
- * ==0：表示超时，没有事件发生，不是错误。
- * <=0：出错，可使用全局错误代码查看代码。
- * 
- * -- 操作API ---------------------------------------------------------------
- * 
- * FD_ZERO：初始化为空集（使用之前都应初始化）
- * FD_CLR：从集中删除套接字
- * FD_ISSET：检查是否为SET的成员，如果是将返回True
- * FD_SET：添加要设置的套接字
- * 
-*/
-
+#if 0
 static timeval create_timeval(wuk::f64 t)
 {
-    timeval tv {0};
+    timeval tv {};
 
     wuk::f64 int_part;
     wuk::f64 float_part;
@@ -67,7 +32,7 @@ static void view_fd_set(const fd_set &fds)
 {
     constexpr wuk::u32 block_size = 32;
 
-    auto print_hex_easy = [](const void *p, const wuk::ulong &n) {
+    auto print_hex_easy = [](const void *p, wuk::ulong n) {
         const wuk::byte *buffer = reinterpret_cast<const wuk::byte *>(p);
         print_hex(buffer, n, block_size, n % block_size, true);
     };
@@ -91,8 +56,6 @@ static std::string recv_data(wuk::net::Socket &fd)
         return {};
     }
 
-    printf("TEST data length: %d\n", tmp_length);
-
     std::string result;
     while (tmp_length) {
         std::string tmp_data = fd.recv(wuk::min(2048, tmp_length));
@@ -106,75 +69,17 @@ static std::string recv_data(wuk::net::Socket &fd)
     return result;
 }
 
-void server()
+void server(wuk::f64 timeout = 15)
 {
     wuk::net::Socket server_fd(AF_INET, SOCK_STREAM, IPPROTO_TCP);
-    fd_set read_fds {0};
 
+    fmt::print("初始化服务端套接字。\n");
     server_fd.set_blocking(false);
     server_fd.setsockopt<bool>(SOL_SOCKET, SO_REUSEADDR, true);
     server_fd.bind("0.0.0.0", 48888);
-    server_fd.listen(30);
+    server_fd.listen(3000);
 
-    // 只为了测试，所以不应该让它循环太多次
-    for (wuk::u32 r = 0; r < 10; ++r) {
-        FD_ZERO(&read_fds);
-        FD_SET(server_fd.get_fd(), &read_fds);
-
-        std::cout << "socket fd: " << static_cast<int>(server_fd.get_fd()) << std::endl;
-
-        view_fd_set(read_fds);
-
-        timeval timetv = create_timeval(5);
-        int ready = select(0, &read_fds, nullptr, nullptr, &timetv);
-        if (ready == 0) {
-            std::cout << "timeout, exit.\n";
-            return;
-        } else if (ready == NETERROR) {
-            wuk::i32 err_code = wuk::net::err::system::code();
-            throw wuk::Exception(err_code, "func",
-                wuk::net::err::system::message(err_code));
-        }
-
-        if (FD_ISSET(server_fd.get_fd(), &read_fds) && server_fd.is_valid()) {
-            auto client_fd = server_fd.accept();
-            client_fd.set_blocking(true);
-            auto client_addr = client_fd.get_raddr().get_address_string();
-            auto client_port = client_fd.get_raddr().get_port();
-
-            std::cout << "Client: " << client_addr << ":" << client_port << std::endl;
-            while (true) {
-                std::string buffer = recv_data(client_fd);
-                if (buffer == "exit" || buffer.empty()) {
-                    std::cerr << "Client close.\n";
-                    client_fd.shutdown(2);
-                    client_fd.close();
-                    break;
-                }
-
-                std::cout << "Client: "
-                          << client_addr << ":" << client_port
-                          <<  ", recv buffer: "
-                          << buffer << std::endl;
-            }
-        }
-
-        view_fd_set(read_fds);
-    }
-
-    server_fd.set_blocking(true);
-    server_fd.close();
-}
-
-void server(int)
-{
-    wuk::net::Socket server_fd(AF_INET, SOCK_STREAM, IPPROTO_TCP);
-    server_fd.set_blocking(false);
-    server_fd.setsockopt<bool>(SOL_SOCKET, SO_REUSEADDR, true);
-    server_fd.bind("0.0.0.0", 48888);
-    server_fd.listen(30);
-
-    constexpr int MAX_CLIENTS = FD_SETSIZE;
+    constexpr wuk::i32 MAX_CLIENTS = FD_SETSIZE;
     wuk::net::Socket client_fds[MAX_CLIENTS];
 
     for (wuk::u32 r = 0; r < 100; ++r) {
@@ -183,7 +88,8 @@ void server(int)
         FD_SET(server_fd.get_fd(), &read_fds);
         wuk::net::wSocket max_fd = server_fd.get_fd();
 
-        for (int i = 0; i < MAX_CLIENTS; ++i) {
+        fmt::print("初始化客户端套接字列表。\n");
+        for (wuk::i32 i = 0; i < MAX_CLIENTS; ++i) {
             if (client_fds[i].is_valid()) {
                 FD_SET(client_fds[i].get_fd(), &read_fds);
                 if (client_fds[i].get_fd() > max_fd)
@@ -191,47 +97,48 @@ void server(int)
             }
         }
 
-        timeval timetv = create_timeval(5);
-        int ready = select(max_fd + 1, &read_fds, nullptr, nullptr, &timetv);
+        fmt::print("绑定 IO 多路复用。\n");
+        timeval timetv = create_timeval(timeout);
+        wuk::i32 ready = select(max_fd + 1, &read_fds, nullptr, nullptr, &timetv);
         if (ready == 0) {
-            std::cout << "timeout, exit.\n";
+            fmt::print("套接字超时，退出。\n");
             break;
         } else if (ready == NETERROR) {
             wuk::i32 err_code = wuk::net::err::system::code();
-            throw wuk::Exception(err_code, "select", wuk::net::err::system::message(err_code));
+            throw wuk::Exception(err_code, "select",
+                wuk::net::err::system::message(err_code));
         }
 
-        // 新连接
         if (FD_ISSET(server_fd.get_fd(), &read_fds)) {
-            auto client_fd = server_fd.accept();
+            wuk::net::Socket client_fd = server_fd.accept();
             client_fd.set_blocking(false);
-            for (int i = 0; i < MAX_CLIENTS; ++i) {
+            for (wuk::i32 i = 0; i < MAX_CLIENTS; ++i) {
                 if (!client_fds[i].is_valid()) {
                     client_fds[i] = std::move(client_fd);
-                    std::cout << "New client: " << client_fds[i].get_raddr().get_address_string()
-                              << ":" << client_fds[i].get_raddr().get_port() << std::endl;
+                    std::string client_addr = client_fds[i].get_raddr().get_address_string();
+                    wuk::u16 client_port = client_fds[i].get_raddr().get_port();
+                    std::cout << fmt::format("有新的客户端连接：{0}:{1}.\n",
+                        client_addr, client_port);
                     break;
                 }
             }
         }
 
-        // 客户端数据
-        for (int i = 0; i < MAX_CLIENTS; ++i) {
-            auto &fd = client_fds[i];
-            if (fd.is_valid() && FD_ISSET(fd.get_fd(), &read_fds)) {
-                std::string buffer = recv_data(fd);
+        fmt::print("处理客户端数据！\n");
+        for (wuk::i32 i = 0; i < MAX_CLIENTS; ++i) {
+            wuk::net::Socket &client_fd = client_fds[i];
+            if (client_fd.is_valid() && FD_ISSET(client_fd.get_fd(), &read_fds)) {
+                std::string buffer = recv_data(client_fd);
+                std::string client_addr = client_fd.get_raddr().get_address_string();
+                wuk::u16 client_port = client_fd.get_raddr().get_port();
                 if (buffer.empty() || buffer == "exit") {
-                    std::cerr << "Client disconnected: "
-                              << fd.get_raddr().get_address_string()
-                              << ":" << fd.get_raddr().get_port() << std::endl;
-                    fd.shutdown(2);
-                    fd.close();
-                } else {
-                    std::cout << "Client: "
-                              << fd.get_raddr().get_address_string()
-                              << ":" << fd.get_raddr().get_port()
-                              << ", recv buffer: " << buffer << std::endl;
+                    std::cout << fmt::format("客户端断开连接：{0}:{1}.",
+                        client_addr, client_port) << std::endl;
+                    client_fd.shutdown(2);
+                    client_fd.close();
                 }
+                std::cout << fmt::format("客户端 {0}:{1}, 接收到的数据：{2}",
+                    client_addr, client_port, buffer) << std::endl;
             }
         }
     }
@@ -239,8 +146,216 @@ void server(int)
     server_fd.set_blocking(true);
     server_fd.close();
 }
+#endif
 
-// python make.py test\futures\futures.cc -DWUK_EXPORTS -lws2_32
+class ClientSession {
+private:
+    wuk::net::Socket m_fd;
+    std::string m_client_addr;
+    wuk::u16 m_client_port;
+
+public:
+    ClientSession(wuk::net::Socket&& socket) 
+        : m_fd(std::move(socket)) 
+    {
+        m_client_addr = m_fd.get_raddr().get_address_string();
+        m_client_port = m_fd.get_raddr().get_port();
+    }
+
+public:
+    ClientSession(const ClientSession&) = delete;
+    ClientSession(ClientSession&&) = default;
+    ClientSession& operator=(const ClientSession&) = delete;
+    ClientSession& operator=(ClientSession&&) = default;
+
+    bool is_valid() const
+    {
+        return m_fd.is_valid();
+    }
+
+    auto get_fd() const
+    {
+        return m_fd.get_fd();
+    }
+
+    std::string receive_data()
+    {
+        std::string packet_length = m_fd.recv(4);
+        if (packet_length.empty()) {
+            return {};
+        }
+
+        wuk::i32 data_length = wuk::utils::unpack_bytes<wuk::i32>(
+            reinterpret_cast<wuk::byte *>(packet_length.data()),
+            packet_length.capacity()
+        );
+
+        if (data_length == 0) return {};
+
+        std::string result;
+        wuk::i32 remaining = data_length;
+
+        while (remaining > 0) {
+            std::string chunk = m_fd.recv(std::min(2048, remaining));
+            if (chunk.empty()) break;
+
+            result += chunk;
+            remaining -= chunk.length();
+        }
+
+        return result;
+    }
+
+    void disconnect() {
+        m_fd.shutdown(2);
+        m_fd.close();
+    }
+
+    const std::string& get_address() const { return m_client_addr; }
+    wuk::u16 get_port() const { return m_client_port; }
+};
+
+class ThreadSafeLogger {
+public:
+    static void log(const std::string& message) {
+        static std::mutex log_mutex;
+        std::lock_guard<std::mutex> lock(log_mutex);
+        fmt::print("{0}\n", message);
+    }
+};
+
+static timeval create_timeval(wuk::f64 t)
+{
+    timeval tv{};
+    wuk::f64 int_part;
+    wuk::f64 float_part = std::modf(t, &int_part);
+
+    tv.tv_sec = static_cast<time_t>(int_part);
+    tv.tv_usec = static_cast<time_t>(float_part * 1e6);
+
+    return tv;
+}
+
+void server(wuk::f64 timeout = 15.0)
+{
+    wuk::net::Socket server_fd(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+
+    ThreadSafeLogger::log("初始化服务端套接字。");
+
+    server_fd.set_blocking(false);
+    server_fd.setsockopt<bool>(SOL_SOCKET, SO_REUSEADDR, true);
+    server_fd.bind("0.0.0.0", 48888);
+    server_fd.listen(3000);
+
+    constexpr wuk::i32 MAX_CLIENTS = FD_SETSIZE;
+    // 使用智能指针管理客户端会话[2](@ref)
+    std::vector<std::unique_ptr<ClientSession>> clients;
+    clients.reserve(MAX_CLIENTS);
+
+    std::atomic<bool> shutdown_requested{false};
+
+    // 使用lambda函数处理客户端连接[5](@ref)
+    auto handle_new_connection = [&]() {
+        wuk::net::Socket client_fd = server_fd.accept();
+        if (!client_fd.is_valid()) return;
+
+        client_fd.set_blocking(false);
+
+        // 查找空位或创建新位置
+        auto it = std::find_if(clients.begin(), clients.end(),
+            [](const std::unique_ptr<ClientSession>& client) {
+                return !client || !client->is_valid();
+            });
+
+        if (it != clients.end()) {
+            *it = std::make_unique<ClientSession>(std::move(client_fd));
+        } else if (clients.size() < MAX_CLIENTS) {
+            clients.push_back(std::make_unique<ClientSession>(std::move(client_fd)));
+        } else {
+            ThreadSafeLogger::log("客户端数量达到上限，拒绝新连接");
+            return;
+        }
+
+        ThreadSafeLogger::log(fmt::format("有新的客户端连接：{}:{}", 
+            clients.back()->get_address(), clients.back()->get_port()));
+    };
+
+    // 使用lambda函数处理客户端数据[5](@ref)
+    auto handle_client_data = [&](ClientSession& client) {
+        std::string buffer = client.receive_data();
+        if (buffer.empty() || buffer == "exit") {
+            ThreadSafeLogger::log(fmt::format("客户端断开连接：{}:{}",
+                client.get_address(), client.get_port()));
+            client.disconnect();
+            return false; // 客户端断开
+        }
+
+        ThreadSafeLogger::log(fmt::format("客户端 {}:{}, 接收到的数据：{}",
+            client.get_address(), client.get_port(), buffer));
+        return true; // 客户端保持连接
+    };
+
+    for (wuk::u32 round = 0; round < 100 && !shutdown_requested; ++round) {
+        fd_set read_fds;
+        FD_ZERO(&read_fds);
+        FD_SET(server_fd.get_fd(), &read_fds);
+        wuk::net::wSocket max_fd = server_fd.get_fd();
+
+        // 设置有效的客户端fd
+        for (const auto& client : clients) {
+            if (client && client->is_valid()) {
+                auto fd = client->get_fd();
+                FD_SET(fd, &read_fds);
+                if (fd > max_fd) max_fd = fd;
+            }
+        }
+
+        ThreadSafeLogger::log("绑定 IO 多路复用。");
+        timeval timetv = create_timeval(timeout);
+        wuk::i32 ready = select(max_fd + 1, &read_fds, nullptr, nullptr, &timetv);
+
+        if (ready == 0) {
+            ThreadSafeLogger::log("套接字超时，退出。");
+            break;
+        } else if (ready == NETERROR) {
+            wuk::i32 err_code = wuk::net::err::system::code();
+            throw wuk::Exception(err_code, "select",
+                wuk::net::err::system::message(err_code));
+        }
+
+        // 处理新连接
+        if (FD_ISSET(server_fd.get_fd(), &read_fds)) {
+            handle_new_connection();
+        }
+
+        // 处理客户端数据[4](@ref)
+        ThreadSafeLogger::log("处理客户端数据！");
+        for (auto& client : clients) {
+            if (client && client->is_valid() && 
+                FD_ISSET(client->get_fd(), &read_fds)) {
+                if (!handle_client_data(*client)) {
+                    // 客户端断开，标记为无效
+                    client.reset();
+                }
+            }
+        }
+
+        // 清理无效客户端
+        clients.erase(std::remove_if(clients.begin(), clients.end(),
+            [](const std::unique_ptr<ClientSession>& client) {
+                return !client || !client->is_valid();
+            }), clients.end());
+    }
+
+    // 清理所有客户端连接
+    for (auto& client : clients) {
+        if (client) {
+            client->disconnect();
+        }
+    }
+
+    ThreadSafeLogger::log("服务器关闭。");
+}
 
 int main()
 {
@@ -250,8 +365,10 @@ int main()
 #   endif
 
     try {
-        server(1);
+        server(30);
     } catch (const wuk::Exception &e) {
+        std::cerr << e.what() << std::endl;
+    } catch (const std::exception &e) {
         std::cerr << e.what() << std::endl;
     }
 

@@ -6,6 +6,7 @@
 
 #if defined(WUK_PLATFORM_WINOS)
 #   include <WS2tcpip.h>
+#   include <Windows.h>
 #else
 #   include <errno.h>
 #   include <netdb.h>
@@ -205,6 +206,23 @@ namespace wuk::net::err::system {
     inline std::string message(int code) noexcept
     {
 #       if defined(WUK_PLATFORM_WINOS)
+        auto log_utf8 = [](const std::string &message) -> std::string
+        {
+            wuk::i32 wlen = MultiByteToWideChar(CP_ACP, 0, message.data(), -1, nullptr, 0);
+            if (wlen == 0) return {};
+
+            std::wstring wstr(wlen, L'\0');
+            MultiByteToWideChar(CP_ACP, 0, message.data(), -1, wstr.data(), wlen);
+
+            wuk::i32 len = WideCharToMultiByte(GetConsoleOutputCP(), 0,
+                wstr.data(), -1, nullptr, 0, nullptr, nullptr);
+            if (len == 0) return {};
+
+            std::string result(len, '\0');
+            WideCharToMultiByte(GetConsoleOutputCP(), 0,
+                wstr.data(), -1, result.data(), len, nullptr, nullptr);
+            return result;
+        };
         char *msg_buf = nullptr;
 
         DWORD len = FormatMessageA( FORMAT_MESSAGE_ALLOCATE_BUFFER |
@@ -221,7 +239,7 @@ namespace wuk::net::err::system {
         if(msg_buf) {
             LocalFree(msg_buf);
         }
-        return result;
+        return log_utf8(result);
 #       else
         return std::string(strerror(code));
 #       endif

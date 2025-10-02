@@ -16,7 +16,7 @@ namespace wuk::misc {
     LIBWUK_API void print_pybytes(const wuk::byte *buf, wuk::ulong size, bool newline);
 
     LIBWUK_API std::string get_pybytes(const wuk::byte *buf, wuk::ulong size, bool newline);
-    LIBWUK_API std::string log_utf8(const std::string &message);
+    LIBWUK_API std::string log(const std::string &message);
 }
 
 #endif

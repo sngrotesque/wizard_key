@@ -5,7 +5,6 @@
 #include <fmt/core.h>
 #include <sstream>
 #include <string>
-#include <cerrno>
 
 namespace wuk {
     enum class Error {

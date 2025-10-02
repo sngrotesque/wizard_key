@@ -172,18 +172,15 @@ namespace wuk::misc {
         return ss.str();
     }
 
-    std::string log_utf8(const std::string &message)
+    std::string log(const std::string &message)
     {
 #       ifdef WUK_PLATFORM_WINOS
-        // Step 1: UTF-8 → UTF-16
-        
         wuk::i32 wlen = MultiByteToWideChar(CP_UTF8, 0, message.c_str(), -1, nullptr, 0);
         if (wlen == 0) return {};
 
         std::wstring wstr(wlen, L'\0');
         MultiByteToWideChar(CP_UTF8, 0, message.c_str(), -1, wstr.data(), wlen);
 
-        // Step 2: UTF-16 → 当前代码页（如GBK）
         wuk::i32 len = WideCharToMultiByte(CP_ACP, 0, wstr.data(), -1, nullptr, 0, nullptr, nullptr);
         if (len == 0) return {};
 

@@ -8,12 +8,6 @@
 
 #include <iostream>
 
-#ifdef USE_LOG
-#   define LOG_UTF8(x) wuk::misc::log_utf8(x)
-#else
-#   define LOG_UTF8(x) x
-#endif
-
 using namespace wuk::db;
 constexpr wuk::u32 ITER_COUNT = 0x656b3U;
 
@@ -136,7 +130,7 @@ public:
         while (true) {
             uid = userinfo::generate_uid();
             if (this->query_exists(this->work, "uid", uid)) {
-                std::cout << LOG_UTF8("UID已存在，重新生成。") << std::endl;
+                std::cout << "UID已存在，重新生成。" << std::endl;
                 continue;
             }
             break;
@@ -144,19 +138,19 @@ public:
         std::string name;
         std::string password;
 
-        std::cout << LOG_UTF8("请输入用户名：");
+        std::cout << "请输入用户名：";
         std::getline(std::cin, name);
 
-        std::cout << LOG_UTF8("请输入密码：");
+        std::cout << "请输入密码：";
         std::getline(std::cin, password);
 
         if (name.empty()) {
             name = "rand_" + userinfo::generate_name();
-            std::cout << LOG_UTF8(fmt::format("未输入名字，生成随机名字：{0}", name)) << std::endl;
+            std::cout << fmt::format("未输入名字，生成随机名字：{0}", name) << std::endl;
         }
         if (password.empty()) {
             password = userinfo::generate_password();
-            std::cout << LOG_UTF8(fmt::format("未输入密码，生成随机密码：{0}", password)) << std::endl;
+            std::cout << fmt::format("未输入密码，生成随机密码：{0}", password) << std::endl;
         }
 
         wuk::Buffer salt = userinfo::generate_salt();
@@ -180,7 +174,7 @@ public:
         std::cout << fmt::format("accessed: {0}", accessed) << std::endl;
         std::cout << fmt::format("deleted:  {0}", deleted)  << std::endl;
 
-        std::cout << LOG_UTF8("正在将数据写入数据库...") << std::endl;
+        std::cout << "正在将数据写入数据库..." << std::endl;
         std::string sql(
             "INSERT INTO test (uid, name, salt, hash, status, created, modified, accessed, deleted) "
             "VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9);");
@@ -200,12 +194,12 @@ public:
 
         if constexpr (check_succ) {
             if (this->query_exists(this->work, "uid", uid)) {
-                std::cout << LOG_UTF8("数据写入数据库成功。") << std::endl;
+                std::cout << "数据写入数据库成功。" << std::endl;
             } else {
-                std::cout << LOG_UTF8("数据写入数据库失败，请重试。") << std::endl;
+                std::cout << "数据写入数据库失败，请重试。" << std::endl;
             }
         } else {
-            std::cout << LOG_UTF8("数据写入数据库成功。") << std::endl;
+            std::cout << "数据写入数据库成功。" << std::endl;
         }
 
         return true;
@@ -217,23 +211,23 @@ public:
         std::string password;
         psql::Result res;
 
-        std::cout << LOG_UTF8("请输入用户名：");
+        std::cout << "请输入用户名：";
         std::getline(std::cin, name);
 
-        std::cout << LOG_UTF8("请输入密码：");
+        std::cout << "请输入密码：";
         std::getline(std::cin, password);
 
         if (name.empty()) {
-            std::cerr << LOG_UTF8("未输入用户名，退出。") << std::endl;
+            std::cerr << "未输入用户名，退出。" << std::endl;
             return false;
         }
         if (password.empty()) {
-            std::cerr << LOG_UTF8("未输入密码，退出。") << std::endl;
+            std::cerr << "未输入密码，退出。" << std::endl;
             return false;
         }
 
         if (!this->query_exists(this->work, "name", name)) {
-            std::cerr << LOG_UTF8("用户不存在，退出。") << std::endl;
+            std::cerr << "用户不存在，退出。" << std::endl;
             return false;
         }
 
@@ -245,7 +239,7 @@ public:
             psql::ResultFormat::BINARY
         );
         if (!res.is_validity()) {
-            std::cerr << LOG_UTF8("盐结果无效，退出。") << std::endl;
+            std::cerr << "盐结果无效，退出。" << std::endl;
             return false;
         }
 
@@ -260,13 +254,13 @@ public:
             psql::ResultFormat::BINARY
         );
         if (!res.is_validity()) {
-            std::cerr << LOG_UTF8("哈希结果无效，退出。") << std::endl;
+            std::cerr << "哈希结果无效，退出。" << std::endl;
             return false;
         }
 
         wuk::Buffer remote_hash = res[0][0];
         if (remote_hash != local_hash) {
-            std::cerr << LOG_UTF8("密码错误，退出。") << std::endl;
+            std::cerr << "密码错误，退出。" << std::endl;
             return false;
         }
 
@@ -278,7 +272,7 @@ public:
             psql::ResultFormat::TEXT
         );
         std::string uid = res[0][0];
-        std::cout << LOG_UTF8(fmt::format("成功登录，你的UID是：{0}。\n欢迎回来。", uid)) << std::endl;
+        std::cout << fmt::format("成功登录，你的UID是：{0}。\n欢迎回来。", uid) << std::endl;
 
         return true;
     }

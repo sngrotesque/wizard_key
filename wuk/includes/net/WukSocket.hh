@@ -91,9 +91,9 @@ namespace wuk::net {
         Socket(wuk::i32 family, wuk::i32 sock_type, wuk::i32 proto, wSocket other_fd);
         ~Socket();
 
-        Socket(const Socket &other) = default;
+        Socket(const Socket &other) = delete;
         Socket(Socket &&other) noexcept;
-        Socket &operator=(const Socket &other) = default;
+        Socket &operator=(const Socket &other) = delete;
         Socket &operator=(Socket &&other) noexcept;
 
     public:

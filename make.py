@@ -113,12 +113,13 @@ def main(verbose: bool = True):
 
     # im源文件
     compiler.add_args(
-        'im/client/sources/WukAccount.cc',
-        'im/common/sources/WukLoginRequest.pb.cc',
-        'im/common/sources/WukPacket.pb.cc',
-        'im/common/sources/WukPacket.cc',
-        'im/server/sources/WukAccount.cc',
-        'im/server/sources/WukIM.cc',
+        # 'im/client/sources/WukAccount.cc',
+        # 'im/common/sources/WukLoginRequest.pb.cc',
+        # 'im/common/sources/WukPacket.pb.cc',
+        # 'im/common/sources/WukPacket.cc',
+        # 'im/server/sources/WukAccount.cc',
+        # 'im/server/sources/WukIM.cc',
+        # 'wuk/sources/db/WukPsql.cc',
     )
 
     # wuk源文件
@@ -126,7 +127,6 @@ def main(verbose: bool = True):
         # 'wuk/sources/crypto/WukOP4.cc',
         # 'wuk/sources/crypto/WukOP4_sse4.cc',
         # 'wuk/sources/crypto/WukChaCha20.cc',
-        'wuk/sources/db/WukPsql.cc',
         'wuk/sources/net/WukSocket.cc',
         'wuk/sources/net/WukSocketEx.cc',
         'wuk/sources/utils/bytes.cc',
