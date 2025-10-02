@@ -12,15 +12,11 @@
 
 using namespace wuk::misc;
 
-#if 0
 static timeval create_timeval(wuk::f64 t)
 {
-    timeval tv {};
-
+    timeval tv{};
     wuk::f64 int_part;
-    wuk::f64 float_part;
-
-    float_part = modf(t, &int_part);
+    wuk::f64 float_part = std::modf(t, &int_part);
 
     tv.tv_sec = static_cast<time_t>(int_part);
     tv.tv_usec = static_cast<time_t>(float_part * 1e6);
@@ -28,6 +24,7 @@ static timeval create_timeval(wuk::f64 t)
     return tv;
 }
 
+#if 0
 static void view_fd_set(const fd_set &fds)
 {
     constexpr wuk::u32 block_size = 32;
@@ -151,15 +148,12 @@ void server(wuk::f64 timeout = 15)
 class ClientSession {
 private:
     wuk::net::Socket m_fd;
-    std::string m_client_addr;
-    wuk::u16 m_client_port;
 
 public:
     ClientSession(wuk::net::Socket&& socket) 
         : m_fd(std::move(socket)) 
     {
-        m_client_addr = m_fd.get_raddr().get_address_string();
-        m_client_port = m_fd.get_raddr().get_port();
+
     }
 
 public:
@@ -168,6 +162,7 @@ public:
     ClientSession& operator=(const ClientSession&) = delete;
     ClientSession& operator=(ClientSession&&) = default;
 
+public:
     bool is_valid() const
     {
         return m_fd.is_valid();
@@ -206,55 +201,40 @@ public:
         return result;
     }
 
-    void disconnect() {
+    void disconnect()
+    {
         m_fd.shutdown(2);
         m_fd.close();
     }
 
-    const std::string& get_address() const { return m_client_addr; }
-    wuk::u16 get_port() const { return m_client_port; }
-};
+    std::string get_address() const
+    {
+        return m_fd.get_raddr().get_address_string();
+    }
 
-class ThreadSafeLogger {
-public:
-    static void log(const std::string& message) {
-        static std::mutex log_mutex;
-        std::lock_guard<std::mutex> lock(log_mutex);
-        fmt::print("{0}\n", message);
+    wuk::u16 get_port() const
+    {
+        return m_fd.get_raddr().get_port();
     }
 };
-
-static timeval create_timeval(wuk::f64 t)
-{
-    timeval tv{};
-    wuk::f64 int_part;
-    wuk::f64 float_part = std::modf(t, &int_part);
-
-    tv.tv_sec = static_cast<time_t>(int_part);
-    tv.tv_usec = static_cast<time_t>(float_part * 1e6);
-
-    return tv;
-}
 
 void server(wuk::f64 timeout = 15.0)
 {
     wuk::net::Socket server_fd(AF_INET, SOCK_STREAM, IPPROTO_TCP);
 
-    ThreadSafeLogger::log("初始化服务端套接字。");
-
+    fmt::println("初始化服务端套接字。");
     server_fd.set_blocking(false);
     server_fd.setsockopt<bool>(SOL_SOCKET, SO_REUSEADDR, true);
     server_fd.bind("0.0.0.0", 48888);
     server_fd.listen(3000);
 
     constexpr wuk::i32 MAX_CLIENTS = FD_SETSIZE;
-    // 使用智能指针管理客户端会话[2](@ref)
+
+    // 使用智能指针管理客户端会话
     std::vector<std::unique_ptr<ClientSession>> clients;
     clients.reserve(MAX_CLIENTS);
 
-    std::atomic<bool> shutdown_requested{false};
-
-    // 使用lambda函数处理客户端连接[5](@ref)
+    // 使用lambda函数处理客户端连接
     auto handle_new_connection = [&]() {
         wuk::net::Socket client_fd = server_fd.accept();
         if (!client_fd.is_valid()) return;
@@ -262,47 +242,58 @@ void server(wuk::f64 timeout = 15.0)
         client_fd.set_blocking(false);
 
         // 查找空位或创建新位置
-        auto it = std::find_if(clients.begin(), clients.end(),
-            [](const std::unique_ptr<ClientSession>& client) {
+        auto it = std::find_if(
+            clients.begin(), clients.end(),
+            [](const std::unique_ptr<ClientSession> &client)
+            {
                 return !client || !client->is_valid();
-            });
+            }
+        );
 
         if (it != clients.end()) {
             *it = std::make_unique<ClientSession>(std::move(client_fd));
         } else if (clients.size() < MAX_CLIENTS) {
             clients.push_back(std::make_unique<ClientSession>(std::move(client_fd)));
         } else {
-            ThreadSafeLogger::log("客户端数量达到上限，拒绝新连接");
+            fmt::println("客户端数量达到上限，拒绝新连接。");
             return;
         }
 
-        ThreadSafeLogger::log(fmt::format("有新的客户端连接：{}:{}", 
-            clients.back()->get_address(), clients.back()->get_port()));
+        fmt::println("有新的客户端连接：{0}:{1}。", 
+            clients.back()->get_address(),
+            clients.back()->get_port()
+        );
     };
 
     // 使用lambda函数处理客户端数据[5](@ref)
-    auto handle_client_data = [&](ClientSession& client) {
+    auto handle_client_data = [&](ClientSession& client)
+    {
         std::string buffer = client.receive_data();
         if (buffer.empty() || buffer == "exit") {
-            ThreadSafeLogger::log(fmt::format("客户端断开连接：{}:{}",
-                client.get_address(), client.get_port()));
+            fmt::println("客户端断开连接：{0}:{1}",
+                client.get_address(),
+                client.get_port()
+            );
             client.disconnect();
             return false; // 客户端断开
         }
 
-        ThreadSafeLogger::log(fmt::format("客户端 {}:{}, 接收到的数据：{}",
-            client.get_address(), client.get_port(), buffer));
+        fmt::println("客户端 {0}:{1}, 接收到的数据：{2}",
+            client.get_address(),
+            client.get_port(),
+            buffer
+        );
         return true; // 客户端保持连接
     };
 
-    for (wuk::u32 round = 0; round < 100 && !shutdown_requested; ++round) {
+    for (wuk::u32 round = 0; round < 100; ++round) {
         fd_set read_fds;
         FD_ZERO(&read_fds);
         FD_SET(server_fd.get_fd(), &read_fds);
         wuk::net::wSocket max_fd = server_fd.get_fd();
 
         // 设置有效的客户端fd
-        for (const auto& client : clients) {
+        for (const auto &client : clients) {
             if (client && client->is_valid()) {
                 auto fd = client->get_fd();
                 FD_SET(fd, &read_fds);
@@ -310,12 +301,12 @@ void server(wuk::f64 timeout = 15.0)
             }
         }
 
-        ThreadSafeLogger::log("绑定 IO 多路复用。");
+        fmt::println("绑定 IO 多路复用。");
         timeval timetv = create_timeval(timeout);
         wuk::i32 ready = select(max_fd + 1, &read_fds, nullptr, nullptr, &timetv);
 
         if (ready == 0) {
-            ThreadSafeLogger::log("套接字超时，退出。");
+            fmt::println("套接字超时，退出。");
             break;
         } else if (ready == NETERROR) {
             wuk::i32 err_code = wuk::net::err::system::code();
@@ -328,11 +319,10 @@ void server(wuk::f64 timeout = 15.0)
             handle_new_connection();
         }
 
-        // 处理客户端数据[4](@ref)
-        ThreadSafeLogger::log("处理客户端数据！");
+        // 处理客户端数据
+        fmt::println("处理客户端数据！");
         for (auto& client : clients) {
-            if (client && client->is_valid() && 
-                FD_ISSET(client->get_fd(), &read_fds)) {
+            if (client && client->is_valid() && FD_ISSET(client->get_fd(), &read_fds)) {
                 if (!handle_client_data(*client)) {
                     // 客户端断开，标记为无效
                     client.reset();
@@ -341,20 +331,23 @@ void server(wuk::f64 timeout = 15.0)
         }
 
         // 清理无效客户端
-        clients.erase(std::remove_if(clients.begin(), clients.end(),
-            [](const std::unique_ptr<ClientSession>& client) {
+        clients.erase(
+            std::remove_if(clients.begin(), clients.end(),
+            [](const std::unique_ptr<ClientSession> &client)
+            {
                 return !client || !client->is_valid();
-            }), clients.end());
+            }),
+            clients.end());
     }
 
     // 清理所有客户端连接
-    for (auto& client : clients) {
+    for (auto &client : clients) {
         if (client) {
             client->disconnect();
         }
     }
 
-    ThreadSafeLogger::log("服务器关闭。");
+    fmt::println("服务器关闭。");
 }
 
 int main()
