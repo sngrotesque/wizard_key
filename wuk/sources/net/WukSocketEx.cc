@@ -57,7 +57,9 @@ static T sock_call_ex(
 
         if (result == _res_err) {
             wuk::net::err::SocketType err = wuk::net::err::from_code(wuk::net::err::system::code());
-            if (err == wuk::net::err::SocketType::WOULDBLOCK || err == wuk::net::err::SocketType::INPROGRESS) {
+            bool process =  (err == wuk::net::err::SocketType::WOULDBLOCK) ||
+                            (err == wuk::net::err::SocketType::INPROGRESS);
+            if (process) {
                 // 设置select监听
                 fd_set fds;
                 FD_ZERO(&fds);
