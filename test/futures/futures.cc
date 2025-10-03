@@ -1,3 +1,42 @@
+/** 说明 ********************
+ * -- 函数声明 ---------------------------------------------------------------
+ * 
+ * int select(int nfds, fd_set *readfds, fd_set *writefds, fd_set *exceptfds, const TIMEVAL *timeout);
+ * 
+ * -- 参数 ---------------------------------------------------------------
+ * 
+ * Platform:           Windows
+ * Reference: https://learn.microsoft.com/zh-cn/windows/win32/api/winsock2/nf-winsock2-select
+ * 
+ * [in] nfds           已忽略。 包含 nfds 参数只是为了与 Berkeley 套接字兼容。
+ * [in, out] readfds   一个可选指针，指向要检查的一组套接字的可读性。
+ * [in, out] writefds  指向要检查可写性的一组套接字的可选指针。
+ * [in, out] exceptfds 指向要检查错误的一组套接字的可选指针。
+ * [in] timeout        选择等待的最长时间，以 TIMEVAL 结构的形式提供。 将阻止操作的 超时 参数设置为 null 。
+ * 
+ * Platform:           Linux
+ * Reference: https://man7.org/linux/man-pages/man2/select.2.html
+ * 
+ * [in] nfds           需要监视的最大文件描述符加1，即待监视的文件描述符的最大值加1。
+ * [in, out] readfds   一个可选指针，指向要检查的一组套接字的可读性。
+ * [in, out] writefds  指向要检查可写性的一组套接字的可选指针。
+ * [in, out] exceptfds 指向要检查错误的一组套接字的可选指针。
+ * [in] timeout        选择等待的最长时间，以 TIMEVAL 结构的形式提供。 将阻止操作的 超时 参数设置为 null 。
+ * 
+ * -- 返回值 ---------------------------------------------------------------
+ * 
+ * >=0：返回当前有事件发生的文件描述符的总数
+ * ==0：表示超时，没有事件发生，不是错误。
+ * <=0：出错，可使用全局错误代码查看代码。
+ * 
+ * -- 操作API ---------------------------------------------------------------
+ * 
+ * FD_ZERO：初始化为空集（使用之前都应初始化）
+ * FD_CLR：从集中删除套接字
+ * FD_ISSET：检查是否为SET的成员，如果是将返回True
+ * FD_SET：添加要设置的套接字
+ * 
+*/
 #include <net/WukSocket.hh>
 #include <utils/bytes.hh>
 #include <WukMisc.hh>
@@ -24,7 +63,7 @@ static timeval create_timeval(wuk::f64 t)
     return tv;
 }
 
-#if 0
+#if OLD_SERVER
 static void view_fd_set(const fd_set &fds)
 {
     constexpr wuk::u32 block_size = 32;
@@ -143,7 +182,8 @@ void server(wuk::f64 timeout = 15)
     server_fd.set_blocking(true);
     server_fd.close();
 }
-#endif
+
+#else
 
 class ClientSession {
 private:
@@ -229,61 +269,46 @@ void server(wuk::f64 timeout = 15.0)
     server_fd.listen(3000);
 
     constexpr wuk::i32 MAX_CLIENTS = FD_SETSIZE;
-
-    // 使用智能指针管理客户端会话
-    std::vector<std::unique_ptr<ClientSession>> clients;
+    std::vector<ClientSession> clients;
     clients.reserve(MAX_CLIENTS);
 
-    // 使用lambda函数处理客户端连接
     auto handle_new_connection = [&]() {
         wuk::net::Socket client_fd = server_fd.accept();
         if (!client_fd.is_valid()) return;
 
         client_fd.set_blocking(false);
 
-        // 查找空位或创建新位置
-        auto it = std::find_if(
-            clients.begin(), clients.end(),
-            [](const std::unique_ptr<ClientSession> &client)
-            {
-                return !client || !client->is_valid();
-            }
-        );
+        auto it = std::find_if(clients.begin(), clients.end(),
+            [](const ClientSession &client) {
+                return !client.is_valid();
+            });
 
         if (it != clients.end()) {
-            *it = std::make_unique<ClientSession>(std::move(client_fd));
+            *it = ClientSession(std::move(client_fd));
         } else if (clients.size() < MAX_CLIENTS) {
-            clients.push_back(std::make_unique<ClientSession>(std::move(client_fd)));
+            clients.emplace_back(std::move(client_fd));
         } else {
             fmt::println("客户端数量达到上限，拒绝新连接。");
             return;
         }
 
-        fmt::println("有新的客户端连接：{0}:{1}。", 
-            clients.back()->get_address(),
-            clients.back()->get_port()
-        );
+        const auto &client = clients.back();
+        fmt::println("有新的客户端连接：{0}:{1}。",
+            client.get_address(), client.get_port());
     };
 
-    // 使用lambda函数处理客户端数据[5](@ref)
-    auto handle_client_data = [&](ClientSession& client)
-    {
+    auto handle_client_data = [&](ClientSession &client) {
         std::string buffer = client.receive_data();
         if (buffer.empty() || buffer == "exit") {
             fmt::println("客户端断开连接：{0}:{1}",
-                client.get_address(),
-                client.get_port()
-            );
+                client.get_address(), client.get_port());
             client.disconnect();
-            return false; // 客户端断开
+            return false;
         }
 
         fmt::println("客户端 {0}:{1}, 接收到的数据：{2}",
-            client.get_address(),
-            client.get_port(),
-            buffer
-        );
-        return true; // 客户端保持连接
+            client.get_address(), client.get_port(), buffer);
+        return true;
     };
 
     for (wuk::u32 round = 0; round < 100; ++round) {
@@ -292,16 +317,15 @@ void server(wuk::f64 timeout = 15.0)
         FD_SET(server_fd.get_fd(), &read_fds);
         wuk::net::wSocket max_fd = server_fd.get_fd();
 
-        // 设置有效的客户端fd
         for (const auto &client : clients) {
-            if (client && client->is_valid()) {
-                auto fd = client->get_fd();
+            if (client.is_valid()) {
+                auto fd = client.get_fd();
                 FD_SET(fd, &read_fds);
                 if (fd > max_fd) max_fd = fd;
             }
         }
 
-        fmt::println("绑定 IO 多路复用。");
+        // fmt::println("绑定 IO 多路复用。");
         timeval timetv = create_timeval(timeout);
         wuk::i32 ready = select(max_fd + 1, &read_fds, nullptr, nullptr, &timetv);
 
@@ -314,41 +338,34 @@ void server(wuk::f64 timeout = 15.0)
                 wuk::net::err::system::message(err_code));
         }
 
-        // 处理新连接
         if (FD_ISSET(server_fd.get_fd(), &read_fds)) {
             handle_new_connection();
         }
 
-        // 处理客户端数据
-        fmt::println("处理客户端数据！");
-        for (auto& client : clients) {
-            if (client && client->is_valid() && FD_ISSET(client->get_fd(), &read_fds)) {
-                if (!handle_client_data(*client)) {
-                    // 客户端断开，标记为无效
-                    client.reset();
-                }
+        // fmt::println("处理客户端数据！");
+        for (auto &client : clients) {
+            if (client.is_valid() && FD_ISSET(client.get_fd(), &read_fds)) {
+                handle_client_data(client);
             }
         }
 
-        // 清理无效客户端
         clients.erase(
             std::remove_if(clients.begin(), clients.end(),
-            [](const std::unique_ptr<ClientSession> &client)
-            {
-                return !client || !client->is_valid();
-            }),
+                [](const ClientSession &client) {
+                    return !client.is_valid();
+                }),
             clients.end());
     }
 
-    // 清理所有客户端连接
     for (auto &client : clients) {
-        if (client) {
-            client->disconnect();
+        if (client.is_valid()) {
+            client.disconnect();
         }
     }
 
     fmt::println("服务器关闭。");
 }
+#endif
 
 int main()
 {

@@ -489,8 +489,7 @@ namespace wuk::net {
                 err::system::message(err_code));
         }
 
-        this->m_is_close = true;
-        this->m_fd = static_cast<wSocket>(NETERROR);
+        this->mark_invalid();
     }
 
     void Socket::set_raddr(const Sockaddr &addr)
@@ -520,14 +519,15 @@ namespace wuk::net {
 
     bool Socket::is_valid() const noexcept
     {
-        if (this->m_is_close || this->m_fd == static_cast<wSocket>(NETERROR)) {
+        if (this->m_is_close || (this->m_fd == static_cast<wSocket>(NETERROR))) {
             return false;
         }
 
         wuk::i32 error = 0;
         socklen_t error_size = sizeof(error);
         if (::getsockopt(this->m_fd, SOL_SOCKET, SO_ERROR,
-                            reinterpret_cast<char *>(&error), &error_size) != 0) {
+                        reinterpret_cast<char *>(&error),
+                        &error_size) != 0) {
             return false;
         }
 
