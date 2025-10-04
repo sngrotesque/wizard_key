@@ -118,7 +118,7 @@ void server(wuk::f64 timeout = 15)
     constexpr wuk::i32 MAX_CLIENTS = FD_SETSIZE;
     wuk::net::Socket client_fds[MAX_CLIENTS];
 
-    for (wuk::u32 r = 0; r < 100; ++r) {
+    while (true) {
         fd_set read_fds;
         FD_ZERO(&read_fds);
         FD_SET(server_fd.get_fd(), &read_fds);
@@ -185,6 +185,8 @@ void server(wuk::f64 timeout = 15)
 
 #else
 
+constexpr wuk::i32 MAX_CLIENTS = FD_SETSIZE;
+
 class ClientSession {
 private:
     wuk::net::Socket m_fd;
@@ -225,7 +227,9 @@ public:
             packet_length.capacity()
         );
 
-        if (data_length == 0) return {};
+        if (data_length == 0) {
+            return {};
+        }
 
         std::string result;
         wuk::i32 remaining = data_length;
@@ -260,48 +264,51 @@ public:
 
 void server(wuk::f64 timeout = 15.0)
 {
-    wuk::net::Socket server_fd(AF_INET, SOCK_STREAM, IPPROTO_TCP);
-
-    fmt::println("初始化服务端套接字。");
-    server_fd.set_blocking(false);
-    server_fd.setsockopt<bool>(SOL_SOCKET, SO_REUSEADDR, true);
-    server_fd.bind("0.0.0.0", 48888);
-    server_fd.listen(3000);
-
-    constexpr wuk::i32 MAX_CLIENTS = FD_SETSIZE;
-    std::vector<ClientSession> clients;
-    clients.reserve(MAX_CLIENTS);
-
-    auto handle_new_connection = [&]() {
+    // 处理新连接的函数
+    auto handle_new_connection = [](wuk::net::Socket &server_fd, std::vector<ClientSession> &clients)
+    {
+        // 接受新连接
         wuk::net::Socket client_fd = server_fd.accept();
-        if (!client_fd.is_valid()) return;
-
+        // 将新连接的客户端设置为非阻塞
         client_fd.set_blocking(false);
 
-        auto it = std::find_if(clients.begin(), clients.end(),
-            [](const ClientSession &client) {
+        // 从序列中，找到第一个符合条件的元素
+        auto it = std::find_if(
+            clients.begin(), clients.end(),
+            [](const ClientSession &client)
+            {
+                // 返回一个已释放的套接字资源（用于复用资源）
+                // 此处理解为空槽位。
                 return !client.is_valid();
-            });
+            }
+        );
 
         if (it != clients.end()) {
+            // 如果找到了一个空槽位
             *it = ClientSession(std::move(client_fd));
         } else if (clients.size() < MAX_CLIENTS) {
+            // 如果没找到空槽位，且整个槽位还没达到数量限制，扩充一个槽位
             clients.emplace_back(std::move(client_fd));
         } else {
+            // 如果没找到空槽位并且已达到数量限制。
             fmt::println("客户端数量达到上限，拒绝新连接。");
             return;
         }
 
+        // 返回对最后一个元素的引用（在此仅用于打印客户端信息）
         const auto &client = clients.back();
         fmt::println("有新的客户端连接：{0}:{1}。",
             client.get_address(), client.get_port());
     };
 
-    auto handle_client_data = [&](ClientSession &client) {
+    // 处理客户端数据的函数
+    auto handle_client_data = [](ClientSession &client) {
         std::string buffer = client.receive_data();
         if (buffer.empty() || buffer == "exit") {
             fmt::println("客户端断开连接：{0}:{1}",
-                client.get_address(), client.get_port());
+                client.get_address(),
+                client.get_port()
+            );
             client.disconnect();
             return false;
         }
@@ -311,16 +318,35 @@ void server(wuk::f64 timeout = 15.0)
         return true;
     };
 
-    for (wuk::u32 round = 0; round < 100; ++round) {
+    wuk::net::Socket server_fd(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+
+    fmt::println("初始化服务端套接字。");
+    server_fd.set_blocking(false);
+    server_fd.setsockopt<bool>(SOL_SOCKET, SO_REUSEADDR, true);
+    server_fd.bind("0.0.0.0", 48888);
+    server_fd.listen(3000);
+
+    std::vector<ClientSession> clients;
+    clients.reserve(MAX_CLIENTS);
+
+    while (true) {
+        // 创建套接字集
         fd_set read_fds;
+        // 初始化（清空套接字集）
         FD_ZERO(&read_fds);
+        // 将服务端套接字加入到【读监听】队列
         FD_SET(server_fd.get_fd(), &read_fds);
+        // 将max_fd设置为当前的服务端套接字文件描述符的数字
         wuk::net::wSocket max_fd = server_fd.get_fd();
 
+        // 遍历找出套接字文件描述符数字最大的那一个并赋值给max_fd
         for (const auto &client : clients) {
             if (client.is_valid()) {
+                // 如果当前元素是有效的套接字
                 auto fd = client.get_fd();
+                // 将此客户端套接字加入【读监听】队列
                 FD_SET(fd, &read_fds);
+                // 如果它的套接字文件描述符更大，那么将它赋值给max_fd
                 if (fd > max_fd) max_fd = fd;
             }
         }
@@ -339,7 +365,7 @@ void server(wuk::f64 timeout = 15.0)
         }
 
         if (FD_ISSET(server_fd.get_fd(), &read_fds)) {
-            handle_new_connection();
+            handle_new_connection(server_fd, clients);
         }
 
         // fmt::println("处理客户端数据！");

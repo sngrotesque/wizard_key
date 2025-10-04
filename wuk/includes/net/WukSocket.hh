@@ -147,8 +147,8 @@ namespace wuk::net {
 
     public:
         // 阻塞套接字
-        void connect(const std::string &addr, const wuk::u16 &port);
-        void bind(const std::string &addr, const wuk::u16 &port);
+        void connect(const std::string &addr, wuk::u16 port);
+        void bind(const std::string &addr, wuk::u16 port);
         void listen(const socklen_t &backlog) const;
         Socket accept() const;
         wuk::ilong send(const std::string &buffer, wuk::i32 flag = 0) const;
@@ -158,12 +158,12 @@ namespace wuk::net {
         std::string recvfrom(const socklen_t &length, Sockaddr &addr, wuk::i32 flag = 0) const;
 
         // 非阻塞套接字
-        void connect_ex(const std::string &addr, const wuk::u16 &port);
+        void connect_ex(const std::string &addr, wuk::u16 port);
         Socket accept_ex();
         wuk::ilong send_ex(const std::string &buffer, wuk::i32 flag = 0);
         std::string recv_ex(const socklen_t &length, wuk::i32 flag = 0);
 
-        void shutdown(const wuk::i32 &how) const;
+        void shutdown(wuk::i32 how) const;
         void close();
 
     public:

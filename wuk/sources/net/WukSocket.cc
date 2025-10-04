@@ -334,7 +334,7 @@ namespace wuk::net {
         return this->m_timeout;
     }
 
-    void Socket::connect(const std::string &addr, const wuk::u16 &port)
+    void Socket::connect(const std::string &addr, wuk::u16 port)
     {
         Addrinfo info(this->m_family);
         info.resolve(addr, port);
@@ -348,7 +348,7 @@ namespace wuk::net {
         this->m_laddr.set_addr(this->getsockname());
     }
 
-    void Socket::bind(const std::string &addr, const wuk::u16 &port)
+    void Socket::bind(const std::string &addr, wuk::u16 port)
     {
         Addrinfo info(this->m_family);
         info.resolve(addr, port);
@@ -463,7 +463,7 @@ namespace wuk::net {
         return buffer;
     }
 
-    void Socket::shutdown(const wuk::i32 &how) const
+    void Socket::shutdown(wuk::i32 how) const
     {
         if (::shutdown(this->m_fd, how) == NETERROR) {
             wuk::i32 err_code = err::system::code();

@@ -108,7 +108,7 @@ static T sock_call_ex(
 }
 
 namespace wuk::net {
-    void Socket::connect_ex(const std::string& addr, const wuk::u16& port)
+    void Socket::connect_ex(const std::string &addr, wuk::u16 port)
     {
         Addrinfo info(this->m_family, this->m_sock_type, this->m_proto);
         info.resolve(addr, port);
