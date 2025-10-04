@@ -305,6 +305,7 @@ void server(wuk::f64 timeout = 15.0)
     auto handle_client_data = [](ClientSession &client) {
         std::string buffer = client.receive_data();
         if (buffer.empty() || buffer == "exit") {
+            // 如果客户端发送了空消息和“exit”视为断开连接。
             fmt::println("客户端断开连接：{0}:{1}",
                 client.get_address(),
                 client.get_port()
@@ -312,20 +313,23 @@ void server(wuk::f64 timeout = 15.0)
             client.disconnect();
             return false;
         }
-
+        // 打印客户端发送的消息
         fmt::println("客户端 {0}:{1}, 接收到的数据：{2}",
             client.get_address(), client.get_port(), buffer);
         return true;
     };
 
-    wuk::net::Socket server_fd(AF_INET, SOCK_STREAM, IPPROTO_TCP);
-
+    // 初始化服务端套接字
     fmt::println("初始化服务端套接字。");
+    wuk::net::Socket server_fd(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+    // 将服务端套接字设置为非阻塞模式
     server_fd.set_blocking(false);
+    // 将服务端套接字设置为可复用地址
     server_fd.setsockopt<bool>(SOL_SOCKET, SO_REUSEADDR, true);
     server_fd.bind("0.0.0.0", 48888);
     server_fd.listen(3000);
 
+    // 初始化客户端队列
     std::vector<ClientSession> clients;
     clients.reserve(MAX_CLIENTS);
 
@@ -339,6 +343,8 @@ void server(wuk::f64 timeout = 15.0)
         // 将max_fd设置为当前的服务端套接字文件描述符的数字
         wuk::net::wSocket max_fd = server_fd.get_fd();
 
+        // Windows系统不需要max_fd参数
+#       ifndef WUK_PLATFORM_WINOS
         // 遍历找出套接字文件描述符数字最大的那一个并赋值给max_fd
         for (const auto &client : clients) {
             if (client.is_valid()) {
@@ -350,39 +356,55 @@ void server(wuk::f64 timeout = 15.0)
                 if (fd > max_fd) max_fd = fd;
             }
         }
+#       endif
 
         // fmt::println("绑定 IO 多路复用。");
         timeval timetv = create_timeval(timeout);
         wuk::i32 ready = select(max_fd + 1, &read_fds, nullptr, nullptr, &timetv);
 
         if (ready == 0) {
+            // select函数返回值为0代表超时
             fmt::println("套接字超时，退出。");
             break;
         } else if (ready == NETERROR) {
+            // 返回值为-1代表出错
             wuk::i32 err_code = wuk::net::err::system::code();
             throw wuk::Exception(err_code, "select",
                 wuk::net::err::system::message(err_code));
         }
 
         if (FD_ISSET(server_fd.get_fd(), &read_fds)) {
+            // 如果服务端套接字在【读监听】队列中就绪就代表有新的客户端连接
+            // 将新客户端连接到客户端队列
             handle_new_connection(server_fd, clients);
         }
 
         // fmt::println("处理客户端数据！");
         for (auto &client : clients) {
-            if (client.is_valid() && FD_ISSET(client.get_fd(), &read_fds)) {
-                handle_client_data(client);
+            if (!client.is_valid()) {
+                // 如果客户端队列中此套接字无效，直接跳过
+                continue;
             }
+            if (!FD_ISSET(client.get_fd(), &read_fds)) {
+                // 如果客户端队列中此套接字无效（未就绪），直接跳过
+                continue;
+            }
+            handle_client_data(client);
         }
 
-        clients.erase(
-            std::remove_if(clients.begin(), clients.end(),
-                [](const ClientSession &client) {
-                    return !client.is_valid();
-                }),
-            clients.end());
+        // 使用std::remove_if将所有有效套接字移到客户端队列前面并将无效套接字标记为垃圾且移动到队列后方
+        auto client_pos = std::remove_if(
+            clients.begin(), clients.end(),
+            [](const ClientSession &client)
+            {
+                return !client.is_valid();
+            }
+        );
+        // 把所有堆在尾部的垃圾套接字清理掉腾出空间
+        clients.erase(client_pos, clients.end());
     }
 
+    // 最后如果套接字超时，断开与所有有效客户端套接字的连接
     for (auto &client : clients) {
         if (client.is_valid()) {
             client.disconnect();
