@@ -15,14 +15,6 @@ using namespace wuk::misc;
 
 constexpr wuk::i32 MAX_CLIENTS = FD_SETSIZE;
 
-struct Packet {
-    wuk::u32 size = 0;
-    wuk::u32 uid = 0;
-    wuk::f64 timestamp = 0;
-    std::string data;
-    wuk::u32 crc = 0;
-};
-
 static timeval create_timeval(wuk::f64 t)
 {
     timeval tv{};
@@ -66,6 +58,14 @@ static std::string receive_data(wuk::net::Socket &client)
     return result;
 }
 
+struct Packet {
+    wuk::u32 size = 0;
+    wuk::u32 uid = 0;
+    wuk::f64 timestamp = 0;
+    std::string data;
+    wuk::u32 crc = 0;
+};
+
 static Packet receive_data(wuk::net::Socket &client, int)
 {
     // 获取包长度（仅包含第四项的长度，即数据流）
@@ -107,7 +107,7 @@ void server(wuk::f64 timeout = 15)
         } else {
             // 如果没有空槽位并且客户端队列已满
             fmt::println("客户端队列数量已达上限，不应该接收新的连接。");
-            return;
+            return false;
         }
 
         // 返回对此客户端的引用（当前仅用于打印客户端信息）
@@ -115,6 +115,7 @@ void server(wuk::f64 timeout = 15)
             (*it).get_raddr().get_address(),
             (*it).get_raddr().get_port()
         );
+        return true;
     };
 
     // 处理客户端数据的函数
@@ -197,7 +198,9 @@ void server(wuk::f64 timeout = 15)
             // 如果服务端套接字在【读监听】队列中被设置为了就绪就代表有新的连接。
             // 等于select告诉你可以开始调用accept来接受一个客户端了。
             // 将新的客户端添加到客户端队列中。
-            handle_new_client(server, clients);
+            if (!handle_new_client(server, clients)) {
+                break;
+            }
         }
 
         for (wuk::net::Socket &client : clients) {
