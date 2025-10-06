@@ -32,14 +32,8 @@ namespace wuk::im::client {
 
     void Account::send_packet()
     {
-        std::string packet_length(4, '\0');
         std::string packet = this->info.SerializeAsString();
-
-        wuk::utils::pack_bytes(
-            reinterpret_cast<wuk::byte *>(packet_length.data()),
-            packet_length.capacity(),
-            static_cast<wuk::u32>(packet.size())
-        );
+        std::string packet_length = wuk::utils::pack_bytes<wuk::i32>(packet.size()).to_str();
 
         // 先发送4字节的包的长度给服务端
         this->fd.send_ex(packet_length);

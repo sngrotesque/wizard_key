@@ -64,7 +64,7 @@ namespace wuk::net {
         const sockaddr *get_addr() const noexcept;
         socklen_t get_addrlen() const noexcept;
 
-        const std::string get_address_string() const;
+        const std::string get_address() const;
         wuk::u16 get_port() const;
     };
 

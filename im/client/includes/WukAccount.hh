@@ -4,7 +4,7 @@
 #if WUK_SUPPORT
 #include <common/includes/WukLoginRequest.pb.hh>
 #include <net/WukSocket.hh>
-#include <utils/bytes.hh>
+#include <utils/number.hh>
 
 namespace wuk::im::client {
     class LIBWUK_API Account {

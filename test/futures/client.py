@@ -1,3 +1,5 @@
+import threading
+import random
 import socket
 import struct
 import time
@@ -47,11 +49,11 @@ class ClientSocket:
         current_time = time.time()
         size, uid, timestamp = struct.unpack('@IId', packet_size, packet_uid, packet_time)
         if not size:
-            raise ValueError('The data length should not be 0.')
+            raise ValueError('数据长度不能为0。')
         if not uid:
-            raise ValueError('UID cannot be 0.')
+            raise ValueError('UID不能为0。')
         if (timestamp > current_time) or (timestamp < (current_time - 300)):
-            raise ValueError('The packet has the wrong time.')
+            raise ValueError('错误的网络包时间戳。')
 
         tmp_size = size
         data = b''
@@ -65,9 +67,9 @@ class ClientSocket:
         packet_base = packet_size + packet_uid + packet_time + data
 
         packet_crc32 = self.fd.recv(4)
-        
+
         if packet_crc32 != struct.pack('@I', zlib.crc32(packet_base)):
-            raise ValueError('The packet has been tampered with.')
+            raise ValueError('数据包已被篡改。')
 
         return uid, timestamp, data
 
@@ -100,11 +102,38 @@ class TestClientSocket:
 
         return data
 
-fd = TestClientSocket()
-fd.connect('127.0.0.1', 48888)
-while True:
-    message = input('Please enter: ')
-    if message == 'exit':
-        break
-    fd.send(message.encode())
+def main(interactive :bool = False):
+    if interactive:
+        fd = TestClientSocket()
+        fd.connect('127.0.0.1', 48888)
+        while True:
+            message = input('请输入内容：')
+            if (not message) or (message == 'exit'):
+                print('退出客户端。')
+                break
+            fd.send(message.encode())
+    else:
+        def test():
+            charset = (
+                '0123456789'
+                'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+                'abcdefghijklmnopqrstuvwxyz'
+            )
+            fd = TestClientSocket()
+            fd.connect('127.0.0.1', 48888)
+            for _ in range(random.randint(20, 100)):
+                message = ''.join(
+                    random.sample(charset, random.randint(4, 50))
+                )
+                fd.send(message.encode())
+                time.sleep(random.uniform(0.001, 0.5))
 
+        ths = [threading.Thread(target = test) for _ in range(4)]
+
+        for th in ths:
+            th.start()
+        for th in ths:
+            th.join()
+
+if __name__ == '__main__':
+    main()

@@ -153,16 +153,6 @@ namespace wuk::im::server {
     {
         while (true) {
             try {
-                wuk::net::Socket client = this->fd.accept_ex();
-
-                std::string packet_length = client.recv(4);
-                wuk::u32 length = wuk::utils::unpack_bytes<wuk::u32>(
-                    reinterpret_cast<wuk::byte *>(packet_length.data()),
-                    packet_length.capacity()
-                );
-                std::string packet(length, '\0');
-                
-                
 
             } catch (wuk::Exception &e) {
                 if (e.get_err_code() == 1) {

@@ -117,7 +117,7 @@ static void start_server(const std::string &host = "0.0.0.0", wuk::u16 port = 47
 
     while (server_active) {
         auto client = server_fd.accept();
-        std::string client_addr = client.get_laddr().get_address_string();
+        std::string client_addr = client.get_laddr().get_address();
         std::thread(handle_client, server_fd, client, client_addr).detach();
     }
 

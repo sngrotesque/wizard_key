@@ -109,7 +109,7 @@ namespace wuk::net {
         return this->m_addrlen;
     }
 
-    const std::string Sockaddr::get_address_string() const
+    const std::string Sockaddr::get_address() const
     {
         char buffer[INET6_ADDRSTRLEN] = {0};
         const sockaddr *sa = this->get_addr();
@@ -120,7 +120,7 @@ namespace wuk::net {
 
         auto throw_error = []() -> void {
             wuk::i32 err_code = err::system::code();
-            throw wuk::Exception(err_code, "wuk::net::Sockaddr::get_address_string",
+            throw wuk::Exception(err_code, "wuk::net::Sockaddr::get_address",
                 err::system::message(err_code));
         };
 
@@ -143,7 +143,7 @@ namespace wuk::net {
             }
             default:
                 throw wuk::Exception(wuk::Error::ERR,
-                    "wuk::net::Sockaddr::get_address_string",
+                    "wuk::net::Sockaddr::get_address",
                     "Unsupported address family");
         }
 
@@ -374,6 +374,7 @@ namespace wuk::net {
         }
 
         Socket new_sock(this->m_family, this->m_sock_type, this->m_proto, client_sock);
+        new_sock.set_timeout(this->m_timeout);
         new_sock.set_raddr(client);
 
         return new_sock;

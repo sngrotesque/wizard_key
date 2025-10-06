@@ -158,6 +158,7 @@ namespace wuk::net {
         }
 
         Socket new_sock(this->m_family, this->m_sock_type, this->m_proto, client_sock);
+        new_sock.set_timeout(this->m_timeout);
         new_sock.set_raddr(client);
 
         return new_sock;

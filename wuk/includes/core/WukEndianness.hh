@@ -20,7 +20,7 @@
 
 namespace wuk {
     template <typename T>
-    inline LIBWUK_API T swap_endian(const T &val)
+    inline LIBWUK_API T swap_endian(T val)
     {
         static_assert(std::is_integral_v<T> || std::is_floating_point_v<T>, 
             "wuk::swap_endian requires numeric type");
@@ -33,7 +33,7 @@ namespace wuk {
         memcpy(buffer, &val, T_size);
 
         for (wuk::u32 i = 0; i < (T_size / 2); ++i) {
-            const wuk::byte swap = buffer[i];
+            wuk::byte swap = buffer[i];
             buffer[i] = buffer[T_size - 1 - i];
             buffer[T_size - 1 - i] = swap;
         }

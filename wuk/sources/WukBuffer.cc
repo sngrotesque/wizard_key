@@ -347,7 +347,7 @@ namespace wuk {
 
     //////////////////////////////////////////////////////////////////////
 
-    bool Buffer::is_empty() const noexcept
+    bool Buffer::empty() const noexcept
     {
         return ((!this->m_data) || (!this->m_len) || (!this->m_size));
     }
@@ -477,7 +477,7 @@ namespace wuk {
 
     std::string Buffer::to_hex() const noexcept
     {
-        if (this->is_empty()) {
+        if (this->empty()) {
             return {};
         }
         std::vector<wuk::byte> input(this->m_data, this->m_offset);

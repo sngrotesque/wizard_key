@@ -66,7 +66,7 @@ namespace wuk {
 
     public:
         // 判断当前容器是否为空。
-        bool is_empty() const noexcept;
+        bool empty() const noexcept;
 
         // 覆盖写入数据（如果空间不足以写入的话将自动扩容）
         void write(const wuk::byte *buffer, wuk::ulong length);
