@@ -132,7 +132,7 @@ void server(wuk::f64 timeout = 15)
             client.close();
             return;
         }
-        fmt::print("客户端[{0}:{1}]数据：{2}\n",
+        fmt::print("客户端[{0}:{1}]，数据：{2}\n",
             client.get_raddr().get_address(),
             client.get_raddr().get_port(),
             data
@@ -148,20 +148,23 @@ void server(wuk::f64 timeout = 15)
     server.bind("0.0.0.0", 48888);
     server.listen(MAX_CLIENTS);
 
+    // 创建【读监听】【写监听】套接字集
+    fd_set read_fds;
+    fd_set write_fds;
+
     // 初始化客户端队列
     std::vector<wuk::net::Socket> clients(MAX_CLIENTS);
 
     fmt::print("循环开始。\n");
-    while (true) {
-        // 创建【读监听】【写监听】套接字集
-        fd_set read_fds;
-        fd_set write_fds;
+    for (wuk::u32 i = 0; i < 1000; ++i) {
+        fmt::print("循环[{0:>4d}] 初始化套接字集\n", i+1);
         // 初始化【读监听】【写监听】套接字集
         FD_ZERO(&read_fds);
         FD_ZERO(&write_fds);
         // 将服务端套接字加入到【读监听】队列
         FD_SET(server.get_fd(), &read_fds);
 
+        fmt::print("循环[{0:>4d}] 初始化nfds\n", i+1);
         // 将当前的服务端套接字设置为最大套接字
         wuk::net::wSocket nfds = server.get_fd();
         // 遍历找出最大的套接字并赋值给nfds
@@ -179,10 +182,12 @@ void server(wuk::f64 timeout = 15)
             }
         }
 
+        fmt::print("循环[{0:>4d}] 调用select函数\n", i+1);
         // 开始绑定select函数实现 IO多路复用
         timeval tv = create_timeval(timeout);
         wuk::i32 ready = select(nfds, &read_fds, &write_fds, nullptr, &tv);
 
+        fmt::print("循环[{0:>4d}] 检测错误码\n", i+1);
         if (ready == 0) {
             // 套接字超时
             fmt::print("套接字超时了！走咯。\n");
@@ -194,6 +199,7 @@ void server(wuk::f64 timeout = 15)
             throw wuk::Exception(code, "server::select", message);
         }
 
+        fmt::print("循环[{0:>4d}] 检查服务端套接字是否就绪\n", i+1);
         if (FD_ISSET(server.get_fd(), &read_fds)) {
             // 如果服务端套接字在【读监听】队列中被设置为了就绪就代表有新的连接。
             // 等于select告诉你可以开始调用accept来接受一个客户端了。
@@ -203,6 +209,7 @@ void server(wuk::f64 timeout = 15)
             }
         }
 
+        fmt::print("循环[{0:>4d}] 处理客户端数据\n", i+1);
         for (wuk::net::Socket &client : clients) {
             if (!client.is_valid() || !FD_ISSET(client.get_fd(), &read_fds)) {
                 // 如果套接字无效或者未被标记为就绪，那么直接跳过
@@ -211,6 +218,7 @@ void server(wuk::f64 timeout = 15)
             handle_client_data(client);
         }
 
+        fmt::print("循环[{0:>4d}] 清理资源\n", i+1);
         // 将所有有效套接字移至前方并将所有无效套接字标为垃圾并移至后方
         std::vector<wuk::net::Socket>::iterator \
         client_pos = std::remove_if(
@@ -243,7 +251,7 @@ int main()
 #   endif
 
     try {
-        server(3);
+        server(30);
     } catch (const wuk::Exception &e) {
         std::cerr << e.what() << std::endl;
         return 1;

@@ -103,9 +103,11 @@ class TestClientSocket:
         return data
 
 def main(interactive :bool = False):
+    server = ('47.79.146.143', 48888)
+    
     if interactive:
         fd = TestClientSocket()
-        fd.connect('127.0.0.1', 48888)
+        fd.connect(*server)
         while True:
             message = input('请输入内容：')
             if (not message) or (message == 'exit'):
@@ -120,7 +122,7 @@ def main(interactive :bool = False):
                 'abcdefghijklmnopqrstuvwxyz'
             )
             fd = TestClientSocket()
-            fd.connect('127.0.0.1', 48888)
+            fd.connect(*server)
             for _ in range(random.randint(20, 100)):
                 message = ''.join(
                     random.sample(charset, random.randint(4, 50))
