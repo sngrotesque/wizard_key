@@ -142,7 +142,7 @@ void server(wuk::f64 timeout = 15)
     // 初始化服务端套接字
     fmt::print("初始化服务端套接字。\n");
     wuk::net::Socket server(AF_INET, SOCK_STREAM, IPPROTO_TCP);
-    server.set_timeout(timeout);
+    server.set_timeout(timeout * 2);
     server.set_blocking(false);
     server.setsockopt<wuk::i32>(SOL_SOCKET, SO_REUSEADDR, 1);
     server.bind("0.0.0.0", 48888);
