@@ -106,12 +106,12 @@ void server(wuk::f64 timeout = 15)
             clients.emplace_back(std::move(client));
         } else {
             // 如果没有空槽位并且客户端队列已满
-            fmt::println("客户端队列数量已达上限，不应该接收新的连接。");
+            fmt::print("客户端队列数量已达上限，不应该接收新的连接。\n");
             return false;
         }
 
         // 返回对此客户端的引用（当前仅用于打印客户端信息）
-        fmt::println("新的客户端连接：{0}:{1}。",
+        fmt::print("新的客户端连接：{0}:{1}。\n",
             (*it).get_raddr().get_address(),
             (*it).get_raddr().get_port()
         );
@@ -124,7 +124,7 @@ void server(wuk::f64 timeout = 15)
     {
         std::string data = receive_data(client);
         if (data.empty() || (data == "exit")) {
-            fmt::println("客户端已断开连接：{0}:{1}。",
+            fmt::print("客户端已断开连接：{0}:{1}。\n",
                 client.get_raddr().get_address(),
                 client.get_raddr().get_port()
             );
@@ -132,7 +132,7 @@ void server(wuk::f64 timeout = 15)
             client.close();
             return;
         }
-        fmt::println("客户端[{0}:{1}]数据：{2}",
+        fmt::print("客户端[{0}:{1}]数据：{2}\n",
             client.get_raddr().get_address(),
             client.get_raddr().get_port(),
             data
@@ -140,22 +140,22 @@ void server(wuk::f64 timeout = 15)
     };
 
     // 初始化服务端套接字
-    fmt::println("初始化服务端套接字。");
+    fmt::print("初始化服务端套接字。\n");
     wuk::net::Socket server(AF_INET, SOCK_STREAM, IPPROTO_TCP);
     server.set_timeout(timeout);
     server.set_blocking(false);
-    server.setsockopt<bool>(SOL_SOCKET, SO_REUSEADDR, true);
+    server.setsockopt<wuk::i32>(SOL_SOCKET, SO_REUSEADDR, 1);
     server.bind("0.0.0.0", 48888);
     server.listen(MAX_CLIENTS);
 
     // 初始化客户端队列
     std::vector<wuk::net::Socket> clients(MAX_CLIENTS);
 
-    fmt::println("循环开始。");
+    fmt::print("循环开始。\n");
     while (true) {
         // 创建【读监听】【写监听】套接字集
         fd_set read_fds;
-        fd_set write_fds [[maybe_unused]];
+        fd_set write_fds;
         // 初始化【读监听】【写监听】套接字集
         FD_ZERO(&read_fds);
         FD_ZERO(&write_fds);
@@ -185,13 +185,13 @@ void server(wuk::f64 timeout = 15)
 
         if (ready == 0) {
             // 套接字超时
-            fmt::println("套接字超时了！走咯。");
+            fmt::print("套接字超时了！走咯。\n");
             break;
         } else if (ready == -1) {
             // 套接字出错
             wuk::i32 code = wuk::net::err::system::code();
             std::string message = wuk::net::err::system::message(code);
-            throw wuk::Exception(code, "server", message);
+            throw wuk::Exception(code, "server::select", message);
         }
 
         if (FD_ISSET(server.get_fd(), &read_fds)) {
@@ -243,7 +243,7 @@ int main()
 #   endif
 
     try {
-        server(300);
+        server(3);
     } catch (const wuk::Exception &e) {
         std::cerr << e.what() << std::endl;
         return 1;

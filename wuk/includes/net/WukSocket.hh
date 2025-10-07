@@ -118,7 +118,7 @@ namespace wuk::net {
             if (err == NETERROR) {
                 int err_code = wuk::net::err::system::code();
                 throw wuk::Exception(err_code, "wuk::net::Socket::setsockopt",
-                    wuk::net::err::system::message(err_code).c_str());
+                    wuk::net::err::system::message(err_code));
             }
         }
 
@@ -132,7 +132,7 @@ namespace wuk::net {
             if (err == NETERROR) {
                 int err_code = wuk::net::err::system::code();
                 throw wuk::Exception(err_code, "wuk::net::Socket::getsockopt",
-                    wuk::net::err::system::message(err_code).c_str());
+                    wuk::net::err::system::message(err_code));
             }
             return value;
         }
