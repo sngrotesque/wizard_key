@@ -185,7 +185,7 @@ void server(wuk::f64 timeout = 15)
         fmt::print("循环[{0:>4d}] 调用select函数\n", i+1);
         // 开始绑定select函数实现 IO多路复用
         timeval tv = create_timeval(timeout);
-        wuk::i32 ready = select(nfds, &read_fds, &write_fds, nullptr, &tv);
+        wuk::i32 ready = select(nfds + 1, &read_fds, &write_fds, nullptr, &tv);
 
         fmt::print("循环[{0:>4d}] 检测错误码\n", i+1);
         if (ready == 0) {
