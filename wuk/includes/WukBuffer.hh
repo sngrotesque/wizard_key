@@ -55,8 +55,12 @@ namespace wuk {
     public:
         Buffer operator+(const Buffer &other);
         Buffer &operator+=(const Buffer &other);
+
         bool operator==(const Buffer &other) const noexcept;
         bool operator!=(const Buffer &other) const noexcept;
+
+        bool operator==(const std::string &other) const noexcept;
+        bool operator!=(const std::string &other) const noexcept;
 
         wuk::byte &operator[](const wuk::ulong &index) noexcept;
         const wuk::byte &operator[](const wuk::ulong &index) const noexcept;
@@ -71,14 +75,22 @@ namespace wuk {
         // 覆盖写入数据（如果空间不足以写入的话将自动扩容）
         void write(const wuk::byte *buffer, wuk::ulong length);
         void write(const std::string &buffer);
-        // 覆盖写入数据（扩容逻辑与上面一致）但返回数据指针供直接写入。
-        wuk::byte *write(wuk::ulong length);
 
         // 追加写入数据（如果空间不足以写入的话将自动扩容）
         void append(const wuk::byte *buffer, wuk::ulong length);
         void append(const std::string &buffer);
-        // 追加写入数据（扩容逻辑与上面一致）但返回数据指针供直接写入。
-        wuk::byte *append(wuk::ulong length);
+
+        // // 覆盖写入数据（扩容逻辑与上面一致）但返回数据指针供直接写入。
+        // wuk::byte *write(wuk::ulong length);
+
+        template <typename T>
+        T *write(wuk::ulong length);
+
+        // // 追加写入数据（扩容逻辑与上面一致）但返回数据指针供直接写入。
+        // wuk::byte *append(wuk::ulong length);
+
+        template <typename T>
+        T *append(wuk::ulong length);
 
         // 将内存占用与实际占用保持一致
         void shrink_to_fit();
@@ -99,5 +111,7 @@ namespace wuk {
         void clear(bool secure = false) noexcept;
     };
 }
+
+#include <template/WukBuffer.hh>
 
 #endif

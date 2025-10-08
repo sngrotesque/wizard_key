@@ -164,9 +164,9 @@ namespace wuk::net {
         return new_sock;
     }
 
-    wuk::ilong Socket::send_ex(const std::string &buffer, wuk::i32 flag)
+    wuk::ilong Socket::send_ex(const wuk::Buffer &buffer, wuk::i32 flag)
     {
-        auto send_timeout = [&](const std::string &buffer)
+        auto send_timeout = [&](const wuk::Buffer &buffer)
         {
             return ::send(this->m_fd, buffer.c_str(), buffer.length(), flag);
         };
@@ -186,14 +186,14 @@ namespace wuk::net {
         return sent;
     }
 
-    std::string Socket::recv_ex(const socklen_t &length, wuk::i32 flag)
+    wuk::Buffer Socket::recv_ex(const socklen_t &length, wuk::i32 flag)
     {
-        auto recv_timeout = [&](std::string &buffer)
+        auto recv_timeout = [&](wuk::Buffer &buffer)
         {
-            return ::recv(this->m_fd, buffer.data(), length, flag);
+            return ::recv(this->m_fd, buffer.write<char>(length), length, flag);
         };
 
-        std::string buffer(length, '\0');
+        wuk::Buffer buffer(length);
         wuk::ilong received = sock_call_ex<wuk::ilong>(
             *this,
             "wuk::net::Socket::recv_ex",
@@ -201,6 +201,10 @@ namespace wuk::net {
             IOType::RECV,
             buffer
         );
+
+        if (received == 0) {
+            return {};
+        }
 
         if (received == NETERROR) {
             throw_error("wuk::net::Socket::recv_ex");

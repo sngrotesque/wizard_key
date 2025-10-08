@@ -32,8 +32,8 @@ void method_1()
     buffer = text;
 
     buffer.append("hello, world.\n");
-    memcpy(buffer.append(13), "SN-Grotesque\n", 13);
-    memcpy(buffer.append(text.size()), text.data(), text.size());
+    memcpy(buffer.append<char>(13), "SN-Grotesque\n", 13);
+    memcpy(buffer.append<char>(text.size()), text.data(), text.size());
 
     wuk::misc::print_pybytes(buffer.data(), buffer.size(), true);
 
@@ -146,11 +146,11 @@ void method_8()
     wuk::misc::print_pybytes(buffer.data(), buffer.size(), true);
     print_info(buffer);
 
-    memcpy(buffer.append(32), "abcdef0123456789abcdef0123456789", 32);
+    memcpy(buffer.append<char>(32), "abcdef0123456789abcdef0123456789", 32);
     wuk::misc::print_pybytes(buffer.data(), buffer.size(), true);
     print_info(buffer);
 
-    memcpy(buffer.write(5), "hello", 5);
+    memcpy(buffer.write<char>(5), "hello", 5);
     wuk::misc::print_pybytes(buffer.data(), buffer.size(), true);
     print_info(buffer);
 }

@@ -4,6 +4,7 @@
 #if WUK_SUPPORT
 #include <net/WukNetwork.hh>
 #include <net/WukError.hh>
+#include <WukBuffer.hh>
 
 #ifdef WUK_STD_CPP_20
 #   include <compare>
@@ -151,17 +152,19 @@ namespace wuk::net {
         void bind(const std::string &addr, wuk::u16 port);
         void listen(const socklen_t &backlog) const;
         Socket accept() const;
-        wuk::ilong send(const std::string &buffer, wuk::i32 flag = 0) const;
-        void sendall(const std::string &buffer, wuk::i32 flag = 0) const;
-        wuk::ilong sendto(const std::string &buffer, const Sockaddr &addr, wuk::i32 flag = 0) const;
-        std::string recv(const socklen_t &length, wuk::i32 flag = 0) const;
-        std::string recvfrom(const socklen_t &length, Sockaddr &addr, wuk::i32 flag = 0) const;
+
+        wuk::ilong send(const wuk::Buffer &buffer, wuk::i32 flag = 0) const;
+        void sendall(const wuk::Buffer &buffer, wuk::i32 flag = 0) const;
+        wuk::ilong sendto(const wuk::Buffer &buffer, const Sockaddr &addr, wuk::i32 flag = 0) const;
+        wuk::Buffer recv(const socklen_t &length, wuk::i32 flag = 0) const;
+        wuk::Buffer recvfrom(const socklen_t &length, Sockaddr &addr, wuk::i32 flag = 0) const;
 
         // 非阻塞套接字
         void connect_ex(const std::string &addr, wuk::u16 port);
         Socket accept_ex();
-        wuk::ilong send_ex(const std::string &buffer, wuk::i32 flag = 0);
-        std::string recv_ex(const socklen_t &length, wuk::i32 flag = 0);
+
+        wuk::ilong send_ex(const wuk::Buffer &buffer, wuk::i32 flag = 0);
+        wuk::Buffer recv_ex(const socklen_t &length, wuk::i32 flag = 0);
 
         void shutdown(wuk::i32 how) const;
         void close();

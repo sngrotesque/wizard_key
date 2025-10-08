@@ -4,12 +4,20 @@
 
 ## v1.0.0
 
+ - 已更新内容
+
 1. 在业务层面完全封装了libpq库于[db/WukPsql.hh](wuk/includes/db/WukPsql.hh)，并提供了[简要文档](wuk/includes/db/libpq_doc/libpq.md)。
 2. 重命名了 [wuk::Buffer](wuk/includes/WukBuffer.hh) 中的方法，  
    如`get_length`改为`length`、`get_size`改为`size`，`get_size`改为`capacity`；  
-   与标准库对齐。预计下次推送添加`insert`方法。
+   与标准库对齐。
 3. 对 [OP4 (four fundamental operations)](wuk/includes/crypto/WukOP4.hh) 的类方法添加了`const`修饰。
 4. 重新调整了代码的文件结构。
+5. 将 [wuk::Buffer](wuk/includes/WukBuffer.hh) 中的 `write`/`append`（带指针返回值版） 优化为了模板函数。
+6. 将[wuk::net::Socket](wuk/includes/net/WukSocket.hh)中关于 send 和 recv 相关的函数的参数类型全部从`std::string`改为`wuk::Buffer`，同时将不再考虑任何标准库容器作为这些函数的容器类型。原因是标准库类型的专用性支持较差，如要实现对应功能需要额外的性能支出。
+
+ - 未来更新内容
+
+1. 为 [wuk::Buffer](wuk/includes/WukBuffer.hh) 添加 `insert` 和 `erase` 功能。
 
 ## v0.9 更新内容
 

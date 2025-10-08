@@ -51,7 +51,7 @@ namespace wuk::im::server {
         PKCS5_PBKDF2_HMAC(password.data(), password.size(),
                         salt.data(), salt.size(),
                         ITER_COUNT, EVP_sha256(),
-                        32, user_hash.write(32));
+                        32, user_hash.write<wuk::byte>(32));
         return user_hash;
     }
 

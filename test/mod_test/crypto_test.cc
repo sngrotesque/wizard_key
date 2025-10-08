@@ -19,7 +19,6 @@
 #endif
 
 using namespace wuk::crypto;
-using namespace wuk::misc;
 namespace fs = std::filesystem;
 constexpr wuk::u32 buffer_size = 4096;
 constexpr wuk::u32 PBKDF2_ROUNDS = 415411;
@@ -31,7 +30,7 @@ wuk::Buffer derive_key(const std::string &password, const wuk::Buffer &salt, con
     PKCS5_PBKDF2_HMAC(password.data(), password.length(),
                       salt.data(), salt.size(),
                       PBKDF2_ROUNDS, EVP_sha256(), dklen,
-                      derived.write(dklen));
+                      derived.write<wuk::byte>(dklen));
 
     return derived;
 }
@@ -44,38 +43,33 @@ std::string file_hexdigest(const fs::path &path)
         throw wuk::Exception(wuk::Error::FTOFO, "file_hexdigest",
             "failed to file optn.");
     }
-
     wuk::crypto::Hashlib<Algo> hash;
     wuk::Buffer buffer;
 
     for (;;) {
-        f.read(reinterpret_cast<char *>(buffer.write(4096)), 4096);
-        wuk::ulong length = f.gcount();
+        wuk::ulong length = f.read(buffer.write<char>(4096), 4096).gcount();
         if (length == 0) {
             break;
         }
-
         hash.update(buffer.data(), length);
     }
 
     return hash.hexdigest();
 }
 
-void file_xcrypt(const fs::path &in_path,
+bool file_xcrypt(const fs::path &in_path,
                  const fs::path &out_path,
                  const std::string &password,
                  bool encrypt)
 {
     if (!fs::exists(in_path)) {
-        throw wuk::Exception(wuk::Error::FNOTF, "file_encryption",
-            log_utf8("输入路径的文件不存在。"));
+        fmt::print("输入的路径文件不存在。\n"); return false;
     }
     std::fstream fin(in_path,   std::ios::in  | std::ios::binary);
     std::fstream fout(out_path, std::ios::out | std::ios::binary);
 
     if (!fin.is_open() || !fout.is_open()) {
-        throw wuk::Exception(wuk::Error::FTOFO, "file_encryption",
-            log_utf8("输入路径或输出路径的文件打开失败。"));
+        fmt::print("输入路径或输出路径的文件打开失败。\n"); return false;
     }
     constexpr wuk::u32 salt_size = 16;
     const wuk::byte *key = nullptr;
@@ -84,10 +78,10 @@ void file_xcrypt(const fs::path &in_path,
 
     // 初始化密码套件
     if (encrypt) {
-        RAND_bytes(salt.write(salt_size), salt_size);
+        RAND_bytes(salt.write<wuk::byte>(salt_size), salt_size);
         fout.write(salt.c_str(), salt.size());
     } else {
-        fin.read(reinterpret_cast<char *>(salt.write(salt_size)), salt_size);
+        fin.read(salt.write<char>(salt_size), salt_size);
     }
     wuk::Buffer key_with_nonce = derive_key(password, salt, OP4_KL + OP4_NL);
     key = key_with_nonce.data();
@@ -100,13 +94,13 @@ void file_xcrypt(const fs::path &in_path,
     wuk::Buffer out_buffer(buffer_size);
     wuk::ulong in_length = 0;
     for (;;) {
-        fin.read(reinterpret_cast<char *>(in_buffer.write(buffer_size)), buffer_size);
+        fin.read(in_buffer.write<char>(buffer_size), buffer_size);
 
         if ((in_length = fin.gcount()) == 0) {
             break;
         }
 
-        op4.ctr_stream(out_buffer.write(in_length), in_buffer.data(), in_length, nonce);
+        op4.ctr_stream(out_buffer.write<wuk::byte>(in_length), in_buffer.data(), in_length, nonce);
         fout.write(out_buffer.c_str(), in_length);
     }
 }

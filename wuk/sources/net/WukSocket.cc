@@ -390,9 +390,9 @@ namespace wuk::net {
         }
     }
 
-    wuk::ilong Socket::send(const std::string &buffer, wuk::i32 flag) const
+    wuk::ilong Socket::send(const wuk::Buffer &buffer, wuk::i32 flag) const
     {
-        wuk::ilong sent = ::send(this->m_fd, buffer.c_str(), buffer.length(), flag);
+        wuk::ilong sent = ::send(this->m_fd, buffer.c_str(), buffer.size(), flag);
         if (sent == NETERROR) {
             wuk::i32 err_code = err::system::code();
             throw wuk::Exception(err_code, "wuk::net::Socket::send",
@@ -401,11 +401,12 @@ namespace wuk::net {
         return sent;
     }
 
-    void Socket::sendall(const std::string &buffer, wuk::i32 flag) const
+    void Socket::sendall(const wuk::Buffer &buffer, wuk::i32 flag) const
     {
         constexpr wuk::ilong block_size = 2048;
         const char *data_ptr = buffer.c_str();
-        wuk::ilong data_len = static_cast<wuk::ilong>(buffer.length());
+        wuk::ilong data_len = static_cast<wuk::ilong>(buffer.size());
+
         while (data_len) {
             wuk::ilong size = wuk::min(block_size, data_len);
             wuk::ilong sent = ::send(this->m_fd, data_ptr, size, flag);
@@ -419,9 +420,9 @@ namespace wuk::net {
         }
     }
 
-    wuk::ilong Socket::sendto(const std::string &buffer, const Sockaddr &addr, wuk::i32 flag) const
+    wuk::ilong Socket::sendto(const wuk::Buffer &buffer, const Sockaddr &addr, wuk::i32 flag) const
     {
-        wuk::ilong sent = ::sendto(this->m_fd, buffer.c_str(), buffer.length(), flag,
+        wuk::ilong sent = ::sendto(this->m_fd, buffer.c_str(), buffer.size(), flag,
                             addr.get_addr(), addr.get_addrlen());
         if (sent == NETERROR) {
             wuk::i32 err_code = err::system::code();
@@ -431,36 +432,34 @@ namespace wuk::net {
         return sent;
     }
 
-    std::string Socket::recv(const socklen_t &length, wuk::i32 flag) const
+    wuk::Buffer Socket::recv(const socklen_t &length, wuk::i32 flag) const
     {
-        std::string buffer(length, '\0');
-        wuk::ilong received = ::recv(this->m_fd, buffer.data(), length, flag);
+        wuk::Buffer buffer(length);
+        wuk::ilong received = ::recv(this->m_fd, buffer.write<char>(length), length, flag);
         if (received == 0) {
-            return std::string{};
+            return {};
         }
         if (received == NETERROR) {
             wuk::i32 err_code = err::system::code();
             throw wuk::Exception(err_code, "wuk::net::Socket::recv",
                 err::system::message(err_code));
         }
-        buffer.resize(received);
         return buffer;
     }
 
-    std::string Socket::recvfrom(const socklen_t &length, Sockaddr &addr, wuk::i32 flag) const
+    wuk::Buffer Socket::recvfrom(const socklen_t &length, Sockaddr &addr, wuk::i32 flag) const
     {
-        std::string buffer(length, '\0');
-        wuk::ilong received = ::recvfrom(this->m_fd, buffer.data(), length, flag,
-                                    addr.set_addr(), addr.set_addrlen());
+        wuk::Buffer buffer(length);
+        wuk::ilong received = ::recvfrom(this->m_fd, buffer.write<char>(length), length, flag,
+                                        addr.set_addr(), addr.set_addrlen());
         if (received == 0) {
-            return std::string{};
+            return {};
         }
         if (received == NETERROR) {
             wuk::i32 err_code = err::system::code();
             throw wuk::Exception(err_code, "wuk::net::Socket::recvfrom",
                 err::system::message(err_code));
         }
-        buffer.resize(received);
         return buffer;
     }
 

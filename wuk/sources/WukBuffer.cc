@@ -317,6 +317,26 @@ namespace wuk {
         return !(*this == other);
     }
 
+    bool Buffer::operator==(const std::string &other) const noexcept
+    {
+        if (this->m_len != other.size()) {
+            return false;
+        }
+
+        for (wuk::ulong i = 0; i < this->m_len; ++i) {
+            if (this->m_data[i] != static_cast<wuk::byte>(other[i])) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    bool Buffer::operator!=(const std::string &other) const noexcept
+    {
+        return !(*this == other);
+    }
+
     wuk::byte &Buffer::operator[](const wuk::ulong &index) noexcept
     {
         return this->m_data[index];
@@ -377,16 +397,6 @@ namespace wuk {
         this->write(p, buffer.size());
     }
 
-    wuk::byte *Buffer::write(wuk::ulong length)
-    {
-        if ((this->m_size < length) && !this->is_memory_sufficient(length)) {
-            this->expand_memory(length);
-        }
-        this->m_len = length;
-        this->m_offset = this->m_data + length;
-        return this->m_data;
-    }
-
     void Buffer::append(const wuk::byte *buffer, wuk::ulong length)
     {
         if (!buffer) {
@@ -412,17 +422,27 @@ namespace wuk {
                     buffer.size());
     }
 
-    wuk::byte *Buffer::append(wuk::ulong length)
-    {
-        if (!this->is_memory_sufficient(length)) {
-            this->expand_memory(length);
-        }
+    // wuk::byte *Buffer::write(wuk::ulong length)
+    // {
+    //     if ((this->m_size < length) && !this->is_memory_sufficient(length)) {
+    //         this->expand_memory(length);
+    //     }
+    //     this->m_len = length;
+    //     this->m_offset = this->m_data + length;
+    //     return this->m_data;
+    // }
 
-        this->m_len += length;
-        this->m_offset += length;
+    // wuk::byte *Buffer::append(wuk::ulong length)
+    // {
+    //     if (!this->is_memory_sufficient(length)) {
+    //         this->expand_memory(length);
+    //     }
 
-        return this->m_offset - length;
-    }
+    //     this->m_len += length;
+    //     this->m_offset += length;
+
+    //     return this->m_offset - length;
+    // }
 
     void Buffer::shrink_to_fit()
     {

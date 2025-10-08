@@ -2,6 +2,8 @@
 #include <utils/number.hh>
 #include <WukMisc.hh>
 
+#include <zlib.h>
+
 #include <numeric>
 #include <functional>
 #include <iostream>
@@ -15,6 +17,19 @@ using namespace wuk::misc;
 
 constexpr wuk::i32 MAX_CLIENTS = FD_SETSIZE;
 
+class ClientSession {
+private:
+    wuk::net::Socket fd;
+    wuk::u32 uid;
+
+public:
+    ClientSession(wuk::net::Socket &&fd)
+        : fd(std::move(fd))
+    {
+
+    }
+};
+
 static timeval create_timeval(wuk::f64 t)
 {
     timeval tv{};
@@ -27,53 +42,79 @@ static timeval create_timeval(wuk::f64 t)
     return tv;
 }
 
-static std::string receive_data(wuk::net::Socket &client)
+struct Packet {
+    wuk::u32 size {};
+    wuk::u32 uid {};
+    wuk::f64 timestamp {};
+    wuk::Buffer data {};
+};
+
+static Packet receive_data(wuk::net::Socket &client)
 {
-    // 获取包长度
-    std::string packet_length = client.recv_ex(4);
-    if (packet_length.empty()) {
-        return {};
-    }
+    Packet result;
+    wuk::Buffer content;
 
-    // 解析包长度为数字
-    wuk::u32 length = wuk::utils::unpack_bytes<wuk::u32>(packet_length);
-    if (length == 0) {
-        return {};
-    }
-
-    // 构建结果（初始化数据）
-    std::string result;
-    result.reserve(length); // 预分配空间，注意std::string result(128, '\0')不适用。
-
-    while (length > 0) {
-        wuk::u32 receive_size = wuk::min(2048U, length);
-        std::string chunk = client.recv_ex(receive_size);
-        if (chunk.empty()) {
-            break;
+    // 获取包长度（仅包含第四项的长度，即数据流）
+    {
+        wuk::Buffer length = client.recv_ex(4);
+        content += length;
+        if (length.empty()) {
+            return {};
         }
-        result.append(chunk);
-        length -= chunk.size();
+        result.size = wuk::utils::unpack_bytes<wuk::u32>(length);
+    }
+
+    // 获取包中用户UID
+    {
+        wuk::Buffer uid = client.recv_ex(4);
+        content += uid;
+        if (uid.empty()) {
+            return {};
+        }
+        result.uid = wuk::utils::unpack_bytes<wuk::u32>(uid);
+    }
+
+    // 获取包发送的时间
+    {
+        wuk::Buffer timestamp = client.recv_ex(8);
+        content += timestamp;
+        if (timestamp.empty()) {
+            return {};
+        }
+        result.timestamp = wuk::utils::unpack_bytes<wuk::f64>(timestamp);
+    }
+
+    // 获取包实际内容
+    {
+        wuk::u32 length = result.size;
+        wuk::Buffer data(length);
+
+        while (length > 0) {
+            wuk::u32 receive_size = wuk::min(2048U, length);
+            wuk::Buffer swap = client.recv_ex(receive_size);
+            if (swap.empty()) {
+                break;
+            }
+            data += swap;
+            length -= static_cast<wuk::u32>(swap.size());
+        }
+
+        content += data;
+        result.data = std::move(data);
+    }
+
+    // 获取CRC校验值
+    {
+        wuk::u32 packet_crc = wuk::utils::unpack_bytes<wuk::u32>(client.recv_ex(4));
+        wuk::u32 real_crc = crc32(0, content.data(), content.size());
+
+        if (packet_crc != real_crc) {
+            throw wuk::Exception(wuk::Error::ERR, "receive_data",
+                "The crc32 check values are inconsistent.");
+        }
     }
 
     return result;
-}
-
-struct Packet {
-    wuk::u32 size = 0;
-    wuk::u32 uid = 0;
-    wuk::f64 timestamp = 0;
-    std::string data;
-    wuk::u32 crc = 0;
-};
-
-static Packet receive_data(wuk::net::Socket &client, int)
-{
-    // 获取包长度（仅包含第四项的长度，即数据流）
-    std::string packet_length = client.recv_ex(4);
-    if (packet_length.empty()) {
-        return {};
-    }
-    
 }
 
 void server(wuk::f64 timeout = 15)
@@ -118,24 +159,20 @@ void server(wuk::f64 timeout = 15)
         return true;
     };
 
-    // 处理客户端数据的函数
     auto handle_client_data = \
     [](wuk::net::Socket &client)
     {
-        std::string data = receive_data(client);
-        if (data.empty() || (data == "exit")) {
-            fmt::print("客户端已断开连接：{0}:{1}。\n",
-                client.get_raddr().get_address(),
-                client.get_raddr().get_port()
-            );
+        Packet packet = receive_data(client);
+        if (packet.data.empty() || packet.data == "exit") {
+            fmt::print("[{0:<10d}]：已断开连接。\n", packet.uid);
             client.shutdown(2);
             client.close();
             return;
         }
-        fmt::print("客户端[{0}:{1}]，数据：{2}\n",
-            client.get_raddr().get_address(),
-            client.get_raddr().get_port(),
-            data
+        fmt::print("[{0:<10d}] [{1:.3f}]：{2}\n",
+            packet.uid,
+            packet.timestamp,
+            packet.data.to_str()
         );
     };
 

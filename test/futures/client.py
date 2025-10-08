@@ -22,26 +22,31 @@ import zlib
 class ClientSocket:
     def __init__(self, uid :int):
         self.fd = socket.socket()
-        self.uid = struct.pack('@I', uid)
+        self.uid = uid
 
     def __del__(self):
         self.fd.close()
 
-    def send_packet(self, data :bytes):
+    def connect(self, raddr :str, rport :int):
+        self.fd.connect((raddr, rport))
+
+    def send(self, data :bytes):
         data_size = len(data)
         data_time = time.time()
 
-        packet_base = struct.pack(f'@I4sd{data_size}s',
-                                data_size,
-                                self.uid,
-                                data_time,
-                                data)
-        packet_crc32 = zlib.crc32(packet_base)
+        packet_base = struct.pack(
+            f'@IId{data_size}s',
+            data_size,
+            self.uid,
+            data_time,
+            data
+        )
+        packet_crc32 = struct.pack('@I', zlib.crc32(packet_base))
         packet_final = packet_base + packet_crc32
 
         self.fd.sendall(packet_final)
 
-    def recv_packet(self):
+    def recv(self):
         packet_size = self.fd.recv(4)
         packet_uid = self.fd.recv(4)
         packet_time = self.fd.recv(8)
@@ -73,69 +78,33 @@ class ClientSocket:
 
         return uid, timestamp, data
 
-# 这是测试使用的，不需要验证数据安全性
-class TestClientSocket:
-    def __init__(self):
-        self.fd = socket.socket()
+def main():
+    server = ('localhost', 48888)
+    charset = (
+        '0123456789'
+        'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+        'abcdefghijklmnopqrstuvwxyz'
+    )
+    threads = 1
+    count = 1
 
-    def __del__(self):
-        self.fd.close()
-
-    def connect(self, raddr :str, rport :int):
-        self.fd.connect((raddr, rport))
-
-    def send(self, data :bytes):
-        self.fd.sendall(struct.pack('@I', len(data)))
-        self.fd.sendall(data)
-
-    def recv(self):
-        size = struct.unpack('@I', self.fd.recv(4))[0]
-
-        tmp_size = size
-        data = b''
-        while tmp_size:
-            tmp = self.fd.recv(min(2048, tmp_size))
-            if not tmp:
-                break
-            data += tmp
-            tmp_size -= len(tmp)
-
-        return data
-
-def main(interactive :bool = False):
-    server = ('47.79.146.143', 48888)
-    
-    if interactive:
-        fd = TestClientSocket()
+    def test():
+        uid = random.randint(0, 0xffffffff)
+        fd = ClientSocket(uid)
         fd.connect(*server)
-        while True:
-            message = input('请输入内容：')
-            if (not message) or (message == 'exit'):
-                print('退出客户端。')
-                break
-            fd.send(message.encode())
-    else:
-        def test():
-            charset = (
-                '0123456789'
-                'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
-                'abcdefghijklmnopqrstuvwxyz'
+        for _ in range(count):
+            message = ''.join(
+                random.sample(charset, random.randint(4, 50))
             )
-            fd = TestClientSocket()
-            fd.connect(*server)
-            for _ in range(random.randint(20, 100)):
-                message = ''.join(
-                    random.sample(charset, random.randint(4, 50))
-                )
-                fd.send(message.encode())
-                time.sleep(random.uniform(0.001, 0.5))
+            fd.send(message.encode())
+            time.sleep(random.uniform(0.001, 0.5))
 
-        ths = [threading.Thread(target = test) for _ in range(4)]
+    ths = [threading.Thread(target = test) for _ in range(threads)]
 
-        for th in ths:
-            th.start()
-        for th in ths:
-            th.join()
+    for th in ths:
+        th.start()
+    for th in ths:
+        th.join()
 
 if __name__ == '__main__':
     main()
