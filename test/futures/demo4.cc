@@ -28,6 +28,49 @@ public:
     {
 
     }
+
+    ClientSession(wuk::net::Socket &&fd, wuk::u32 uid)
+        : fd(std::move(fd))
+        , uid(uid)
+    {
+
+    }
+
+    void set_fd(wuk::net::Socket &&fd)
+    {
+        this->fd = std::move(fd);
+    }
+
+    void set_uid(wuk::u32 uid)
+    {
+        this->uid = uid;
+    }
+
+    operator bool() const
+    {
+        return this->fd.is_valid();
+    }
+
+    bool is_valid() const noexcept
+    {
+        return this->fd.is_valid();
+    }
+
+    std::string get_addr() const noexcept
+    {
+        return this->fd.get_raddr().get_address();
+    }
+
+    wuk::u16 get_port() const noexcept
+    {
+        return this->fd.get_raddr().get_port();
+    }
+
+    void disconnect()
+    {
+        this->fd.shutdown(2);
+        this->fd.close();
+    }
 };
 
 static timeval create_timeval(wuk::f64 t)
