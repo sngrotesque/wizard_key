@@ -15,8 +15,10 @@
 #ifndef NETERROR
 #   ifdef WUK_PLATFORM_WINOS
 #       define NETERROR SOCKET_ERROR
+#       define INV_SOCK INVALID_SOCKET
 #   else
 #       define NETERROR EOF
+#       define INV_SOCK EOF
 #   endif
 #endif
 

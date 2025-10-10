@@ -11,7 +11,8 @@ enum class IOType {
 static inline void throw_error(const std::string &func_name)
 {
     wuk::i32 err_code = wuk::net::err::system::code();
-    throw wuk::Exception(err_code, func_name, wuk::net::err::system::message(err_code));
+    throw wuk::Exception(err_code, func_name,
+        wuk::net::err::system::message(err_code));
 }
 
 static inline timeval create_timeval(wuk::f64 timeout) noexcept
@@ -38,9 +39,6 @@ static T sock_call_ex(
     Args&&...          args
 )
 {
-    if (fd.get_timeout() == 0) {
-        return func(std::forward<Args>(args)...);
-    }
     bool was_blocking = fd.get_blocking(); // 保存原始阻塞状态
 
     try {
@@ -66,15 +64,17 @@ static T sock_call_ex(
                 FD_SET(fd.get_fd(), &fds);
 
                 timeval tv = create_timeval(fd.get_timeout());
+                timeval *ptv = (fd.get_timeout()) ? &tv : nullptr;
+
                 wuk::i32 select_ret = 0;
                 switch (io_type) {
                     case IOType::SEND:
                     case IOType::CONNECT:
-                        select_ret = select(fd.get_fd() + 1, nullptr, &fds, nullptr, &tv);
+                        select_ret = select(fd.get_fd() + 1, nullptr, &fds, nullptr, ptv);
                         break;
                     case IOType::RECV:
                     case IOType::ACCEPT:
-                        select_ret = select(fd.get_fd() + 1, &fds, nullptr, nullptr, &tv);
+                        select_ret = select(fd.get_fd() + 1, &fds, nullptr, nullptr, ptv);
                         break;
                 }
 
@@ -101,7 +101,7 @@ static T sock_call_ex(
         fd.set_blocking(was_blocking);
         return result;
     } catch (...) {
-        // 确保无论如何都恢复阻塞状态
+        // 确保无论如何都恢复原始阻塞状态
         fd.set_blocking(was_blocking);
         throw;
     }
@@ -186,7 +186,19 @@ namespace wuk::net {
         return sent;
     }
 
-    wuk::Buffer Socket::recv_ex(const socklen_t &length, wuk::i32 flag)
+    void Socket::sendall_ex(const wuk::Buffer &buffer, wuk::i32 flag)
+    {
+        throw wuk::Exception(wuk::Error::UNIMPL, "wuk::net::Socket::sendall_ex",
+            "Do not use it until it is completed.");
+    }
+
+    wuk::ilong Socket::sendto_ex(const wuk::Buffer &buffer, wuk::i32 flag)
+    {
+        throw wuk::Exception(wuk::Error::UNIMPL, "wuk::net::Socket::sendto_ex",
+            "Do not use it until it is completed.");
+    }
+
+    wuk::Buffer Socket::recv_ex(socklen_t length, wuk::i32 flag)
     {
         auto recv_timeout = [&](wuk::Buffer &buffer)
         {
@@ -211,5 +223,11 @@ namespace wuk::net {
         }
 
         return buffer;
+    }
+
+    wuk::Buffer Socket::recvfrom_ex(socklen_t length, wuk::i32 flag)
+    {
+        throw wuk::Exception(wuk::Error::UNIMPL, "wuk::net::Socket::sendto_ex",
+            "Do not use it until it is completed.");
     }
 }

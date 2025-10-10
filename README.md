@@ -23,20 +23,24 @@
 
 ### 先决条件
 
- -  注意！如果你使用的是 Windows 系统，那么应该注意 CHCP 应始终是 65001 。
+```
+注意！如果你使用的是 Windows 系统，那么应该注意 CHCP 应始终是 65001 。  
+尤其是在控制台环境下，否则会出现一些令你感到难受却又找不出问题的 BUG 。
+```
+
  -  最低支持 **C++17** 的编译器（GCC 7+、Clang 5+、MSVC 2017+）。
  -  ~~CMake 3.15+（用于构建）~~，暂时还用不到 **CMake** 。
  -  Python 3.6+。不要担心，Python只是用来更方便的构建脚本所使用的，没有它你其实也可以构建。
- -  此库（部分）模块依赖以下开源库：  
-    | Name      | Website                                                     | Necessity | Description |
-    | ---       | ---                                                         | ---       | ---         |
-    | Libfmt    | [fmt.dev](https://fmt.dev/)                                 | Yes       | 高性能、安全的 C++ 字符串格式化库 |
-    | Libsodium | [doc.libsodium.org](https://doc.libsodium.org/)             | No        | 现代加密库，提供安全加密、签名、哈希等功能 |
-    | Libpng    | [www.libpng.org](http://www.libpng.org/pub/png/libpng.html) | No        | 处理 PNG 图片的读写官方库 |
-    | Libpq     | [www.postgresql.org](https://www.postgresql.org/)           | No        | PostgreSQL 数据库的 C 语言客户端接口 |
-    | OpenSSL   | [www.openssl.org](https://www.openssl.org/)                 | No        | 实现 SSL/TLS 协议及常用加密算法的库 |
-    | Protobuf  | [protobuf.dev](https://protobuf.dev/)                       | No        | Google研发的高效的结构化数据序列化工具 |
-    | Zlib      | [www.zlib.net](https://www.zlib.net/)                       | No        | 通用数据压缩/解压库（DEFLATE 算法） |
+ -  此库使用以下开源库（ `Necessity` 仅代表你可以不依赖于对应库来运行此库的基础功能）：  
+    | Name                                                | Necessity | Description |
+    | ---                                                 | ---       | ---         |
+    | [libfmt](https://fmt.dev/)                          | Yes       | 高性能、安全的 C++ 字符串格式化库 |
+    | [libsodium](https://doc.libsodium.org/)             | No        | 现代加密库，提供安全加密、签名、哈希等功能 |
+    | [libpng](http://www.libpng.org/pub/png/libpng.html) | No        | 处理 PNG 图片的读写官方库 |
+    | [libpq](https://www.postgresql.org/)                | No        | PostgreSQL 数据库的 C 语言客户端接口 |
+    | [OpenSSL](https://www.openssl.org/)                 | No        | 实现 SSL/TLS 协议及常用加密算法的库 |
+    | [Protobuf](https://protobuf.dev/)                   | No        | Google研发的高效的结构化数据序列化工具 |
+    | [Zlib](https://www.zlib.net/)                       | No        | 通用数据压缩/解压库（DEFLATE 算法） |
 
 ##### 安装必要依赖（Linux、Termux）
 

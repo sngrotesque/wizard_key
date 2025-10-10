@@ -59,12 +59,12 @@ namespace wuk::net {
     }
 
 // ==================== Sockaddr ====================
-    Sockaddr::Sockaddr(const sockaddr_storage *addr, const socklen_t &addrlen)
+    Sockaddr::Sockaddr(const sockaddr_storage *addr, socklen_t addrlen)
     {
         this->set_addr(reinterpret_cast<const sockaddr *>(addr), addrlen);
     }
 
-    Sockaddr::Sockaddr(const sockaddr *addr, const socklen_t &addrlen)
+    Sockaddr::Sockaddr(const sockaddr *addr, socklen_t addrlen)
     {
         this->set_addr(addr, addrlen);
     }
@@ -84,7 +84,7 @@ namespace wuk::net {
         return &this->m_addrlen;
     }
 
-    void Sockaddr::set_addr(const sockaddr *addr, const socklen_t &addrlen)
+    void Sockaddr::set_addr(const sockaddr *addr, socklen_t addrlen)
     {
         if (!addr || addrlen > static_cast<socklen_t>(sizeof(sockaddr_storage))) {
             throw wuk::Exception(wuk::Error::ERR, "wuk::net::Sockaddr::set_addr",
@@ -178,10 +178,12 @@ namespace wuk::net {
 
 // ==================== Socket ====================
     Socket::Socket(wuk::i32 family, wuk::i32 sock_type, wuk::i32 proto)
-    : m_family(family), m_sock_type(sock_type), m_proto(proto)
+        : m_family(family)
+        , m_sock_type(sock_type)
+        , m_proto(proto)
     {
         this->m_fd = socket(family, sock_type, proto);
-        if (this->m_fd == static_cast<wSocket>(NETERROR)) {
+        if (this->m_fd == INV_SOCK) {
             wuk::i32 err_code = err::system::code();
             throw wuk::Exception(err_code, "wuk::net::Socket::Socket",
                 err::system::message(err_code));
@@ -189,9 +191,11 @@ namespace wuk::net {
     }
 
     Socket::Socket(wuk::i32 family, wuk::i32 sock_type, wuk::i32 proto, wSocket other_fd)
-    : m_family(family), m_sock_type(sock_type), m_proto(proto)
+        : m_fd(other_fd)
+        , m_family(family)
+        , m_sock_type(sock_type)
+        , m_proto(proto)
     {
-        this->m_fd = other_fd;
         this->m_laddr = this->getsockname();
     }
 
@@ -277,6 +281,11 @@ namespace wuk::net {
     }
 #   endif
 
+    Socket::operator bool() const noexcept
+    {
+        return this->is_valid();
+    }
+
     const Sockaddr Socket::getsockname()
     {
         Sockaddr addr;
@@ -324,9 +333,13 @@ namespace wuk::net {
         return this->m_is_blocking;
     }
 
-    void Socket::set_timeout(wuk::f64 t) noexcept
+    void Socket::set_timeout(wuk::f64 t)
     {
-        this->m_timeout = (t < 0) ? 0 : t; // 超时时间不允许为负数
+        if (t < 0) {
+            throw wuk::Exception(wuk::Error::ERR, "wuk::net::Socket::set_timeout",
+                "Timeout should not be set to a negative number.");
+        }
+        this->m_timeout = t;
     }
 
     wuk::f64 Socket::get_timeout() const noexcept
@@ -364,10 +377,9 @@ namespace wuk::net {
     Socket Socket::accept() const
     {
         Sockaddr client;
-
         wSocket client_sock = ::accept(this->m_fd, client.set_addr(), client.set_addrlen());
 
-        if (client_sock == static_cast<wSocket>(NETERROR)) {
+        if (client_sock == INV_SOCK) {
             wuk::i32 err_code = err::system::code();
             throw wuk::Exception(err_code, "wuk::net::Socket::accept",
                 err::system::message(err_code));
@@ -380,7 +392,7 @@ namespace wuk::net {
         return new_sock;
     }
 
-    void Socket::listen(const socklen_t &backlog) const
+    void Socket::listen(socklen_t backlog) const
     {
         wuk::i32 err = ::listen(this->m_fd, backlog);
         if (err == NETERROR) {
@@ -432,7 +444,7 @@ namespace wuk::net {
         return sent;
     }
 
-    wuk::Buffer Socket::recv(const socklen_t &length, wuk::i32 flag) const
+    wuk::Buffer Socket::recv(socklen_t length, wuk::i32 flag) const
     {
         wuk::Buffer buffer(length);
         wuk::ilong received = ::recv(this->m_fd, buffer.write<char>(length), length, flag);
@@ -447,7 +459,7 @@ namespace wuk::net {
         return buffer;
     }
 
-    wuk::Buffer Socket::recvfrom(const socklen_t &length, Sockaddr &addr, wuk::i32 flag) const
+    wuk::Buffer Socket::recvfrom(socklen_t length, Sockaddr &addr, wuk::i32 flag) const
     {
         wuk::Buffer buffer(length);
         wuk::ilong received = ::recvfrom(this->m_fd, buffer.write<char>(length), length, flag,
@@ -519,15 +531,21 @@ namespace wuk::net {
 
     bool Socket::is_valid() const noexcept
     {
-        if (this->m_is_close || (this->m_fd == static_cast<wSocket>(NETERROR))) {
+        if (this->m_is_close || (this->m_fd == INV_SOCK)) {
             return false;
         }
 
         wuk::i32 error = 0;
         socklen_t error_size = sizeof(error);
-        if (::getsockopt(this->m_fd, SOL_SOCKET, SO_ERROR,
-                        reinterpret_cast<char *>(&error),
-                        &error_size) != 0) {
+        wuk::i32 ret_val = ::getsockopt(
+            this->m_fd,
+            SOL_SOCKET,
+            SO_ERROR,
+            reinterpret_cast<char *>(&error),
+            &error_size
+        );
+
+        if (ret_val != 0) {
             return false;
         }
 
@@ -536,7 +554,7 @@ namespace wuk::net {
 
     void Socket::mark_invalid() noexcept
     {
-        this->m_fd = static_cast<wSocket>(NETERROR);
+        this->m_fd = INV_SOCK;
 
         this->m_family = NETERROR;
         this->m_sock_type = NETERROR;

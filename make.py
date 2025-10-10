@@ -151,9 +151,10 @@ def main(verbose: bool = True):
         '-Werror',
         '-Wall',
 
+        ### 这四个仅用于测试时使用，其他情况应注释掉
         # '-Wno-unused-variable',
         '-Wno-unused-function',
-        # '-Wno-unused-parameter',
+        '-Wno-unused-parameter',
         # '-Wno-unused-but-set-variable',
 
         '--std=c++17',

@@ -8,7 +8,7 @@
 
 1. 在业务层面完全封装了libpq库于[db/WukPsql.hh](wuk/includes/db/WukPsql.hh)，并提供了[简要文档](wuk/includes/db/libpq_doc/libpq.md)。
 2. 重命名了 [wuk::Buffer](wuk/includes/WukBuffer.hh) 中的方法，  
-   如`get_length`改为`length`、`get_size`改为`size`，`get_size`改为`capacity`；  
+   如`get_length`改`size`、`get_size`改`capacity`等；  
    与标准库对齐。
 3. 对 [OP4 (four fundamental operations)](wuk/includes/crypto/WukOP4.hh) 的类方法添加了`const`修饰。
 4. 重新调整了代码的文件结构。

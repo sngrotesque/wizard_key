@@ -79,20 +79,20 @@ class ClientSocket:
         return uid, timestamp, data
 
 def main():
-    server = ('localhost', 48888)
+    server = ('47.79.146.143', 48888)
     charset = (
         '0123456789'
         'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
         'abcdefghijklmnopqrstuvwxyz'
     )
-    threads = 1
-    count = 1
+    threads = 4
+    count = (10, 50)
 
     def test():
         uid = random.randint(0, 0xffffffff)
         fd = ClientSocket(uid)
         fd.connect(*server)
-        for _ in range(count):
+        for _ in range(random.randint(*count)):
             message = ''.join(
                 random.sample(charset, random.randint(4, 50))
             )
