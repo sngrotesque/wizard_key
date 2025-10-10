@@ -112,4 +112,4 @@ OP4_SI(void) inv_cipher(wuk::byte state[wuk::crypto::OP4_BL],
     }
 }
 
-#include "_op4_mode.hh"
+#include "WukOP4_modes.cc"

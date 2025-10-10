@@ -103,9 +103,9 @@ namespace wuk {
             if(!length) {
                 return {};
             }
-            wuk::Buffer result(length, 0);
+            wuk::Buffer result(length);
 
-            this->bytes(result.write(length), length);
+            this->bytes(result.write<wuk::byte>(length), length);
 
             return result;
         }
