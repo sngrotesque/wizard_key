@@ -27,11 +27,12 @@ namespace wuk::net {
     Addrinfo &Addrinfo::operator=(Addrinfo &&other) noexcept
     {
         if (this == &other) {
-            *this;
+            return *this;
         }
         this->m_hints = other.m_hints;
         this->m_res = other.m_res;
         other.m_res = nullptr;
+        return *this;
     }
 
     Addrinfo &Addrinfo::resolve(const std::string &addr, const wuk::u16 &port)
