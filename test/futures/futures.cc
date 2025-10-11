@@ -324,7 +324,7 @@ int main()
 #   endif
 
     try {
-        server(1);
+        server(30);
     } catch (const wuk::Exception &e) {
         std::cerr << e.what() << std::endl;
         return 1;
