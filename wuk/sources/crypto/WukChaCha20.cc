@@ -77,9 +77,9 @@ namespace wuk::crypto {
                 "key is nullptr.");
         }
         memcpy(this->m_key, key, WukCC20_KL);
-    #   ifdef LIBSODIUM_SUPPORT
+#       ifdef LIBSODIUM_SUPPORT
         this->use_libsodium = (sodium_init() >= 0);
-    #   endif
+#       endif
     }
 
     ChaCha20::~ChaCha20()
@@ -136,11 +136,11 @@ namespace wuk::crypto {
                            const wuk::byte nonce[WukCC20_NL]) noexcept
     {
         if (this->m_use_sodium) {
-    #       ifdef LIBSODIUM_SUPPORT
+#           ifdef LIBSODIUM_SUPPORT
             // 此处的宏仅仅是为了避免在未使用Libsodium库时出现此函数未定义的情况
             crypto_stream_chacha20_ietf_xor_ic(out, in, length,
                 nonce, this->m_counter, this->m_key);
-    #       endif
+#           endif
         } else {
             this->rfc8439_crypto_stream(out, in, length, nonce);
         }

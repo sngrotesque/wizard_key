@@ -4,7 +4,7 @@
 constexpr char base64pad = '=';
 constexpr wuk::byte __ = 0x7f;
 
-constexpr char b64en_table[65]   = {
+constexpr char b64en_table[65] = {
     "ABCDEFGHIJKLMNOP"
     "QRSTUVWXYZabcdef"
     "ghijklmnopqrstuv"
@@ -33,32 +33,32 @@ constexpr wuk::byte b64de_table[256] = {
     __, __, __, __,  __, __, __, __,  __, __, __, __,  __, __, __, __
 };
 
-std::vector<char> base64_encode(const std::vector<wuk::byte> &buffer) noexcept
+std::vector<wuk::byte> base64_encode(const std::vector<wuk::byte> &buffer) noexcept
 {
     if (buffer.empty()) {
         return {};
     }
     wuk::ulong input_length = buffer.size();
     wuk::ulong output_length = (buffer.size() + 2) / 3 * 4;
-    std::vector<char> result(output_length);
+    std::vector<wuk::byte> result(output_length);
 
     wuk::ulong i = 0, j = 0;
     for(; (i + 2) < input_length; i += 3, j += 4) {
-        wuk::u32 v  = (buffer[i]     << 16) |
-                      (buffer[i+1]   << 8)  |
-                      (buffer[i+2]);
-        result[j]   = b64en_table[(v >> 18) & 0x3f];
-        result[j+1] = b64en_table[(v >> 12) & 0x3f];
-        result[j+2] = b64en_table[(v >> 6 ) & 0x3f];
-        result[j+3] = b64en_table[(v      ) & 0x3f];
+        wuk::u32 v  =   (buffer[i]     << 16) |
+                        (buffer[i+1]   << 8)  |
+                        (buffer[i+2]);
+        result[j]   =   b64en_table[(v >> 18) & 0x3f];
+        result[j+1] =   b64en_table[(v >> 12) & 0x3f];
+        result[j+2] =   b64en_table[(v >> 6 ) & 0x3f];
+        result[j+3] =   b64en_table[(v      ) & 0x3f];
     }
 
     if (i < input_length) {
         wuk::u32 v  = buffer[i] << 16;
         result[j]   = b64en_table[(v >> 18) & 0x3f];
         result[j+1] = b64en_table[(v >> 12) & 0x3f];
-        result[j+2] = (i+1 < input_length)\
-                    ? b64en_table[((buffer[i+1] << 8) >> 6) & 0x3f]\
+        result[j+2] = (i+1 < input_length) \
+                    ? b64en_table[((buffer[i+1] << 8) >> 6) & 0x3f] \
                     : base64pad;
         result[j+3] = base64pad;
     }
@@ -66,15 +66,14 @@ std::vector<char> base64_encode(const std::vector<wuk::byte> &buffer) noexcept
     return result;
 }
 
-std::vector<wuk::byte> base64_decode(const std::vector<char> &buffer, bool strict)
+std::vector<wuk::byte> base64_decode(const std::vector<wuk::byte> &buffer, bool strict)
 {
     if (buffer.empty()) {
         return {};
     }
-    const wuk::byte *input_data = reinterpret_cast<const wuk::byte *>(buffer.data());
+    const wuk::byte *input_data = buffer.data();
     const wuk::ulong input_length = buffer.size();
     bool padding_started = false;
-    std::stringstream error;
 
     wuk::ulong             result_length = (input_length + 3) / 4 * 3;
     std::vector<wuk::byte> result_data(result_length);
@@ -157,18 +156,20 @@ std::vector<wuk::byte> base64_decode(const std::vector<char> &buffer, bool stric
     }
 
     if (quad_pos) {
+        std::string err_message;
         if (quad_pos == 1) {
-            error   << "Invalid base64-encoded string: "
-                    << "number of data characters ("
-                    << ((bin_data - bin_data_start) / 3 * 4 + 1)
-                    << ") cannot be 1 more "
-                    << "than a multiple of 4.";
+            err_message = fmt::format(
+                "Invalid base64-encoded string: "
+                "number of data characters ({0}) "
+                "cannot be 1 more than a multiple of 4.",
+                ((bin_data - bin_data_start) / 3 * 4 + 1)
+            );
         } else {
-            error   << "Incorrect padding.";
+            err_message = "Incorrect padding.";
         }
 
         throw wuk::Exception(wuk::Error::ERR, "wuk::base64::decode",
-            error.str());
+            err_message);
     }
 
 done:
@@ -180,44 +181,15 @@ done:
 }
 
 namespace wuk::base64 {
-    std::string encode(const std::string &buffer) noexcept
-    {
-        const wuk::byte *p = \
-            reinterpret_cast<const wuk::byte *>(buffer.data());
-        wuk::ulong n = buffer.length();
-
-        std::vector<wuk::byte> input(p, p + n);
-        std::vector<char> output = base64_encode(input);
-
-        std::string result(output.data(), output.size());
-
-        return result;
-    }
-
-    std::string decode(const std::string &buffer, bool strict)
-    {
-        const char *p = buffer.c_str();
-        wuk::ulong  n = buffer.length();
-
-        std::vector<char> input(p, p + n);
-        std::vector<wuk::byte> output = base64_decode(input, strict);
-
-        std::string result(reinterpret_cast<const char *>(output.data()),
-                        output.size());
-
-        return result;
-    }
-
     wuk::Buffer encode(const wuk::Buffer &buffer) noexcept
     {
         const wuk::byte *p = buffer.data();
         wuk::ulong       n = buffer.size();
 
         std::vector<wuk::byte> input(p, p + n);
-        std::vector<char> output = base64_encode(input);
+        std::vector<wuk::byte> output = base64_encode(input);
 
-        wuk::Buffer result(reinterpret_cast<const wuk::byte *>(output.data()),
-                        output.size());
+        wuk::Buffer result(output.data(), output.size());
 
         return result;
     }
@@ -227,7 +199,7 @@ namespace wuk::base64 {
         const char *p = buffer.c_str();
         wuk::ulong n = buffer.size();
 
-        std::vector<char> input(p, p + n);
+        std::vector<wuk::byte> input(p, p + n);
         std::vector<wuk::byte> output = base64_decode(input, strict);
 
         wuk::Buffer result(output.data(), output.size());

@@ -34,6 +34,11 @@ namespace wuk::net {
                  wuk::i32 proto     = IPPROTO_TCP) noexcept;
         ~Addrinfo();
 
+        Addrinfo(const Addrinfo &other) = delete;
+        Addrinfo(Addrinfo &&other) noexcept;
+        Addrinfo &operator=(const Addrinfo &other) = delete;
+        Addrinfo &operator=(Addrinfo &&other) noexcept;
+
     public:
         Addrinfo &resolve(const std::string &addr, const wuk::u16 &port);
 

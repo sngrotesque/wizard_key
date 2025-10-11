@@ -2,6 +2,7 @@
 
 #include <utils/bytes.hh>
 #include <WukMemory.hh>
+#include <functional>
 #include <vector>
 
 namespace wuk {
@@ -501,9 +502,9 @@ namespace wuk {
             return {};
         }
         std::vector<wuk::byte> input(this->m_data, this->m_offset);
-        std::vector<char> output = wuk::utils::bytes_to_hex(input);
+        std::vector<wuk::byte> output = wuk::utils::bytes_to_hex(input);
 
-        return std::string(output.data(), output.size());
+        return std::string(reinterpret_cast<char *>(output.data()), output.size());
     }
 
     void Buffer::clear(bool secure) noexcept
@@ -511,10 +512,8 @@ namespace wuk {
         if (!this->m_data) {
             return;
         }
-        void (*mem_zero)(void *, wuk::ulong) = \
-            (!secure) ? wuk::memory_zero : wuk::memory_secure;
-
-        mem_zero(this->m_data, this->m_size);
+        std::invoke(secure ? wuk::memory_secure : wuk::memory_zero,
+                    this->m_data, this->m_size);
 
         wuk::m_free(this->m_data);
         this->m_data = nullptr;

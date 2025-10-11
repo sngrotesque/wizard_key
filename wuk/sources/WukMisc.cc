@@ -171,24 +171,4 @@ namespace wuk::misc {
         }
         return ss.str();
     }
-
-    std::string log(const std::string &message)
-    {
-#       ifdef WUK_PLATFORM_WINOS
-        wuk::i32 wlen = MultiByteToWideChar(CP_UTF8, 0, message.c_str(), -1, nullptr, 0);
-        if (wlen == 0) return {};
-
-        std::wstring wstr(wlen, L'\0');
-        MultiByteToWideChar(CP_UTF8, 0, message.c_str(), -1, wstr.data(), wlen);
-
-        wuk::i32 len = WideCharToMultiByte(CP_ACP, 0, wstr.data(), -1, nullptr, 0, nullptr, nullptr);
-        if (len == 0) return {};
-
-        std::string result(len, '\0');
-        WideCharToMultiByte(CP_ACP, 0, wstr.data(), -1, result.data(), len, nullptr, nullptr);
-        return result;
-#       else
-        return message;
-#       endif
-    }
 }

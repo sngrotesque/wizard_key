@@ -3,10 +3,6 @@
 #include <cstring>   // 标准字符串库
 #include <cstdint>   // 标准数字类型库
 
-#define WUK "The Wizard's Universal Key"
-#define WUK_VERSION "0.9.0"
-#define WUK_VER WUK "/" WUK_VERSION
-
 /**
  * 在Visual Studio（以及C++17标准）中，C++已经集成了bool类型，不需要使用此头文件了。
  * https://learn.microsoft.com/zh-cn/cpp/cpp/bool-cpp?view=msvc-170
@@ -65,7 +61,7 @@
 #if WUK_CPP_STD >= 201703L
 #   define WUK_STD_CPP_17
 #else
-#   error "WUK requires C++17 or later. Please use /std:c++17 or -std=c++17."
+#   error "WUK requires C++17 or later. Please use /std:c++17 or --std=c++17."
 #endif
 
 // Optional: C++20 feature macros

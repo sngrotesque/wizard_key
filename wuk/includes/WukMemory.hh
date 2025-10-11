@@ -9,14 +9,6 @@
 #include <memory>
 #include <new>
 
-static inline void forced_zeroing(volatile void *p, wuk::ulong length) noexcept
-{
-    volatile char *ptr = (volatile char *)p;
-    do {
-        *ptr++ = 0;
-    } while (--length);
-}
-
 namespace wuk {
     inline LIBWUK_API void memory_secure(void *buffer, wuk::ulong length) noexcept
     {
@@ -24,7 +16,11 @@ namespace wuk {
         SecureZeroMemory(buffer, length);
 #       elif defined(WUK_PLATFORM_LINUX)
 #       ifdef WUK_PLATFORM_ANDROID
-        forced_zeroing(buffer, length);
+        [=]() {
+            auto remaining = length;
+            volatile char *p = (volatile char *)buffer;
+            do { *p++ = 0; } while (--remaining);
+        } ();
 #       else
         explicit_bzero(buffer, length);
 #       endif

@@ -70,7 +70,7 @@ OP4_SI(void) key_extension(
 
 namespace wuk::crypto {
     OP4::OP4(const wuk::byte key[OP4_KL], wuk::u32 counter)
-    : m_counter(counter)
+        : m_counter(counter)
     {
         if (!key) {
             throw wuk::Exception(wuk::Error::NPTR, "wuk::crypto::OP4::OP4",
