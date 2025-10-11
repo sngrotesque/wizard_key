@@ -79,7 +79,7 @@ class ClientSocket:
         return uid, timestamp, data
 
 def main():
-    server = ('47.79.146.143', 48888)
+    server = ('192.168.50.137', 48888)
     charset = (
         '0123456789'
         'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
