@@ -17,6 +17,23 @@ namespace wuk::net {
         freeaddrinfo(this->m_res);
     }
 
+    Addrinfo::Addrinfo(Addrinfo &&other) noexcept
+        : m_hints(other.m_hints)
+        , m_res(other.m_res)
+    {
+        other.m_res = nullptr;
+    }
+
+    Addrinfo &Addrinfo::operator=(Addrinfo &&other) noexcept
+    {
+        if (this == &other) {
+            *this;
+        }
+        this->m_hints = other.m_hints;
+        this->m_res = other.m_res;
+        other.m_res = nullptr;
+    }
+
     Addrinfo &Addrinfo::resolve(const std::string &addr, const wuk::u16 &port)
     {
         freeaddrinfo(this->m_res); // 防止多次调用导致内存泄漏

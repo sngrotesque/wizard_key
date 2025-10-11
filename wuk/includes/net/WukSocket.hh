@@ -60,6 +60,11 @@ namespace wuk::net {
         Sockaddr(const sockaddr *addr, socklen_t addrlen);
         ~Sockaddr();
 
+        Sockaddr(const Sockaddr &other) = default;
+        Sockaddr(Sockaddr &&other) = default;
+        Sockaddr &operator=(const Sockaddr &other) = default;
+        Sockaddr &operator=(Sockaddr &&other) = default;
+
     public:
         sockaddr *set_addr() noexcept;
         socklen_t *set_addrlen() noexcept;
