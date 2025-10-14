@@ -77,19 +77,19 @@ g++ test.cpp -lfmt -o test && ./test # 或替换为clang
 ### 使用
 
 ```bash
-git clone git@github.com:sngrotesque/wizard_key.git
+git clone --single-branch git@github.com:sngrotesque/wizard_key.git
 cd wizard_key/
 
 # 使用测试代码进行构建运行测试
-python3 make.py [test_file] [complier paramater]
+python3 py/exec.py [test_file] [complier paramater]
 
 # 比如
-python3 make.py test/test.cc
+python3 py/exec.py test/test.cc
 # 再比如
-python3 make.py test/im/user.cc -lssl -lcrypto -lpq
+python3 py/exec.py test/im/user.cc -lssl -lcrypto -lpq
 ```
 
-对于源文件的包含，请查看[make.py](make.py#L105)中 **main** 函数的部分。
+对于源文件的包含，请查看[exec.py](py/exec.py#L105)中 **main** 函数的部分。
 
 ## 文档
  - API参考：详细文档内容可在 [API.md](doc/API.md) 中找到。
