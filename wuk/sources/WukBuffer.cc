@@ -241,13 +241,13 @@ namespace wuk {
     }
 
     Buffer::Buffer(const wuk::byte *buffer, wuk::ulong length)
+        : m_len(length)
+        , m_size(length)
     {
         if (!buffer) {
             throw wuk::Exception(wuk::Error::NPTR, "wuk::Buffer::Buffer",
                 "buffer is nullptr.");
         }
-        this->m_len = length;
-        this->m_size = length;
 
         this->m_data = wuk::m_alloc<wuk::byte *>(this->m_len);
         if (!this->m_data) {
@@ -257,6 +257,25 @@ namespace wuk {
         memcpy(this->m_data, buffer, length);
 
         this->m_offset = this->m_data + length;
+    }
+
+    Buffer::Buffer(const char *buffer)
+        : m_len(strlen(buffer))
+        , m_size(m_len)
+    {
+        if (!buffer) {
+            throw wuk::Exception(wuk::Error::NPTR, "wuk::Buffer::Buffer",
+                "buffer is nullptr.");
+        }
+
+        this->m_data = wuk::m_alloc<wuk::byte *>(this->m_len);
+        if (!this->m_data) {
+            throw wuk::Exception(wuk::Error::MEMORY, "wuk::Buffer::Buffer",
+                "Failed to allocate memory for this->m_data.");
+        }
+        memcpy(this->m_data, buffer, this->m_len);
+
+        this->m_offset = this->m_data + this->m_len;
     }
 
     //////////////////////////////////////////////////////////////////////
@@ -423,27 +442,17 @@ namespace wuk {
                     buffer.size());
     }
 
-    // wuk::byte *Buffer::write(wuk::ulong length)
-    // {
-    //     if ((this->m_size < length) && !this->is_memory_sufficient(length)) {
-    //         this->expand_memory(length);
-    //     }
-    //     this->m_len = length;
-    //     this->m_offset = this->m_data + length;
-    //     return this->m_data;
-    // }
+    void Buffer::insert(wuk::ulong index, const Buffer &buffer)
+    {
+        throw wuk::Exception(wuk::Error::UNIMPL, "wuk::Buffer::insert",
+            "Do not use it until it is completed.");
+    }
 
-    // wuk::byte *Buffer::append(wuk::ulong length)
-    // {
-    //     if (!this->is_memory_sufficient(length)) {
-    //         this->expand_memory(length);
-    //     }
-
-    //     this->m_len += length;
-    //     this->m_offset += length;
-
-    //     return this->m_offset - length;
-    // }
+    void Buffer::erase(wuk::ulong start, wuk::ulong end)
+    {
+        throw wuk::Exception(wuk::Error::UNIMPL, "wuk::Buffer::erase",
+            "Do not use it until it is completed.");
+    }
 
     void Buffer::shrink_to_fit()
     {

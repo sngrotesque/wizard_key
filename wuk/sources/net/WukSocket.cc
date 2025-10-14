@@ -433,13 +433,11 @@ namespace wuk::net {
 
     void Socket::sendall(const wuk::Buffer &buffer, wuk::i32 flag) const
     {
-        constexpr wuk::ilong block_size = 2048;
         const char *data_ptr = buffer.c_str();
         wuk::ilong data_len = static_cast<wuk::ilong>(buffer.size());
 
         while (data_len) {
-            wuk::ilong size = wuk::min(block_size, data_len);
-            wuk::ilong sent = ::send(this->m_fd, data_ptr, size, flag);
+            wuk::ilong sent = ::send(this->m_fd, data_ptr, data_len, flag);
             if (sent == NETERROR) {
                 wuk::i32 err_code = err::system::code();
                 throw wuk::Exception(err_code, "wuk::net::Socket::sendall",

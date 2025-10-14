@@ -16,6 +16,8 @@ namespace wuk {
         FNOTF  = 5, // 文件未找到（File not found）
         FTOFO  = 6, // 文件无法打开（Failed to file opening）
         UNIMPL = 7, // 功能还未实现（Unimplemented）
+
+        TIMEO  = 30, // 超时（网络超时，响应超时等）
     };
 
     class LIBWUK_API Exception {

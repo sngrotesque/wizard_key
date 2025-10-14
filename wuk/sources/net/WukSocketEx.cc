@@ -82,14 +82,15 @@ static T sock_call_ex(
                     // 除了connect操作以外都需要重新执行以获得一个返回值
                     if (io_type == IOType::CONNECT) {
                         fd.set_blocking(was_blocking);
-                        return 0;
+                        return fd.getsockopt<wuk::i32>(SOL_SOCKET, SO_ERROR);
                     }
+                    // 其他操作
                     result = func(std::forward<Args>(args)...);
                     if (result == _res_err) {
                         throw_error(func_name);
                     }
                 } else if (select_ret == 0) {
-                    throw wuk::Exception(wuk::Error::ERR, func_name,
+                    throw wuk::Exception(wuk::Error::TIMEO, func_name,
                         "socket timeout.");
                 } else if (select_ret == NETERROR) {
                     throw_error(func_name);
@@ -188,8 +189,27 @@ namespace wuk::net {
 
     void Socket::sendall_ex(const wuk::Buffer &buffer, wuk::i32 flag)
     {
-        throw wuk::Exception(wuk::Error::UNIMPL, "wuk::net::Socket::sendall_ex",
-            "Do not use it until it is completed.");
+        auto send_timeout = [&](const char *buffer, socklen_t length)
+        {
+            return ::send(this->m_fd, buffer, length, flag);
+        };
+
+        const char *data = buffer.c_str();
+        socklen_t remaining = buffer.size();
+
+        while (remaining > 0) {
+            wuk::ilong sent = sock_call_ex<wuk::ilong>(
+                *this,
+                "wuk::net::Socket::send_ex",
+                send_timeout,
+                IOType::SEND,
+                data,
+                remaining
+            );
+
+            data += sent;
+            remaining -= static_cast<socklen_t>(sent);
+        }
     }
 
     wuk::ilong Socket::sendto_ex(const wuk::Buffer &buffer, wuk::i32 flag)

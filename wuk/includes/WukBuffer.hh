@@ -51,6 +51,7 @@ namespace wuk {
         Buffer(wuk::ulong length, wuk::byte ch);
         // 数据构造
         Buffer(const wuk::byte *buffer, wuk::ulong length);
+        Buffer(const char *buffer);
 
     public:
         Buffer operator+(const Buffer &other);
@@ -80,17 +81,16 @@ namespace wuk {
         void append(const wuk::byte *buffer, wuk::ulong length);
         void append(const std::string &buffer);
 
-        // // 覆盖写入数据（扩容逻辑与上面一致）但返回数据指针供直接写入。
-        // wuk::byte *write(wuk::ulong length);
-
         template <typename T>
         T *write(wuk::ulong length);
 
-        // // 追加写入数据（扩容逻辑与上面一致）但返回数据指针供直接写入。
-        // wuk::byte *append(wuk::ulong length);
-
         template <typename T>
         T *append(wuk::ulong length);
+
+        // 插入数据
+        void insert(wuk::ulong index, const Buffer &buffer);
+        // 删除范围数据
+        void erase(wuk::ulong start, wuk::ulong end);
 
         // 将内存占用与实际占用保持一致
         void shrink_to_fit();
