@@ -1,0 +1,38 @@
+syntax = "proto3";
+
+import "packet.proto";
+
+package wuk.im.auth;
+
+// 响应类型
+enum ResponseType {
+    RESPONSE_TYPE_SUCCESS       = 0; // 成功
+    RESPONSE_TYPE_FAILED        = 1; // 失败（通用）
+    RESPONSE_TYPE_AUTH_FAILED   = 2; // 认证失败（密码错误，验证码错误）
+    RESPONSE_TYPE_NOT_FOUND     = 3; // 用户未找到
+    RESPONSE_TYPE_TOKEN_EXPIRED = 4; // 令牌过期
+    RESPONSE_TYPE_WAITWAITWAIT  = 5; // 客户端操作次数过多，等待一段时间再给响应
+}
+
+// 用户信息
+message UserInfo {
+    string m_profile_picture    = 1; // 头像
+    string m_username           = 2; // 名字
+    string m_bio                = 3; // 个性签名
+}
+
+// 登录响应
+message LoginResponse {
+    // 基本数据
+    base.BaseRequest m_base     = 1;
+
+    // 响应信息
+    ResponseType     m_code     = 2; // 响应码
+    string           m_message  = 3; // 响应信息
+
+    // 登录凭证
+    string           m_token    = 4; // 由服务端生成，用于标识用户
+
+    // 用户信息
+    UserInfo         m_user     = 5; // 用户的基本信息（如昵称，头像等）
+}

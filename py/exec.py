@@ -125,10 +125,10 @@ def main(verbose: bool = True):
     # wuk源文件
     compiler.add_args(
         # 'wuk/sources/crypto/WukOP4.cc',
-        'wuk/sources/crypto/WukOP4_sse4.cc',
+        # 'wuk/sources/crypto/WukOP4_sse4.cc',
         # 'wuk/sources/crypto/WukChaCha20.cc',
-        'wuk/sources/net/WukSocket.cc',
-        'wuk/sources/net/WukSocketEx.cc',
+        # 'wuk/sources/net/WukSocket.cc',
+        # 'wuk/sources/net/WukSocketEx.cc',
         'wuk/sources/utils/bytes.cc',
         # 'wuk/sources/WukBase64.cc',
         # 'wuk/sources/WukBinascii.cc',

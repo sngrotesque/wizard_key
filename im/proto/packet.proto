@@ -1,0 +1,30 @@
+syntax = "proto3";
+
+package wuk.im.base;
+
+// 包的总类型
+enum RequestType {
+    // 系统层
+    REQUEST_TYPE_HEARTBEAT      = 0;  // 心跳
+
+    // 认证层
+    REQUEST_TYPE_LOGIN          = 10; // 登录
+    REQUEST_TYPE_REGISTER       = 11; // 注册
+    REQUEST_TYPE_FIND_PWD       = 12; // 找回密码
+
+    // 消息层
+    REQUEST_TYPE_MESSAGE        = 20; // 发送消息
+}
+
+// 基本请求包构成
+message BaseRequest {
+    // 包类型
+    RequestType m_type          = 1; // 请求类型：LOGIN, REGISTER, SEND_MSG等
+
+    // 元数据
+    uint32      m_id            = 2; // 唯一ID（此处的ID表示​ ​identifier ​而非 identity ）
+    uint32      m_sequence      = 3; // 序列号（用于标识包的顺序）
+    uint32      m_segment       = 4; // 分段包ID（由于包可能分段所以需要此字段，如果没分段，此值始终为0）
+    uint32      m_proto_ver     = 5; // 协议版本
+    uint64      m_timestamp     = 6; // 时间戳（毫秒），使用时使用 %1000 分离毫秒部分
+}

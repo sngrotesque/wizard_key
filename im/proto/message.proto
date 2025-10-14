@@ -1,0 +1,40 @@
+syntax = "proto3";
+
+import "packet.proto";
+
+package wuk.im.msg;
+
+// 消息类型
+enum MessageType {
+    MESSAGE_TYPE_TEXT            = 0; // 文本
+    MESSAGE_TYPE_IMAGE           = 1; // 图像
+    MESSAGE_TYPE_VOICE           = 2; // 语音
+    MESSAGE_TYPE_FILE            = 4; // 文件
+}
+
+// 聊天类型
+enum ChatType {
+    CHAT_TYPE_PRIVATE            = 0; // 私聊（普通）
+    CHAT_TYPE_GROUP              = 1; // 群聊
+    CHAT_TYPE_ONE2ONE            = 2; // 一对一（不受打扰专线）
+}
+
+// 主消息结构
+message Message {
+    // 基本数据
+    base.BaseRequest m_base      = 1;
+
+    // 元数据
+    MessageType     m_msg_type   = 2; // 消息类型
+    ChatType        m_chat_type  = 3; // 聊天类型
+
+    // 参与者
+    uint64          m_sender     = 4; // 发送方ID
+    oneof target {                    // 接收方ID
+        uint64      m_recipient  = 5; // 私聊或一对一
+        uint64      m_group      = 6; // 群聊
+    }
+
+    // 数据信息
+    bytes           m_content    = 7; // 二进制消息体
+}

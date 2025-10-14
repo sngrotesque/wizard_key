@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+import "packet.proto";
+
+package wuk.im.auth;
+
+// 登录请求
+message LoginRequest {
+    // 基本数据
+    base.BaseRequest m_base  = 1;
+
+    // 登录信息
+    oneof credential {
+        string password      = 3; // 密码
+        string token         = 4; // 凭证
+        string sms_code      = 5; // 短信验证码
+    }
+    string     m_account     = 2; // 账号
+}

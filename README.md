@@ -92,8 +92,8 @@ python3 make.py test/im/user.cc -lssl -lcrypto -lpq
 对于源文件的包含，请查看[make.py](make.py#L105)中 **main** 函数的部分。
 
 ## 文档
- - API参考：详细文档内容可在 [API.md](API.md) 中找到。
- - 更新日志：跟踪 **wizard_key** 的版本修改可在 [CHANGELOG.md](CHANGELOG.md)。
+ - API参考：详细文档内容可在 [API.md](doc/API.md) 中找到。
+ - 更新日志：跟踪 **wizard_key** 的版本修改可在 [CHANGELOG.md](doc/CHANGELOG.md)。
  - 示例代码：使用此库可参考目录[test](test/mod_test/)。
 
 ## 许可证
