@@ -127,11 +127,11 @@ namespace wuk::net {
         return this->m_addrlen;
     }
 
-    const std::string Sockaddr::get_address() const
+    std::string Sockaddr::get_address() const
     {
         char buffer[INET6_ADDRSTRLEN] = {0};
         const sockaddr *sa = this->get_addr();
-        
+
         if (!sa) {
             return std::string{};
         }

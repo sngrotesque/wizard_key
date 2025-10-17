@@ -34,6 +34,8 @@ namespace wuk::im::server {
     public:
         wuk::i64 generate_id();
     };
+
+    
 }
 
 #endif
