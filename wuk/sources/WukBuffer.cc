@@ -15,6 +15,9 @@ namespace wuk {
      */
     void Buffer::expand_memory(wuk::ulong length)
     {
+        if (length == 0) {
+            return;
+        }
         wuk::ulong offset_val = (this->m_offset) ? (this->m_offset - this->m_data) : (0);
 
         this->m_size = this->m_len + length;
@@ -37,6 +40,9 @@ namespace wuk {
      */
     void Buffer::shrink_memory(wuk::ulong length)
     {
+        if (length == 0) {
+            return;
+        }
         if (!this->m_data) {
             throw wuk::Exception(wuk::Error::NPTR, "wuk::Buffer::shrink_memory",
                 "Attempt to shrink the memory space of an nullptr.");
@@ -452,6 +458,25 @@ namespace wuk {
     {
         throw wuk::Exception(wuk::Error::UNIMPL, "wuk::Buffer::erase",
             "Do not use it until it is completed.");
+    }
+
+    void Buffer::resize(wuk::ulong length)
+    {
+        if (length == this->m_len) {
+            return; // 长度一致无需调整
+        }
+
+        if (length > this->m_len) {
+            // 新长度更大
+            wuk::ulong need = length - this->m_len;
+            if (!this->is_memory_sufficient(need)) {
+                this->expand_memory(need);
+            }
+            wuk::memory_zero(this->m_data + this->m_len, need);
+        }
+        // 新长度更小与更大的剩余调整都是这两行代码
+        this->m_len = length;
+        this->m_offset = this->m_data + this->m_len;
     }
 
     void Buffer::shrink_to_fit()

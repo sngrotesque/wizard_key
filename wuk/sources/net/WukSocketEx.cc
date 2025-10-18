@@ -242,6 +242,8 @@ namespace wuk::net {
             throw_error("wuk::net::Socket::recv_ex");
         }
 
+        buffer.resize(received);
+
         return buffer;
     }
 

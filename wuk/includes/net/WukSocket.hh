@@ -137,10 +137,11 @@ namespace wuk::net {
         wuk::f64 get_timeout() const noexcept;
 
     public:
-        // 阻塞套接字
-        void connect(const std::string &addr, wuk::u16 port);
         void bind(const std::string &addr, wuk::u16 port);
         void listen(socklen_t backlog) const;
+
+        // 阻塞套接字
+        void connect(const std::string &addr, wuk::u16 port);
         Socket accept() const;
 
         wuk::ilong send(const wuk::Buffer &buffer, wuk::i32 flag = 0) const;

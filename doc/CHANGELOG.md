@@ -12,12 +12,14 @@
    与标准库对齐。
 3. 对 [OP4 (four fundamental operations)](wuk/includes/crypto/WukOP4.hh) 的类方法添加了`const`修饰。
 4. 重新调整了代码的文件结构。
-5. 将 [wuk::Buffer](wuk/includes/WukBuffer.hh) 中的 `write`/`append`（带指针返回值版） 优化为了模板函数。
-6. 将[wuk::net::Socket](wuk/includes/net/WukSocket.hh)中关于 send 和 recv 相关的函数的参数类型全部从`std::string`改为`wuk::Buffer`，同时将不再考虑任何标准库容器作为这些函数的容器类型。原因是标准库类型的专用性支持较差，如要实现对应功能需要额外的性能支出。
+5. 将 `wuk::Buffer` 中的 `write`/`append`（带指针返回值版） 优化为了模板函数。
+6. 将 [wuk::net::Socket](wuk/includes/net/WukSocket.hh) 中关于 send 和 recv 相关的函数的参数类型全部从`std::string`改为`wuk::Buffer`，同时将不再考虑任何标准库容器作为这些函数的容器类型。原因是标准库类型的专用性支持较差，如要实现对应功能需要额外的性能支出。
+7. 为 `wuk::Buffer` 添加了 `resize` 方法。
 
  - 未来更新内容
 
-1. 为 [wuk::Buffer](wuk/includes/WukBuffer.hh) 添加 `insert` 和 `erase` 功能。
+1. 为 `wuk::Buffer` 添加 `insert` 和 `erase` 功能。
+2. 将 `wuk::net::Socket` 中原先的阻塞性操作方法（`connect`/`send`/`recv`/`accept`等）删除并使用 `_ex` 方法替代，并将 `_ex` 方法更名为原先的阻塞性操作方法的名称（如`connect_ex`改为`connect`，`send_ex`改为`send`）。
 
 ## v0.9 更新内容
 

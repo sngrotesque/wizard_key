@@ -91,6 +91,8 @@ namespace wuk {
         void insert(wuk::ulong index, const Buffer &buffer);
         // 删除范围数据
         void erase(wuk::ulong start, wuk::ulong end);
+        // 重新调整大小
+        void resize(wuk::ulong length);
 
         // 将内存占用与实际占用保持一致
         void shrink_to_fit();
