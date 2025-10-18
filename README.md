@@ -45,36 +45,33 @@
 
 #### 安装必要依赖
 
- - Linux, Termux (Android)
 ```bash
-# 更新本地包列表
+### CMake - Linux, Android (Termux), Mac OS #########################################
+# 更新本地包列表 & 安装必要的程序
 apt update && apt upgrade -y
-# 安装必要的程序
-apt install git cmake make gcc g++ -y # 或clang
-# 克隆官方仓库
-git clone --single-branch git@github.com:fmtlib/fmt.git
-# 进入目录
-cd fmt
-# 编译并安装
-mkdir build && cd build
-cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=$PREFIX
-make -j$(nproc)
-make install
-```
+apt install git cmake make gcc g++ -y
+# 克隆仓库
+git clone --single-branch https://github.com/fmtlib/fmt.git
+# 进入目录并创建构建目录
+cd fmt && mkdir build && cd build
+# 生成构建文件
+cmake -DCMAKE_INSTALL_PREFIX="你的安装路径" -DCMAKE_BUILD_TYPE=Release ..
+# 构建和安装
+cmake --build . --target install
 
- - Windows, MSYS2 - MinGW64
-```bash
+### Cmake - Windows #################################################################
+# 克隆仓库
+git clone --single-branch https://github.com/fmtlib/fmt.git
+# 进入目录并创建构建目录
+cd fmt && mkdir build && cd build
+# 生成构建文件
+cmake -DCMAKE_INSTALL_PREFIX="你的安装路径" -DCMAKE_BUILD_TYPE=Release ..
+# 构建和安装
+cmake --build . --config Release --target INSTALL
+
+### MSYS2 MinGW64 - Windows #########################################################
 pacman -Syu
 pacman -S mingw-w64-x86_64-fmt
-```
-
- - Windows, Cmake - Visual Studio
-```bash
-git clone --single-branch https://github.com/fmtlib/fmt.git
-cd fmt
-mkdir build && cd build
-cmake -DCMAKE_INSTALL_PREFIX="[你想安装的路径]" -DCMAKE_BUILD_TYPE=Release ..
-cmake --build . --config Release --target INSTALL
 ```
 
 最小化测试代码
@@ -138,5 +135,6 @@ python3 py/exec.py test/im/user.cc -lssl -lcrypto -lpq
 ### 二进制操作
  - Binascii 实现。
  - 二进制序列与数字互转。
+
 
 
