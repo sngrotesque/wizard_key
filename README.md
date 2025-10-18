@@ -77,6 +77,11 @@ pacman -S mingw-w64-x86_64-fmt
 最小化测试代码
 ```cpp
 #include <fmt/core.h>
+
+#ifdef _MSC_VER
+#    pragma comment(lib, "libfmt")
+#endif
+
 int main() {
     fmt::print("hello, {}\n", "world");
     return 0;
@@ -84,7 +89,7 @@ int main() {
 ```
 
 ```bash
-# 编译执行
+# 编译执行（Linux, MinGW64, Mac OS, Termux）
 g++ test.cpp -lfmt -o test && ./test # 或替换为clang
 ```
 
@@ -135,6 +140,7 @@ python3 py/exec.py test/im/user.cc -lssl -lcrypto -lpq
 ### 二进制操作
  - Binascii 实现。
  - 二进制序列与数字互转。
+
 
 
 
