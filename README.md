@@ -23,11 +23,6 @@
 
 ### 先决条件
 
-```
-注意！如果你使用的是 Windows 系统，那么应该注意 CHCP 应始终是 65001 。  
-尤其是在控制台环境下，否则会出现一些令你感到难受却又找不出问题的 BUG 。
-```
-
  -  最低支持 **C++17** 的编译器（GCC 7+、Clang 5+、MSVC 2017+）。
  -  ~~CMake 3.15+（用于构建）~~，暂时还用不到 **CMake** 。
  -  Python 3.6+。不要担心，Python只是用来更方便的构建脚本所使用的，没有它你其实也可以构建。
@@ -42,9 +37,15 @@
     | [Protobuf](https://protobuf.dev/)                   | No        | Google研发的高效的结构化数据序列化工具 |
     | [Zlib](https://www.zlib.net/)                       | No        | 通用数据压缩/解压库（DEFLATE 算法） |
 
-##### 安装必要依赖
+#### Windows 特殊性
+注意！如果你使用的是 Windows 系统，那么应该注意 CHCP 应始终是 `65001` 。  
+尤其是在控制台环境下，否则会出现一些令你感到难受却又可能找不出问题的 BUG 。
 
-Linux, Termux (Android)
+参考：[GetConsoleOutputCP](https://learn.microsoft.com/zh-cn/windows/console/getconsoleoutputcp)，[SetConsoleOutputCP](https://learn.microsoft.com/zh-cn/windows/console/setconsoleoutputcp)。
+
+#### 安装必要依赖
+
+ - Linux, Termux (Android)
 ```bash
 # 更新本地包列表
 apt update && apt upgrade -y
@@ -61,10 +62,18 @@ make -j$(nproc)
 make install
 ```
 
-MSYS2 - MinGW
+ - Windows, MSYS2 - MinGW64
 ```bash
 pacman -Syu
 pacman -S mingw-w64-x86_64-fmt
+```
+
+ - Windows, Cmake - Visual Studio
+```bash
+git clone --single-branch https://github.com/fmtlib/fmt.git
+mkdir build && cd build
+cmake -DCMAKE_INSTALL_PREFIX="[你想安装的路径]" -DCMAKE_BUILD_TYPE=Release ..
+cmake --build . --config Release --target INSTALL
 ```
 
 最小化测试代码
@@ -126,5 +135,6 @@ python3 py/exec.py test/im/user.cc -lssl -lcrypto -lpq
  - IO多路复用支持：select/poll/epoll/IOCP。
 
 ### 二进制操作
- - Base64 / Binascii 实现。
+ - Binascii 实现。
  - 二进制序列与数字互转。
+
