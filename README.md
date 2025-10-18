@@ -71,6 +71,7 @@ pacman -S mingw-w64-x86_64-fmt
  - Windows, Cmake - Visual Studio
 ```bash
 git clone --single-branch https://github.com/fmtlib/fmt.git
+cd fmt
 mkdir build && cd build
 cmake -DCMAKE_INSTALL_PREFIX="[你想安装的路径]" -DCMAKE_BUILD_TYPE=Release ..
 cmake --build . --config Release --target INSTALL
@@ -137,4 +138,5 @@ python3 py/exec.py test/im/user.cc -lssl -lcrypto -lpq
 ### 二进制操作
  - Binascii 实现。
  - 二进制序列与数字互转。
+
 
