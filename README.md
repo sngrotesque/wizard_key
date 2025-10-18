@@ -42,8 +42,9 @@
     | [Protobuf](https://protobuf.dev/)                   | No        | Google研发的高效的结构化数据序列化工具 |
     | [Zlib](https://www.zlib.net/)                       | No        | 通用数据压缩/解压库（DEFLATE 算法） |
 
-##### 安装必要依赖（Linux、Termux）
+##### 安装必要依赖
 
+Linux, Termux (Android)
 ```bash
 # 更新本地包列表
 apt update && apt upgrade -y
@@ -60,11 +61,17 @@ make -j$(nproc)
 make install
 ```
 
+MSYS2 - MinGW
+```bash
+pacman -Syu
+pacman -S mingw-w64-x86_64-fmt
+```
+
+最小化测试代码
 ```cpp
-// 最小化测试代码
 #include <fmt/core.h>
 int main() {
-    fmt::print("Hello, {0}!\n", "World");
+    fmt::print("hello, {}\n", "world");
     return 0;
 }
 ```
@@ -113,9 +120,11 @@ python3 py/exec.py test/im/user.cc -lssl -lcrypto -lpq
  - Base64 编码/解码。
 
 ### 联网
+ - 封装于 `libpq` 的 `wuk::db::psql`（不使用 `libpqxx` ）。
  - 现代套接字封装：`wuk::net::Socket`。
  - 用于网络数据包协议的 **Protobuf**。
  - IO多路复用支持：select/poll/epoll/IOCP。
 
-
-
+### 二进制操作
+ - Base64 / Binascii 实现。
+ - 二进制序列与数字互转。
