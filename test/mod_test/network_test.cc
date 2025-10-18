@@ -70,6 +70,7 @@ void block_test(const std::string &addr, const wuk::u16 &port)
     wuk::net::Socket fd(AF_INET, SOCK_STREAM, 0);
 
     fd.set_blocking(false);
+    fd.set_timeout(1);
 
     fd.connect(addr, port);
 
@@ -104,40 +105,37 @@ void timeout_test(const std::string &addr, const wuk::u16 &port, wuk::f64 timeou
         useragent
     );
 
-#   if defined(CONNECT_TEST)
-    fd.connect_ex(addr, port);
-
-    fd.send(headers);
-
-    std::cout << fd.recv(4096).to_str() << std::endl;
-#   elif defined(ACCEPT_TEST)
-    fd.bind(addr, port);
-    fd.listen(5);
-    auto client = fd.accept_ex();
-
-    std::cout << client.recv(4096).to_str() << std::endl;
-    client.send(headers);
-
-    client.close();
-#   elif defined(SEND_TEST)
     fd.connect(addr, port);
-
-    fd.sendall_ex(headers);
-
+    fd.sendall(headers);
     std::cout << fd.recv(4096).to_str() << std::endl;
-#   elif defined(RECV_TEST)
-    fd.connect(addr, port);
-
-    fd.send(headers);
-
-    std::cout << fd.recv_ex(4096).to_str() << std::endl;
-#   elif defined(ALL_TEST)
-    fd.connect_ex(addr, port);
-    fd.sendall_ex(headers);
-    std::cout << fd.recv_ex(4096).to_str() << std::endl;
-#   endif
 
     fd.close();
+}
+
+template <bool test_recv_instead_of_recvfrom>
+void zero_test(const std::string &addr, const wuk::u16 &port)
+{
+    wuk::net::Socket fd(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+    fd.connect(addr, port);
+
+    [[maybe_unused]] wuk::net::Sockaddr remote;
+
+    std::string useragent("Mozilla/5.0 (X11; Linux x86_64; rv:129.0) Gecko/20100101 Firefox/129.0");
+    std::string headers = fmt::format(
+        "GET / HTTP/1.1\r\n"
+        "Host: {}:{}\r\n"
+        "Accept: */*\r\n"
+        "Connection: close\r\n"
+        "User-Agent: {}\r\n\r\n",
+        addr, port,
+        useragent
+    );
+
+    fd.send(headers);
+    auto buffer = (test_recv_instead_of_recvfrom) ? fd.recv(0) : fd.recvfrom(0, remote);
+
+    fmt::print("buffer size:     {}。\n", buffer.size());
+    fmt::print("buffer capacity: {}。\n", buffer.capacity());
 }
 
 int main()
@@ -150,7 +148,7 @@ int main()
     std::cout << "The program starts execution.\n";
 
     try {
-        timeout_test("klbq.idreamsky.com", 80, 1 / 1e6);
+        block_test("klbq.idreamsky.com", 80);
     } catch (const wuk::Exception &e) {
         std::cerr << e.what() << std::endl;
     }

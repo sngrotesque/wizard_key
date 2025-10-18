@@ -28,7 +28,7 @@ static wuk::Buffer receive_buffer(wuk::net::Socket &fd, wuk::i32 length)
     wuk::Buffer result(length);
 
     while (length > 0) {
-        wuk::Buffer temp = fd.recv_ex(length);
+        wuk::Buffer temp = fd.recv(length);
         if (temp.empty()) {
             break;
         }
@@ -159,7 +159,7 @@ void server(wuk::f64 timeout = 15)
             }
 
             // 处理客户端内容
-            wuk::i32 packet_size = wuk::utils::unpack_bytes<wuk::i32>(client.recv_ex(4));
+            wuk::i32 packet_size = wuk::utils::unpack_bytes<wuk::i32>(client.recv(4));
             
         }
 

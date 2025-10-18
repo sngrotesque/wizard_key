@@ -15,7 +15,7 @@ int main()
         wuk::im::server::Server server(48888);
 
         server.init();
-        server.run();
+        server.run(5);
     } catch (const wuk::Exception &e) {
         std::cerr << e.what() << std::endl;
         return 1;

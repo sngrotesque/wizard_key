@@ -137,28 +137,16 @@ namespace wuk::net {
         wuk::f64 get_timeout() const noexcept;
 
     public:
+        void connect(const std::string &addr, wuk::u16 port);
         void bind(const std::string &addr, wuk::u16 port);
         void listen(socklen_t backlog) const;
+        Socket accept();
 
-        // 阻塞套接字
-        void connect(const std::string &addr, wuk::u16 port);
-        Socket accept() const;
-
-        wuk::ilong send(const wuk::Buffer &buffer, wuk::i32 flag = 0) const;
-        void sendall(const wuk::Buffer &buffer, wuk::i32 flag = 0) const;
-        wuk::ilong sendto(const wuk::Buffer &buffer, const Sockaddr &addr, wuk::i32 flag = 0) const;
-        wuk::Buffer recv(socklen_t length, wuk::i32 flag = 0) const;
-        wuk::Buffer recvfrom(socklen_t length, Sockaddr &addr, wuk::i32 flag = 0) const;
-
-        // 非阻塞套接字
-        void connect_ex(const std::string &addr, wuk::u16 port);
-        Socket accept_ex();
-
-        wuk::ilong send_ex(const wuk::Buffer &buffer, wuk::i32 flag = 0);
-        void sendall_ex(const wuk::Buffer &buffer, wuk::i32 flag = 0);
-        wuk::ilong sendto_ex(const wuk::Buffer &buffer, wuk::i32 flag = 0);
-        wuk::Buffer recv_ex(socklen_t length, wuk::i32 flag = 0);
-        wuk::Buffer recvfrom_ex(socklen_t length, wuk::i32 flag = 0);
+        wuk::ilong send(const wuk::Buffer &buffer, wuk::i32 flag = 0);
+        void sendall(const wuk::Buffer &buffer, wuk::i32 flag = 0);
+        wuk::ilong sendto(const wuk::Buffer &buffer, const Sockaddr &addr, wuk::i32 flag = 0);
+        wuk::Buffer recv(socklen_t length, wuk::i32 flag = 0);
+        wuk::Buffer recvfrom(socklen_t length, Sockaddr &addr, wuk::i32 flag = 0);
 
         void shutdown(wuk::i32 how) const;
         void close();
