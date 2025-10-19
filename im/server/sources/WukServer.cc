@@ -75,7 +75,7 @@ namespace wuk::im::server {
             }
 
             if (FD_ISSET(this->m_fd.get_fd(), &read_fds)) {
-                wuk::net::Socket client = this->m_fd.accept_ex();
+                wuk::net::Socket client = this->m_fd.accept();
                 client.set_blocking(false);
 
                 std::vector<Session>::iterator \
