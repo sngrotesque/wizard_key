@@ -98,7 +98,6 @@ void timeout_test(const std::string &addr, const wuk::u16 &port, wuk::f64 timeou
     wuk::net::Socket fd(AF_INET, SOCK_STREAM, IPPROTO_TCP);
     fd.set_timeout(timeout);
 
-    
     std::string headers = fmt::format(
         "GET / HTTP/1.1\r\n"
         "Host: {}:{}\r\n"

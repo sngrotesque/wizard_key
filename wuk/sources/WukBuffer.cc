@@ -286,7 +286,7 @@ namespace wuk {
 
     //////////////////////////////////////////////////////////////////////
 
-    Buffer Buffer::operator+(const Buffer &other)
+    Buffer Buffer::operator+(const Buffer &other) const noexcept
     {
         Buffer result{*this};
 
@@ -302,7 +302,7 @@ namespace wuk {
         return result;
     }
 
-    Buffer &Buffer::operator+=(const Buffer &other)
+    Buffer &Buffer::operator+=(const Buffer &other) noexcept
     {
         if (!this->is_memory_sufficient(other.m_len)) {
             this->expand_memory(other.m_len);
@@ -375,7 +375,7 @@ namespace wuk {
 
     wuk::byte &Buffer::at(const wuk::ulong &index)
     {
-        if (index > this->m_len) {
+        if (index >= this->m_len) {
             throw wuk::Exception(wuk::Error::ERR, "wuk::Buffer::at",
                 "Index out of range.");
         }
@@ -384,7 +384,7 @@ namespace wuk {
 
     const wuk::byte &Buffer::at(const wuk::ulong &index) const
     {
-        if (index > this->m_len) {
+        if (index >= this->m_len) {
             throw wuk::Exception(wuk::Error::ERR, "wuk::Buffer::at",
                 "Index out of range.");
         }
@@ -450,14 +450,12 @@ namespace wuk {
 
     void Buffer::insert(wuk::ulong index, const Buffer &buffer)
     {
-        throw wuk::Exception(wuk::Error::UNIMPL, "wuk::Buffer::insert",
-            "Do not use it until it is completed.");
+        WUK_UNIMPL_EXCEPTION("wuk::Buffer::insert");
     }
 
     void Buffer::erase(wuk::ulong start, wuk::ulong end)
     {
-        throw wuk::Exception(wuk::Error::UNIMPL, "wuk::Buffer::erase",
-            "Do not use it until it is completed.");
+        WUK_UNIMPL_EXCEPTION("wuk::Buffer::erase");
     }
 
     void Buffer::resize(wuk::ulong length)

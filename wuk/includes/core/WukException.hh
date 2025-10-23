@@ -65,4 +65,11 @@ namespace wuk {
     };
 }
 
+#define WUK_UNIMPL_EXCEPTION(function_name)    \
+    throw wuk::Exception(                      \
+        wuk::Error::UNIMPL,                    \
+        function_name  ,                       \
+        "Do not use it until it is completed." \
+    );
+
 #endif /* WUK_SUPPORT */

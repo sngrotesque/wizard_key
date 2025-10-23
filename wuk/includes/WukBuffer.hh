@@ -54,8 +54,8 @@ namespace wuk {
         Buffer(const char *buffer);
 
     public:
-        Buffer operator+(const Buffer &other);
-        Buffer &operator+=(const Buffer &other);
+        Buffer operator+(const Buffer &other) const noexcept;
+        Buffer &operator+=(const Buffer &other) noexcept;
 
         bool operator==(const Buffer &other) const noexcept;
         bool operator!=(const Buffer &other) const noexcept;
