@@ -672,6 +672,7 @@ namespace wuk::net {
                 "The size of the buffer should not be negative.");
         }
 
+        WUK_UNIMPL_EXCEPTION("wuk::net::Socket::recvall");
         /*
         auto recvall_timeout = [&](char *buffer, socklen_t length)
         {
@@ -811,3 +812,4 @@ namespace wuk::net {
         this->m_is_close = true; // 此处不应调用close
     }
 }
+
