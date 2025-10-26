@@ -29,7 +29,8 @@ void normal_test()
     fmt::print("数据哈希（SHA-256）：{}。\n", hexdigest);
 
     /////////////////////////////////////////////////////
-    std::string addr("localhost");
+    // std::string addr("localhost");
+    std::string addr("47.79.146.143");
     wuk::u16 port(48888);
 
     wuk::net::Socket client(AF_INET, SOCK_STREAM, IPPROTO_TCP);
