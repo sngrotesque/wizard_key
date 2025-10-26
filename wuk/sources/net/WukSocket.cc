@@ -665,6 +665,26 @@ namespace wuk::net {
         return buffer;
     }
 
+    wuk::Buffer Socket::recvall(socklen_t length, wuk::i32 flag)
+    {
+        if (length < 0) {
+            throw wuk::Exception(wuk::Error::ERR, "wuk::net::Socket::recvall",
+                "The size of the buffer should not be negative.");
+        }
+
+        /*
+        auto recvall_timeout = [&](char *buffer, socklen_t length)
+        {
+            return ::recv(this->m_fd, buffer, length, flag);
+        };
+
+        wuk::Buffer result(length);
+        while (true) {
+
+        }
+        */
+    }
+
     wuk::Buffer Socket::recvfrom(socklen_t length, Sockaddr &addr, wuk::i32 flag)
     {
         if (length < 0) {
