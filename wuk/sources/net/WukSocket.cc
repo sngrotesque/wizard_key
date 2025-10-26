@@ -672,18 +672,17 @@ namespace wuk::net {
                 "The size of the buffer should not be negative.");
         }
 
-        WUK_UNIMPL_EXCEPTION("wuk::net::Socket::recvall");
-        /*
-        auto recvall_timeout = [&](char *buffer, socklen_t length)
-        {
-            return ::recv(this->m_fd, buffer, length, flag);
-        };
-
+        socklen_t remaining = length;
         wuk::Buffer result(length);
-        while (true) {
 
+        while (remaining > 0) {
+            wuk::Buffer swap = this->recv(length);
+
+            result += swap;
+            remaining -= swap.size();
         }
-        */
+
+        return result;
     }
 
     wuk::Buffer Socket::recvfrom(socklen_t length, Sockaddr &addr, wuk::i32 flag)

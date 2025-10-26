@@ -113,12 +113,12 @@ def main(verbose: bool = True):
 
     # im源文件
     compiler.add_args(
-        'im/server/sources/WukAccountService.cc',
-        'im/server/sources/WukDispatcher.cc',
-        'im/server/sources/WukMessageService.cc',
-        'im/server/sources/WukServer.cc',
-        'im/server/sources/WukSession.cc',
-        'im/server/sources/WukUtils.cc',
+        # 'im/server/sources/WukAccountService.cc',
+        # 'im/server/sources/WukDispatcher.cc',
+        # 'im/server/sources/WukMessageService.cc',
+        # 'im/server/sources/WukServer.cc',
+        # 'im/server/sources/WukSession.cc',
+        # 'im/server/sources/WukUtils.cc',
 
         # 'im/client/sources/WukAccountClient.cc',
         # 'im/client/sources/WukClient.cc',
