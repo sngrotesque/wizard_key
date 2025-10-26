@@ -1,7 +1,8 @@
 #include <net/WukSocket.hh>
-
 #include <WukMemory.hh>
+
 #include <fcntl.h>
+#include <cmath>
 
 // ==================== Private ====================
 enum class IOType {
