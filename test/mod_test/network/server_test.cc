@@ -79,7 +79,7 @@ void cyberpunk_test()
         message += client.recv(remaining);
     }
 
-    std::filesystem::path path(R"(C:\Users\sn\Desktop\code_test\bg_test.jpg)");
+    std::filesystem::path path("/root/code/bg_test.jpg");
     std::fstream f(path, std::ios::binary | std::ios::out);
 
     f.write(message.c_str(), message.size());
