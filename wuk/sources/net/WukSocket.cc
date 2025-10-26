@@ -523,7 +523,7 @@ namespace wuk::net {
         this->m_laddr.set_addr(info.get_addr(), info.get_addrlen());
     }
 
-    void Socket::listen(socklen_t backlog) const
+    void Socket::listen(wuk::i32 backlog) const
     {
         wuk::i32 err = ::listen(this->m_fd, backlog);
         if (err == NETERROR) {
@@ -585,7 +585,7 @@ namespace wuk::net {
 
     void Socket::sendall(const wuk::Buffer &buffer, wuk::i32 flag)
     {
-        auto send_timeout = [&](const char *buffer, socklen_t length)
+        auto send_timeout = [&](const char *buffer, wuk::i32 length)
         {
             return ::send(this->m_fd, buffer, length, flag);
         };
@@ -631,7 +631,7 @@ namespace wuk::net {
         return sent;
     }
 
-    wuk::Buffer Socket::recv(socklen_t length, wuk::i32 flag)
+    wuk::Buffer Socket::recv(wuk::i32 length, wuk::i32 flag)
     {
         if (length < 0) {
             throw wuk::Exception(wuk::Error::ERR, "wuk::net::Socket::recv",
@@ -665,14 +665,14 @@ namespace wuk::net {
         return buffer;
     }
 
-    wuk::Buffer Socket::recvall(socklen_t length, wuk::i32 flag)
+    wuk::Buffer Socket::recvall(wuk::i32 length, wuk::i32 flag)
     {
         if (length < 0) {
             throw wuk::Exception(wuk::Error::ERR, "wuk::net::Socket::recvall",
                 "The size of the buffer should not be negative.");
         }
 
-        socklen_t remaining = length;
+        wuk::i32 remaining = length;
         wuk::Buffer result(length);
 
         while (remaining > 0) {
@@ -685,7 +685,7 @@ namespace wuk::net {
         return result;
     }
 
-    wuk::Buffer Socket::recvfrom(socklen_t length, Sockaddr &addr, wuk::i32 flag)
+    wuk::Buffer Socket::recvfrom(wuk::i32 length, Sockaddr &addr, wuk::i32 flag)
     {
         if (length < 0) {
             throw wuk::Exception(wuk::Error::ERR, "wuk::net::Socket::recvfrom",

@@ -139,15 +139,15 @@ namespace wuk::net {
     public:
         void connect(const std::string &addr, wuk::u16 port);
         void bind(const std::string &addr, wuk::u16 port);
-        void listen(socklen_t backlog) const;
+        void listen(wuk::i32 backlog) const;
         Socket accept();
 
         wuk::ilong send(const wuk::Buffer &buffer, wuk::i32 flag = 0);
         void sendall(const wuk::Buffer &buffer, wuk::i32 flag = 0);
         wuk::ilong sendto(const wuk::Buffer &buffer, const Sockaddr &addr, wuk::i32 flag = 0);
-        wuk::Buffer recv(socklen_t length, wuk::i32 flag = 0);
-        wuk::Buffer recvall(socklen_t length, wuk::i32 flag = 0);
-        wuk::Buffer recvfrom(socklen_t length, Sockaddr &addr, wuk::i32 flag = 0);
+        wuk::Buffer recv(wuk::i32 length, wuk::i32 flag = 0);
+        wuk::Buffer recvall(wuk::i32 length, wuk::i32 flag = 0);
+        wuk::Buffer recvfrom(wuk::i32 length, Sockaddr &addr, wuk::i32 flag = 0);
 
         void shutdown(wuk::i32 how) const;
         void close();
