@@ -18,8 +18,8 @@ void normal_test()
     fmt::print("等待客户端连接。\n");
     wuk::net::Socket client = server.accept();
     fmt::print("客户端已连接：{}:{}。\n",
-        client.get_raddr().get_address(),
-        client.get_raddr().get_port()
+        client.get_remote().get_address(),
+        client.get_remote().get_port()
     );
 
     wuk::i32 needed = wuk::utils::unpack_bytes<wuk::i32>(client.recv(4));
@@ -60,8 +60,8 @@ void cyberpunk_test()
     fmt::print("等待客户端连接。\n");
     wuk::net::Socket client = server.accept();
     fmt::print("客户端已连接：{}:{}。\n",
-        client.get_raddr().get_address(),
-        client.get_raddr().get_port()
+        client.get_remote().get_address(),
+        client.get_remote().get_port()
     );
 
     wuk::i32 needed = wuk::utils::unpack_bytes<wuk::i32>(client.recv(4));

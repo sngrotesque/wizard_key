@@ -48,9 +48,9 @@ namespace wuk::im::server {
             FD_ZERO(&read_fds);
             FD_ZERO(&write_fds);
 
-            FD_SET(this->m_fd.get_fd(), &read_fds);
+            FD_SET(this->m_fd.fd(), &read_fds);
 
-            wuk::net::wSocket max_fds = this->m_fd.get_fd();
+            wuk::net::wSocket max_fds = this->m_fd.fd();
             for (const Session &client : this->m_clients) {
                 if (!client.valid()) {
                     continue;
@@ -74,7 +74,7 @@ namespace wuk::im::server {
                     wuk::net::err::system::last_message());
             }
 
-            if (FD_ISSET(this->m_fd.get_fd(), &read_fds)) {
+            if (FD_ISSET(this->m_fd.fd(), &read_fds)) {
                 wuk::net::Socket client = this->m_fd.accept();
                 client.set_blocking(false);
 

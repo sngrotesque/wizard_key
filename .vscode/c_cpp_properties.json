@@ -1,25 +1,45 @@
 {
     "configurations": [
         {
-            "name": "Linux",
+            "name": "Windows MSYS2",
             "includePath": [
-                "${workspaceFolder}/wuk/includes",
-                "${workspaceFolder}/wuk/sources",
-                "${workspaceFolder}/im",
-                "/usr/include",
-                "/usr/include/postgresql"
+                "${workspaceFolder}/wuk/includes/**",
+                "${workspaceFolder}/wuk/sources/**",
+                "${workspaceFolder}/im/**",
+                "H:/MSYS2/mingw64/include/"
             ],
             "defines": [],
-            "compilerPath": "/usr/bin/g++",
+            "compilerPath": "H:/msys2/mingw64/bin/g++.exe",
             "cStandard": "c17",
             "cppStandard": "c++17",
-            "intelliSenseMode": "linux-gcc-x64",
+            "intelliSenseMode": "windows-gcc-x64",
             "compilerArgs": [
                 "-Wall",
                 "-Wextra",
                 "-Wpedantic"
             ]
         }
+        // ,
+        // {
+        //     "name": "Linux",
+        //     "includePath": [
+        //         "${workspaceFolder}/wuk/includes",
+        //         "${workspaceFolder}/wuk/sources",
+        //         "${workspaceFolder}/im/**",
+        //         "/usr/include/",
+        //         "/usr/include/postgresql/"
+        //     ],
+        //     "defines": [],
+        //     "compilerPath": "/usr/bin/g++",
+        //     "cStandard": "c17",
+        //     "cppStandard": "c++17",
+        //     "intelliSenseMode": "linux-gcc-x64",
+        //     "compilerArgs": [
+        //         "-Wall",
+        //         "-Wextra",
+        //         "-Wpedantic"
+        //     ]
+        // }
     ],
     "version": 4
 }

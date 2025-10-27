@@ -49,9 +49,9 @@ public:
         return m_fd.is_valid();
     }
 
-    auto get_fd() const
+    auto fd() const
     {
-        return m_fd.get_fd();
+        return m_fd.fd();
     }
 
     std::string receive_data()
@@ -89,12 +89,12 @@ public:
 
     std::string get_address() const
     {
-        return m_fd.get_raddr().get_address();
+        return m_fd.get_remote().get_address();
     }
 
     wuk::u16 get_port() const
     {
-        return m_fd.get_raddr().get_port();
+        return m_fd.get_remote().get_port();
     }
 };
 
@@ -176,16 +176,16 @@ void server(wuk::f64 timeout = 15.0)
         // 初始化（清空套接字集）
         FD_ZERO(&read_fds);
         // 将服务端套接字加入到【读监听】队列
-        FD_SET(server_fd.get_fd(), &read_fds);
+        FD_SET(server_fd.fd(), &read_fds);
         // 将max_fd设置为当前的服务端套接字文件描述符的数字
-        wuk::net::wSocket max_fd = server_fd.get_fd();
+        wuk::net::wSocket max_fd = server_fd.fd();
 
 #       ifndef WUK_COMPILER_MSVC
         // 遍历找出套接字文件描述符数字最大的那一个并赋值给max_fd
         for (const auto &client : clients) {
             if (client.is_valid()) {
                 // 如果当前元素是有效的套接字
-                auto fd = client.get_fd();
+                auto fd = client.fd();
                 // 将此客户端套接字加入【读监听】队列
                 FD_SET(fd, &read_fds);
                 // 如果它的套接字文件描述符更大，那么将它赋值给max_fd
@@ -209,7 +209,7 @@ void server(wuk::f64 timeout = 15.0)
                 wuk::net::err::system::message(err_code));
         }
 
-        if (FD_ISSET(server_fd.get_fd(), &read_fds)) {
+        if (FD_ISSET(server_fd.fd(), &read_fds)) {
             // 如果服务端套接字在【读监听】队列中就绪就代表有新的客户端连接
             // 将新客户端连接到客户端队列
             handle_new_connection(server_fd, clients);
@@ -217,7 +217,7 @@ void server(wuk::f64 timeout = 15.0)
 
         // fmt::println("处理客户端数据！");
         for (auto &client : clients) {
-            if (!client.is_valid() || !FD_ISSET(client.get_fd(), &read_fds)) {
+            if (!client.is_valid() || !FD_ISSET(client.fd(), &read_fds)) {
                 continue;
             }
             handle_client_data(client);

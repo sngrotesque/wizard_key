@@ -115,15 +115,15 @@ void server(wuk::f64 timeout = 15)
     while (true) {
         fd_set read_fds;
         FD_ZERO(&read_fds);
-        FD_SET(server_fd.get_fd(), &read_fds);
-        wuk::net::wSocket max_fd = server_fd.get_fd();
+        FD_SET(server_fd.fd(), &read_fds);
+        wuk::net::wSocket max_fd = server_fd.fd();
 
         fmt::print("初始化客户端套接字列表。\n");
         for (wuk::i32 i = 0; i < MAX_CLIENTS; ++i) {
             if (client_fds[i].is_valid()) {
-                FD_SET(client_fds[i].get_fd(), &read_fds);
-                if (client_fds[i].get_fd() > max_fd)
-                    max_fd = client_fds[i].get_fd();
+                FD_SET(client_fds[i].fd(), &read_fds);
+                if (client_fds[i].fd() > max_fd)
+                    max_fd = client_fds[i].fd();
             }
         }
 
@@ -139,14 +139,14 @@ void server(wuk::f64 timeout = 15)
                 wuk::net::err::system::message(err_code));
         }
 
-        if (FD_ISSET(server_fd.get_fd(), &read_fds)) {
+        if (FD_ISSET(server_fd.fd(), &read_fds)) {
             wuk::net::Socket client_fd = server_fd.accept();
             client_fd.set_blocking(false);
             for (wuk::i32 i = 0; i < MAX_CLIENTS; ++i) {
                 if (!client_fds[i].is_valid()) {
                     client_fds[i] = std::move(client_fd);
-                    std::string client_addr = client_fds[i].get_raddr().get_address();
-                    wuk::u16 client_port = client_fds[i].get_raddr().get_port();
+                    std::string client_addr = client_fds[i].get_remote().get_address();
+                    wuk::u16 client_port = client_fds[i].get_remote().get_port();
                     std::cout << fmt::format("有新的客户端连接：{0}:{1}.\n",
                         client_addr, client_port);
                     break;
@@ -157,10 +157,10 @@ void server(wuk::f64 timeout = 15)
         fmt::print("处理客户端数据！\n");
         for (wuk::i32 i = 0; i < MAX_CLIENTS; ++i) {
             wuk::net::Socket &client_fd = client_fds[i];
-            if (client_fd.is_valid() && FD_ISSET(client_fd.get_fd(), &read_fds)) {
+            if (client_fd.is_valid() && FD_ISSET(client_fd.fd(), &read_fds)) {
                 std::string buffer = recv_data(client_fd);
-                std::string client_addr = client_fd.get_raddr().get_address();
-                wuk::u16 client_port = client_fd.get_raddr().get_port();
+                std::string client_addr = client_fd.get_remote().get_address();
+                wuk::u16 client_port = client_fd.get_remote().get_port();
                 if (buffer.empty() || buffer == "exit") {
                     std::cout << fmt::format("客户端断开连接：{0}:{1}.",
                         client_addr, client_port) << std::endl;

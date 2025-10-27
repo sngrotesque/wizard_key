@@ -78,10 +78,10 @@ void server(wuk::f64 timeout = 15)
         FD_ZERO(&read_fds);
         FD_ZERO(&write_fds);
         // 将服务端套接字加入到【读监听】队列
-        FD_SET(server.get_fd(), &read_fds);
+        FD_SET(server.fd(), &read_fds);
 
         // 将当前的服务端套接字设置为最大套接字
-        wuk::net::wSocket nfds = server.get_fd();
+        wuk::net::wSocket nfds = server.fd();
         // 遍历找出最大的套接字并赋值给nfds
         for (const wuk::net::Socket &client : clients) {
             if (!client.is_valid()) {
@@ -89,7 +89,7 @@ void server(wuk::f64 timeout = 15)
                 continue;
             }
             // 将有效客户端套接字加入到【读监听】队列
-            wuk::net::wSocket fd = client.get_fd();
+            wuk::net::wSocket fd = client.fd();
             FD_SET(fd, &read_fds);
             // 如果当前客户端套接字比nfds更大，那么把nfds改为它
             if (fd > nfds) {
@@ -112,7 +112,7 @@ void server(wuk::f64 timeout = 15)
             throw wuk::Exception(code, "server::select", message);
         }
 
-        if (FD_ISSET(server.get_fd(), &read_fds)) {
+        if (FD_ISSET(server.fd(), &read_fds)) {
             // 如果服务端套接字在【读监听】队列中被设置为了就绪就代表有新的连接。
             // 等于select告诉你可以开始调用accept来接受一个客户端了。
             // 将新的客户端添加到客户端队列中。
@@ -145,7 +145,7 @@ void server(wuk::f64 timeout = 15)
             }
 
             // 返回对此客户端的引用（当前仅用于打印客户端信息）
-            const wuk::net::Sockaddr &client_info = (*it).get_raddr();
+            const wuk::net::Sockaddr &client_info = (*it).get_remote();
             fmt::print("新的客户端连接：{0}:{1}。\n",
                 client_info.get_address(),
                 client_info.get_port()
@@ -153,7 +153,7 @@ void server(wuk::f64 timeout = 15)
         }
 
         for (wuk::net::Socket &client : clients) {
-            if (!client.is_valid() || !FD_ISSET(client.get_fd(), &read_fds)) {
+            if (!client.is_valid() || !FD_ISSET(client.fd(), &read_fds)) {
                 // 如果套接字无效或者未被标记为就绪，那么直接跳过
                 continue;
             }

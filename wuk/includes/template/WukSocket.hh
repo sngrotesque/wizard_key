@@ -1,5 +1,5 @@
 template <typename T>
-void wuk::net::Socket::setsockopt(wuk::i32 level, wuk::i32 opt_name, const T &value)
+void wuk::net::Socket::setsockopt(wuk::i32 level, wuk::i32 opt_name, T value)
 {
     const char *opt_ptr = reinterpret_cast<const char *>(&value);
     socklen_t opt_len = static_cast<socklen_t>(sizeof(T));

@@ -57,7 +57,7 @@ static void broadcast(wuk::net::Socket &fd, const std::string &message)
 {
     std::lock_guard lock(clients_mutex);
     for (const auto& [sock, _] : clients) {
-        if (sock != fd.get_fd()) {
+        if (sock != fd.fd()) {
             fd_send(fd, message);
         }
     }
@@ -67,7 +67,7 @@ static void handle_client(wuk::net::Socket server_fd, wuk::net::Socket fd, std::
 {
     auto remove_client = [&]() -> void {
         std::lock_guard lock(clients_mutex);
-        auto it = clients.find(fd.get_fd());
+        auto it = clients.find(fd.fd());
         if (it != clients.end()) {
             log("[断开连接] 用户 " + it->second.username + " (" + it->second.address + ") 已退出");
             clients.erase(it);
@@ -82,7 +82,7 @@ static void handle_client(wuk::net::Socket server_fd, wuk::net::Socket fd, std::
         }
     };
 
-    auto username_opt = fd_recv(fd.get_fd());
+    auto username_opt = fd_recv(fd.fd());
     if (!username_opt) {
         remove_client();
         return;
@@ -90,14 +90,14 @@ static void handle_client(wuk::net::Socket server_fd, wuk::net::Socket fd, std::
 
     do {
         std::lock_guard lock(clients_mutex);
-        clients[fd.get_fd()] = ClientInfo{*username_opt, addr_str};
+        clients[fd.fd()] = ClientInfo{*username_opt, addr_str};
     } while (0);
 
     log("[新连接] 用户 " + *username_opt + " (" + addr_str + ") 加入聊天室");
     broadcast(fd, "系统通知: " + *username_opt + " 进入了聊天室");
 
     while (true) {
-        auto msg_opt = fd_recv(fd.get_fd());
+        auto msg_opt = fd_recv(fd.fd());
         if (!msg_opt || msg_opt->empty() || *msg_opt == "exit" || *msg_opt == "quit") break;
         broadcast(fd, "[" + *username_opt + "] " + *msg_opt);
     }

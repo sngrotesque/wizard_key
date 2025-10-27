@@ -75,17 +75,17 @@ static T sock_call_ex(
                 fd_set fds;
                 FD_ZERO(&fds);
                 // 将当前套接字加入到监听集合
-                FD_SET(fd.get_fd(), &fds);
+                FD_SET(fd.fd(), &fds);
 
                 timeval tv = create_timeval(fd.get_timeout());
                 wuk::i32 ready;
                 switch (io_type) {
                     case IOType::CONNECT:
                     case IOType::SEND:
-                        ready = select(fd.get_fd() + 1, nullptr, &fds, nullptr, &tv); break;
+                        ready = select(fd.fd() + 1, nullptr, &fds, nullptr, &tv); break;
                     case IOType::ACCEPT:
                     case IOType::RECV:
-                        ready = select(fd.get_fd() + 1, &fds, nullptr, nullptr, &tv); break;
+                        ready = select(fd.fd() + 1, &fds, nullptr, nullptr, &tv); break;
                 }
 
                 if (ready == 0) {
@@ -253,7 +253,7 @@ namespace wuk::net {
         const sockaddr *sa = this->get_addr();
 
         if (!sa) {
-            return std::string{};
+            return {};
         }
 
         auto throw_error = []() -> void {
@@ -557,7 +557,7 @@ namespace wuk::net {
 
         Socket client(this->m_family, this->m_sock_type, this->m_proto, client_sock);
         client.set_timeout(this->m_timeout);
-        client.set_raddr(client_addrinfo);
+        client.set_remote(client_addrinfo);
 
         return client;
     }
@@ -751,27 +751,27 @@ namespace wuk::net {
         this->mark_invalid();
     }
 
-    void Socket::set_raddr(const Sockaddr &addr)
+    void Socket::set_remote(const Sockaddr &addr)
     {
         this->m_raddr = addr;
     }
 
-    void Socket::set_laddr(const Sockaddr &addr)
+    void Socket::set_local(const Sockaddr &addr)
     {
         this->m_laddr = addr;
     }
 
-    const Sockaddr &Socket::get_raddr() const noexcept
+    const Sockaddr &Socket::get_remote() const noexcept
     {
         return this->m_raddr;
     }
 
-    const Sockaddr &Socket::get_laddr() const noexcept
+    const Sockaddr &Socket::get_local() const noexcept
     {
         return this->m_laddr;
     }
 
-    wSocket Socket::get_fd() const noexcept
+    wSocket Socket::fd() const noexcept
     {
         return this->m_fd;
     }

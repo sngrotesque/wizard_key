@@ -23,17 +23,17 @@ namespace wuk::im::server {
 
     wuk::net::wSocket Session::fd() const noexcept
     {
-        return this->m_client.get_fd();
+        return this->m_client.fd();
     }
 
     std::string Session::remote_addr() const noexcept
     {
-        return this->m_client.get_raddr().get_address();
+        return this->m_client.get_remote().get_address();
     }
 
     wuk::u16 Session::remote_port() const noexcept
     {
-        return this->m_client.get_raddr().get_port();
+        return this->m_client.get_remote().get_port();
     }
 
     

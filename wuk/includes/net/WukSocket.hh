@@ -82,7 +82,7 @@ namespace wuk::net {
 // Socket BEGIN
     class LIBWUK_API Socket {
     private:
-        wSocket m_fd = INV_SOCK;
+        wSocket  m_fd        = INV_SOCK;
 
         wuk::i32 m_family    = NETERROR;
         wuk::i32 m_sock_type = NETERROR;
@@ -124,7 +124,7 @@ namespace wuk::net {
 
     public:
         template <typename T>
-        void setsockopt(wuk::i32 level, wuk::i32 opt_name, const T &value);
+        void setsockopt(wuk::i32 level, wuk::i32 opt_name, T value);
         template <typename T>
         T getsockopt(wuk::i32 level, wuk::i32 opt_name);
 
@@ -153,14 +153,14 @@ namespace wuk::net {
         void close();
 
     public:
-        void set_raddr(const Sockaddr &addr);
-        void set_laddr(const Sockaddr &addr);
+        void set_remote(const Sockaddr &addr);
+        void set_local(const Sockaddr &addr);
 
     public:
-        const Sockaddr &get_raddr() const noexcept;
-        const Sockaddr &get_laddr() const noexcept;
+        const Sockaddr &get_remote() const noexcept;
+        const Sockaddr &get_local() const noexcept;
 
-        wSocket get_fd() const noexcept;
+        wSocket fd() const noexcept;
 
         bool is_valid() const noexcept;
         void mark_invalid() noexcept;
