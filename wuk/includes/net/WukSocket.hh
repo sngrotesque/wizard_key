@@ -26,26 +26,24 @@ namespace wuk::net {
     class LIBWUK_API Addrinfo {
     private:
         addrinfo m_hints {};
-        addrinfo *m_res = nullptr;
+
+    private:
+        Sockaddr _resolve(const char *host, const char *service);
 
     public:
         Addrinfo(wuk::i32 family    = AF_INET,
                  wuk::i32 sock_type = SOCK_STREAM,
                  wuk::i32 proto     = IPPROTO_TCP) noexcept;
-        ~Addrinfo();
+        ~Addrinfo() = default;
 
-        Addrinfo(const Addrinfo &other) = delete;
-        Addrinfo(Addrinfo &&other) noexcept;
-        Addrinfo &operator=(const Addrinfo &other) = delete;
-        Addrinfo &operator=(Addrinfo &&other) noexcept;
-
-    public:
-        Addrinfo &resolve(const std::string &addr, const wuk::u16 &port);
+        Addrinfo(const Addrinfo &other) = default;
+        Addrinfo(Addrinfo &&other) = default;
+        Addrinfo &operator=(const Addrinfo &other) = default;
+        Addrinfo &operator=(Addrinfo &&other) = default;
 
     public:
-        const sockaddr *get_addr() const;
-        socklen_t get_addrlen() const;
-        Sockaddr get_sockaddr() const;
+        Sockaddr resolve(const std::string &addr, wuk::u16 port);
+        Sockaddr resolve(const std::string &addr, const std::string &service);
     };
 
 // Sockaddr BEGIN
@@ -95,6 +93,9 @@ namespace wuk::net {
 
         bool m_is_close = false;
         bool m_is_blocking = true;
+
+    private:
+        void mark_invalid() noexcept;
 
     public:
         Socket() = default;
@@ -157,13 +158,12 @@ namespace wuk::net {
         void set_local(const Sockaddr &addr);
 
     public:
-        const Sockaddr &get_remote() const noexcept;
-        const Sockaddr &get_local() const noexcept;
+        Sockaddr get_remote() const noexcept;
+        Sockaddr get_local() const noexcept;
 
         wSocket fd() const noexcept;
 
         bool is_valid() const noexcept;
-        void mark_invalid() noexcept;
     };
 }
 

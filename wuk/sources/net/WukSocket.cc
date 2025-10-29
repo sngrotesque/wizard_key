@@ -125,6 +125,29 @@ static T sock_call_ex(
 
 namespace wuk::net {
 // ==================== Addrinfo ====================
+    Sockaddr Addrinfo::_resolve(const char *host, const char *service)
+    {
+        addrinfo *ai_result = nullptr;
+
+        wuk::i32 err_code = getaddrinfo(
+            host,
+            service,
+            &this->m_hints,
+            &ai_result
+        );
+
+        if (err_code) {
+            throw wuk::Exception(err_code, "wuk::net::Addrinfo::resolve",
+                err::system::message(err_code));
+        }
+
+        Sockaddr sa_result(ai_result->ai_addr, ai_result->ai_addrlen);
+
+        freeaddrinfo(ai_result);
+
+        return sa_result;
+    }
+
     Addrinfo::Addrinfo(wuk::i32 family, wuk::i32 sock_type, wuk::i32 proto) noexcept
     {
         this->m_hints.ai_family = family;
@@ -132,68 +155,14 @@ namespace wuk::net {
         this->m_hints.ai_protocol = proto;
     }
 
-    Addrinfo::~Addrinfo()
+    Sockaddr Addrinfo::resolve(const std::string &addr, wuk::u16 port)
     {
-        freeaddrinfo(this->m_res);
+        return this->_resolve(addr.c_str(), std::to_string(port).c_str());
     }
 
-    Addrinfo::Addrinfo(Addrinfo &&other) noexcept
-        : m_hints(other.m_hints)
-        , m_res(other.m_res)
+    Sockaddr Addrinfo::resolve(const std::string &addr, const std::string &service)
     {
-        other.m_res = nullptr;
-    }
-
-    Addrinfo &Addrinfo::operator=(Addrinfo &&other) noexcept
-    {
-        if (this == &other) {
-            return *this;
-        }
-        this->m_hints = other.m_hints;
-        this->m_res = other.m_res;
-        other.m_res = nullptr;
-        return *this;
-    }
-
-    Addrinfo &Addrinfo::resolve(const std::string &addr, const wuk::u16 &port)
-    {
-        freeaddrinfo(this->m_res); // 防止多次调用导致内存泄漏
-
-        wuk::i32 err_code = getaddrinfo(addr.c_str(), std::to_string(port).c_str(),
-                &this->m_hints, &this->m_res);
-        if (err_code) {
-            throw wuk::Exception(err_code, "wuk::net::Addrinfo::resolve",
-                err::system::message(err_code));
-        }
-
-        return *this; // 返回自身方便链式调用
-    }
-
-    const sockaddr *Addrinfo::get_addr() const
-    {
-        if (!this->m_res) {
-            throw wuk::Exception(wuk::Error::NPTR, "wuk::net::Addrinfo::get_addr",
-                "this->m_res is nullptr.");
-        }
-        return this->m_res->ai_addr;
-    }
-
-    socklen_t Addrinfo::get_addrlen() const
-    {
-        if (!this->m_res) {
-            throw wuk::Exception(wuk::Error::NPTR, "wuk::net::Addrinfo::get_addrlen",
-                "this->m_res is nullptr.");
-        }
-        return this->m_res->ai_addrlen;
-    }
-
-    Sockaddr Addrinfo::get_sockaddr() const
-    {
-        if (!this->m_res) {
-            throw wuk::Exception(wuk::Error::NPTR, "wuk::net::Addrinfo::get_sockaddr",
-                "this->m_res is nullptr.");
-        }
-        return Sockaddr(this->m_res->ai_addr, this->m_res->ai_addrlen);
+        return this->_resolve(addr.c_str(), service.c_str());
     }
 
 // ==================== Sockaddr ====================
@@ -249,25 +218,19 @@ namespace wuk::net {
 
     std::string Sockaddr::get_address() const
     {
-        char buffer[INET6_ADDRSTRLEN] = {0};
+        char buffer[INET6_ADDRSTRLEN] {};
         const sockaddr *sa = this->get_addr();
 
         if (!sa) {
             return {};
         }
 
-        auto throw_error = []() -> void {
-            wuk::i32 err_code = err::system::code();
-            throw wuk::Exception(err_code, "wuk::net::Sockaddr::get_address",
-                err::system::message(err_code));
-        };
-
         switch (sa->sa_family) {
             case AF_INET:
             {
                 const sockaddr_in *sin = reinterpret_cast<const sockaddr_in *>(sa);
                 if (!inet_ntop(AF_INET, &sin->sin_addr, buffer, sizeof(buffer))) {
-                    throw_error();
+                    throw_error("wuk::net::Sockaddr::get_address");
                 }
                 break;
             }
@@ -275,7 +238,7 @@ namespace wuk::net {
             {
                 const sockaddr_in6 *sin6 = reinterpret_cast<const sockaddr_in6 *>(sa);
                 if (!inet_ntop(AF_INET6, &sin6->sin6_addr, buffer, sizeof(buffer))) {
-                    throw_error();
+                    throw_error("wuk::net::Sockaddr::get_address");
                 }
                 break;
             }
@@ -315,6 +278,19 @@ namespace wuk::net {
     }
 
 // ==================== Socket ====================
+    void Socket::mark_invalid() noexcept
+    {
+        this->m_fd        = INV_SOCK;
+
+        this->m_family    = NETERROR;
+        this->m_sock_type = NETERROR;
+        this->m_proto     = NETERROR;
+
+        this->m_timeout   = 0;
+
+        this->m_is_close  = true; // 此处不应调用close
+    }
+
     Socket::Socket(wuk::i32 family, wuk::i32 sock_type, wuk::i32 proto)
         : m_family(family)
         , m_sock_type(sock_type)
@@ -348,14 +324,17 @@ namespace wuk::net {
 
     Socket::Socket(Socket &&other) noexcept
     {
-        this->m_fd = other.m_fd;
-        this->m_family = other.m_family;
-        this->m_sock_type = other.m_sock_type;
-        this->m_proto = other.m_proto;
-        this->m_raddr = other.m_raddr;
-        this->m_laddr = other.m_laddr;
-        this->m_timeout = other.m_timeout;
-        this->m_is_close = other.m_is_close;
+        this->m_fd          = other.m_fd;
+
+        this->m_family      = other.m_family;
+        this->m_sock_type   = other.m_sock_type;
+        this->m_proto       = other.m_proto;
+
+        this->m_raddr       = other.m_raddr;
+        this->m_laddr       = other.m_laddr;
+
+        this->m_timeout     = other.m_timeout;
+        this->m_is_close    = other.m_is_close;
         this->m_is_blocking = other.m_is_blocking;
 
         other.mark_invalid();
@@ -368,14 +347,17 @@ namespace wuk::net {
         }
         this->close();
 
-        this->m_fd = other.m_fd;
-        this->m_family = other.m_family;
-        this->m_sock_type = other.m_sock_type;
-        this->m_proto = other.m_proto;
-        this->m_raddr = other.m_raddr;
-        this->m_laddr = other.m_laddr;
-        this->m_timeout = other.m_timeout;
-        this->m_is_close = other.m_is_close;
+        this->m_fd          = other.m_fd;
+
+        this->m_family      = other.m_family;
+        this->m_sock_type   = other.m_sock_type;
+        this->m_proto       = other.m_proto;
+
+        this->m_raddr       = other.m_raddr;
+        this->m_laddr       = other.m_laddr;
+
+        this->m_timeout     = other.m_timeout;
+        this->m_is_close    = other.m_is_close;
         this->m_is_blocking = other.m_is_blocking;
 
         other.mark_invalid();
@@ -426,14 +408,21 @@ namespace wuk::net {
 
     const Sockaddr Socket::getsockname()
     {
-        Sockaddr addr;
-        wuk::i32 err = ::getsockname(this->m_fd, addr.set_addr(), addr.set_addrlen());
+        Sockaddr sa_result;
+
+        wuk::i32 err = ::getsockname(
+            this->m_fd,
+            sa_result.set_addr(),
+            sa_result.set_addrlen()
+        );
+
         if (err == NETERROR) {
             wuk::i32 err_code = err::system::code();
             throw wuk::Exception(err_code, "wuk::net::Socket::getsockname",
                 err::system::message(err_code));
         }
-        return addr;
+
+        return sa_result;
     }
 
     void Socket::set_blocking(bool blocked)
@@ -441,8 +430,8 @@ namespace wuk::net {
         wuk::i32 err = 0;
 
 #       ifdef WUK_PLATFORM_WINOS
-        wuk::u32 mode = static_cast<wuk::u32>(!blocked);
-        err = ioctlsocket(this->m_fd, FIONBIO, reinterpret_cast<u_long *>(&mode));
+        u_long mode = static_cast<u_long>(!blocked);
+        err = ioctlsocket(this->m_fd, FIONBIO, &mode);
 #       else
         wuk::i32 flag = fcntl(this->m_fd, F_GETFL, 0);
         if (flag == NETERROR) {
@@ -492,45 +481,47 @@ namespace wuk::net {
             return ::connect(this->m_fd, addr, addrlen);
         };
         Addrinfo info(this->m_family, this->m_sock_type, this->m_proto);
-        info.resolve(addr, port);
+        Sockaddr sa_result = info.resolve(addr, port);
 
         wuk::i32 err = sock_call_ex<wuk::i32>(
             *this,
             "wuk::net::Socket::connect",
             connect_timeout,
             IOType::CONNECT,
-            info.get_addr(),
-            info.get_addrlen()
+            sa_result.get_addr(),
+            sa_result.get_addrlen()
         );
 
         if (err == NETERROR) {
             throw_error("wuk::net::Socket::connect");
         }
 
-        this->m_raddr.set_addr(info.get_addr(), info.get_addrlen());
+        this->m_raddr.set_addr(sa_result);
         this->m_laddr.set_addr(this->getsockname());
     }
 
     void Socket::bind(const std::string &addr, wuk::u16 port)
     {
         Addrinfo info(this->m_family);
-        info.resolve(addr, port);
-        wuk::i32 err = ::bind(this->m_fd, info.get_addr(), info.get_addrlen());
+        Sockaddr sa_result = info.resolve(addr, port);
+
+        wuk::i32 err = ::bind(
+            this->m_fd,
+            sa_result.get_addr(),
+            sa_result.get_addrlen()
+        );
+
         if (err == NETERROR) {
-            wuk::i32 err_code = err::system::code();
-            throw wuk::Exception(err_code, "wuk::net::Socket::bind",
-                err::system::message(err_code));
+            throw_error("wuk::net::Socket::bind");
         }
-        this->m_laddr.set_addr(info.get_addr(), info.get_addrlen());
+
+        this->m_laddr.set_addr(sa_result);
     }
 
     void Socket::listen(wuk::i32 backlog) const
     {
-        wuk::i32 err = ::listen(this->m_fd, backlog);
-        if (err == NETERROR) {
-            wuk::i32 err_code = err::system::code();
-            throw wuk::Exception(err_code, "wuk::net::Socket::listen",
-                err::system::message(err_code));
+        if (::listen(this->m_fd, backlog) == NETERROR) {
+            throw_error("wuk::net::Socket::listen");
         }
     }
 
@@ -679,6 +670,11 @@ namespace wuk::net {
         while (remaining > 0) {
             wuk::Buffer swap = this->recv(length);
 
+            if (swap.size() == 0) {
+                // 防止实际接收长度与指定长度不一致导致一直阻塞
+                break;
+            }
+
             result += swap;
             remaining -= swap.size();
         }
@@ -725,9 +721,7 @@ namespace wuk::net {
     void Socket::shutdown(wuk::i32 how) const
     {
         if (::shutdown(this->m_fd, how) == NETERROR) {
-            wuk::i32 err_code = err::system::code();
-            throw wuk::Exception(err_code, "wuk::net::Socket::shutdown",
-                err::system::message(err_code));
+            throw_error("wuk::net::Socket::shutdown");
         }
     }
 
@@ -743,9 +737,7 @@ namespace wuk::net {
         wuk::i32 err = ::close(this->m_fd);
 #       endif
         if (err == NETERROR) {
-            wuk::i32 err_code = err::system::code();
-            throw wuk::Exception(err_code, "wuk::net::Socket::close",
-                err::system::message(err_code));
+            throw_error("wuk::net::Socket::close");
         }
 
         this->mark_invalid();
@@ -761,12 +753,12 @@ namespace wuk::net {
         this->m_laddr = addr;
     }
 
-    const Sockaddr &Socket::get_remote() const noexcept
+    Sockaddr Socket::get_remote() const noexcept
     {
         return this->m_raddr;
     }
 
-    const Sockaddr &Socket::get_local() const noexcept
+    Sockaddr Socket::get_local() const noexcept
     {
         return this->m_laddr;
     }
@@ -797,19 +789,6 @@ namespace wuk::net {
         }
 
         return error == 0;
-    }
-
-    void Socket::mark_invalid() noexcept
-    {
-        this->m_fd = INV_SOCK;
-
-        this->m_family = NETERROR;
-        this->m_sock_type = NETERROR;
-        this->m_proto = NETERROR;
-
-        this->m_timeout = 0;
-
-        this->m_is_close = true; // 此处不应调用close
     }
 }
 

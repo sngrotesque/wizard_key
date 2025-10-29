@@ -60,9 +60,10 @@ void udp_test(const std::string &addr, const wuk::u16 &port)
     wuk::net::Sockaddr remote;
 
     fd.bind("0.0.0.0", 48999);
+    ainfo.resolve(addr, port);
 
     std::cout << "send...\n";
-    fd.sendto("hello", ainfo.resolve(addr, port).get_sockaddr());
+    fd.sendto("hello", ainfo.get_sockaddr());
     std::cout << "recv...\n";
     fd.recvfrom(5, remote);
     std::cout << "close...\n";
