@@ -62,10 +62,7 @@ static wuk::Buffer file_read(const fs::path &path)
     }
     wuk::Buffer file_data(file_length, 0);
 
-    file.read(
-        reinterpret_cast<char *>(file_data.write(file_length)),
-        file_length
-    );
+    file.read(file_data.write<char>(file_length), file_length);
 
     return file_data;
 }
