@@ -15,7 +15,7 @@
 
 // #define WEAK_KEY_TEST
 // #define XCRYPTION_TEST
-// #define THREADS_METHOD 3
+#define THREADS_METHOD 5
 // #define AVALANCHE_EFFECT 1
 // #define CUSTOM_TEST
 
@@ -421,16 +421,16 @@ void op4_thread(wuk::byte* ciphertext, const wuk::byte* plaintext, wuk::ulong le
 }
 #endif
 
-void op4_single_thread(wuk::byte* ciphertext, const wuk::byte* plaintext, wuk::ulong length,
-            const wuk::byte key[OP4_KL], const wuk::byte nonce[OP4_NL])
-{
-    // 如果不写在函数内部进行初始化的话，计数器会一直更新，导致多线程与单线程加密结果不一致、
-    OP4 op4(key, 0);
-    op4.ctr_stream(ciphertext, plaintext, length, nonce);
-}
-
 void op4_threads()
 {
+    auto op4_single_thread = [](wuk::byte* ciphertext, const wuk::byte* plaintext, wuk::ulong length,
+                const wuk::byte key[OP4_KL], const wuk::byte nonce[OP4_NL])
+    {
+        // 如果不写在函数内部进行初始化的话，计数器会一直更新，导致多线程与单线程加密结果不一致、
+        OP4 op4(key, 0);
+        op4.ctr_stream(ciphertext, plaintext, length, nonce);
+    };
+
     // 128KB（131072 Bytes）是多线程弱于单线程性能的分水岭
     constexpr wuk::ulong length = static_cast<wuk::ulong>(512ULL * 1024*1024);
     wuk::byte *plaintext = new (std::align_val_t(16), std::nothrow) wuk::byte[length];
@@ -450,15 +450,14 @@ void op4_threads()
     const wuk::byte nonce[OP4_KL]{0};
     wuk::Time timer;
 
-    std::cout << "The length of the encrypted data is: "
-              << std::fixed << std::setprecision(2)
-              << (static_cast<wuk::f64>(length) / (1024*1024))
-              << " MB." << std::endl;
+    fmt::print("The length of the encrypted data is: {:.2f} MB.\n",
+        (static_cast<wuk::f64>(length) / (1024*1024)));
 #   if defined(THREADS_METHOD) && ((THREADS_METHOD >= 1) && (THREADS_METHOD <= 3))
-    std::cout << "Multi threaded encryption is in progress.." << std::endl;
+    fmt::print("Multi threaded encryption is in progress..\n");
+
     wuk::u32 thread_count = std::min(static_cast<wuk::u32>(std::thread::hardware_concurrency()),
                                 static_cast<wuk::u32>((length + OP4_BL - 1) / OP4_BL));
-    std::cout << "threads count: " << thread_count << std::endl;
+    fmt::print("threads count: {}.\n", thread_count);
     SPEED_TEST(op4_thread(ciphertext, plaintext, length, key, nonce, thread_count));
 #   else
     std::cout << "single threaded encryption is in progress.." << std::endl;

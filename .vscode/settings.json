@@ -1,5 +1,6 @@
 {
     "files.associations": {
+        "*.dbclient-js": "javascript",
         "cstdbool": "cpp",
         "type_traits": "cpp",
         "array": "cpp",
@@ -70,6 +71,11 @@
         "cinttypes": "cpp",
         "typeinfo": "cpp",
         "variant": "cpp",
-        "text_encoding": "cpp"
+        "text_encoding": "cpp",
+        "forward_list": "cpp",
+        "ios": "cpp",
+        "locale": "cpp",
+        "ranges": "cpp",
+        "__locale": "cpp"
     }
 }
