@@ -3,6 +3,7 @@
 
 #if WUK_SUPPORT
 #include <atomic>
+#include <WukBuffer.hh>
 
 namespace wuk::crypto {
     constexpr wuk::u32 OP4_BL  = 16; // Block length
@@ -20,6 +21,7 @@ namespace wuk::crypto {
     public:
         OP4() = default;
         OP4(const wuk::byte key[OP4_KL], wuk::u32 counter = 0U);
+        OP4(const wuk::Buffer &key, wuk::u32 counter = 0U);
         ~OP4();
 
     public:
@@ -38,6 +40,8 @@ namespace wuk::crypto {
 
         void ctr_stream(wuk::byte *out, const wuk::byte *in,
                         wuk::ulong length, const wuk::byte nonce[OP4_NL]);
+
+        wuk::Buffer ctr_stream(const wuk::Buffer &buffer, const wuk::Buffer &nonce);
 
     public:
         void set_counter(const wuk::u32 &counter) noexcept

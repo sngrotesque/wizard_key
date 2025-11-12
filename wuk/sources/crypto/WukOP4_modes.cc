@@ -79,6 +79,21 @@ namespace wuk::crypto {
         key_extension(key, this->m_round_key);
     }
 
+    OP4::OP4(const wuk::Buffer &key, wuk::u32 counter)
+        : m_counter(counter)
+    {
+        if (key.empty()) {
+            throw wuk::Exception(wuk::Error::NODAT, "wuk::crypto::OP4::OP4",
+                "key is empty.");
+        }
+        if (key.size() != OP4_KL) {
+            std::string message = fmt::format(
+                "Key must be {} bytes, currently {} bytes.", OP4_KL, key.size());
+            throw wuk::Exception(wuk::Error::ERR, "wuk::crypto::OP4::OP4", message);
+        }
+        key_extension(key.data(), this->m_round_key);
+    }
+
     OP4::~OP4()
     {
         wuk::memory_secure(this->m_round_key, sizeof(this->m_round_key));
@@ -211,5 +226,28 @@ namespace wuk::crypto {
                 out[i] = in[i] ^ state[i];
             }
         }
+    }
+
+    wuk::Buffer OP4::ctr_stream(const wuk::Buffer &buffer, const wuk::Buffer &nonce)
+    {
+        if (buffer.empty()) {
+            return {};
+        }
+        if (nonce.size() != OP4_NL) {
+            std::string message = fmt::format(
+                "Nonce must be {} bytes, currently {} bytes.", OP4_NL, nonce.size());
+            throw wuk::Exception(wuk::Error::ERR, "wuk::crypto::OP4::ctr_stream", message);
+        }
+        wuk::ulong length = buffer.size();
+        wuk::Buffer result(length);
+
+        this->ctr_stream(
+            result.write<wuk::byte>(length),
+            buffer.data(),
+            length,
+            nonce.data()
+        );
+
+        return result;
     }
 }

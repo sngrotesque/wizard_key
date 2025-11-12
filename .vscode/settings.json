@@ -76,6 +76,16 @@
         "ios": "cpp",
         "locale": "cpp",
         "ranges": "cpp",
-        "__locale": "cpp"
+        "__locale": "cpp",
+        "__node_handle": "cpp",
+        "flat_map": "cpp",
+        "flat_set": "cpp",
+        "stacktrace": "cpp",
+        "valarray": "cpp",
+        "__hash_table": "cpp",
+        "__split_buffer": "cpp",
+        "__tree": "cpp",
+        "queue": "cpp",
+        "stack": "cpp"
     }
 }

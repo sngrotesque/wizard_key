@@ -15,7 +15,7 @@
 
 // #define WEAK_KEY_TEST
 // #define XCRYPTION_TEST
-#define THREADS_METHOD 5
+// #define THREADS_METHOD 5
 // #define AVALANCHE_EFFECT 1
 // #define CUSTOM_TEST
 
@@ -685,6 +685,33 @@ void custom_test()
 }
 #endif
 
+#define BUFFER_TEST
+#ifdef BUFFER_TEST
+void buffer_test()
+{
+    wuk::Buffer plaintext("hello, world");
+    wuk::Buffer ciphertext;
+    wuk::Buffer decrypted;
+
+    wuk::Buffer key = wrand.bytes(32);
+    wuk::Buffer nonce = wrand.bytes(12);
+
+    wuk::crypto::OP4 op4(key);
+
+    ciphertext = op4.ctr_stream(plaintext, nonce);
+
+    op4.set_counter(0);
+
+    decrypted = op4.ctr_stream(ciphertext, nonce);
+
+    if (decrypted != plaintext) {
+        fmt::print("[!] CTR Decryption failed! [!]\n");
+    } else {
+        fmt::print("Decrypted: {}。\n", decrypted.to_str());
+    }
+}
+#endif
+
 /*
  *  python py/exec.py test/mod_test/op4_test.cc -lssl -lcrypto \
  *          [-lbcrypt \
@@ -696,30 +723,40 @@ void custom_test()
  */
 int main(int argc, char **argv)
 {
-#   ifdef WEAK_KEY_TEST
-    std::cout << "================================ Weak key test ================================\n";
-    weak_key_test<true>();
-#   endif
+    try {
+#       ifdef WEAK_KEY_TEST
+        std::cout << "================================ Weak key test ================================\n";
+        weak_key_test<true>();
+#       endif
 
-#   ifdef XCRYPTION_TEST
-    std::cout << "================================ xcryption test ================================\n";
-    xcryption_verification();
-#   endif
+#       ifdef XCRYPTION_TEST
+        std::cout << "================================ xcryption test ================================\n";
+        xcryption_verification();
+#       endif
 
-#   ifdef THREADS_METHOD
-    std::cout << "================================ threads test ================================\n";
-    op4_threads();
-#   endif
+#       ifdef THREADS_METHOD
+        std::cout << "================================ threads test ================================\n";
+        op4_threads();
+#       endif
 
-#   ifdef AVALANCHE_EFFECT
-    std::cout << "================================ avalanche effect test ================================\n";
-    avalanche_effect_test();
-#   endif
+#       ifdef AVALANCHE_EFFECT
+        std::cout << "================================ avalanche effect test ================================\n";
+        avalanche_effect_test();
+#       endif
 
-#   ifdef CUSTOM_TEST
-    std::cout << "================================ custom test ================================\n";
-    custom_test();
-#   endif
+#       ifdef CUSTOM_TEST
+        std::cout << "================================ custom test ================================\n";
+        custom_test();
+#       endif
+
+#       ifdef BUFFER_TEST
+        std::cout << "================================ buffer test ================================\n";
+        buffer_test();
+#       endif
+    } catch (const wuk::Exception &e) {
+        std::cerr << e.what() << std::endl;
+        return 1;
+    }
 
     return 0;
 }
