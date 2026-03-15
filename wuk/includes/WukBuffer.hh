@@ -45,9 +45,9 @@ namespace wuk {
         Buffer &operator=(std::string &&other);
 
     public:
-        // 申请一个length大小的内存空间，不显式初始化内存空间。
+        // 申请一个length大小的内存空间（注意，长度依旧为0），不显式初始化内存空间。
         Buffer(wuk::ulong length);
-        // 申请一个length大小的内存空间，并将元素初始化为ch。
+        // 申请一个length大小的内存空间（注意，长度依旧为0），并将元素初始化为ch。
         Buffer(wuk::ulong length, wuk::byte ch);
         // 数据构造
         Buffer(const wuk::byte *buffer, wuk::ulong length);

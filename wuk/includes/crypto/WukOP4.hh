@@ -24,6 +24,9 @@ namespace wuk::crypto {
         OP4(const wuk::Buffer &key, wuk::u32 counter = 0U);
         ~OP4();
 
+        OP4(const OP4 &other) = default;
+        OP4 &operator=(const OP4 &other) = default;
+
     public:
         void ecb_encrypt(wuk::byte *out, const wuk::byte *in,
                          wuk::ulong length) const;
@@ -44,9 +47,14 @@ namespace wuk::crypto {
         wuk::Buffer ctr_stream(const wuk::Buffer &buffer, const wuk::Buffer &nonce);
 
     public:
-        void set_counter(const wuk::u32 &counter) noexcept
+        void set_counter(wuk::u32 counter) noexcept
         {
             this->m_counter = counter;
+        }
+
+        void reset_counter() noexcept
+        {
+            this->m_counter = 0;
         }
 
         wuk::u32 get_counter() const noexcept

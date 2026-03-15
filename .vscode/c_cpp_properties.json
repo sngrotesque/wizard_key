@@ -6,6 +6,7 @@
                 "${workspaceFolder}/wuk/includes/**",
                 "${workspaceFolder}/wuk/sources/**",
                 "${workspaceFolder}/im/**",
+                // "H:/MSYS2/mingw64/include/opencv4/**",
                 "H:/MSYS2/mingw64/include/"
             ],
             "defines": [],

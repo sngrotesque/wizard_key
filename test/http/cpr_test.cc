@@ -31,7 +31,7 @@ void test()
 {
     cpr::Header headers = {
         {"Referer", "https://www.pixiv.net/"},
-        {"User-Agent", UserAgentList[random.randint(0, UserAgentList.size() - 1)]}
+        {"User-Agent", random.choice(UserAgentList)}
     };
 
     std::string proxy_addr("http://127.0.0.1:8081");
@@ -46,11 +46,11 @@ void test()
     std::string path("test/http/test.jpg");
 
     if (r.status_code == 200) {
-        std::cout << fmt::format("Download successful, save to {}.", path) << std::endl;
+        fmt::print("Download successful, save to {}.\n", path);
         std::fstream out(fs::path(path), std::ios::binary | std::ios::out);
         out.write(r.text.c_str(), r.text.size());
     } else {
-        std::cerr << fmt::format("Download failed, error code: {}.", r.status_code) << std::endl;
+        fmt::print("Download failed, error code: {}.\n", r.status_code);
     }
 }
 
