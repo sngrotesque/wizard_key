@@ -1,6 +1,5 @@
-# 本仓库将不再更新
+# 本仓库将不再更新（This repository will not be updated）
 
-```
 # 🔐 The Wizard's Universal Key
 
 一个模块化、安全和跨平台的 C++ 框架，用于构建具有加密功能、网络通信和数据处理实用程序的健壮应用程序。
@@ -144,6 +143,5 @@ python3 py/exec.py test/im/user.cc -lssl -lcrypto -lpq
  - Binascii 实现。
  - 二进制序列与数字互转。
 
-```
 
 
